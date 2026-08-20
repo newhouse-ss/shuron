@@ -1,0 +1,58 @@
+# BC5CDR Annotation Guidelines
+
+## Guidelines for disease mention and concept id annotation
+
+### What to annotate?
+
+1. Annotate the most specific disease mentions and select the best-matching MeSH ID. For instance, the complete phrase “partial seizures” should be preferred over “seizures” as it is more specific.
+2. Annotate minimum necessary text spans for a disease. For example, select “hypertension” instead of “sustained hypertension.”
+3. Annotate all mentions of a disease entity in an abstract. All occurrences of the same disease mention should be marked, including duplicates within the same sentence. PubTator provides an automatic function to help mark the duplicate mentions via a single click.
+4. Annotate mentions with morphological variations such as adjectives. For instance, “hypertensive” is annotated as “hypertension.”
+5. Annotate abbreviations. Abbreviations should be annotated separately. For instance, “Huntington disease (HD)” should be separated into two annotations: “Huntington disease” and “HD” with the same concept id.
+6. Annotate all concepts in a composite disease mention using the ‘‘|’’ separator. Composite mentions such as: ‘‘ovarian and peritoneal cancer’’ should be normalized to the collection of the individual constituents as D010051 (Ovarian Neoplasms) | D010534 (Peritoneal Neoplasms). When possible, we also spell out the individual constituents with their associated text. That is, for the above example, we also provide “ovarian … cancer” for D010051 and “peritoneal cancer” for D010534.
+7. Annotate a disease mention using multiple concepts to logically describe the disease mention as a whole, using the ‘‘+’’ concatenator. It may be required to represent a disease mention with multiple concepts which are not inherited with each other. For example, “bone marrow oedema” implies Bone Marrow Diseases (MESH: D001855) and Edema (MESH:D004487). Thus, the complete phrase should be annotated as D001855+D004487. When possible, we also spell out the individual constituents with their associated text. That is, for the above example, we also provide “bone marrow” for D001855 and “edema” for D004487.
+8. When a disease cannot be normalized, “-1” is used (e.g. erythroblastocytopenia).
+
+### What not to annotate?
+
+1. Do NOT include species names as part of a disease. Organism names such as “human” are generally excluded from the preferred mention unless they are critical part of a disease name. Viruses, bacteria, and other organism names are not annotated unless it is clear from the context that the disease is caused by these organisms. e.g. “HIV-1-infected” means the disease caused by the organism “HIV”. Thus, “HIV” should be included.
+2. DO NOT annotate overlapping mentions. For example, the phrase “hepatitis B virus (HBV) infected” was annotated as one single disease D006509 (Hepatitis B).
+3. DO NOT annotate general terms such as: disease, syndrome, deficiency, complications, etc. However, terms such as pain, cancer, tumor and death should be retained.
+4. DO NOT annotate references to biological processes such as “tumorigenesis” or “cancerogenesis”.
+
+### Special cases of disease annotations
+
+1. Rules for “toxicity” related mentions. In this dataset, ‘toxicity’ and related terms are common. Below are our rules for annotating them.
+   a) When the general term ‘toxicity’ appears by itself, use concept id D064420 (Drug-Related Side Effects and Adverse Reactions).
+   b) When a specific type of ‘toxicity’ is mentioned (e.g. cardiotoxicity or liver toxicity), use concepts under D064420 when possible (e.g. D066126 for ‘cardiac toxicity’ and D056486 for ‘liver toxicity’).
+   c) When no matching MeSH terms can be found under D064420 for a specific type of toxicity, use the corresponding disease ids. For instance, use D014786 (vision disorders) for ‘visual toxicity’ and D006311 (hearing disorders) for ‘auditory toxicity’ and ‘ototoxicity.’
+2. If the article indicates that a disease is drug induced (again common in this dataset), then one should always try to annotate the disease using terms under D064420 (Drug-Related Side Effects and Adverse Reactions) whenever possible. For instance, ‘dyskinesia’ is a movement disorder and has its own MeSH ID (D020820). However, when it is clear from the article that ‘dyskinesia’ is caused by a drug (e.g. PMID: 6727060), then we should use D004409 regardless whether ‘drug-induced’ is included in the disease mention or not. Other common examples include D056486 (Drug-induced Liver Injury) for ‘hepatitis’; D017109 (Akathisia, Drug-induced) for ‘akathisis.’
+
+## Guidelines for chemical mention and concept id annotation
+
+### What to annotate?
+
+1. Annotate the most specific chemical mentions and select the best-matching MeSH concept ID. Chemicals which should be annotated are listed as follows:
+   a) Chemical Nouns convertible to: -A single chemical structure diagram: single atoms, ions, isotopes, pure elements and molecules such as: Calcium (Ca), Iron (Fe), Lithium (Li), Potassium (K), Oxygen (O2),  -A general Markush diagram with R groups such as: Amino acids
+   b) General class names where the definition of the class includes information on some structural or elemental composition such as: steroids, sugars, fatty acids, saturated fatty acids …
+   c) Small Biochemicals - Monosaccharides, disaccharides and trisaccharides: Glucose, Sucrose … - Peptides and proteins with less than 15 aminoacids: Angiotensin II … - Monomers, dimmers, trimmers of nucleotides: e.g. ATP, cAMP … - Fatty acids and their derivatives excluding polymeric structures. e.g. Cholesterol, glycerol, prostaglandin E1 …
+   d) Synthetic Polymers such as: Polyethylene glycol
+   e) Special chemicals having well-defined chemical compositions. E.g. “ethanolic extract of Daucus carota seeds (DCE)” in 16755009; “grape seed proanthocyanidin extract” in 11334364.
+2. Annotate all mentions of a chemical entity in an abstract.
+3. Annotate abbreviations. Some abbreviations are ambiguous by convention. Take “Nitric Oxide (NO)” as an example, “NO” could also be interpreted as a negative response. Ambiguity should be avoided using context.
+4. Annotate chemicals when they cannot be normalized. In such a case, “-1” will be used as the concept id.
+
+### What not to annotate?
+
+1. DO NOT annotate other terms different from chemical nouns. Adjective forms of chemical names are also excluded. For instance, muscarinic, adrenergic and purinergic in 17244258.
+2. DO NOT annotate chemical nouns named for a role or similar, that is, nonstructural concepts (e.g. anti-HIV agents, anticonvulsants, anticholinesterase drug, antipsychotic, anticoagulant, etc).
+3. DO NOT annotate very nonspecific structural concepts. e.g. Atom, Ion, Molecular, Lipid, Protein …
+4. DO NOT annotate words that are not chemicals in context, even if they are co-incidentally the same set of characters (synonyms and metaphors). For instance, “Gold” should not be annotated if it appears in “gold standard.”
+5. DO NOT annotate Biomolecules/Macromolecular biochemicals: not large oligomeric and polymeric or established DNA/RNA/protein sequences. Proteins, polypeptides (> 15aa), nucleic acid polymers, polysaccharides, oligosaccharides and other biochemical are excluded. E.g. Insulin, DNA, mRNA, collagen, starch, cellulose, glycogen, lipopolysaccharide, glucocorticoid, glucagon (29 peptides), prolactin (199 peptides) …
+6. DO NOT annotate general vague compositions. For instance, according to Wikipedia, the term opiate describes any of the narcotic opioid alkaloids found as natural products in the opium poppy plant, Papaver somniferum, and thus should be excluded.
+7. DO NOT annotate special words not to be labeled by convention (e.g. Water, saline, juice, etc).
+
+### Special cases of chemical annotations
+
+- Antidepressive Agents (D000928), Estrogens (D004967), DContraceptives, Oral (D003276) are annotated in order to match CTD’s relation annotations.
+- For combo drugs, mark as one entity and use their corresponding id in MeSH when possible (as opposed to annotating its component separately). For example, select levodopa/carbidopa in PMID:2265898 and assign MeSH ID:C009265 (carbidopa, levodopa drug combination).

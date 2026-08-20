@@ -1,0 +1,35 @@
+{
+  "experiment_id": "ncbi_disease_valid_gpt_r_g_round1",
+  "description": "NCBI Disease paper-style moderation run with random sampling of 10 training examples and strict-match stopping at F1 >= 0.9 or no further improvement.",
+  "dataset_name": "NCBI Disease",
+  "split": "valid",
+  "evaluation_url": "https://pubannotation.org/projects/ncbi-valid",
+  "paths": {
+    "guidelines_txt": "data/guidelines/ncbi_disease_guidelines.txt",
+    "entity_schema_json": "data/schemas/ncbi_entities.schema.json",
+    "output_dir": "outputs"
+  },
+  "evidence": {
+    "discrepancy_examples": "",
+    "true_positive_examples": "",
+    "verified_examples": ""
+  },
+  "moderation_sampling": {
+    "source_dir_path": "data/datasets/ncbi_disease/train",
+    "source_split": "train",
+    "sampling_method": "random",
+    "sample_size": 10,
+    "seed": 42,
+    "shared_across_models": true,
+    "selection_note": "Randomly sample 10 training examples from the shared NCBI Disease train directory and reuse the same sampled subset across compared models."
+  },
+  "model": {
+    "provider": "openai",
+    "model": "gpt-5",
+    "rounds": 1
+  },
+  "iterative": {
+    "threshold_f1": 0.9,
+    "n_examples": 5
+  }
+}

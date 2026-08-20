@@ -1,0 +1,88 @@
+# Concept types
+
+To the better understanding, we grouped those highly relevant entities to six concepts types as shown below:
+(1) Gene: it includes genes, proteins, mRNA and other gene products.
+(2) Chemical: it contents chemical and drug.
+(3) Disease : it contents diseases, symptoms, and some disease-related phenotypes.
+(4) Variant : it contents the genomic/protein variants (including substitutions, deletions, insertions, and others).
+(5) Species: it includes the species in the hierarchical taxonomy of organisms.
+(6) CellLine: cell line.
+
+# Guideline of the entities
+
+## General rules
+
+- Annotate all the spans of all the six concept types.
+- The full text can be accessed to clarify the concept spans and identifiers.
+- The abbreviation and its long form should be annotated separately if possible. prostaglandin E2 (PGE2) in the text, “prostaglandin E2” and “PGE2” should be both annotated to chemicals with the same identifier (D015232).
+- Annotate both the full name and abbreviation in one entity, if the boundary of the entity covers both of them. For instance, annotate “Deoxyguanosine kinase (dGK) deficiency” entirely to a disease (PMID:19394258).
+- Annotate the composite entity spans (e.g., “MMP-1, -2”) entirely.
+- Annotate the concept spans with misspelling (“HLRRC” in PMID:18366737).
+
+## Gene
+
+- Annotate the gene families including paralogs/orthologs (e.g., bone morphogenetic protein(bmp)), but DO NOT annotate the functional based families (e.g., tumor suppressor gene, protein kinase).
+- Following the previous rule, if at least one of the gene family members mentioned in the text, the identifiers of those members are assigned to the family name (e.g., in “Cytochrome P-450 genes (CYP1A1, CYP2A6, CYP2D6, and CYP2E1)”, Cytochrome P-450 genes should be assigned with NCBI Gene: 1543,1548,1565,1571). If no family member is in the text, the first gene reached in the gene family should be assigned (e.g., matrix metalloproteinases to NCBI Gene:4312(MMP1)).
+- In experimental studies, annotate the gene identifier corresponding to the organism/species that is the source of the gene (for example mouse gene transfected into human cells is annotated to record for mouse gene).
+- DO NOT annotate the genes, if they are named for cells and pathways.
+
+## Disease
+
+- Annotate the diseased-related phenotypes but not other (e.g., short ear in PMID:17345627).
+- DO NOT annotate the high-level diseases (e.g., “genetic disorder”).
+  Excludes:
+  - Cis-acting disease (PMID:12442272)
+  - genetic disorders (PMID:18046082)
+  - familial disorder (PMID:20806042)
+- Annotate “drug addiction” to “disease”.
+- Annotate the symptoms to diseases.
+- DO NOT annotate overdose.
+- DO NOT annotate the mental status and phenotypes to diseases unless the term is exactly recorded in MEDIC. e.g., decline in sympathetic tone (PMID:19067809)
+- DO NOT annotate references to biological processes such as “tumorigenesis” or “cancerogenesis”.
+- Annotate minimum necessary text spans for a disease. For example, select “hypertension” instead of “sustained hypertension.”, unless the span covers the prefix or the suffix can exactly match a specific concept identifier (e.g., “chronic bronchitis” to D029481).
+
+## Chemical
+
+- Annotate the chemical abbreviation with the dose. For example “In addition, GABA content of mice hippocampus treated with GFC75 plus P400 showed an increase of 46.90% when compared with seized mice.”, 75 and 400 suffixes are the doses. In this case, we annotate GFC75 and P400 as chemical spans. (PMID:24911645).
+- Annotate the chemical resource for extracts, e.g., “ethanolic extract of Daucus carota seeds (DCE)” in PMID:16755009; “grape seed proanthocyanidin extract” in PMID:11334364.
+- DO NOT annotate antibodies to chemicals. (PMID:17595233) (PMID:20648600)
+- DO NOT annotate saline, placebo, water, and juice.
+- DO NOT annotate residue, free radicals.
+- DO NOT annotate staining chemical (e.g., hematoxylin in PMID:24442316)
+- DO NOT annotate vaccines.
+
+## Species
+
+- DO NOT annotate beyond species rank (e.g., annotate homo sapiens but do not annotate mammalian which is a taxonomy class)
+
+## Variant
+
+- DO NOT annotate residue of the gene modification.
+
+## Conflict cases among different concept types
+
+- [Gene/Disease] If the disease and gene share the same name, e.g., adrenoleukodystrophy (ALD) gene, annotate the concept following the below cases:
+  - Adrenoleukodystrophy gene > GeneOrGeneProduct
+  - Adrenoleukodystrophy patient > DiseaseOrPhenotypicFeature
+  - ALD gene > GeneOrGeneProduct
+  - ALD patient > DiseaseOrPhenotypicFeature
+  - adrenoleukodystrophy (ALD) gene > GeneOrGeneProduct
+  - adrenoleukodystrophy (ALD) patient > DiseaseOrPhenotypicFeature
+- Annotate the concept with longer spans. For instance, Deoxyguanosine kinase (dGK) deficiency (MESH:C580039) instead Deoxyguanosine kinase (in PMID:19394258).
+- Annotate the prefix of the corresponding species to the gene span separately (e.g., “human leukocyte antigen (HLA)-DRB1” to “human” to species and “leukocyte antigen (HLA)-DRB1” to gene).
+- Annotate the virus spans (e.g., HIV-1 and HBV) to species. But annotate the infection of the virus to disease (e.g., “HIV-1 infected” maps to MESH: D015658).
+- Some of the proteins can be chemicals for particular usage or purpose. We annotate the organic compounds to proteins. While, we annotate the proteins or molecules as the biologic medical products to treat diseases .
+- Annotate the alleles to variants rather than chemicals, DO NOT annotate the amino acids to chemicals.
+- The rule for antagonist/agonist/blocker/inhibitor: If the sentence mentions a drug/chemical and then tells the target gene, we annotate both the chemical and the gene.
+- Following the previous rule, we annotate the mention to a gene if the inhibitor/blockage/agonist is part of the gene name.
+  - e.g., “plasminogen activator inhibitor-1” in PMID:16167916
+- Following the previous rule, if “<gene> inhibitors/agonists” is mentioned in the context of a family of compounds, without mentioning a specific drug, We annotate the entire mention (“<gene> inhibitors/agonists”) as a chemical.
+  - “Methadone dose, presence of cytochrome P-450 3A4 inhibitors” in PMID:16801510
+- We don’t annotate functions of genes that are described as inhibitors or activators of processes.
+  - We don’t annotate “coagulation inhibitors” in PMID:17003923
+
+## Others
+
+- Annotate spans with morphological variations such as adjectives. For instance, annotate “hypertensive” to “hypertension”, “psychiatric” to “Mental Disorders” and “VLCAD-deficient” to “VLCAD-deficiency”.
+- The suffixes of the gene/protein (e.g., “kinase” of “dGK kinase”, “gene” of “ESR1 gene”) are ignored unless the meaning is changed without the suffix (e.g., “gene” in “Becker muscular dystrophy gene”).
+- DO NOT annotate the general terms such as: disease, syndrome, deficiency, complications, gene, drug, protein, nucleotide, etc. However, the disease terms such as pain, cancer, tumor, and death should be retained.

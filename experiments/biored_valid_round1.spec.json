@@ -1,0 +1,35 @@
+{
+  "experiment_id": "biored_valid_gpt_r_g_round1",
+  "description": "BioRED paper-style moderation run with random sampling of 10 training examples and strict-match stopping at F1 >= 0.9 or no further improvement.",
+  "dataset_name": "BioRED",
+  "split": "valid",
+  "evaluation_url": "https://pubannotation.org/projects/biored-valid",
+  "paths": {
+    "guidelines_txt": "data/guidelines/biored_guidelines.txt",
+    "entity_schema_json": "data/schemas/biored_entities.schema.json",
+    "output_dir": "outputs"
+  },
+  "evidence": {
+    "discrepancy_examples": "",
+    "true_positive_examples": "",
+    "verified_examples": ""
+  },
+  "moderation_sampling": {
+    "source_dir_path": "data/datasets/biored/train",
+    "source_split": "train",
+    "sampling_method": "random",
+    "sample_size": 10,
+    "seed": 42,
+    "shared_across_models": true,
+    "selection_note": "Randomly sample 10 training examples from the shared BioRED train directory and reuse the same sampled subset across compared models."
+  },
+  "model": {
+    "provider": "openai",
+    "model": "gpt-5",
+    "rounds": 1
+  },
+  "iterative": {
+    "threshold_f1": 0.9,
+    "n_examples": 5
+  }
+}
