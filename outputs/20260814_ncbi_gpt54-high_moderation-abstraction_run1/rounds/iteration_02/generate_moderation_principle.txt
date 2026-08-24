@@ -1,0 +1,43 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: SpecificDisease (Span Boundary Error)
+
+**INFERRED PATTERNS:**
+- **Pattern Insight**
+  - **Pattern Name**: Relational **“deficiency of/in X”** disease names
+  - **Confusion Trigger**: The head noun **“deficiency”** is semantically generic, and when it appears in the structure **deficiency + of/in + biochemical entity** (e.g., **G6PD, C7, seventh component of complement**), the phrase can look like a mere molecular abnormality instead of a disease mention.
+  - **Contrastive Evidence**: The true positives are mostly **lexicalized disease names** like *ovarian cancer*, *Coats disease*, and *Sjogren-Larsson syndrome*, whose disease status is explicit from the head noun. Crucially, in **10484772**, the text also contains **“a deficiency of norrin”** but it is **not** annotated, showing that the same surface form can denote a **mechanistic consequence** rather than a diagnosis. The discrepancy cases differ because the deficient factor itself conventionally names the disorder (*C7 deficiency*, *G6PD deficiency*).
+  - **Linguistic Rule (Proposed)**: For phrases matching **“deficiency (of|in) X”**, assign **SpecificDisease** only when **X is the canonical deficient factor that names a recognized patient disorder**. If the phrase merely describes a **local/tissue-level biochemical lack or downstream effect**, do **not** treat it as a disease mention. Boundary-wise, capture the **core deficiency phrase plus X**, but do not rely on the generic noun **deficiency** alone.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 1303173.json):
+Snippet: "... coexistence of the two mutations is responsible for enzyme deficiency in G6PD A- because they act synergistically in causing instability ..."
+Gold: SpecificDisease, LLM: SpecificDisease
+Entity Text: "deficiency in G6PD"
+
+Example 2 (Doc: 6859721.json):
+Snippet: "...of functional and antigenic C7 , compatible with a complete deficiency of the seventh component of complement . Study of the patients family spanning four generations sh..."
+Gold: SpecificDisease, LLM: SpecificDisease
+Entity Text: "deficiency of the seventh component of complement"
+
+Example 3 (Doc: 6859721.json):
+Snippet: "...tients family spanning four generations showed heterozygous deficiency of C7 in five members . Chronic neisserial infection can be assoc..."
+Gold: SpecificDisease, LLM: SpecificDisease
+Entity Text: "deficiency of C7"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

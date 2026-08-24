@@ -1,0 +1,45 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: SpecificDisease (Span Boundary Error)
+
+**INFERRED PATTERNS:**
+- **Pattern Insight**
+  - **Pattern Name**: Expanded NP boundary confusion around disease heads
+  - **Confusion Trigger**: The mention sits inside a larger noun phrase built on a generic disease head like **disease** or **deficiency**, with nearby **non-core modifiers** before or after it—e.g., premodifiers like **complete / heterozygous** or post-head PPs like **of the retina**. This makes the model drift on span boundaries because the whole NP looks medically cohesive.
+  - **Contrastive Evidence**: The true positives are mostly **self-contained disease names** or abbreviations—e.g., **Coats disease**, **Sjogren-Larsson syndrome**, **ovarian cancer**, **SLS**—where there is no hard decision about trimming surrounding descriptive material. The discrepancy cases are harder because the disease mention is **embedded inside an expanded descriptive NP**.
+  - **Linguistic Rule (Proposed)**: Select the **minimal disease-denoting span**.  
+    - **Include** a following complement only when it is **semantically required** to identify a generic head: e.g., **deficiency of C7**, **deficiency of the seventh component of complement**.  
+    - **Exclude** surrounding descriptors that add status, extent, carrier state, or localization but do not define the disease itself: e.g., **complete**, **heterozygous**, and in a self-sufficient name like **Coats' disease**, exclude the attached locator **of the retina**.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10484772.json):
+Snippet: "...Coats' disease of the retina (unilateral retinal telangiectasis) caused by..."
+Gold: SpecificDisease, LLM: SpecificDisease
+Entity Text: "Coats' disease"
+
+Example 2 (Doc: 6859721.json):
+Snippet: "...of functional and antigenic C7 , compatible with a complete deficiency of the seventh component of complement . Study of the patients family spanning four generations sh..."
+Gold: SpecificDisease, LLM: SpecificDisease
+Entity Text: "deficiency of the seventh component of complement"
+
+Example 3 (Doc: 6859721.json):
+Snippet: "...tients family spanning four generations showed heterozygous deficiency of C7 in five members . Chronic neisserial infection can be assoc..."
+Gold: SpecificDisease, LLM: SpecificDisease
+Entity Text: "deficiency of C7"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

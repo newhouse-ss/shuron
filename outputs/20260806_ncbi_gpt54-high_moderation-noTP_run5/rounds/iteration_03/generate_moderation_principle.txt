@@ -1,0 +1,43 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: DiseaseClass vs LLM: SpecificDisease (Label Mismatch)
+
+**INFERRED PATTERNS:**
+- **Pattern Insight**
+  - **Pattern Name**: Generic manifestation term mistaken for a named disease
+  - **Confusion Trigger**: The model overweights the **surface form of a disease-like noun phrase** and predicts **SpecificDisease** even when the mention is actually a **generic clinical manifestation / complication** occurring inside a definitional or causal frame, especially in structures like **“characterized by X, Y, Z”** or **“results in … (X)”**.
+  - **Contrastive Evidence**: In the errors, **“ichthyosis,” “mental retardation,”** and **“exudative retinal detachment”** are not the focal diagnosed disorder; they are **features, consequences, or phenotype components** of another disease. By contrast, the true positives are **named disorders or explicit aliases of named disorders**: e.g. **“Coats disease,” “Norrie disease,” “Sjogren-Larsson syndrome,” “SLS,”** and **“unilateral retinal telangiectasis”** when used as a parenthetical synonym of **Coats’ disease**.  
+  - **Linguistic Rule (Proposed)**: If a medical mention appears as a **symptom/phenotype/complication in the description of another disease**—especially after cues like **“characterized by,” “results in,” “associated with,”** or within a comma-separated feature list—label it **DiseaseClass**, **unless** it is explicitly introduced as the **name or alias of the main disorder** being discussed.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10484772.json):
+Snippet: "...in massive intraretinal and subretinal lipid accumulation ( exudative retinal detachment ) . The classical form of Coats disease is almost invariabl..."
+Gold: DiseaseClass, LLM: SpecificDisease
+Entity Text: "exudative retinal detachment"
+
+Example 2 (Doc: 10577908.json):
+Snippet: "...( SLS ) is an autosomal recessive disorder characterized by ichthyosis , mental retardation , spasticity , and deficient activity ..."
+Gold: DiseaseClass, LLM: SpecificDisease
+Entity Text: "ichthyosis"
+
+Example 3 (Doc: 10577908.json):
+Snippet: "... autosomal recessive disorder characterized by ichthyosis , mental retardation , spasticity , and deficient activity of fatty aldehyde deh..."
+Gold: DiseaseClass, LLM: SpecificDisease
+Entity Text: "mental retardation"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

@@ -82,11 +82,22 @@ def main() -> None:
     parser.add_argument("--repeats", type=int, default=5)
     parser.add_argument("--sizes", default="10,20,30", help="nested split sizes to score")
     parser.add_argument("--guidelines", default="data/guidelines/ncbi_disease_guidelines.txt")
+    parser.add_argument("--provider", choices=["azure", "deepseek"], default="azure")
     parser.add_argument("--azure-model-key", default="5_4")
-    parser.add_argument("--reasoning-effort", default="high")
+    parser.add_argument("--model", default="deepseek-v4-flash",
+                        help="model id when --provider deepseek")
+    parser.add_argument("--reasoning-effort", default="high",
+                        help='"none" for models that do not take it, such as GPT-4o. '
+                             'An empty string is unreliable to pass through a shell, so the '
+                             'literal "none" is accepted as the off switch.')
+    parser.add_argument("--token-param", default=None,
+                        help="max_tokens or max_completion_tokens; the GPT-5.x "
+                             "deployments reject the former, GPT-4o and DeepSeek take it")
+    parser.add_argument("--max-output-tokens", type=int, default=64000)
     parser.add_argument("--temperature", type=float, default=None,
-                        help="only meaningful once the provider forwards it on the "
-                             "Responses path; see the temperature probe")
+                        help="omit for the API default. Reasoning models accept it but "
+                             "are not made deterministic by it, since the reasoning trace "
+                             "is sampled independently; see probe_deepseek.py")
     parser.add_argument("--out-dir", default="reproduction/results/size_noise")
     args = parser.parse_args()
 
@@ -111,14 +122,33 @@ def main() -> None:
     out_dir = REPO_ROOT / args.out_dir
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    provider_kwargs = {"reasoning_effort": args.reasoning_effort}
+    shared = {"max_output_tokens": args.max_output_tokens}
     if args.temperature is not None:
-        provider_kwargs["temperature"] = args.temperature
-    provider = OpenAIProvider.from_azure_env(args.azure_model_key, **provider_kwargs)
+        shared["temperature"] = args.temperature
+    if args.reasoning_effort and args.reasoning_effort.lower() != "none":
+        shared["reasoning_effort"] = args.reasoning_effort
+    if args.token_param:
+        shared["token_param"] = args.token_param
+
+    if args.provider == "deepseek":
+        import os
+        key = os.environ.get("DEEPSEEK_API_KEY")
+        if not key:
+            sys.exit("DEEPSEEK_API_KEY is not set")
+        shared.setdefault("token_param", "max_tokens")
+        # DeepSeek is OpenAI-compatible on chat/completions; background mode is
+        # an Azure Responses feature and does not apply.
+        provider = OpenAIProvider(model=args.model, api_key=key, use_background=False,
+                                  base_url="https://api.deepseek.com/chat/completions",
+                                  **shared)
+        label = args.model
+    else:
+        provider = OpenAIProvider.from_azure_env(args.azure_model_key, **shared)
+        label = f"azure:{args.azure_model_key}"
 
     gold_counts = {n: sum(len(d.gold_annotations) for d in documents[n]) for n in sizes}
-    print(f"guideline {len(guidelines)} chars, {args.repeats} repeats, "
-          f"temperature={args.temperature}, effort={args.reasoning_effort}")
+    print(f"model {label}, guideline {len(guidelines)} chars, {args.repeats} repeats, "
+          f"temperature={args.temperature}, effort={shared.get('reasoning_effort', 'none')}")
     for n in sizes:
         print(f"  dev{n}: {len(documents[n])} docs, {gold_counts[n]} gold annotations")
     print(f"cache: {out_dir}\n", flush=True)
@@ -178,6 +208,7 @@ def main() -> None:
     summary_path.write_text(json.dumps({
         "repeats": args.repeats, "temperature": args.temperature,
         "reasoning_effort": args.reasoning_effort,
+        "model": label,
         "sizes": {str(n): {"gold": gold_counts[n],
                            "f1": [f for f, _ in results[n]],
                            "true_positives": [t for _, t in results[n]]} for n in sizes},

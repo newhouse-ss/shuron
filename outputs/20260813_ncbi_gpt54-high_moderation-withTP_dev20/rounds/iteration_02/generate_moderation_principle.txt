@@ -1,0 +1,54 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: Modifier vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+- **Pattern Insight**
+  - **Pattern Name**: Gene-name prenominal modifiers in mutation/allele phrases
+  - **Confusion Trigger**: The missed spans are not disease names but **gene symbols/full gene names** used as **attributive modifiers** inside molecular-genetics noun phrases, e.g., **APC alleles**, **APC mutations**, **APC germline mutations**, **adenomatous polyposis coli (APC) tumor-suppressor gene**. The model appears to treat these as out-of-schema gene mentions and assigns **O**.
+  - **Contrastive Evidence**: The true-positive Modifiers are mostly **disease-denoting phrases** used before general/clinical heads, such as **ovarian cancer cases**, **fragile X syndrome patients**, and **ALPS phenotype**. They do not occur as gene names modifying heads like **mutation/allele/gene**.
+  - **Linguistic Rule (Proposed)**: If a span is a **gene symbol or gene full name** and it appears **immediately before or within a noun phrase headed by genetic-variation terms** like **mutation(s)**, **allele(s)**, or **gene** (including compounds such as **tumor-suppressor gene**), label that span as **Modifier** rather than **O**.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10924409.json):
+Snippet: "...Inactivation of germline mutant APC alleles by attenuated somatic mutations: a molecular geneti..."
+Gold: Modifier, LLM: O
+Entity Text: "APC"
+
+Example 2 (Doc: 10924409.json):
+Snippet: "...d familial adenomatous polyposis.
+Germline mutations of the adenomatous polyposis coli ( APC ) tumor-suppressor gene result in familial adenomatous polyposis ( ..."
+Gold: Modifier, LLM: O
+Entity Text: "adenomatous polyposis coli ( APC ) tumor"
+
+Example 3 (Doc: 10924409.json):
+Snippet: "...rs and early-onset colorectal cancer . A subset of germline APC mutations results in an attenuated FAP ( AFAP ) phenotype ,..."
+Gold: Modifier, LLM: O
+Entity Text: "APC"
+
+Example 4 (Doc: 10924409.json):
+Snippet: "...h a genotype-phenotype correlation between the locations of APC germline mutations and the development of AFAP has been wel..."
+Gold: Modifier, LLM: O
+Entity Text: "APC"
+
+Example 5 (Doc: 10924409.json):
+Snippet: "...igated the mechanism for AFAP in patients carrying a mutant APC allele ( APC ( AS9 ) ) that has a mutation in the alternati..."
+Gold: Modifier, LLM: O
+Entity Text: "APC"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

@@ -1,0 +1,53 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: DiseaseClass (Label Mismatch)
+
+**INFERRED PATTERNS:**
+- **Pattern Name:** Instantiated pathology nouns misread as broad disease classes  
+  **Confusion Trigger:** The mention is a **bare/common pathology noun phrase in a patient-instance frame**—e.g., *develop colorectal tumors*, *tumors from these patients*, *presenting as vasculitis*. The model overweights the generic head noun (*tumors*, *vasculitis*) and misses that the phrase denotes an **actual manifested diagnosis/lesion** in a specific patient or cohort.  
+  **Contrastive Evidence:** The true positives mostly avoid this ambiguity because they are **canonical disease names, abbreviations, or explicit synonymic labels** (*Coats disease*, *ALPS*, *retinal telangiectasis*), so their status as named diagnoses is clearer. They are not just generic pathology heads embedded in manifestation wording.  
+  **Linguistic Rule (Proposed):** If a pathology noun phrase refers to a **concrete condition occurring in a described patient/group**—especially after verbs like *develop*, *have*, *present with/as*, or in patient-linked phrases like *from these patients*—label it **SpecificDisease**, even when the head noun is lexically generic. Reserve **DiseaseClass** for **taxonomic/definitional** uses of the term, not instantiated clinical occurrences.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10924409.json):
+Snippet: "...atients with FAP typically develop hundreds to thousands of benign colorectal tumors and early-onset colorectal cancer . A subset of germline AP..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "benign colorectal tumors"
+
+Example 2 (Doc: 10924409.json):
+Snippet: "... the wild-type APC alleles were somatically mutated in most colorectal tumors from these patients . Functional analysis showed that 4666i..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "colorectal tumors"
+
+Example 3 (Doc: 10924409.json):
+Snippet: "...results indicate that carriers of APC ( AS9 ) develop fewer colorectal tumors than do typical patients with FAP because somatic inactivat..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "colorectal tumors"
+
+Example 4 (Doc: 10924409.json):
+Snippet: "...colorectal tumorigenesis . However , these patients develop colorectal tumors more frequently than does the general population because AP..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "colorectal tumors"
+
+Example 5 (Doc: 6859721.json):
+Snippet: "...ent in a patient with chronic meningococcemia presenting as vasculitis.
+A previously healthy 40-year-old man presenting with fever..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "vasculitis"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

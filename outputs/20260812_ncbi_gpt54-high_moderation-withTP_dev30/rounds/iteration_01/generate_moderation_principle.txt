@@ -1,0 +1,54 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: DiseaseClass (Label Mismatch)
+
+**INFERRED PATTERNS:**
+- **Pattern Insight**
+  - **Pattern Name**: Head-driven downcasting of neoplasm subtype phrases
+  - **Confusion Trigger**: The mention is a common-noun NP headed by a broad oncology term like **tumor(s)** or **lymphoma**, while the specificity is carried by premodifiers such as **colorectal**, **benign colorectal**, or **T-cell**. The model appears to classify from the head noun alone, so it maps these to **DiseaseClass**.
+  - **Contrastive Evidence**: The true-positive **SpecificDisease** cases are mostly lexicalized disease names or distinct technical diagnoses—e.g., **Zellweger syndrome**, **Argininemia**, **Coats disease**, **seminoma**—where specificity is inherent in the whole term rather than added onto a generic neoplasm head. In the controls, truly broad heads like **cancer** are annotated as **DiseaseClass/Modifier**, which shows the model is overgeneralizing that behavior to subtype phrases.
+  - **Linguistic Rule (Proposed)**: Do **not** assign **DiseaseClass** solely because the syntactic head is a generic neoplasm word. If a neoplasm head noun is narrowed by organ/site, cell lineage, or behavior modifiers into a concrete diagnostic subtype—pattern: **[specific modifier(s) + tumor/lymphoma/etc.]**—label the full mention as **SpecificDisease**. Reserve **DiseaseClass** for bare or only weakly specified hypernyms.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10924409.json):
+Snippet: "...atients with FAP typically develop hundreds to thousands of benign colorectal tumors and early-onset colorectal cancer . A subset of germline AP..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "benign colorectal tumors"
+
+Example 2 (Doc: 10924409.json):
+Snippet: "... the wild-type APC alleles were somatically mutated in most colorectal tumors from these patients . Functional analysis showed that 4666i..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "colorectal tumors"
+
+Example 3 (Doc: 10924409.json):
+Snippet: "...results indicate that carriers of APC ( AS9 ) develop fewer colorectal tumors than do typical patients with FAP because somatic inactivat..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "colorectal tumors"
+
+Example 4 (Doc: 10924409.json):
+Snippet: "...colorectal tumorigenesis . However , these patients develop colorectal tumors more frequently than does the general population because AP..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "colorectal tumors"
+
+Example 5 (Doc: 1316718.json):
+Snippet: "...Coincident Kaposi sarcoma and T-cell lymphoma in a patient with the Wiskott-Aldrich syndrome.
+A 24 year o..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "T-cell lymphoma"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

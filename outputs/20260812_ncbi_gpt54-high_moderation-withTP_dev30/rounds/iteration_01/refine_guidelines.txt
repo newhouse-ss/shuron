@@ -1,0 +1,230 @@
+You are an expert AI Moderator.
+
+**GOAL:**
+Update the official Annotation Guidelines to incorporate new "Moderation Principles" discovered from error analysis.
+
+**CURRENT GUIDELINES:**
+# Biomedical Annotation Guidelines
+
+## What to Annotate
+
+### 1. Annotate all **Specific Disease** mentions
+A textual string referring to a disease name may refer to a **Specific Disease** or a **Disease Class**.  
+- **Disease Class**: Mentions that could be described as a family of multiple specific diseases.  
+- **Specific Disease**: Mentions that can be linked to one specific definition that does not include further categorization.
+
+**Example**  
+> Diastrophic dysplasia is an autosomal recessive disease characterized by short stature, very short limbs and joint problems that restrict mobility.
+
+- **Annotate**:  
+  - “Diastrophic dysplasia” as **Specific Disease**  
+  - “autosomal recessive disease” as **Disease Class**
+
+---
+
+### 2. Annotate **contiguous text strings**
+A textual string may refer to two or more separate disease mentions. Such mentions are annotated with the **Composite Mention** category.
+
+**Example**  
+> The text phrase “Duchenne and Becker muscular dystrophy” refers to two separate diseases. If this phrase is separated into two strings: “Duchenne” and “Becker muscular dystrophy,” it results in information loss, because the word “Duchenne” on its own is not a disease mention.
+
+---
+
+### 3. Annotate disease mentions that are used as **Modifiers** for other concepts
+A textual string may refer to a disease name, but it may modify a noun phrase (or may not be a noun phrase itself). In such cases, annotate using the **Modifier** category.
+
+**Example**  
+> Although this mutation was initially detected in four of 33 colorectal cancer families analysed from eastern England, more extensive analysis has reduced the frequency to four of 52 English HNPCC kindreds analysed.
+
+- **Annotate**:  
+  - “colorectal cancer” as **Modifier**  
+  - “HNPCC” as **Modifier**
+
+---
+
+### 4. Annotate **duplicate mentions**
+For each sentence in the PubMed abstract and title, the locations of all disease mentions are marked, including duplicates within the same sentence.
+
+---
+
+### 5. Annotate **minimum necessary span of text**
+Use the smallest span necessary to include all tokens expressing the most specific form of the disease.
+
+**Example**  
+> In the case of “insulin-dependent diabetes mellitus,” the disease mention including the whole phrase was preferred over its substrings such as “diabetes mellitus” or “diabetes.”
+
+---
+
+### 6. Annotate all **synonymous mentions**
+Abbreviation definitions such as “Huntington disease” (“HD”) are separated into two annotated mentions (one for the long form, one for the abbreviation).
+
+---
+
+## What NOT to Annotate
+
+1. **Do not annotate organism names**  
+   - Organism names such as “human” were excluded from the preferred mention.  
+   - Viruses, bacteria, and other organism names were not annotated **unless** it was clear that the disease caused by these organisms is being discussed.  
+   - **Example**  
+     > Studies of biopsied tissue for the presence of Epstein-Barr virus and cytomegalovirus were negative.  
+     
+     In this case: “Epstein-Barr virus” and “cytomegalovirus” are annotated as **Specific Disease** category **only** if the context clearly indicates the diseases they cause, otherwise not.
+
+2. **Do not annotate gender**  
+   - Tokens such as “male” and “female” were only included if they specifically identified a new form of the disease.  
+   - **Example**  
+     > “male breast cancer”
+
+3. **Do not annotate overlapping mentions**  
+   - **Example**: The phrase “von Hippel-Lindau (VHL) disease” is annotated as **one single disease mention** (Specific Disease category).
+
+4. **Do not annotate general terms**  
+   - Very general terms such as “disease,” “syndrome,” “deficiency,” “complications,” “abnormalities,” etc. were excluded.  
+   - However, the terms “cancer” and “tumor” were retained.
+
+5. **Do not annotate references to **biological processes**  
+   - e.g. Terms corresponding to biological processes such as “tumorigenesis” or “cancerogenesis.”
+
+6. **Do not annotate disease mentions interrupted by nested mentions**  
+   - Essentially, do not break the contiguous text rule.  
+   - **Example**  
+     > WT1 dysfunction is implicated in both neoplastic (Wilms tumor, mesothelioma, leukemia, and breast cancer) and nonneoplastic (glomerulosclerosis) disease.  
+     
+     Here, the mentions “neoplastic disease” and “nonneoplastic disease” are not annotated because other tokens break up these phrases.
+
+---
+
+## Examples
+
+1. **“Insulin-dependent diabetes mellitus”**  
+   - **Specific Disease**  
+   - Prefer the whole string.
+
+2. **CDH1 mutations predispose to early onset “colorectal cancer.”**  
+   - “early onset” may or may not be part of the disease mention, depending on:  
+     1. If there is a UMLS concept specifying this as a separate form of disease  
+     2. If the annotator believes it should be included
+
+3. **Human “X-linked recessive disorder”**
+
+4. **Her fresh serum lacked complement-mediated bactericidal activity against Neisseria gonorrhoeae.**
+
+5. **“Huntington disease” (“HD”)**  
+   - The long form and the short form constitute two separate mentions.
+
+6. **C7 deficiency**  
+   - “This report represents the first cases of C7 deficiency associated with infectious complications.”  
+   - “infectious complications” is too general a term; C7 deficiency is a **Specific Disease**.
+
+7. **“colorectal, endometrial, and ovarian cancers”**  
+   - Considered one **Composite Mention** of several Specific Diseases.
+
+8. **WT1 dysfunction is implicated in both neoplastic (“Wilms tumor,” “mesothelioma,” “leukemias,” and “breast cancer”) and nonneoplastic (“glomerulosclerosis”) disease.**  
+   - Potential disease mentions include: “neoplastic disease,” “nonneoplastic disease,” “Wilms tumor,” “mesothelioma,” “leukemias,” “breast cancer,” and “glomerulosclerosis.”  
+   - “neoplastic disease” and “nonneoplastic disease” are **not** annotated because these phrases are interrupted by nested mentions.
+
+9. **Tumorigenesis and cancerogenesis**  
+   - These refer to processes, not diseases.
+
+10. **“autosomal recessive disease”**  
+    - Refers to a family of diseases that can be passed down genetically → **Disease Class** category.
+
+11. **Large phenotypic variability with “convulsive disorders,” “motor retardation,” and “mental retardation.”**  
+    - These are “grey area” terms: they may not correspond to a single **Specific Disease**, so they are annotated as **Disease Class** category if appropriate.
+
+12. **Borjeson-Forssman-Lehmann syndrome (BFLS) is a syndromal X-linked mental retardation.**  
+    - “Borjeson-Forssman-Lehmann syndrome” = **Specific Disease**  
+    - “X-linked mental retardation syndrome” = a family of diseases (i.e., **Disease Class**)
+
+13. **Acute meningococcal pericarditis**  
+    - Exists as a separate concept in UMLS.
+
+14. **Acute Neisseria infection**  
+    - May or may not include “acute” depending on context.
+
+15. **Classical galactosemia**  
+    - Includes “classical” because it corresponds to a particular form of the disease.
+
+16. **Inherited spinocerebellar ataxia**  
+    - May or may not include “inherited,” depending on the annotator.
+
+17. **“Adenomatous polyps of the colon and rectum”**  
+    - **Composite Mention**
+
+18. **Fibroepithelial or epithelial hyperplasias**  
+    - **Composite Mention**
+
+19. **Stage II or stage III colorectal cancer**  
+    - **Composite Mention**
+
+---
+
+**NEW MODERATION PRINCIPLES:**
+- **IF** a disease mention is a noun phrase headed by a generic neoplasm term, but dependent modifiers within the same mention restrict that head to a concrete subtype through diagnostic information such as anatomical site, cell lineage, morphology, or biologic behavior, **THEN** label the entire mention as **SpecificDisease** rather than **DiseaseClass**; **this rule does NOT apply** when the head remains a bare or only weakly specified hypernym, or when the added material is merely non-diagnostic/contextual description rather than subtype-defining restriction.
+
+**CONSTRAINT: DO NOT BREAK THESE EXAMPLES:**
+The following examples are currently handled CORRECTLY. Your new guidelines MUST NOT cause these to be annotated incorrectly.
+FILE: 10196379.json
+TEXT: Germline BRCA1 alterations in a population-based series of ovarian cancer cases.
+The objective of this study was to provide more accurate frequency estimates of breast cancer susceptibility gene 1 ( BRCA1 ) germline alterations in the ovarian cancer population . To achieve this , we determined the prevalence of BRCA1 alterations in a population-based series of consecutive ovarian cancer cases . This is the first population-based ovarian cancer study reporting BRCA1 alterations derived from a comprehensive screen of the entire coding region . One hundred and seven ovarian cancer cases were analyzed for BRCA1 alterations using the RNase mismatch cleavage assay followed by direct sequencing . Two truncating mutations , 962del4 and 3600del11 , were identified . Both patients had a family history of breast or ovarian cancer . Several novel as well as previously reported uncharacterized variants were also identified , some of which were associated with a family history of cancer . The frequency distribution of common polymorphisms was determined in the 91 Caucasian cancer cases in this series and 24 sister controls using allele-specific amplification . The rare form of the Q356R polymorphism was significantly ( P = 0 . 03 ) associated with a family history of ovarian cancer , suggesting that this polymorphism may influence ovarian cancer risk . In summary , our data suggest a role for some uncharacterized variants and rare forms of polymorphisms in determining ovarian cancer risk , and highlight the necessity to screen for missense alterations as well as truncating mutations in this population . 
+MATCHED ANNOTATIONS:
+- DiseaseClass [981, 987] "cancer"
+- Modifier [1076, 1082] "cancer"
+- Modifier [161, 174] "breast cancer"
+- Modifier [59, 73] "ovarian cancer"
+- Modifier [570, 584] "ovarian cancer"
+
+FILE: 10447258.json
+TEXT: Identification of a common PEX1 mutation in Zellweger syndrome.
+The Zellweger spectrum of disease , encompassing Zellweger syndrome and the progressively milder phenotypes of neonatal adrenoleukodystrophy and infantile Refsum disease , is due to a failure to form functional peroxisomes . Cell fusion complementation studies demonstrated that these diseases are genetically heterogeneous , with two-thirds of all patients lying within a single complementation group , CG1 . Molecular genetic and cell biology studies have shown that PEX1 is deficient in many CG1 patients . However , previous studies have focused on mildly affected patients and there is still no report of two mutant PEX1 alleles in any Zellweger syndrome patient . Furthermore , mutations in the PMP70 gene have also been identified in two Zellweger syndrome patients from CG1 , raising the possibility that CG1 patients may represent a mixture of PEX1-deficient and PMP70-deficient individuals . To address the molecular basis of disease in Zellweger syndrome patients from CG1 , we examined all 24 PEX1 exons in four patients , including both patients that have mutations in PMP70 . PEX1 mutations were detected in all four patients , including a 1-bp insertion ( c . 2097insT ) in exon 13 that was present in three of the four patients . Subsequent studies demonstrated that this mutation is present in one-half of all CG1 patients and correlates with the Zellweger syndrome phenotype . As this mutation leads to a loss of protein function its frequency makes it the most common cause of Zellweger syndrome , helping to explain the high percentage of patients that belong to CG1 . 
+MATCHED ANNOTATIONS:
+- SpecificDisease [1560, 1578] "Zellweger syndrome"
+- SpecificDisease [209, 233] "infantile Refsum disease"
+- Modifier [1428, 1446] "Zellweger syndrome"
+- DiseaseClass [68, 97] "Zellweger spectrum of disease"
+- Modifier [1011, 1029] "Zellweger syndrome"
+
+FILE: 10484772.json
+TEXT: Coats' disease of the retina (unilateral retinal telangiectasis) caused by somatic mutation in the NDP gene: a role for norrin in retinal angiogenesis.
+Coats disease is characterized by abnormal retinal vascular development ( so-called retinal telangiectasis ) which results in massive intraretinal and subretinal lipid accumulation ( exudative retinal detachment ) . The classical form of Coats disease is almost invariably isolated , unilateral and seen in males . A female with a unilateral variant of Coats disease gave birth to a son affected by Norrie disease . Both carried a missense mutation within the NDP gene on chromosome Xp11 . 2 2 . Subsequently analysis of the retinas of nine enucleated eyes from males with Coats disease demonstrated in one a somatic mutation in the NDP gene which was not present within non-retinal tissue . We suggest that Coats telangiectasis is secondary to somatic mutation in the NDP gene which results in a deficiency of norrin ( the protein product of the NDP gene ) within the developing retina . This supports recent observations that the protein is critical for normal retinal vasculogenesis . 
+MATCHED ANNOTATIONS:
+- SpecificDisease [236, 258] "retinal telangiectasis"
+- SpecificDisease [505, 518] "Coats disease"
+- SpecificDisease [725, 738] "Coats disease"
+- SpecificDisease [30, 63] "unilateral retinal telangiectasis"
+- SpecificDisease [152, 165] "Coats disease"
+
+FILE: 10484981.json
+TEXT: Hereditary TP53 codon 292 and somatic P16INK4A codon 94 mutations in a Li-Fraumeni syndrome family.
+Li-Fraumeni syndrome is an autosomal dominant disorder that is characterized by various types of cancer in childhood and adult cases . Although hereditary TP53 mutation is very rare in different human cancers , it has been frequently reported in Li-Fraumeni syndrome . On the other hand , hereditary mutations of TP57KIP2 , P15INK4B , and P16INK4A , which affect the cell cycle similar to TP53 , were observed in some types of cancer . In a Turkish family with the diagnosis of Li-Fraumeni syndrome , we analyzed the mutation pattern of TP53 , P57KIP2 , P15INK4B , and P16INK4A in the peripheral blood , and loss of heterozygosity ( homo / hemizygous deletion ) pattern of TP53 and P15INK4B / P16INK4A in two tumor tissues . The propositus had a seminoma , his daughter a medulloblastoma , and one of his healthy cousins , a TP53 codon 292 missense point mutation ( AAA-- > ATA ; Lys-- > Ile ) in the peripheral blood cells . Tumor tissue obtained from the propositus with the seminoma revealed loss of heterozygosity in the TP53 gene . In the analyses of tumor tissues from the propositus and his daughter , a P16INK4A codon 94 missense point mutation ( GCG-- > GAG ; Ala-- > Glu ) was observed with the hereditary TP53 mutation . P16INK4A codon 94 mutation observed in our family is a novel mutation in Li-Fraumeni syndrome . No other gene alteration in TP53 , P57KIP2 , P15INK4B , and P16INK4A was observed . Existence of the P16INK4A mutation and the hereditary TP53 mutation with or without loss of heterozygosity in the TP53 gene ( seminoma / medulloblastoma ) may be evidence for a common mechanism involved in tumorogenesis . The gene alterations in TP53 and P16INK4A genes may be used as tumor markers in our family . . 
+MATCHED ANNOTATIONS:
+- SpecificDisease [1405, 1425] "Li-Fraumeni syndrome"
+- SpecificDisease [100, 120] "Li-Fraumeni syndrome"
+- SpecificDisease [846, 854] "seminoma"
+- Modifier [809, 814] "tumor"
+- DiseaseClass [197, 203] "cancer"
+
+FILE: 10502833.json
+TEXT: Identification of a novel R21X mutation in the liver-type arginase gene (ARG1) in four Portuguese patients with argininemia.
+Argininemia is a rare autossomal recessive disorder caused by deficiency in the cytosolic liver-type arginase enzyme ( L-arginine urea-hydrolase ; E . C . 3 . 5 . 3 . 1 ) . In order to investigate the molecular basis for argininemia in four unrelated Portuguese patients ( two from northern Portugal and two from Madeira Island ) we performed a DNA sequence analysis of all the exons and exon / intron boundaries of the liver-type arginase gene ( ARG1 ) . All patients were found to be homozygous for a newly identified C - > T transition in codon 21 ( exon 2 ) substituting arginine for a premature stop codon ( R21X  CGA to TGA ) and generating a NlaIII restriction site . Restriction digestion following PCR amplification of ARG1 exon 2 confirmed the presence of the mutation .
+MATCHED ANNOTATIONS:
+- DiseaseClass [147, 176] "autossomal recessive disorder"
+- SpecificDisease [125, 136] "Argininemia"
+- SpecificDisease [346, 357] "argininemia"
+- SpecificDisease [112, 123] "argininemia"
+
+**INSTRUCTIONS:**
+1. Read the Current Guidelines and the New Principles.
+2. Integrate the New Principles into the Guidelines naturally.
+   - Do NOT just append them at the end unless it makes sense.
+   - If an existing rule contradicts the new principle, update it.
+   - **Conflict Resolution**: If the new principle necessitates changing an existing rule, explicitly justify (in your internal thought process) why the new rule is superior (e.g., more specific, resolves an ambiguity).
+   - If the new principle clarifies a specific section, add it there.
+3. **CONSTRAINT CHECK**:
+   - Review the "CONSTRAINT" examples above.
+   - Ensure your changes strictly support the New Principles WITHOUT invalidating the "CONSTRAINT" examples.
+   - If a trade-off is required, prioritize specific sub-cases to avoid regression.
+4. Maintain the original formatting and structure.
+5. Return the FULL updated Guidelines text.
+6. **CRITICAL INSTRUCTION**: Models often try to summarize or use placeholders like "(...)" to save tokens. **DO NOT DO THIS.** YOU MUST OUTPUT THE COMPLETED DOCUMENT IN FULL. If you leave out any section, the file will be corrupted.
+7. Output ONLY the guideline text. Do not start with "Here are the updated guidelines:".
