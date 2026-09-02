@@ -1,0 +1,38 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: DiseaseClass (Label Mismatch)
+
+**INFERRED PATTERNS:**
+- **Pattern Insight**
+  - **Pattern Name**: Head-driven downgrade of etiologically specified disease NPs
+  - **Confusion Trigger**: The model overweights a **generic disease head noun** like **“deficiency/deficiencies”** or **“infection”** and underweights the **specializing biomedical modifier** before it (e.g., **“PAH”**, **“neisserial”**). So phrases of the form **[gene/enzyme/pathogen modifier + generic condition noun]** get collapsed to **DiseaseClass** even when the modifier makes them a specific disorder.
+  - **Contrastive Evidence**: The true positives mostly avoid this because they use **canonical disease names** (“Coats disease”, “Sjogren-Larsson syndrome”) or **transparent subtype modifiers** that the model recognizes as disease-defining (“retinal telangiectasis”). In the error cases, the specificity is carried by a **specialized etiologic modifier**, not by the head noun itself.
+  - **Linguistic Rule (Proposed)**: If a broad disease noun is **lexically narrowed by a causative/etiologic modifier** (gene/enzyme acronym, organism-derived adjective, etc.), treat the whole noun phrase as **SpecificDisease** rather than **DiseaseClass**. In other words, classify by the **full modified NP**, not by the generic head alone.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 1671881.json):
+Snippet: "...or by the large variety of mutant genotypes associated with PAH deficiencies . . ..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "PAH deficiencies"
+
+Example 2 (Doc: 6859721.json):
+Snippet: "...ions showed heterozygous deficiency of C7 in five members . Chronic neisserial infection can be associated with C7 deficiency and must be distinguis..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "Chronic neisserial infection"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

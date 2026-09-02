@@ -1,0 +1,45 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: Modifier (Label Mismatch)
+
+**INFERRED PATTERNS:**
+- **Pattern Insight**
+  - **Pattern Name**: Embedded disease complement misread as adjectival modifier
+  - **Confusion Trigger**: The model appears to tag a disease as **Modifier** whenever it is inside a larger noun phrase that contains another biomedical head, even when the disease is actually a **complement/argument** rather than a true modifier. This happens in constructions like **“family history of ovarian cancer”** and **“Tay-Sachs disease/TSD-causing mutation”**: the disease name is syntactically embedded, but it is not just adjectivally modifying the head noun.
+  - **Contrastive Evidence**: The true **Modifier** controls are direct premodifiers of a following head noun, e.g. **“ovarian cancer cases”**, **“ovarian cancer risk”**, **“Wiskott-Aldrich syndrome protein”**, **“fragile X syndrome patients.”** By contrast, the true **SpecificDisease** cases are referential disease mentions that stand as their own NP head or argument, e.g. **“Coats disease is...”**, **“affected by Norrie disease”**, **“Sjogren-Larsson syndrome (SLS)....”**
+  - **Linguistic Rule (Proposed)**: Assign **Modifier** only when the disease span directly functions as a nominal premodifier of another head noun. If the disease appears as the **object/complement** inside a larger relation—such as **PP complements** (*history of X*) or **deverbal/adjectival constructions** (*X-causing mutation*)—label the disease span itself as **SpecificDisease**, including its abbreviation/appositive form.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10196379.json):
+Snippet: "...ficantly ( P = 0 . 03 ) associated with a family history of ovarian cancer , suggesting that this polymorphism may influence ovarian c..."
+Gold: SpecificDisease, LLM: Modifier
+Entity Text: "ovarian cancer"
+
+Example 2 (Doc: 8326491.json):
+Snippet: "...from the British Isles.
+In a previous study we found that a Tay-Sachs disease ( TSD ) causing mutation in the intron 9 donor splice site ..."
+Gold: SpecificDisease, LLM: Modifier
+Entity Text: "Tay-Sachs disease"
+
+Example 3 (Doc: 8326491.json):
+Snippet: "...es.
+In a previous study we found that a Tay-Sachs disease ( TSD ) causing mutation in the intron 9 donor splice site of the..."
+Gold: SpecificDisease, LLM: Modifier
+Entity Text: "TSD"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

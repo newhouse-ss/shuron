@@ -1,0 +1,43 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: DiseaseClass vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+- **Pattern Name**: Descriptive pathology NP without an explicit disease head  
+  **Confusion Trigger**: The missed mentions are **DiseaseClass spans expressed as descriptive noun phrases headed by generic pathology/process nouns**—e.g., **development, detachment, deficiency**—rather than by overt disease-name cues like **disease, syndrome, cancer**. This likely made the model treat them as ordinary findings/processes and output **O**.  
+  **Contrastive Evidence**: The true positives mostly use **canonical disease labels** or **clear disease lexemes**: *Coats disease, Norrie disease, fragile X syndrome, Sjogren-Larsson syndrome, ovarian cancer*, and even *ichthyosis* is a lexicalized disease term. They avoid the ambiguity of phrases like *abnormal retinal vascular development* or *deficiency of norrin*, which look like mechanistic descriptions embedded in explanatory text.  
+  **Linguistic Rule (Proposed)**: If a noun phrase denotes a **pathologic abnormal state** and is headed by a biomedical condition noun such as **deficiency, detachment, accumulation, development** when modified by abnormal/pathologic descriptors or disease-site terms, it should still be eligible for **DiseaseClass**, **even when no explicit disease cue word is present** and even when it appears inside characterization/result clauses or parentheses.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10484772.json):
+Snippet: "... in retinal angiogenesis.
+Coats disease is characterized by abnormal retinal vascular development ( so-called retinal telangiectasis ) which results in massi..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "abnormal retinal vascular development"
+
+Example 2 (Doc: 10484772.json):
+Snippet: "...in massive intraretinal and subretinal lipid accumulation ( exudative retinal detachment ) . The classical form of Coats disease is almost invariabl..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "exudative retinal detachment"
+
+Example 3 (Doc: 10484772.json):
+Snippet: "...dary to somatic mutation in the NDP gene which results in a deficiency of norrin ( the protein product of the NDP gene ) within the developi..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "deficiency of norrin"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

@@ -1,0 +1,214 @@
+# Biomedical Annotation Guidelines
+
+## What to Annotate
+
+### 1. Annotate all **Specific Disease** mentions
+A textual string referring to a disease name may refer to a **Specific Disease** or a **Disease Class**.  
+- **Disease Class**: Mentions that could be described as a family of multiple specific diseases, or as a broader pathological category/abnormal state that is not anchored to one concrete diagnosed disorder.  
+- **Specific Disease**: Mentions that can be linked to one specific definition that does not include further categorization, or that in local context denote one concrete diagnosed disorder entity rather than an unanchored category.
+
+For borderline cases, apply the following in order:
+- **Narrower rule: deficiency/insufficiency disease names**  
+  If a noun phrase is headed by a **deficit/insufficiency nominalization** or a **reduced-function expression**, and its complement names a **specific biomolecule** (e.g., gene, enzyme, protein, complement component), annotate the **entire noun phrase** as **Specific Disease** when the phrase itself is being used as the name or alias of a recognized disorder in an **etiologic, mutation, diagnosis, or phenotype-defining context**.
+- **Broader rule: contextually specific descriptive disease names**  
+  If a disease-denoting noun phrase has a **generic pathology head** (e.g., disease, disorder, syndrome, deficiency, infection, failure) but local context makes it referential to a **particular disorder instance**—for example through **patient-case presentation**, **diagnosis framing**, **causation/association syntax**, or a **specific etiologic, genetic, or microbial modifier**—annotate it as **Specific Disease**.
+- **Broader rule: pathological-state classes**  
+  If a noun phrase expresses an **abnormal or deficient pathological state** via a **deviation-from-normal modifier** or a **deficit/failure nominal construction** attached to a biological process, anatomical function, or molecular product, annotate the **entire noun phrase** as **Disease Class** **only when it does not satisfy the narrower Specific Disease rule above**.
+- **Do not apply** the previous bullets when the phrase remains an **unanchored general category, phenotype, or disease type** mentioned taxonomically or descriptively rather than as a concrete disease entity.
+- **Do not apply** the previous bullets when the phrase is only a **mechanistic, laboratory, biochemical, or transient functional finding**, including a biochemical feature listed as a characteristic or consequence of another disease, rather than the name of a disease entity or disease class.
+- If a disease-denoting phrase would otherwise be **Specific Disease** or **Disease Class** but is being used **attributively** to modify another non-disease concept, annotate it using the **Modifier** category instead.
+
+**Example**  
+> Diastrophic dysplasia is an autosomal recessive disease characterized by short stature, very short limbs and joint problems that restrict mobility.
+
+- **Annotate**:  
+  - “Diastrophic dysplasia” as **Specific Disease**  
+  - “autosomal recessive disease” as **Disease Class**
+
+**Example**  
+> This report represents the first cases of C7 deficiency associated with infectious complications.
+
+- **Annotate**:  
+  - “C7 deficiency” as **Specific Disease** because the deficiency phrase itself names the disorder  
+  - “infectious complications” is too general a term to annotate
+
+---
+
+### 2. Annotate **contiguous text strings**
+A textual string may refer to two or more separate disease mentions. Such mentions are annotated with the **Composite Mention** category.
+
+**Example**  
+> The text phrase “Duchenne and Becker muscular dystrophy” refers to two separate diseases. If this phrase is separated into two strings: “Duchenne” and “Becker muscular dystrophy,” it results in information loss, because the word “Duchenne” on its own is not a disease mention.
+
+---
+
+### 3. Annotate disease mentions that are used as **Modifiers** for other concepts
+A textual string may refer to a disease name, but it may modify a noun phrase (or may not be a noun phrase itself). In such cases, annotate using the **Modifier** category.
+- This includes disease terms modifying concepts such as **cases, families, kindreds, patients, population, study, risk, gene, protein, mutation,** or similar non-disease heads.
+- Do **not** relabel such mentions as **Specific Disease** or **Disease Class** solely because the surrounding sentence discusses diagnosed patients, mutations, associations, or case series; if the disease phrase is syntactically functioning as a modifier of another concept, use **Modifier**.
+
+**Example**  
+> Although this mutation was initially detected in four of 33 colorectal cancer families analysed from eastern England, more extensive analysis has reduced the frequency to four of 52 English HNPCC kindreds analysed.
+
+- **Annotate**:  
+  - “colorectal cancer” as **Modifier**  
+  - “HNPCC” as **Modifier**
+
+**Example**  
+> Germline BRCA1 alterations in a population-based series of ovarian cancer cases.
+
+- **Annotate**:  
+  - “ovarian cancer” as **Modifier** in “ovarian cancer cases”  
+  - Likewise, annotate “ovarian cancer” as **Modifier** in phrases such as “ovarian cancer population” or “ovarian cancer risk”
+
+---
+
+### 4. Annotate **duplicate mentions**
+For each sentence in the PubMed abstract and title, the locations of all disease mentions are marked, including duplicates within the same sentence.
+
+---
+
+### 5. Annotate **minimum necessary span of text**
+Use the smallest span necessary to include all tokens expressing the most specific form of the disease.
+- Prefer the smallest span that still captures the complete disease expression.
+- For **Specific Disease** mentions headed by a disease-denoting noun and followed by a **prepositional complement** naming the affected biological substance, gene, protein, or component, include the span from the head noun **through that complement**.
+- Exclude left-side modifiers that only express clinical status such as **degree, severity, zygosity, certainty, or completeness**, unless the modifier is part of a **lexicalized disease name**.
+- Include pre-head modifiers when they are part of the lexicalized disease form.
+
+**Example**  
+> In the case of “insulin-dependent diabetes mellitus,” the disease mention including the whole phrase was preferred over its substrings such as “diabetes mellitus” or “diabetes.”
+
+**Example**  
+> In a phrase such as “complete deficiency of complement component C7,” prefer “deficiency of complement component C7” unless “complete deficiency” is itself part of a lexicalized disease name.
+
+---
+
+### 6. Annotate all **synonymous mentions**
+Abbreviation definitions such as “Huntington disease” (“HD”) are separated into two annotated mentions (one for the long form, one for the abbreviation).
+
+---
+
+## What NOT to Annotate
+
+1. **Do not annotate organism names**  
+   - Organism names such as “human” were excluded from the preferred mention.  
+   - Viruses, bacteria, and other organism names were not annotated **unless** it was clear that the disease caused by these organisms is being discussed.  
+   - A microbial or organism-derived modifier is included **only when it is part of an actual disease mention**; a bare organism name remains unannotated.  
+   - **Example**  
+     > Studies of biopsied tissue for the presence of Epstein-Barr virus and cytomegalovirus were negative.  
+     
+     In this case: “Epstein-Barr virus” and “cytomegalovirus” are annotated as **Specific Disease** category **only** if the context clearly indicates the diseases they cause, otherwise not.
+
+2. **Do not annotate gender**  
+   - Tokens such as “male” and “female” were only included if they specifically identified a new form of the disease.  
+   - **Example**  
+     > “male breast cancer”
+
+3. **Do not annotate overlapping mentions**  
+   - **Example**: The phrase “von Hippel-Lindau (VHL) disease” is annotated as **one single disease mention** (Specific Disease category).
+
+4. **Do not annotate general terms**  
+   - Bare general terms such as “disease,” “syndrome,” “deficiency,” “failure,” “complications,” “abnormalities,” etc. were excluded when used alone or as unanchored generic labels.  
+   - However, if the **full noun phrase** with its modifiers and/or complements denotes a **Specific Disease** or a **Disease Class** under the rules above, annotate the full phrase.  
+   - The terms “cancer” and “tumor” were retained.
+
+5. **Do not annotate references to biological processes**  
+   - e.g. Terms corresponding to biological processes such as “tumorigenesis” or “cancerogenesis.”  
+   - Also do **not** annotate normal biological processes/components, isolated genes/proteins/substances, or purely mechanistic descriptions such as reduced expression/activity/absence of a biomolecule when these do **not themselves name** a disease entity or disease class.  
+   - If a phrase explicitly asserts an abnormal/pathological state **and functions as a disease mention**, annotate it according to the rules in **What to Annotate**.
+
+6. **Do not annotate disease mentions interrupted by nested mentions**  
+   - Essentially, do not break the contiguous text rule.  
+   - **Example**  
+     > WT1 dysfunction is implicated in both neoplastic (Wilms tumor, mesothelioma, leukemia, and breast cancer) and nonneoplastic (glomerulosclerosis) disease.  
+     
+     Here, the mentions “neoplastic disease” and “nonneoplastic disease” are not annotated because other tokens break up these phrases.
+
+---
+
+## Examples
+
+1. **“Insulin-dependent diabetes mellitus”**  
+   - **Specific Disease**  
+   - Prefer the whole string.
+
+2. **CDH1 mutations predispose to early onset “colorectal cancer.”**  
+   - “early onset” may or may not be part of the disease mention, depending on:  
+     1. If there is a UMLS concept specifying this as a separate form of disease  
+     2. If the annotator believes it should be included
+
+3. **Human “X-linked recessive disorder”**  
+   - “X-linked recessive disorder” = **Disease Class**  
+   - Exclude “Human”
+
+4. **Her fresh serum lacked complement-mediated bactericidal activity against Neisseria gonorrhoeae.**  
+   - Do **not** annotate “complement-mediated bactericidal activity” as a disease mention; it is a biological function/functional finding  
+   - Do **not** annotate “Neisseria gonorrhoeae” unless the disease caused by the organism is clearly being referred to
+
+5. **“Huntington disease” (“HD”)**  
+   - The long form and the short form constitute two separate mentions.
+
+6. **C7 deficiency**  
+   - “This report represents the first cases of C7 deficiency associated with infectious complications.”  
+   - “infectious complications” is too general a term; C7 deficiency is a **Specific Disease** because the deficiency phrase itself names the disorder.
+
+7. **“colorectal, endometrial, and ovarian cancers”**  
+   - Considered one **Composite Mention** of several Specific Diseases.
+
+8. **WT1 dysfunction is implicated in both neoplastic (“Wilms tumor,” “mesothelioma,” “leukemias,” and “breast cancer”) and nonneoplastic (“glomerulosclerosis”) disease.**  
+   - Potential disease mentions include: “neoplastic disease,” “nonneoplastic disease,” “Wilms tumor,” “mesothelioma,” “leukemias,” “breast cancer,” and “glomerulosclerosis.”  
+   - “neoplastic disease” and “nonneoplastic disease” are **not** annotated because these phrases are interrupted by nested mentions.
+
+9. **Tumorigenesis and cancerogenesis**  
+   - These refer to processes, not diseases.
+
+10. **“autosomal recessive disease”**  
+    - Refers to a family of diseases that can be passed down genetically → **Disease Class** category.
+
+11. **Large phenotypic variability with “convulsive disorders,” “motor retardation,” and “mental retardation.”**  
+    - These are “grey area” terms: they may not correspond to a single **Specific Disease**, so they are annotated as **Disease Class** category if appropriate.
+
+12. **Borjeson-Forssman-Lehmann syndrome (BFLS) is a syndromal X-linked mental retardation.**  
+    - “Borjeson-Forssman-Lehmann syndrome” = **Specific Disease**  
+    - “X-linked mental retardation syndrome” = a family of diseases (i.e., **Disease Class**)
+
+13. **Acute meningococcal pericarditis**  
+    - Exists as a separate concept in UMLS.  
+    - The specific microbial modifier helps make this a **Specific Disease**.
+
+14. **Acute Neisseria infection**  
+    - May or may not include “acute” depending on context.  
+    - Annotate only when the phrase is being used as the disease mention rather than merely naming the organism.
+
+15. **Classical galactosemia**  
+    - Includes “classical” because it corresponds to a particular form of the disease.
+
+16. **Inherited spinocerebellar ataxia**  
+    - May or may not include “inherited,” depending on the annotator.
+
+17. **“Adenomatous polyps of the colon and rectum”**  
+    - **Composite Mention**
+
+18. **Fibroepithelial or epithelial hyperplasias**  
+    - **Composite Mention**
+
+19. **Stage II or stage III colorectal cancer**  
+    - **Composite Mention**
+
+20. **“ovarian cancer cases,” “ovarian cancer population,” and “ovarian cancer risk”**  
+    - Annotate “ovarian cancer” as **Modifier** because it modifies a non-disease head (“cases,” “population,” “risk”).
+
+21. **“Wiskott-Aldrich syndrome protein”**  
+    - Annotate “Wiskott-Aldrich syndrome” as **Modifier** because it modifies “protein.”
+
+22. **“…resulting in absence of the FMR1 protein.”**  
+    - Do **not** annotate “absence of the FMR1 protein” when it is only a mechanistic consequence or functional finding rather than a disease name.
+
+23. **“…results in a deficiency of norrin … within the developing retina.”**  
+    - Do **not** annotate “deficiency of norrin” when it is used only as a mechanistic consequence of mutation rather than as the name of a disorder.
+
+24. **“…characterized by … deficient activity of fatty aldehyde dehydrogenase …”**  
+    - Do **not** annotate “deficient activity of fatty aldehyde dehydrogenase” when it is listed only as a biochemical feature of another disease rather than as an independently denoted disease entity or disease class.
+
+25. **“complete deficiency of complement component C7”**  
+    - Annotate “deficiency of complement component C7” as the disease span unless “complete deficiency” is part of a lexicalized disease name.

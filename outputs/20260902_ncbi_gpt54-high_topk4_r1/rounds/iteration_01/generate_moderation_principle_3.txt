@@ -1,0 +1,39 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: DiseaseClass vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+- **Pattern Insight**
+  - **Pattern Name**: Mechanism-headed pathology phrases without an explicit disease noun
+  - **Confusion Trigger**: The missed mentions are noun phrases whose **head is a generic biological/process noun**—e.g., **“development”** in *abnormal retinal vascular development* and **“deficiency”** in *deficiency of norrin*—so their disease meaning is carried only by **abnormality semantics** (*abnormal*, *deficiency of*) rather than by a canonical disease term like *disease*, *syndrome*, or a known phenotype label.
+  - **Contrastive Evidence**: The true positives mostly use **lexicalized disease/phenotype heads** such as *Coats disease*, *retinal telangiectasis*, *ovarian cancer*, *ichthyosis*, and *spasticity*. Those are overtly disease-denoting, so the model can tag them directly. The discrepancy cases require an extra inference: they describe a **pathologic state/mechanism** rather than naming a conventional disease label.
+  - **Linguistic Rule (Proposed)**: If a noun phrase denotes a **pathological abnormality** through constructions like **“abnormal + anatomical/process noun”** or **“deficiency of + biomolecule”**, and it functions as the **disease-defining abnormal state** in context (e.g., after *characterized by*, *results in*, *secondary to*), classify it as **DiseaseClass** even when the head noun itself is not a standard disease word.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10484772.json):
+Snippet: "... in retinal angiogenesis.
+Coats disease is characterized by abnormal retinal vascular development ( so-called retinal telangiectasis ) which results in massi..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "abnormal retinal vascular development"
+
+Example 2 (Doc: 10484772.json):
+Snippet: "...dary to somatic mutation in the NDP gene which results in a deficiency of norrin ( the protein product of the NDP gene ) within the developi..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "deficiency of norrin"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

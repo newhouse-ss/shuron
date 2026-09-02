@@ -1,0 +1,39 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: DiseaseClass (Label Mismatch)
+
+**INFERRED PATTERNS:**
+- **Pattern Name:** Standalone descriptive subtype with a generic disease head. **Confusion Trigger:** The model is over-weighting class-like head nouns such as **deficiency/deficiencies, infection, vasculitis** and under-weighting the premodifiers that make the mention diagnostically specific (**PAH**, **neisserial**, **cutaneous**). Because these phrases are lowercase, non-eponymic, and lack an explicit cue like *disease/syndrome* or a proper-name label, the model defaults to **DiseaseClass**. **Contrastive Evidence:** The true positives mostly contain overt lexicalized disease-name signals—*Coats disease, Norrie disease, Sjogren-Larsson syndrome, fragile X syndrome*—or a descriptive term anchored by apposition to a named disease (*unilateral retinal telangiectasis* after *Coats' disease*). The control **ichthyosis** is correctly **DiseaseClass** because it is an unmodified broad category, unlike the discrepant mentions, which are narrowed to a specific subtype. **Linguistic Rule (Proposed):** If a generic pathology head noun is **restricted by a specific etiologic/genetic/anatomic modifier** and the whole NP is used referentially as a diagnosis (e.g., *PAH deficiency*, *neisserial infection*, *cutaneous vasculitis*), classify it as **SpecificDisease**; reserve **DiseaseClass** for broad, unqualified category terms.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 1671881.json):
+Snippet: "...or by the large variety of mutant genotypes associated with PAH deficiencies . . ..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "PAH deficiencies"
+
+Example 2 (Doc: 6859721.json):
+Snippet: "...ions showed heterozygous deficiency of C7 in five members . Chronic neisserial infection can be associated with C7 deficiency and must be distinguis..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "Chronic neisserial infection"
+
+Example 3 (Doc: 6859721.json):
+Snippet: "...7 deficiency and must be distinguished from other causes of cutaneous vasculitis . . ..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "cutaneous vasculitis"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

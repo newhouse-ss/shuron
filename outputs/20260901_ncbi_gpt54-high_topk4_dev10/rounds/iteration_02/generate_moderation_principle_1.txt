@@ -1,0 +1,54 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: DiseaseClass (Label Mismatch)
+
+**INFERRED PATTERNS:**
+- **Pattern Insight**
+  - **Pattern Name**: Generic pathology-head NP misread as a class
+  - **Confusion Trigger**: The model overweights a **common-noun disease head**—e.g., *deficiency, infection, arthritis, vasculitis*—and treats the whole NP as a **DiseaseClass** when the mention lacks an obvious canonical naming cue such as *disease/syndrome/cancer*, an eponym, or an acronym.
+  - **Contrastive Evidence**: The true positives are mostly **lexicalized disease names** (*ovarian cancer, Coats disease, Sjogren-Larsson syndrome, SLS*) or are explicitly tied to one in apposition/definition (*retinal telangiectasis* linked to *Coats disease*). The discrepancy cases are instead **generic pathology nouns used as actual diagnoses/subtypes** (*PAH deficiencies, cutaneous vasculitis, chronic neisserial infection*), so the model defaults to the head noun’s class meaning.
+  - **Linguistic Rule (Proposed)**: Do **not** assign **DiseaseClass** purely because the head is a generic pathology noun. If the full NP is **etiologically, anatomically, or clinically delimited** (modifier like *PAH, cutaneous, neisserial, chronic*) or refers to an **instantiated diagnosis/condition** in context, label it **SpecificDisease**. Reserve **DiseaseClass** for truly taxonomic or definitional mentions (e.g., *autosomal recessive disorder*).
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 1671881.json):
+Snippet: "...or by the large variety of mutant genotypes associated with PAH deficiencies . . ..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "PAH deficiencies"
+
+Example 2 (Doc: 6859721.json):
+Snippet: "...ent in a patient with chronic meningococcemia presenting as vasculitis.
+A previously healthy 40-year-old man presenting with fever..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "vasculitis"
+
+Example 3 (Doc: 6859721.json):
+Snippet: "... previously healthy 40-year-old man presenting with fever , arthritis , and cutaneous vasculitis was found to have chronic mening..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "arthritis"
+
+Example 4 (Doc: 6859721.json):
+Snippet: "...thy 40-year-old man presenting with fever , arthritis , and cutaneous vasculitis was found to have chronic meningococcemia . Evaluation of h..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "cutaneous vasculitis"
+
+Example 5 (Doc: 6859721.json):
+Snippet: "...ions showed heterozygous deficiency of C7 in five members . Chronic neisserial infection can be associated with C7 deficiency and must be distinguis..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "Chronic neisserial infection"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

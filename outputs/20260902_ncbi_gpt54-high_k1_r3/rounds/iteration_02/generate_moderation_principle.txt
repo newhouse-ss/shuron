@@ -1,0 +1,44 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: DiseaseClass vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+- **Pattern Insight**
+  - **Pattern Name**: Descriptive phenotype/pathology mentions without a canonical disease lexeme
+  - **Confusion Trigger**: The missed entities are **clinical abnormality descriptions** rather than standard disease names: e.g., NPs headed by generic/pathophysiologic nouns like **development**, **deficiency**, or symptom nouns like **spasticity**. The model appears to rely on lexical disease cues and therefore predicts **O** when the mention denotes a disease-related state but lacks a familiar disease label.
+  - **Contrastive Evidence**: The true positives are mostly **lexicalized disease expressions** or obvious disease terms—**cancer**, **ichthyosis**, **retinal telangiectasis**, **Wiskott-Aldrich syndrome**, **fragile X syndrome**. Even when short, they contain a recognized disease-class lexeme. The discrepancy cases instead encode disease content as **descriptive manifestations/abnormal states**.
+  - **Linguistic Rule (Proposed)**: Tag a span as **DiseaseClass** when it denotes a **pathological phenotype, symptom, developmental abnormality, or molecular deficiency** in disease-defining contexts (especially after cues like **characterized by**, **results in**, **secondary to**), **even if the head noun is not a canonical disease word**. In other words: *“abnormal X development,” “deficiency of Y,” and symptom nouns like “spasticity” should count as DiseaseClass when they describe disease manifestations.*
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10484772.json):
+Snippet: "... in retinal angiogenesis.
+Coats disease is characterized by abnormal retinal vascular development ( so-called retinal telangiectasis ) which results in massi..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "abnormal retinal vascular development"
+
+Example 2 (Doc: 10484772.json):
+Snippet: "...dary to somatic mutation in the NDP gene which results in a deficiency of norrin ( the protein product of the NDP gene ) within the developi..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "deficiency of norrin"
+
+Example 3 (Doc: 10577908.json):
+Snippet: "...disorder characterized by ichthyosis , mental retardation , spasticity , and deficient activity of fatty aldehyde dehydrogenase ( ..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "spasticity"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

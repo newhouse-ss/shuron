@@ -1,0 +1,44 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+- **Pattern Insight**
+  - **Pattern Name**: Descriptive abnormal-state mentions in manifestation/causation frames
+  - **Confusion Trigger**: The missed entities are **not canonical disease names**; they are **descriptive pathology/symptom NPs** like *deficient activity of fatty aldehyde dehydrogenase*, *deficiency in G6PD*, and *fever*, typically appearing after predicates such as **“characterized by,” “presenting with,” “responsible for,”** or **“causing.”** Because their heads are generic or clinical-state words (*activity, deficiency, fever*) rather than overt disease labels (*disease, syndrome, cancer*), the model defaults to **O**.
+  - **Contrastive Evidence**: The true positives are mostly **lexicalized disease names** or phrases with strong disease-denoting heads—*ovarian cancer, Coats disease, fragile X syndrome, retinal telangiectasis, Sjogren-Larsson syndrome*. These do not require contextual inference from a manifestation frame to be recognized as diseases.
+  - **Linguistic Rule (Proposed)**: If a noun phrase occurs as the complement of a **clinical manifestation/etiology predicate** (e.g., *characterized by, presenting with, responsible for, causing*) and denotes an **abnormal pathological or symptomatic state**, it should be treated as a disease mention **even when the phrase lacks an explicit disease keyword** and is headed by a generic clinical noun.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10577908.json):
+Snippet: "...rized by ichthyosis , mental retardation , spasticity , and deficient activity of fatty aldehyde dehydrogenase ( FALDH ) . To define the molecular defects causing SLS , w..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficient activity of fatty aldehyde dehydrogenase"
+
+Example 2 (Doc: 1303173.json):
+Snippet: "... coexistence of the two mutations is responsible for enzyme deficiency in G6PD A- because they act synergistically in causing instability ..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficiency in G6PD"
+
+Example 3 (Doc: 6859721.json):
+Snippet: "...litis.
+A previously healthy 40-year-old man presenting with fever , arthritis , and cutaneous vasculitis was found to have ch..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "fever"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

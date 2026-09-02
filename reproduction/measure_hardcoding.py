@@ -51,6 +51,10 @@ RUNS = [
     # Experiment 2: the block stays, one instruction forbids transcribing it.
     ("dev10  abstr r1", "20260814_ncbi_gpt54-high_moderation-abstraction_run1"),
     ("dev10  abstr r2", "20260814_ncbi_gpt54-high_moderation-abstraction_run2"),
+    # Four groups moderated in one rewrite instead of one. The block that holds
+    # the true positives is unchanged, so any move here comes from the guideline
+    # growing faster, not from more of the answer key being in the prompt.
+    ("dev10  top-4", "20260901_ncbi_gpt54-high_topk4_dev10"),
 ]
 
 # Mentions this short match inside ordinary words ("DM" inside "ADMIT"), so a

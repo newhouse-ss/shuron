@@ -1,0 +1,49 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+- **Pattern Insight**
+  - **Pattern Name**: Descriptive clinical-state mentions in *attribute/presentation* context
+  - **Confusion Trigger**: The missed spans are **common-noun pathology/symptom/defect phrases**—e.g., *retinal telangiectasis, deficient activity of fatty aldehyde dehydrogenase, deficiency in G6PD, fever*—appearing inside frames like **“characterized by …,” “presenting with …,” “results in …,”** rather than as canonical disease-name mentions. The model seems to require a standard disease label (*disease, syndrome, cancer*) or a well-known eponym, so it drops these as mere findings/biochemical consequences.
+  - **Contrastive Evidence**: The true positives are mostly **canonical nosological names** (*Coats disease, Sjogren-Larsson syndrome, ovarian cancer, Wiskott-Aldrich syndrome*). Even the similar true positive *unilateral retinal telangiectasis* appears as an **explicit title/appositive alias** for *Coats’ disease*, not as a symptom/feature in a characterization list. So the key boolean separator is: **attribute/presentation mention of a descriptive pathology NP = discrepancies; direct disease naming/alias use = true positives.**
+  - **Linguistic Rule (Proposed)**: Do **not** reject a mention just because it lacks *disease/syndrome/cancer*. If a noun phrase denotes a **pathological clinical condition/abnormal state** and is used as a disease-relevant mention—even in **characterization or presentation constructions**—it should remain eligible for tagging. Distinguish **diagnostic/pathology-denoting NPs** from ordinary non-medical descriptions by their medical heads (*telangiectasis, deficiency, activity deficiency, fever*) and surrounding clinical predicates, rather than by canonical disease-name morphology alone.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10484772.json):
+Snippet: "...erized by abnormal retinal vascular development ( so-called retinal telangiectasis ) which results in massive intraretinal and subretinal lipi..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "retinal telangiectasis"
+
+Example 2 (Doc: 10577908.json):
+Snippet: "...rized by ichthyosis , mental retardation , spasticity , and deficient activity of fatty aldehyde dehydrogenase ( FALDH ) . To define the molecular defects causing SLS , w..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficient activity of fatty aldehyde dehydrogenase"
+
+Example 3 (Doc: 1303173.json):
+Snippet: "... coexistence of the two mutations is responsible for enzyme deficiency in G6PD A- because they act synergistically in causing instability ..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficiency in G6PD"
+
+Example 4 (Doc: 6859721.json):
+Snippet: "...litis.
+A previously healthy 40-year-old man presenting with fever , arthritis , and cutaneous vasculitis was found to have ch..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "fever"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

@@ -1,0 +1,38 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: SpecificDisease (Span Boundary Error)
+
+**INFERRED PATTERNS:**
+- **Pattern Insight**
+  - **Pattern Name**: Status-modified **“deficiency of X”** disease mentions
+  - **Confusion Trigger**: A **preposed non-disease descriptor** immediately before the head noun **“deficiency”**—especially words like **complete, partial, heterozygous, homozygous**—in phrases of the form **[status adjective] + deficiency of + protein/component**.
+  - **Contrastive Evidence**: In the discrepancy cases, the true disease span is the compositional noun phrase **“deficiency of …”**, while the preceding word (**complete**, **heterozygous**) is only a **Modifier**. The true positives mostly use **bare lexical disease names** like *ovarian cancer*, *Coats disease*, *Sjogren-Larsson syndrome*, which do not have this detachable status layer. Even when an adjective appears in a TP (e.g. *unilateral retinal telangiectasis*), it functions as part of a **lexicalized disease name/synonym**, not as a variable patient-state descriptor.
+  - **Linguistic Rule (Proposed)**: When a mention is headed by **deficiency** and followed by **of + biomolecule/component** (*deficiency of C7*, *deficiency of the seventh component of complement*), treat **“deficiency of X”** as the **SpecificDisease** span. Any immediately preceding adjective that encodes **extent, zygosity, severity, or carrier status** should be split off as **Modifier**, unless there is evidence that the full adjective+noun sequence is a **conventional disease name**.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 6859721.json):
+Snippet: "...of functional and antigenic C7 , compatible with a complete deficiency of the seventh component of complement . Study of the patients family spanning four generations sh..."
+Gold: SpecificDisease, LLM: SpecificDisease
+Entity Text: "deficiency of the seventh component of complement"
+
+Example 2 (Doc: 6859721.json):
+Snippet: "...tients family spanning four generations showed heterozygous deficiency of C7 in five members . Chronic neisserial infection can be assoc..."
+Gold: SpecificDisease, LLM: SpecificDisease
+Entity Text: "deficiency of C7"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.
