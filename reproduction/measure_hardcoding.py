@@ -131,7 +131,7 @@ def main() -> None:
 
     results = []
     for label, directory in RUNS:
-        path = REPO_ROOT / "outputs" / directory
+        path = REPO_ROOT / "outputs" / "ncbi_disease" / directory
         if not (path / "final" / "iterative_refinement_run.json").exists():
             print(f"{label:<16} (no final run file, skipped)")
             continue

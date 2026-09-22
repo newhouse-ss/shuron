@@ -1,0 +1,53 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- Chemical
+- Disease
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: Disease vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+- **Pattern Insight: Shorthand/Non-Headed Disease Mentions (acronyms + adjectival disease stems) get dropped**
+  - **Confusion Trigger:** The disease is expressed **without an explicit disease head noun** (“disease/failure/anemia/etc.”) or full form—e.g., **bare acronyms** (*CRF, ESRD*) used as cohort/outcome labels, or **adjectival stems** (*hemolytic*) modifying a non-disease head (“effect”).
+  - **Contrastive Evidence:** In the True Positives, the same clinical concepts appear in **canonical, headed NPs** or are **explicitly defined**: *“end-stage renal disease (ESRD)”*, *“chronic renal failure (CRF)”*, *“hemolytic anemia”*, *“hemolysis”*. These provide clear nominal disease cues (“disease/failure/anemia/-sis”).
+  - **Linguistic Rule (Proposed):**  
+    Label a span as **Disease** even if it lacks a disease head noun when either holds:
+    1) **Acronym rule:** token is an all-caps medical acronym (≈2–5 chars) functioning as an NP in clinical-statistical frames (e.g., coordinated with known diseases; or governed by *have/develop/onset/incidence/survival/treated with dialysis/transplant*), ⇒ **Disease** (covers *CRF, ESRD*).  
+    2) **Adjectival disease-stem rule:** adjective derived from a pathology/process (*hemolytic, nephrotic, ischemic, etc.*) used as a predicate/modifier in an adverse biomedical context (e.g., “X effect”, “X episode”), optionally allowing normalization to its nominal disease (*hemolytic → hemolysis/hemolytic disorder*), ⇒ **Disease** (covers *hemolytic*).
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10704919.json):
+Snippet: "...not shift the osmotic fragility curves of erythrocytes. The hemolytic effect of TAM is prevented by low concentrations of alpha-t..."
+Gold: Disease, LLM: O
+Entity Text: "hemolytic"
+
+Example 2 (Doc: 11773892.json):
+Snippet: "...divided into three groups: Controls, no CRF or ESRD, n=748; CRF, sustained serum creatinine >2.5 mg/dl, n=41; and ESRD, n=4..."
+Gold: Disease, LLM: O
+Entity Text: "CRF"
+
+Example 3 (Doc: 11773892.json):
+Snippet: "...D. RESULTS: At 13 years after OLTX, the incidence of severe renal dysfunction was 18.1% (CRF 8.6% and ESRD 9.5%). Compared with control p..."
+Gold: Disease, LLM: O
+Entity Text: "renal dysfunction"
+
+Example 4 (Doc: 11773892.json):
+Snippet: "...tients developing ESRD had a 6-year survival after onset of ESRD of 27% for the patients receiving hemodialysis versus 71.4%..."
+Gold: Disease, LLM: O
+Entity Text: "ESRD"
+
+Example 5 (Doc: 11773892.json):
+Snippet: "...t-OLTX have CRF and ESRD at a high rate. The development of ESRD decreases survival, particularly in those patients treated ..."
+Gold: Disease, LLM: O
+Entity Text: "ESRD"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

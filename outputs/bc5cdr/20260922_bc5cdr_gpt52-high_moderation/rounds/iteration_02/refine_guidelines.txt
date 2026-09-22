@@ -1,0 +1,136 @@
+You are an expert AI Moderator.
+
+**GOAL:**
+Update the official Annotation Guidelines to incorporate new "Moderation Principles" discovered from error analysis.
+
+**CURRENT GUIDELINES:**
+# BC5CDR Annotation Guidelines
+
+## Guidelines for disease mention and concept id annotation
+
+### What to annotate?
+
+1. Annotate the most specific disease mentions and select the best-matching MeSH ID. For instance, the complete phrase “partial seizures” should be preferred over “seizures” as it is more specific.
+2. Annotate minimum necessary text spans for a disease. For example, select “hypertension” instead of “sustained hypertension.”
+3. Annotate all mentions of a disease entity in an abstract. All occurrences of the same disease mention should be marked, including duplicates within the same sentence. PubTator provides an automatic function to help mark the duplicate mentions via a single click.
+4. Annotate mentions with morphological variations such as adjectives **when the adjective itself denotes a disease/condition** (i.e., it is a conventional disease-derived form used to describe the presence of that disorder). For instance, “hypertensive” is annotated as “hypertension,” and “hemolytic” is annotated as “hemolysis/hemolytic anemia” according to the best-matching MeSH concept in context.
+5. Annotate abbreviations. Abbreviations should be annotated separately. For instance, “Huntington disease (HD)” should be separated into two annotations: “Huntington disease” and “HD” with the same concept id.
+6. Annotate all concepts in a composite disease mention using the ‘‘|’’ separator. Composite mentions such as: ‘‘ovarian and peritoneal cancer’’ should be normalized to the collection of the individual constituents as D010051 (Ovarian Neoplasms) | D010534 (Peritoneal Neoplasms). When possible, we also spell out the individual constituents with their associated text. That is, for the above example, we also provide “ovarian … cancer” for D010051 and “peritoneal cancer” for D010534.
+7. Annotate a disease mention using multiple concepts to logically describe the disease mention as a whole, using the ‘‘+’’ concatenator. It may be required to represent a disease mention with multiple concepts which are not inherited with each other. For example, “bone marrow oedema” implies Bone Marrow Diseases (MESH: D001855) and Edema (MESH:D004487). Thus, the complete phrase should be annotated as D001855+D004487. When possible, we also spell out the individual constituents with their associated text. That is, for the above example, we also provide “bone marrow” for D001855 and “edema” for D004487.
+8. When a disease cannot be normalized, “-1” is used (e.g. erythroblastocytopenia).
+9. **Diagnosable-condition requirement (moderation principle):** Prefer annotating spans that function as a **standalone disease/condition name** in the sentence (i.e., the span itself names the condition being discussed) and can be reasonably normalized to a disease/disorder concept. This is especially important for terms that can also describe mechanisms or morphologic changes (e.g., “injury,” “damage,” “scarring,” “fibrosis,” “toxicity”): annotate them **only when they are being used as a condition name in context** (and/or are covered by the toxicity rules below), not when they are merely describing a mechanism, experimental finding, or attribute of another entity.
+
+### What not to annotate?
+
+1. Do NOT include species names as part of a disease. Organism names such as “human” are generally excluded from the preferred mention unless they are critical part of a disease name. Viruses, bacteria, and other organism names are not annotated unless it is clear from the context that the disease is caused by these organisms. e.g. “HIV-1-infected” means the disease caused by the organism “HIV”. Thus, “HIV” should be included.
+2. DO NOT annotate overlapping mentions. For example, the phrase “hepatitis B virus (HBV) infected” was annotated as one single disease D006509 (Hepatitis B).
+3. DO NOT annotate general terms such as: disease, syndrome, deficiency, complications, etc. However, terms such as pain, cancer, tumor and death should be retained.
+4. DO NOT annotate references to biological processes such as “tumorigenesis” or “cancerogenesis”.
+5. **Do NOT annotate non-diagnostic pathological processes / morphologic findings used as mechanisms or attributes (moderation principle):**  
+   a) If a candidate span describes a **mechanism, lesion, morphologic change, or experimental/pathology finding** rather than a named condition—especially when its **syntactic head** is a lesion/mechanism term (e.g., *injury, damage, toxicity, scarring, fibrosis*)—label it **O (not Disease)**.  
+   b) This includes cases where the candidate span appears primarily as an **adjectival/participial modifier** of another noun (or as a property of a structure/cell), rather than naming a condition itself (e.g., “damaged membrane,” “injured podocytes,” “scarring areas,” “fibrosis scoring,” “oxidative membrane damage”).  
+   c) **Exception:** This rule does **NOT** apply when the span is (or is part of) a **canonical, diagnosable disease/condition name** expressed as a standalone condition term (including established disease acronyms), even if it is etymologically related to a morphologic adjective or lesion word. For example, established condition uses such as “end-stage renal disease (ESRD),” “cardiac toxicity,” “hemolysis,” “proteinuria,” and “fibrosis” (when discussed as a condition/outcome) should still be annotated and normalized appropriately.
+
+### Special cases of disease annotations
+
+1. Rules for “toxicity” related mentions. In this dataset, ‘toxicity’ and related terms are common. Below are our rules for annotating them.
+   a) When the general term ‘toxicity’ appears by itself, use concept id D064420 (Drug-Related Side Effects and Adverse Reactions).
+   b) When a specific type of ‘toxicity’ is mentioned (e.g. cardiotoxicity or liver toxicity), use concepts under D064420 when possible (e.g. D066126 for ‘cardiac toxicity’ and D056486 for ‘liver toxicity’).
+   c) When no matching MeSH terms can be found under D064420 for a specific type of toxicity, use the corresponding disease ids. For instance, use D014786 (vision disorders) for ‘visual toxicity’ and D006311 (hearing disorders) for ‘auditory toxicity’ and ‘ototoxicity.’
+   d) **Note (interaction with the moderation principle):** Although “toxicity” can be linguistically similar to a mechanism/lesion term, in this corpus toxicity mentions (including adjectival forms such as “nephrotoxic” when used to assert a toxic condition/effect) are treated as disease/adverse-reaction entities and should be annotated following Rules 1a–1c above. Do not confuse these with generic “damage/injury” descriptions that do not name a condition.
+2. If the article indicates that a disease is drug induced (again common in this dataset), then one should always try to annotate the disease using terms under D064420 (Drug-Related Side Effects and Adverse Reactions) whenever possible. For instance, ‘dyskinesia’ is a movement disorder and has its own MeSH ID (D020820). However, when it is clear from the article that ‘dyskinesia’ is caused by a drug (e.g. PMID: 6727060), then we should use D004409 regardless whether ‘drug-induced’ is included in the disease mention or not. Other common examples include D056486 (Drug-induced Liver Injury) for ‘hepatitis’; D017109 (Akathisia, Drug-induced) for ‘akathisis.’
+
+## Guidelines for chemical mention and concept id annotation
+
+### What to annotate?
+
+1. Annotate the most specific chemical mentions and select the best-matching MeSH concept ID. Chemicals which should be annotated are listed as follows:
+   a) Chemical Nouns convertible to: -A single chemical structure diagram: single atoms, ions, isotopes, pure elements and molecules such as: Calcium (Ca), Iron (Fe), Lithium (Li), Potassium (K), Oxygen (O2),  -A general Markush diagram with R groups such as: Amino acids
+   b) General class names where the definition of the class includes information on some structural or elemental composition such as: steroids, sugars, fatty acids, saturated fatty acids …
+   c) Small Biochemicals - Monosaccharides, disaccharides and trisaccharides: Glucose, Sucrose … - Peptides and proteins with less than 15 aminoacids: Angiotensin II … - Monomers, dimmers, trimmers of nucleotides: e.g. ATP, cAMP … - Fatty acids and their derivatives excluding polymeric structures. e.g. Cholesterol, glycerol, prostaglandin E1 …
+   d) Synthetic Polymers such as: Polyethylene glycol
+   e) Special chemicals having well-defined chemical compositions. E.g. “ethanolic extract of Daucus carota seeds (DCE)” in 16755009; “grape seed proanthocyanidin extract” in 11334364.
+2. Annotate all mentions of a chemical entity in an abstract.
+3. Annotate abbreviations. Some abbreviations are ambiguous by convention. Take “Nitric Oxide (NO)” as an example, “NO” could also be interpreted as a negative response. Ambiguity should be avoided using context.
+4. Annotate chemicals when they cannot be normalized. In such a case, “-1” will be used as the concept id.
+
+### What not to annotate?
+
+1. DO NOT annotate other terms different from chemical nouns. Adjective forms of chemical names are also excluded. For instance, muscarinic, adrenergic and purinergic in 17244258.
+2. DO NOT annotate chemical nouns named for a role or similar, that is, nonstructural concepts (e.g. anti-HIV agents, anticonvulsants, anticholinesterase drug, antipsychotic, anticoagulant, etc).
+3. DO NOT annotate very nonspecific structural concepts. e.g. Atom, Ion, Molecular, Lipid, Protein …
+4. DO NOT annotate words that are not chemicals in context, even if they are co-incidentally the same set of characters (synonyms and metaphors). For instance, “Gold” should not be annotated if it appears in “gold standard.”
+5. DO NOT annotate Biomolecules/Macromolecular biochemicals: not large oligomeric and polymeric or established DNA/RNA/protein sequences. Proteins, polypeptides (> 15aa), nucleic acid polymers, polysaccharides, oligosaccharides and other biochemical are excluded. E.g. Insulin, DNA, mRNA, collagen, starch, cellulose, glycogen, lipopolysaccharide, glucocorticoid, glucagon (29 peptides), prolactin (199 peptides) …
+6. DO NOT annotate general vague compositions. For instance, according to Wikipedia, the term opiate describes any of the narcotic opioid alkaloids found as natural products in the opium poppy plant, Papaver somniferum, and thus should be excluded.
+7. DO NOT annotate special words not to be labeled by convention (e.g. Water, saline, juice, etc).
+
+### Special cases of chemical annotations
+
+- Antidepressive Agents (D000928), Estrogens (D004967), DContraceptives, Oral (D003276) are annotated in order to match CTD’s relation annotations.
+- For combo drugs, mark as one entity and use their corresponding id in MeSH when possible (as opposed to annotating its component separately). For example, select levodopa/carbidopa in PMID:2265898 and assign MeSH ID:C009265 (carbidopa, levodopa drug combination).
+
+**NEW MODERATION PRINCIPLES:**
+- **IF** a span describes a **pathological state** using (a) a **compositional descriptor** with an anatomical/cellular modifier plus a generic pathology head (e.g., “injury/damage/dysfunction/abnormality”), (b) a **pathology adjective** modifying a biomedical condition/effect/state noun, or (c) an **experimental/induced model condition label** formed as “agent/acronym + pathology noun,” **THEN** annotate the span as **Disease** even if it is not a canonical, lexicalized diagnosis name; **DO NOT APPLY** this rule when the span is merely a **normal function/process**, **non-pathological trait**, **method/assay readout**, or a purely **chemical/material** mention without indicating a pathological condition.
+
+**CONSTRAINT: DO NOT BREAK THESE EXAMPLES:**
+The following examples are currently handled CORRECTLY. Your new guidelines MUST NOT cause these to be annotated incorrectly.
+FILE: 10704919.json
+TEXT: Hemolysis of human erythrocytes induced by tamoxifen is related to disruption of membrane structure. Tamoxifen (TAM), the antiestrogenic drug most widely prescribed in the chemotherapy of breast cancer, induces changes in normal discoid shape of erythrocytes and hemolytic anemia. This work evaluates the effects of TAM on isolated human erythrocytes, attempting to identify the underlying mechanisms on TAM-induced hemolytic anemia and the involvement of biomembranes in its cytostatic action mechanisms. TAM induces hemolysis of erythrocytes as a function of concentration. The extension of hemolysis is variable with erythrocyte samples, but 12.5 microM TAM induces total hemolysis of all tested suspensions. Despite inducing extensive erythrocyte lysis, TAM does not shift the osmotic fragility curves of erythrocytes. The hemolytic effect of TAM is prevented by low concentrations of alpha-tocopherol (alpha-T) and alpha-tocopherol acetate (alpha-TAc) (inactivated functional hydroxyl) indicating that TAM-induced hemolysis is not related to oxidative membrane damage. This was further evidenced by absence of oxygen consumption and hemoglobin oxidation both determined in parallel with TAM-induced hemolysis. Furthermore, it was observed that TAM inhibits the peroxidation of human erythrocytes induced by AAPH, thus ruling out TAM-induced cell oxidative stress. Hemolysis caused by TAM was not preceded by the leakage of K(+) from the cells, also excluding a colloid-osmotic type mechanism of hemolysis, according to the effects on osmotic fragility curves. However, TAM induces release of peripheral proteins of membrane-cytoskeleton and cytosol proteins essentially bound to band 3. Either alpha-T or alpha-TAc increases membrane packing and prevents TAM partition into model membranes. These effects suggest that the protection from hemolysis by tocopherols is related to a decreased TAM incorporation in condensed membranes and the structural damage of the erythrocyte membrane is consequently avoided. Therefore, TAM-induced hemolysis results from a structural perturbation of red cell membrane, leading to changes in the framework of the erythrocyte membrane and its cytoskeleton caused by its high partition in the membrane. These defects explain the abnormal erythrocyte shape and decreased mechanical stability promoted by TAM, resulting in hemolytic anemia. Additionally, since membrane leakage is a final stage of cytotoxicity, the disruption of the structural characteristics of biomembranes by TAM may contribute to the multiple mechanisms of its anticancer action.
+MATCHED ANNOTATIONS:
+- Disease [1500, 1509] "hemolysis"
+- Disease [188, 201] "breast cancer"
+- Chemical [1389, 1392] "TAM"
+- Disease [2357, 2373] "hemolytic anemia"
+- Disease [1019, 1028] "hemolysis"
+
+FILE: 11773892.json
+TEXT: End-stage renal disease (ESRD) after orthotopic liver transplantation (OLTX) using calcineurin-based immunotherapy: risk of development and treatment. BACKGROUND: The calcineurin inhibitors cyclosporine and tacrolimus are both known to be nephrotoxic. Their use in orthotopic liver transplantation (OLTX) has dramatically improved success rates. Recently, however, we have had an increase of patients who are presenting after OLTX with end-stage renal disease (ESRD). This retrospective study examines the incidence and treatment of ESRD and chronic renal failure (CRF) in OLTX patients. METHODS: Patients receiving an OLTX only from June 1985 through December of 1994 who survived 6 months postoperatively were studied (n=834). Our prospectively collected database was the source of information. Patients were divided into three groups: Controls, no CRF or ESRD, n=748; CRF, sustained serum creatinine >2.5 mg/dl, n=41; and ESRD, n=45. Groups were compared for preoperative laboratory variables, diagnosis, postoperative variables, survival, type of ESRD therapy, and survival from onset of ESRD. RESULTS: At 13 years after OLTX, the incidence of severe renal dysfunction was 18.1% (CRF 8.6% and ESRD 9.5%). Compared with control patients, CRF and ESRD patients had higher preoperative serum creatinine levels, a greater percentage of patients with hepatorenal syndrome, higher percentage requirement for dialysis in the first 3 months postoperatively, and a higher 1-year serum creatinine. Multivariate stepwise logistic regression analysis using preoperative and postoperative variables identified that an increase of serum creatinine compared with average at 1 year, 3 months, and 4 weeks postoperatively were independent risk factors for the development of CRF or ESRD with odds ratios of 2.6, 2.2, and 1.6, respectively. Overall survival from the time of OLTX was not significantly different among groups, but by year 13, the survival of the patients who had ESRD was only 28.2% compared with 54.6% in the control group. Patients developing ESRD had a 6-year survival after onset of ESRD of 27% for the patients receiving hemodialysis versus 71.4% for the patients developing ESRD who subsequently received kidney transplants. CONCLUSIONS: Patients who are more than 10 years post-OLTX have CRF and ESRD at a high rate. The development of ESRD decreases survival, particularly in those patients treated with dialysis only. Patients who develop ESRD have a higher preoperative and 1-year serum creatinine and are more likely to have hepatorenal syndrome. However, an increase of serum creatinine at various times postoperatively is more predictive of the development of CRF or ESRD. New strategies for long-term immunosuppression may be needed to decrease this complication.
+MATCHED ANNOTATIONS:
+- Disease [2345, 2349] "ESRD"
+- Disease [2297, 2300] "CRF"
+- Disease [239, 250] "nephrotoxic"
+- Chemical [2590, 2600] "creatinine"
+- Disease [436, 459] "end-stage renal disease"
+
+FILE: 11961407.json
+TEXT: GLEPP1 receptor tyrosine phosphatase (Ptpro) in rat PAN nephrosis. A marker of acute podocyte injury. Glomerular epithelial protein 1 (GLEPP1) is a podocyte receptor membrane protein tyrosine phosphatase located on the apical cell membrane of visceral glomerular epithelial cell and foot processes. This receptor plays a role in regulating the structure and function of podocyte foot process. To better understand the utility of GLEPP1 as a marker of glomerular injury, the amount and distribution of GLEPP1 protein and mRNA were examined by immunohistochemistry, Western blot and RNase protection assay in a model of podocyte injury in the rat. Puromycin aminonucleoside nephrosis was induced by single intraperitoneal injection of puromycin aminonucleoside (PAN, 20 mg/100g BW). Tissues were analyzed at 0, 5, 7, 11, 21, 45, 80 and 126 days after PAN injection so as to include both the acute phase of proteinuria associated with foot process effacement (days 5-11) and the chronic phase of proteinuria associated with glomerulosclerosis (days 45-126). At day 5, GLEPP1 protein and mRNA were reduced from the normal range (265.2 +/- 79.6 x 10(6) moles/glomerulus and 100%) to 15% of normal (41.8 +/- 4.8 x 10(6) moles/glomerulus, p < 0.005). This occurred in association with an increase in urinary protein content from 1.8 +/- 1 to 99.0 +/- 61 mg/day (p < 0.001). In contrast, podocalyxin did not change significantly at this time. By day 11, GLEPP1 protein and mRNA had begun to return towards baseline. By day 45-126, at a time when glomerular scarring was present, GLEPP1 was absent from glomerulosclerotic areas although the total glomerular content of GLEPP1 was not different from normal. We conclude that GLEPP1 expression, unlike podocalyxin, reflects podocyte injury induced by PAN. GLEPP1 expression may be a useful marker of podocyte injury.
+MATCHED ANNOTATIONS:
+- Chemical [1790, 1793] "PAN"
+- Chemical [849, 852] "PAN"
+- Disease [993, 1004] "proteinuria"
+- Chemical [760, 763] "PAN"
+- Disease [1021, 1039] "glomerulosclerosis"
+
+FILE: 12584269.json
+TEXT: Kidney function and morphology after short-term combination therapy with cyclosporine A, tacrolimus and sirolimus in the rat. BACKGROUND: Sirolimus (SRL) may supplement calcineurin inhibitors in clinical organ transplantation. These are nephrotoxic, but SRL seems to act differently displaying only minor nephrotoxic effects, although this question is still open. In a number of treatment protocols where SRL was combined with a calcineurin inhibitor indications of a synergistic nephrotoxic effect were described. The aim of this study was to examine further the renal function, including morphological analysis of the kidneys of male Sprague-Dawley rats treated with either cyclosporine A (CsA), tacrolimus (FK506) or SRL as monotherapies or in different combinations. METHODS: For a period of 2 weeks, CsA 15 mg/kg/day (given orally), FK506 3.0 mg/kg/day (given orally) or SRL 0.4 mg/kg/day (given intraperitoneally) was administered once a day as these doses have earlier been found to achieve a significant immunosuppressive effect in Sprague-Dawley rats. In the 'conscious catheterized rat' model, the glomerular filtration rate (GFR) was measured as the clearance of Cr(EDTA). The morphological analysis of the kidneys included a semi-quantitative scoring system analysing the degree of striped fibrosis, subcapsular fibrosis and the number of basophilic tubules, plus an additional stereological analysis of the total grade of fibrosis in the cortex stained with Sirius Red. RESULTS: CsA, FK506 and SRL all significantly decreased the GFR. A further deterioration was seen when CsA was combined with either FK506 or SRL, whereas the GFR remained unchanged in the group treated with FK506 plus SRL when compared with treatment with any of the single substances. The morphological changes presented a similar pattern. The semi-quantitative scoring was significantly worst in the group treated with CsA plus SRL (P<0.001 compared with controls) and the analysis of the total grade of fibrosis also showed the highest proportion in the same group and was significantly different from controls (P<0.02). The FK506 plus SRL combination showed only a marginally higher degree of fibrosis as compared with controls (P=0.05). CONCLUSION: This rat study demonstrated a synergistic nephrotoxic effect of CsA plus SRL, whereas FK506 plus SRL was better tolerated.
+MATCHED ANNOTATIONS:
+- Chemical [104, 113] "sirolimus"
+- Chemical [89, 99] "tacrolimus"
+- Chemical [149, 152] "SRL"
+- Disease [2180, 2188] "fibrosis"
+- Chemical [692, 695] "CsA"
+
+FILE: 15325671.json
+TEXT: Cardiac toxicity observed in association with high-dose cyclophosphamide-based chemotherapy for metastatic breast cancer. INTRODUCTION: Cyclophosphamide is an alkylating agent given frequently as a component of many conditioning regimens. In high doses, its nonhematological dose-limiting toxicity is cardiomyopathy. STUDY DESIGN: We combined paclitaxel, melphalan and high-dose cyclophosphamide, thiotepa, and carboplatin in a triple sequential high-dose regimen for patients with metastatic breast cancer. Analysis was performed on 61 women with chemotherapy-responsive metastatic breast cancer receiving 96-h infusional cyclophosphamide as part of a triple sequential high-dose regimen to assess association between presence of peritransplant congestive heart failure (CHF) and the following pretreatment characteristics: presence of electrocardiogram (EKG) abnormalities, age, hypertension, prior cardiac history, smoking, diabetes mellitus, prior use of anthracyclines, and left-sided chest irradiation. RESULTS: Six of 61 women (10%) developed clinically reversible grade 3 CHF following infusional cyclophosphamide with a median percent decline in ejection fraction of 31%. Incidence of transient cyclophosphamide-related cardiac toxicity (10%) is comparable to previous recorded literature. Older age was significantly correlated with the CHF development; with median ages for the entire group and for patients developing CHF of 45 and 59, respectively. No association was found with other pretreatment characteristics. CONCLUSIONS: As a result of these findings, oncologists should carefully monitor fluid balance in older patients. Routine EKG monitoring during infusional cyclophosphamide did not predict CHF development.
+MATCHED ANNOTATIONS:
+- Disease [1229, 1245] "cardiac toxicity"
+- Disease [301, 315] "cardiomyopathy"
+- Disease [772, 775] "CHF"
+- Chemical [1204, 1220] "cyclophosphamide"
+- Chemical [959, 973] "anthracyclines"
+
+**INSTRUCTIONS:**
+1. Read the Current Guidelines and the New Principles.
+2. Integrate the New Principles into the Guidelines naturally.
+   - Do NOT just append them at the end unless it makes sense.
+   - If an existing rule contradicts the new principle, update it.
+   - **Conflict Resolution**: If the new principle necessitates changing an existing rule, explicitly justify (in your internal thought process) why the new rule is superior (e.g., more specific, resolves an ambiguity).
+   - If the new principle clarifies a specific section, add it there.
+3. **CONSTRAINT CHECK**:
+   - Review the "CONSTRAINT" examples above.
+   - Ensure your changes strictly support the New Principles WITHOUT invalidating the "CONSTRAINT" examples.
+   - If a trade-off is required, prioritize specific sub-cases to avoid regression.
+4. Maintain the original formatting and structure.
+5. Return the FULL updated Guidelines text.
+6. **CRITICAL INSTRUCTION**: Models often try to summarize or use placeholders like "(...)" to save tokens. **DO NOT DO THIS.** YOU MUST OUTPUT THE COMPLETED DOCUMENT IN FULL. If you leave out any section, the file will be corrupted.
+7. Output ONLY the guideline text. Do not start with "Here are the updated guidelines:".

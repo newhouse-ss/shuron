@@ -1,0 +1,106 @@
+You are an expert Computational Linguist.
+Your goal is to analyze **ONE Dominant Discrepancy Case** (a specific recurring error type) to find the underlying linguistic cause.
+
+**FOCUS:** You are analyzing ONLY the discrepancy type described below. Do not analyze other random errors.
+
+**ENTITY SCHEMA:**
+- GeneOrGeneProduct
+- DiseaseOrPhenotypicFeature
+- ChemicalEntity
+- SequenceVariant
+- CellLine
+- OrganismTaxon
+
+**INPUT DATA:**
+1. **Discrepancies (The Problem)**: Examples of the specific error type we are solving.
+2. **True Positives (The Control)**: Correct examples where the model worked (for contrast).
+
+---
+**1. DISCREPANCIES TO ANALYZE:**
+Example 1 (Doc: 16158428.json):
+Snippet: "...th cerebellar hypoplasia have been demonstrated in all male patients reported to date. We report here a new family with X-linked..."
+Gold: OrganismTaxon, LLM: O
+Entity Text: "patients"
+
+Example 2 (Doc: 16506214.json):
+Snippet: "...n our study population and these were genotyped in all case patients and control subjects and gene-specific haplotypes were cons..."
+Gold: OrganismTaxon, LLM: O
+Entity Text: "patients"
+
+Example 3 (Doc: 17615423.json):
+Snippet: "...is and acute renal failure. BACKGROUND: A 72-year-old white man with underlying human immunodeficiency virus, atrial fibril..."
+Gold: OrganismTaxon, LLM: O
+Entity Text: "man"
+
+Example 4 (Doc: 17615423.json):
+Snippet: "...alized pain, fatigue, and dark orange urine for 3 days. The patient was taking 80 mg simvastatin at bedtime (initiated 27 days ..."
+Gold: OrganismTaxon, LLM: O
+Entity Text: "patient"
+
+Example 5 (Doc: 17615423.json):
+Snippet: "... alanine aminotransferase. Simvastatin, amiodarone, and the patient's human immunodeficiency virus medications were all tempora..."
+Gold: OrganismTaxon, LLM: O
+Entity Text: "patient"
+
+**2. TRUE POSITIVE EXAMPLES (For Contrast):**
+FILE: 15075188.json
+TEXT: Increased expression and apical targeting of renal ENaC subunits in puromycin aminonucleoside-induced nephrotic syndrome in rats. Nephrotic syndrome is often accompanied by sodium retention and generalized edema. However, the molecular basis for the decreased renal sodium excretion remains undefined. We hypothesized that epithelial Na channel (ENaC) subunit dysregulation may be responsible for the increased sodium retention. An experimental group of rats was treated with puromycin aminonucleoside (PAN; 180 mg/kg iv), whereas the control group received only vehicle. After 7 days, PAN treatment induced significant proteinuria, hypoalbuminemia, decreased urinary sodium excretion, and extensive ascites. The protein abundance of alpha-ENaC and beta-ENaC was increased in the inner stripe of the outer medulla (ISOM) and in the inner medulla (IM) but was not altered in the cortex. gamma-ENaC abundance was increased in the cortex, ISOM, and IM. Immunoperoxidase brightfield- and laser-scanning confocal fluorescence microscopy demonstrated increased targeting of alpha-ENaC, beta-ENaC, and gamma-ENaC subunits to the apical plasma membrane in the distal convoluted tubule (DCT2), connecting tubule, and cortical and medullary collecting duct segments. Immunoelectron microscopy further revealed an increased labeling of alpha-ENaC in the apical plasma membrane of cortical collecting duct principal cells of PAN-treated rats, indicating enhanced apical targeting of alpha-ENaC subunits. In contrast, the protein abundances of Na(+)/H(+) exchanger type 3 (NHE3), Na(+)-K(+)-2Cl(-) cotransporter (BSC-1), and thiazide-sensitive Na(+)-Cl(-) cotransporter (TSC) were decreased. Moreover, the abundance of the alpha(1)-subunit of the Na-K-ATPase was decreased in the cortex and ISOM, but it remained unchanged in the IM. In conclusion, the increased or sustained expression of ENaC subunits combined with increased apical targeting in the DCT2, connecting tubule, and collecting duct are likely to play a role in the sodium retention associated with PAN-induced nephrotic syndrome. The decreased abundance of NHE3, BSC-1, TSC, and Na-K-ATPase may play a compensatory role to promote sodium excretion.
+MATCHED ANNOTATIONS:
+- GeneOrGeneProduct [1471, 1481] "alpha-ENaC"
+- GeneOrGeneProduct [1612, 1656] "thiazide-sensitive Na(+)-Cl(-) cotransporter"
+- ChemicalEntity [476, 501] "puromycin aminonucleoside"
+- GeneOrGeneProduct [1095, 1105] "gamma-ENaC"
+- OrganismTaxon [454, 458] "rats"
+
+FILE: 15983230.json
+TEXT: Polymorphisms in the SLC2A2 (GLUT2) gene are associated with the conversion from impaired glucose tolerance to type 2 diabetes: the Finnish Diabetes Prevention Study. Impaired insulin secretion is a fundamental defect in type 2 diabetes. The aim of this study was to investigate whether single nucleotide polymorphisms (SNPs) in the genes regulating insulin secretion (SLC2A2 [encoding GLUT2], GCK, TCF1 [encoding HNF-1alpha], HNF4A, GIP, and GLP1R) are associated with the conversion from impaired glucose tolerance (IGT) to type 2 diabetes in participants of the Finnish Diabetes Prevention Study. With the exception of SLC2A2, other genes were not associated with the risk of type 2 diabetes. All four SNPs of SLC2A2 predicted the conversion to diabetes, and rs5393 (AA genotype) increased the risk of type 2 diabetes in the entire study population by threefold (odds ratio 3.04, 95% CI 1.34-6.88, P = 0.008). The risk for type 2 diabetes in the AA genotype carriers was increased in the control group (5.56 [1.78-17.39], P = 0.003) but not in the intervention group. We conclude that the SNPs of SLC2A2 predict the conversion to diabetes in obese subjects with IGT.
+MATCHED ANNOTATIONS:
+- GeneOrGeneProduct [427, 432] "HNF4A"
+- DiseaseOrPhenotypicFeature [167, 193] "Impaired insulin secretion"
+- GeneOrGeneProduct [443, 448] "GLP1R"
+- DiseaseOrPhenotypicFeature [526, 541] "type 2 diabetes"
+- SequenceVariant [762, 768] "rs5393"
+
+FILE: 16158428.json
+TEXT: Delineation of the clinical phenotype associated with OPHN1 mutations based on the clinical and neuropsychological evaluation of three families. Recent reports have demonstrated that mutations in the OPHN1 gene were responsible for a syndromic rather than non-specific mental retardation. Abnormalities of the posterior fossa with cerebellar hypoplasia have been demonstrated in all male patients reported to date. We report here a new family with X-linked mental retardation due to mutation in OPHN1 and present unpublished data about two families previously reported, concerning the facial and psychological phenotype of affected males and carrier females. Our study confirms that cerebellar hypoplasia is a hallmark of this syndrome. In addition, affected males display facial similarities that can help the diagnosis. Most carrier females have mild mental retardation and subtle facial changes.
+MATCHED ANNOTATIONS:
+- DiseaseOrPhenotypicFeature [853, 871] "mental retardation"
+- DiseaseOrPhenotypicFeature [331, 352] "cerebellar hypoplasia"
+- GeneOrGeneProduct [495, 500] "OPHN1"
+- GeneOrGeneProduct [200, 205] "OPHN1"
+- DiseaseOrPhenotypicFeature [269, 287] "mental retardation"
+
+FILE: 16506214.json
+TEXT: Genetic variation in the COX-2 gene and the association with prostate cancer risk. COX-2 is a key enzyme in the conversion of arachidonic acid to prostaglandins. The prostaglandins produced by COX-2 are involved in inflammation and pain response in different tissues in the body. Accumulating evidence from epidemiologic studies, chemical carcinogen-induced rodent models and clinical trials indicate that COX-2 plays a role in human carcinogenesis and is overexpressed in prostate cancer tissue. We examined whether sequence variants in the COX-2 gene are associated with prostate cancer risk. We analyzed a large population-based case-control study, cancer prostate in Sweden (CAPS) consisting of 1,378 cases and 782 controls. We evaluated 16 single nucleotide polymorphisms (SNPs) spanning the entire COX-2 gene in 94 subjects of the control group. Five SNPs had a minor allele frequency of more than 5% in our study population and these were genotyped in all case patients and control subjects and gene-specific haplotypes were constructed. A statistically significant difference in allele frequency between cases and controls was observed for 2 of the SNPs (+3100 T/G and +8365 C/T), with an odds ratio of 0.78 (95% CI=0.64-0.96) and 0.65 (95% CI=0.45-0.94) respectively. In the haplotype analysis, 1 haplotype carrying the variant allele from both +3100 T/G and +8365 C/T, with a population frequency of 3%, was also significantly associated with decreased risk of prostate cancer (p=0.036, global simulated p-value=0.046). This study supports the hypothesis that inflammation is involved in prostate carcinogenesis and that sequence variation within the COX-2 gene influence the risk of prostate cancer.
+MATCHED ANNOTATIONS:
+- ChemicalEntity [166, 180] "prostaglandins"
+- SequenceVariant [1163, 1172] "+3100 T/G"
+- GeneOrGeneProduct [193, 198] "COX-2"
+- DiseaseOrPhenotypicFeature [215, 227] "inflammation"
+- DiseaseOrPhenotypicFeature [61, 76] "prostate cancer"
+
+FILE: 17304550.json
+TEXT: Disruption of a synaptotagmin (SYT14) associated with neurodevelopmental abnormalities. We report cytogenetic and molecular studies of a de novo, apparently balanced t(1;3)(q32.1;q25.1) identified in a 12-year-old female (designated DGAP128) with cerebral atrophy, macrocephaly seizures, and developmental delay. A combination of fluorescence in situ hybridization (FISH) and Southern blot analysis demonstrated disruption of a synaptotagmin gene (SYT14) at the 1q32 breakpoint. Expression of SYT14 in human brain was confirmed using Northern analysis. Because members of the synaptotagmin family of proteins function as sensors that link changes in calcium levels with a variety of biological processes, including neurotransmission and hormone-responsiveness, SYT14 is an intriguing candidate gene for the abnormal development in this child. This is the first known constitutional rearrangement of SYT14, and further systematic genetic analysis and clinical studies of DGAP128 may offer unique insights into the role of SYT14 in neurodevelopment.
+MATCHED ANNOTATIONS:
+- GeneOrGeneProduct [16, 29] "synaptotagmin"
+- DiseaseOrPhenotypicFeature [54, 86] "neurodevelopmental abnormalities"
+- DiseaseOrPhenotypicFeature [265, 277] "macrocephaly"
+- GeneOrGeneProduct [761, 766] "SYT14"
+- GeneOrGeneProduct [428, 441] "synaptotagmin"
+---
+
+**TASK:**
+Step 1: **Deep Dive Analysis (Chain-of-Thought)**.
+- **Contrast**: Explicitly compare the "Discrepancy" cases against the "True Positives". Identify the *single* boolean feature (syntactic, positional, or semantic) that separates them.
+- **Isolate Trigger**: What specific word, phrase, or structure misled the model?
+- **Hypothesis Check**: Does this trigger explain ALL the discrepancy examples? If not, refine the pattern.
+
+Step 2: **Formulate Pattern**.
+- Define the specific linguistic pattern that triggers this confusion.
+
+**OUTPUT FORMAT:**
+Return a **Markdown List** with exactly ONE "Pattern Insight" that explains this specific discrepancy cluster.
+- **Pattern Name**: Short descriptive title.
+- **Confusion Trigger**: The specific linguistic feature causing the error (e.g., "Nouns acting as adjectives").
+- **Contrastive Evidence**: Briefly explain how the "True Positive" cases avoid this trigger.
+- **Linguistic Rule (Proposed)**: The precise logic needed to distinguish this case correctly.

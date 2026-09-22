@@ -1,0 +1,55 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- GeneOrGeneProduct
+- DiseaseOrPhenotypicFeature
+- ChemicalEntity
+- SequenceVariant
+- CellLine
+- OrganismTaxon
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: OrganismTaxon vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+- **Pattern Insight — “Human participant nouns not recognized as taxa”**
+  - **Pattern Name:** Implicit *Homo sapiens* via role nouns
+  - **Confusion Trigger:** The organism is referenced only through **generic human role/demographic nouns** (e.g., *patient(s), man*) rather than an explicit taxon/species string (e.g., *human, Homo sapiens, mice, rats*). These nouns are semantically “people in a study/clinic” and the model treats them as non-entities, outputting **O**.
+  - **Contrastive Evidence:** In the True Positive control, the organism mention is an **overt species name** (*rats*), which has strong lexical cues for `OrganismTaxon`. The discrepancy cases use **non-taxonomic common nouns** (*patients, patient, man*) that require an inference “these are humans ⇒ taxon = Homo sapiens,” which the model fails to perform.
+  - **Linguistic Rule (Proposed):** If a noun phrase denotes **human study participants/clinical subjects**—lexemes like *patient(s), subject(s), case(s), control(s), man/men, woman/women, male(s), female(s)*—**and** occurs in a clinical/epidemiologic context (age/sex descriptors, case-control language, medications, diagnosis, genotyping), then annotate that span as `OrganismTaxon` (implicit **Homo sapiens**), even when “human” is not explicitly stated.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 16158428.json):
+Snippet: "...th cerebellar hypoplasia have been demonstrated in all male patients reported to date. We report here a new family with X-linked..."
+Gold: OrganismTaxon, LLM: O
+Entity Text: "patients"
+
+Example 2 (Doc: 16506214.json):
+Snippet: "...n our study population and these were genotyped in all case patients and control subjects and gene-specific haplotypes were cons..."
+Gold: OrganismTaxon, LLM: O
+Entity Text: "patients"
+
+Example 3 (Doc: 17615423.json):
+Snippet: "...is and acute renal failure. BACKGROUND: A 72-year-old white man with underlying human immunodeficiency virus, atrial fibril..."
+Gold: OrganismTaxon, LLM: O
+Entity Text: "man"
+
+Example 4 (Doc: 17615423.json):
+Snippet: "...alized pain, fatigue, and dark orange urine for 3 days. The patient was taking 80 mg simvastatin at bedtime (initiated 27 days ..."
+Gold: OrganismTaxon, LLM: O
+Entity Text: "patient"
+
+Example 5 (Doc: 17615423.json):
+Snippet: "... alanine aminotransferase. Simvastatin, amiodarone, and the patient's human immunodeficiency virus medications were all tempora..."
+Gold: OrganismTaxon, LLM: O
+Entity Text: "patient"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.
