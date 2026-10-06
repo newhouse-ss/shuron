@@ -62,7 +62,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--run-name",
         help="Output folder name. Defaults to '<experiment_id>_iterative'. "
-             "Use something readable, e.g. 20260805_ncbi_gpt54-high_moderation.",
+             "Use something readable, e.g. 20260805_gpt54-high_moderation.",
     )
     parser.add_argument(
         "--dev-split",

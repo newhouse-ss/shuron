@@ -1,0 +1,91 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: Modifier vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+- **Pattern Insight**
+  - **Pattern Name**: Embedded disease-derived shorthand in technical compounds
+  - **Confusion Trigger**: The missed spans are usually **not full disease names**; they are **abbreviated, eponymic, or stem-like disease-derived modifiers** embedded inside a larger biomedical compound, e.g. **APC alleles / APC mutations**, **DMD/BMD patients**, **von Willebrand factor**, **tumor-suppressor**. This makes them look like **gene symbols, protein names, or generic nouns**, so the model defaults to `O`.
+  - **Contrastive Evidence**: In the true positives, the modifier is typically a **complete, canonical disease expression** or a **standalone disease abbreviation**: *ovarian cancer cases*, *Zellweger syndrome phenotype*, *fragile X syndrome patients*, *Wiskott-Aldrich syndrome protein*, *ALPS phenotype*. Those forms explicitly signal “disease” and are easier to tag as `Modifier`.
+  - **Linguistic Rule (Proposed)**: If a token/phrase with disease-derived meaning appears as the **left modifier of a non-disease head** (e.g. *gene, allele, mutation, protein, factor, phenotype, patient, function*) — including **slash-compounds** and **hyphenated compounds** — tag it as `Modifier` **even when the span omits an overt disease head word** like *disease/syndrome/cancer* and **even when the surface form is ambiguous with a gene/protein label**.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10924409.json):
+Snippet: "...Inactivation of germline mutant APC alleles by attenuated somatic mutations: a molecular geneti..."
+Gold: Modifier, LLM: O
+Entity Text: "APC"
+
+Example 2 (Doc: 10924409.json):
+Snippet: "...d familial adenomatous polyposis.
+Germline mutations of the adenomatous polyposis coli ( APC ) tumor-suppressor gene result in familial adenomatous polyposis ( ..."
+Gold: Modifier, LLM: O
+Entity Text: "adenomatous polyposis coli ( APC ) tumor"
+
+Example 3 (Doc: 10924409.json):
+Snippet: "...rs and early-onset colorectal cancer . A subset of germline APC mutations results in an attenuated FAP ( AFAP ) phenotype ,..."
+Gold: Modifier, LLM: O
+Entity Text: "APC"
+
+Example 4 (Doc: 10924409.json):
+Snippet: "...h a genotype-phenotype correlation between the locations of APC germline mutations and the development of AFAP has been wel..."
+Gold: Modifier, LLM: O
+Entity Text: "APC"
+
+Example 5 (Doc: 10924409.json):
+Snippet: "...igated the mechanism for AFAP in patients carrying a mutant APC allele ( APC ( AS9 ) ) that has a mutation in the alternati..."
+Gold: Modifier, LLM: O
+Entity Text: "APC"
+
+Example 6 (Doc: 10924409.json):
+Snippet: "...n-regulate beta-catenin-regulated transcription , the major tumor-suppressor function of APC , as did the wild-type APC . Mut..."
+Gold: Modifier, LLM: O
+Entity Text: "tumor"
+
+Example 7 (Doc: 10924409.json):
+Snippet: "...ion analysis showed that both APC ( AS9 ) and the wild-type APC alleles were somatically mutated in most colorectal tumors ..."
+Gold: Modifier, LLM: O
+Entity Text: "APC"
+
+Example 8 (Doc: 10924409.json):
+Snippet: "...ical patients with FAP because somatic inactivation of both APC alleles is necessary for colorectal tumorigenesis . However..."
+Gold: Modifier, LLM: O
+Entity Text: "APC"
+
+Example 9 (Doc: 2253937.json):
+Snippet: "...Detection of 98% of DMD / BMD gene deletions by polymerase chain reaction.
+We describe ol..."
+Gold: Modifier, LLM: O
+Entity Text: "BMD"
+
+Example 10 (Doc: 2253937.json):
+Snippet: "...ow deletion detection and prenatal diagnosis for most DMD / BMD patients in a fraction of the time required for Southern bl..."
+Gold: Modifier, LLM: O
+Entity Text: "BMD"
+
+Example 11 (Doc: 3876122.json):
+Snippet: "...illebrand disease: evidence for a subgroup with an abnormal von Willebrand factor.
+Type I von Willebrand disease ( vWD ) is characteri..."
+Gold: Modifier, LLM: O
+Entity Text: "von Willebrand"
+
+Example 12 (Doc: 3876122.json):
+Snippet: "... ) is characterized by equally low plasma concentrations of von Willebrand factor antigen ( vWF  Ag ) and ristocetin cofactor ( RiCof ..."
+Gold: Modifier, LLM: O
+Entity Text: "von Willebrand"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

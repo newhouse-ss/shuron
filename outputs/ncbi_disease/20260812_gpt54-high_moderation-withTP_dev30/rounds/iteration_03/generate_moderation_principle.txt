@@ -1,0 +1,56 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+- **Pattern Insight**
+  - **Pattern Name**: Embedded, context-dependent disease mentions
+  - **Confusion Trigger**: The model seems to require a **standalone canonical disease NP**. It drops mentions when the disease is expressed **indirectly or in an embedded diagnostic/lab context**—e.g., as a pathology phrase headed by generic nouns like **“deficiency/activity”**, as a **pathogen name standing for infection** (“Epstein-Barr virus”, “cytomegalovirus”), or as a **parenthetical sample/tumor label** (“seminoma / medulloblastoma”).
+  - **Contrastive Evidence**: The true positives are mostly **direct disease-denoting heads** or clear appositional aliases: “Zellweger syndrome,” “Coats disease,” “Li-Fraumeni syndrome,” “argininemia.” Even “retinal telangiectasis” is presented as a direct disease label, not buried inside a test/result NP like “presence of X” or a biochemical abnormality description.
+  - **Linguistic Rule (Proposed)**: Do **not** require a disease mention to be the main clause topic or to contain overt disease words like *disease/syndrome/cancer*. Tag **SpecificDisease** whenever the span denotes a specific pathological condition, tumor, or infection **by context**, including:
+    - abnormal-state NPs such as **“deficient activity of fatty aldehyde dehydrogenase”** / **“deficiency in G6PD”**,
+    - pathogen names in diagnostic contexts where they stand for infection status (**“presence of Epstein-Barr virus … negative”**),
+    - embedded parenthetical tumor labels (**“seminoma / medulloblastoma”**).
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10484981.json):
+Snippet: "...ithout loss of heterozygosity in the TP53 gene ( seminoma / medulloblastoma ) may be evidence for a common mechanism involved in tumoro..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "medulloblastoma"
+
+Example 2 (Doc: 10577908.json):
+Snippet: "...rized by ichthyosis , mental retardation , spasticity , and deficient activity of fatty aldehyde dehydrogenase ( FALDH ) . To define the molecular defects causing SLS , w..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficient activity of fatty aldehyde dehydrogenase"
+
+Example 3 (Doc: 1303173.json):
+Snippet: "... coexistence of the two mutations is responsible for enzyme deficiency in G6PD A- because they act synergistically in causing instability ..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficiency in G6PD"
+
+Example 4 (Doc: 1316718.json):
+Snippet: "...l lymphoma . Studies of biopsied tissue for the presence of Epstein-Barr virus and cytomegalovirus were negative , as were studies of bloo..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "Epstein-Barr virus"
+
+Example 5 (Doc: 1316718.json):
+Snippet: "... biopsied tissue for the presence of Epstein-Barr virus and cytomegalovirus were negative , as were studies of blood , including the po..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "cytomegalovirus"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

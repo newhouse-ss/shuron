@@ -90,7 +90,7 @@ def main() -> None:
     parser.add_argument("--azure-model-key", default="5_4")
     parser.add_argument("--reasoning-effort", default="high")
     parser.add_argument("--max-output-tokens", type=int, default=64000)
-    parser.add_argument("--run-name", help="Output folder name, e.g. 20260805_ncbi_gpt54-high_moderation-noTP")
+    parser.add_argument("--run-name", help="Output folder name, e.g. 20260805_gpt54-high_moderation-noTP")
     parser.add_argument("--dev-split", help="Document list from reproduction/make_dev_splits.py")
     parser.add_argument("--n-examples", type=int,
                         help="Prompt evidence count. Scale it with the dev split, since the "

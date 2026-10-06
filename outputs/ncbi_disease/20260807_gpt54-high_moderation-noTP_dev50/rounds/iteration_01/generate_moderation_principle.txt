@@ -1,0 +1,151 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+- **Pattern Insight**
+  - **Pattern Name**: Schema-boundary mismatch for non-canonical disease-adjacent mentions
+  - **Confusion Trigger**: The missed spans are usually **not standalone nosological names**; they are embedded, context-dependent NPs whose heads denote a **manifestation, causal defect, pathogen, exposure, or risk factor** rather than an overt disease word, e.g. *dysfunction, defect, deficiency, virus, fever, trauma, APC*. They often occur in relational frames like **“characterized by …”**, **“history of …”**, **“presence of …”**, **“risk of …”**, or gene-causation descriptions.
+  - **Contrastive Evidence**: In the true positives, the model succeeds mainly on **lexicalized disease/condition labels** such as *X-linked adrenoleukodystrophy, protein S deficiency, Kaposi sarcoma, venous thrombosis, retinal telangiectasis*. Even descriptive TPs name the disorder itself. In the discrepancies, the gold schema extends **SpecificDisease** to items that are semantically one step away from the disease proper—its symptom, mechanism, genotype, infectious agent, or precipitating factor.
+  - **Linguistic Rule (Proposed)**: For this corpus, do **not** require a canonical disease headword to assign **SpecificDisease**. If a biomedical NP appears in a disease-defining or disease-association frame and denotes a **pathological state or etiologic abnormality** relevant to diagnosis/phenotype, treat it as a candidate **SpecificDisease**; otherwise a model limited to strict disease names will keep dropping these as **O**.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10190819.json):
+Snippet: "... ALD ) is an inherited disease characterized by progressive neurologic dysfunction , occasionally associated with adrenal insufficiency . The ..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "neurologic dysfunction"
+
+Example 2 (Doc: 10471457.json):
+Snippet: "...psy ; 3 had hepatic fibrosis , and 1 , who had a history of excessive alcohol consumption , had cirrhosis and mild microvesicular steatosis . Eight o..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "excessive alcohol consumption"
+
+Example 3 (Doc: 10484981.json):
+Snippet: "...ithout loss of heterozygosity in the TP53 gene ( seminoma / medulloblastoma ) may be evidence for a common mechanism involved in tumoro..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "medulloblastoma"
+
+Example 4 (Doc: 10577908.json):
+Snippet: "...rized by ichthyosis , mental retardation , spasticity , and deficient activity of fatty aldehyde dehydrogenase ( FALDH ) . To define the molecular defects causing SLS , w..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficient activity of fatty aldehyde dehydrogenase"
+
+Example 5 (Doc: 10706858.json):
+Snippet: "...Twenty-eight index patients with protein S deficiency and a PROS1 gene defect were studied , together with 109 first-degree relatives . T..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "PROS1 gene defect"
+
+Example 6 (Doc: 10706858.json):
+Snippet: "...w free protein S level was the most reliable predictor of a PROS1 gene defect ( sensitivity 97 . 7 % , specificity 100 % ) . First-degree..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "PROS1 gene defect"
+
+Example 7 (Doc: 10706858.json):
+Snippet: ".... 7 % , specificity 100 % ) . First-degree relatives with a PROS1 gene defect had a 5 . 0-fold higher risk of thrombosis ( 95 % confidenc..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "PROS1 gene defect"
+
+Example 8 (Doc: 10706858.json):
+Snippet: "... thrombophilic defect . Although pregnancy / puerperium and immobility / trauma were important precipitating factors for thrombosi..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "immobility"
+
+Example 9 (Doc: 10706858.json):
+Snippet: "...c defect . Although pregnancy / puerperium and immobility / trauma were important precipitating factors for thrombosis , almos..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "trauma"
+
+Example 10 (Doc: 10706858.json):
+Snippet: "...pontaneous . Relatives with splice-site or major structural defects in the PROS1 gene were more likely to have had a thrombotic event and had sig..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "defects in the PROS1 gene"
+
+Example 11 (Doc: 10706858.json):
+Snippet: "...s having missense mutations . We conclude that persons with PROS1 gene defects and protein S deficiency are at increased risk of thrombosi..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "PROS1 gene defects"
+
+Example 12 (Doc: 10732816.json):
+Snippet: "...Emerin, deficiency of which causes Emery-Dreifuss muscular dystrophy, is local..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "Emerin, deficiency"
+
+Example 13 (Doc: 10732816.json):
+Snippet: "...disorder characterized by the clinical triad of progressive wasting of humero-peroneal muscles , early contractures of the elbows , Achilles tendons and p..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "wasting of humero-peroneal muscles"
+
+Example 14 (Doc: 10732816.json):
+Snippet: "... muscles , and cardiac conduction block with a high risk of sudden death . The gene for EDMD on Xq28 encodes a novel protein named e..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "sudden death"
+
+Example 15 (Doc: 1303173.json):
+Snippet: "... coexistence of the two mutations is responsible for enzyme deficiency in G6PD A- because they act synergistically in causing instability ..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficiency in G6PD"
+
+Example 16 (Doc: 1316718.json):
+Snippet: "...l lymphoma . Studies of biopsied tissue for the presence of Epstein-Barr virus and cytomegalovirus were negative , as were studies of bloo..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "Epstein-Barr virus"
+
+Example 17 (Doc: 1316718.json):
+Snippet: "... biopsied tissue for the presence of Epstein-Barr virus and cytomegalovirus were negative , as were studies of blood , including the po..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "cytomegalovirus"
+
+Example 18 (Doc: 1316718.json):
+Snippet: "...ing the polymerase chain reaction , for the presence of the human immunodeficiency virus ( HIV ) . This is the first report of Kaposi sarcoma arisin..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "human immunodeficiency virus"
+
+Example 19 (Doc: 1316718.json):
+Snippet: "...on , for the presence of the human immunodeficiency virus ( HIV ) . This is the first report of Kaposi sarcoma arising in a..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "HIV"
+
+Example 20 (Doc: 1316718.json):
+Snippet: "...ows allograft transplantation and in patients infected with HIV , we postulate that longevity in the face of mild immunosup..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "HIV"
+
+Example 21 (Doc: 492335.json):
+Snippet: "...Genetic defect in secretion of complement C5 in mice.
+A genetic deficiency of the fifth ( C5 ) component..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "defect in secretion of complement C5"
+
+Example 22 (Doc: 6859721.json):
+Snippet: "...litis.
+A previously healthy 40-year-old man presenting with fever , arthritis , and cutaneous vasculitis was found to have ch..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "fever"
+
+Example 23 (Doc: 7951315.json):
+Snippet: "...m defects.
+The human eye malformation aniridia results from haploinsufficiency of PAX6 , a paired box DNA-binding protein . To study this dosage e..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "haploinsufficiency of PAX6"
+
+Example 24 (Doc: 8259519.json):
+Snippet: "...PC gene product . Two cellular proteins that associate with APC were identified by nucleotide sequence analysis and peptide..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "APC"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

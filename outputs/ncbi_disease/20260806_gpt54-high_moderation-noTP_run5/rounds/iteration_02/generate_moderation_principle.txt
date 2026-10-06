@@ -1,0 +1,48 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: DiseaseClass (Label Mismatch)
+
+**INFERRED PATTERNS:**
+- **Pattern Insight**
+  - **Pattern Name**: Bare descriptive diagnosis mistaken for a disease category
+  - **Confusion Trigger**: The mention is a **lowercase/common-noun clinical phrase** of the form **[anatomic/etiologic/gene modifier + generic pathology head]** — e.g., *retinal telangiectasis, PAH deficiencies, chronic neisserial infection, cutaneous vasculitis*. Because the head is a broad pathology noun (*telangiectasis, deficiency, infection, vasculitis*), the model defaults to **DiseaseClass**.
+  - **Contrastive Evidence**: The true positives mostly contain **explicit naming cues** that look like canonical disease names — *Coats disease, Norrie disease, Sjogren-Larsson syndrome* — or a more strongly lexicalized/specified variant such as *unilateral retinal telangiectasis* or *G6PD deficiency*. Those cues reduce the temptation to read the phrase as a generic class.
+  - **Linguistic Rule (Proposed)**: Do **not** assign **DiseaseClass** solely because a mention is a descriptive NP with a generic pathology head. If the full phrase functions as a **complete diagnosis/condition label** in context—even inside explanatory, associative, or differential-diagnosis frames—treat it as **SpecificDisease**. Reserve **DiseaseClass** for true **taxonomic/umbrella labels** that denote a higher-order category rather than a concrete condition mention.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10484772.json):
+Snippet: "...erized by abnormal retinal vascular development ( so-called retinal telangiectasis ) which results in massive intraretinal and subretinal lipi..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "retinal telangiectasis"
+
+Example 2 (Doc: 1671881.json):
+Snippet: "...or by the large variety of mutant genotypes associated with PAH deficiencies . . ..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "PAH deficiencies"
+
+Example 3 (Doc: 6859721.json):
+Snippet: "...ions showed heterozygous deficiency of C7 in five members . Chronic neisserial infection can be associated with C7 deficiency and must be distinguis..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "Chronic neisserial infection"
+
+Example 4 (Doc: 6859721.json):
+Snippet: "...7 deficiency and must be distinguished from other causes of cutaneous vasculitis . . ..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "cutaneous vasculitis"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

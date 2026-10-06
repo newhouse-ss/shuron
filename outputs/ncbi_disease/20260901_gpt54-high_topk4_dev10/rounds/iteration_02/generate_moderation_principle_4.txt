@@ -1,0 +1,40 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: Modifier (Label Mismatch)
+
+**INFERRED PATTERNS:**
+- **Pattern Insight**
+  - **Pattern Name**: Reduced-relative “disease-causing mutation” trap
+  - **Confusion Trigger**: A complete disease name, often followed by its acronym, appears immediately before **“causing mutation”** (or an equivalent participial phrase), e.g. **“Tay-Sachs disease (TSD) causing mutation”**. The model overreads this as if the disease term were a simple prenominal modifier of **mutation**.
+  - **Contrastive Evidence**: In the true Modifier controls, the disease term directly modifies an external head noun: **“ovarian cancer cases”**, **“fragile X syndrome patients”**, **“Wiskott-Aldrich syndrome protein”**. In the discrepancy, **“Tay-Sachs disease / TSD”** is still a disease mention; **mutation** is introduced through the participial predicate **causing**, not by direct noun-noun modification. True positive SpecificDisease examples like **“Coats disease”** are not in this misleading modifier-like slot.
+  - **Linguistic Rule (Proposed)**: If a disease expression is a **self-contained disease NP** (or its appositive acronym) and the following biomedical noun is reached via a **participial predicate** such as **causing / associated with / linked to**, label the disease mention as **SpecificDisease**, not **Modifier**. Only use **Modifier** when the disease term **directly attaches to and modifies** the next head noun without an intervening predicate structure.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 8326491.json):
+Snippet: "...from the British Isles.
+In a previous study we found that a Tay-Sachs disease ( TSD ) causing mutation in the intron 9 donor splice site ..."
+Gold: SpecificDisease, LLM: Modifier
+Entity Text: "Tay-Sachs disease"
+
+Example 2 (Doc: 8326491.json):
+Snippet: "...es.
+In a previous study we found that a Tay-Sachs disease ( TSD ) causing mutation in the intron 9 donor splice site of the..."
+Gold: SpecificDisease, LLM: Modifier
+Entity Text: "TSD"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

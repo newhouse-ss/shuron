@@ -63,7 +63,7 @@ to run, and a rule that genuinely fixes six cases will break one or two. The
 budget bounds the attempts and the best draft is kept regardless.
 
     python reproduction/verified_refinement.py --dev-split reproduction/dev_splits/ncbi_disease_dev10.json \
-        --run-name 20260814_ncbi_gpt54-high_verified_dev10
+        --run-name 20260814_gpt54-high_verified_dev10
 """
 
 from __future__ import annotations

@@ -1,0 +1,55 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- GeneOrGeneProduct
+- DiseaseOrPhenotypicFeature
+- ChemicalEntity
+- SequenceVariant
+- CellLine
+- OrganismTaxon
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: O vs LLM: SequenceVariant (Added)
+
+**INFERRED PATTERNS:**
+- **Pattern Insight — “Generic variant-class terms mislabeled as specific SequenceVariant instances”**
+  - **Pattern Name:** Variant *type* noun ≠ Variant *identifier*
+  - **Confusion Trigger:** Standalone/common-noun mentions of variation—especially plural/indefinite forms like **“polymorphisms”**, **“single nucleotide polymorphisms”**, **“SNPs”**, and categorical labels like **“AA genotype”**—occurring near gene names (e.g., *“SNPs in SLC2A2”*). The proximity to genes + variant vocabulary cues the model to over-tag as **SequenceVariant** even when no specific variant is stated.
+  - **Contrastive Evidence:** In the True Positives, SequenceVariant annotations appear only when the text contains a **concrete, referential variant designator** (e.g., **“rs5393”**, **“+3100 T/G”**, **“+8365 C/T”**) that uniquely identifies a particular variant. Those strings have “ID/coordinate + allele” structure, unlike the discrepancy terms which denote only a *class* of variants.
+  - **Linguistic Rule (Proposed):** Tag **SequenceVariant** **only if** the mention includes an **instance-level identifier** (e.g., `rs\d+`, HGVS-like patterns such as `c\.\d+[ACGT]>[ACGT]`, protein changes like `p\.[A-Z][a-z]{2}\d+[A-Z][a-z]{2}`, or position+alleles like `\+\d+\s*[ACGT]/[ACGT]`). Otherwise, if the span is a **generic variant-class noun** (“polymorphism(s)”, “SNP(s)”, “mutation(s)”, “genotype”) **without** an attached unique identifier/coordinate/allele specification, label it **O** (even when it appears in “in/of + GENE” contexts).
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 15983230.json):
+Snippet: "...Polymorphisms in the SLC2A2 (GLUT2) gene are associated with the conversi..."
+Gold: O, LLM: SequenceVariant
+Entity Text: "Polymorphisms"
+
+Example 2 (Doc: 15983230.json):
+Snippet: "... diabetes. The aim of this study was to investigate whether single nucleotide polymorphisms (SNPs) in the genes regulating insulin secretion (SLC2A2 [e..."
+Gold: O, LLM: SequenceVariant
+Entity Text: "single nucleotide polymorphisms"
+
+Example 3 (Doc: 15983230.json):
+Snippet: "...was to investigate whether single nucleotide polymorphisms (SNPs) in the genes regulating insulin secretion (SLC2A2 [encodin..."
+Gold: O, LLM: SequenceVariant
+Entity Text: "SNPs"
+
+Example 4 (Doc: 15983230.json):
+Snippet: "...e not associated with the risk of type 2 diabetes. All four SNPs of SLC2A2 predicted the conversion to diabetes, and rs5393 ..."
+Gold: O, LLM: SequenceVariant
+Entity Text: "SNPs"
+
+Example 5 (Doc: 15983230.json):
+Snippet: "...of SLC2A2 predicted the conversion to diabetes, and rs5393 (AA genotype) increased the risk of type 2 diabetes in the entire study ..."
+Gold: O, LLM: SequenceVariant
+Entity Text: "AA genotype"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

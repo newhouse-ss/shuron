@@ -125,8 +125,8 @@ def main() -> None:
 
     for row_index, (name, status, cells) in enumerate(rows):
         y = TOP + row_index * PITCH_Y
-        label = name.replace("20260902_ncbi_gpt54-high_", "").replace(
-            "20260901_ncbi_gpt54-high_", "").replace("20260802_ncbi_gpt54-high_", "")
+        label = name.replace("20260902_gpt54-high_", "").replace(
+            "20260901_gpt54-high_", "").replace("20260802_gpt54-high_", "")
         svg.append(f'<text x="{GUTTER - 34}" y="{y + 56}" font-size="12.5" '
                    f'text-anchor="end" font-weight="bold">{label}</text>')
         svg.append(f'<text x="{GUTTER - 34}" y="{y + 73}" font-size="11" text-anchor="end">'

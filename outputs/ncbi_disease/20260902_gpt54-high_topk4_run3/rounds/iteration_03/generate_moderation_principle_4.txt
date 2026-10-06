@@ -1,0 +1,33 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: CompositeMention vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+- **Pattern Insight**
+  - **Pattern Name**: Composite pathology phrase with no explicit disease head
+  - **Confusion Trigger**: The missed span is a coordinated descriptive NP — **“intraretinal and subretinal lipid accumulation”** — where **“intraretinal and subretinal”** are coordinated location modifiers and the head noun is **“accumulation”**, a pathology/process term rather than an overt disease word like *disease*, *syndrome*, or *cancer*.
+  - **Contrastive Evidence**: In the true positives, the model succeeds when the mention contains a **clear disease-denoting lexical head** or a canonical disease name: *ovarian cancer*, *Wiskott-Aldrich syndrome*, *Coats disease*, and even the TP CompositeMention *breast or ovarian cancer* still has the explicit disease head **“cancer.”** The discrepancy lacks that cue, so it is easier for the model to misread as a mere descriptive finding.
+  - **Linguistic Rule (Proposed)**: Do **not** require an explicit disease noun to detect a **CompositeMention**. If a noun phrase denotes a **pathologic abnormality/lesion** and contains **coordinated modifiers sharing one pathology head** (e.g., *X and Y accumulation / degeneration / detachment*), treat it as a CompositeMention when the full phrase refers to a clinically meaningful abnormal state.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10484772.json):
+Snippet: "...so-called retinal telangiectasis ) which results in massive intraretinal and subretinal lipid accumulation ( exudative retinal detachment ) . The classical form of Co..."
+Gold: CompositeMention, LLM: O
+Entity Text: "intraretinal and subretinal lipid accumulation"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

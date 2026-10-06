@@ -1,0 +1,43 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: SpecificDisease (Span Boundary Error)
+
+**INFERRED PATTERNS:**
+- **Pattern Insight**
+  - **Pattern Name**: Disease heads with integral **“of”-complements**
+  - **Confusion Trigger**: A disease NP is followed by a postnominal **of + noun phrase** that is semantically part of the name, not just extra context—e.g., **“Coats' disease of the retina”**, **“deficiency of the seventh component of complement”**, **“deficiency of C7”**. The preposition **of** appears to mislead the model into treating the phrase after the head noun as non-entity material or as a biochemical description rather than part of a disease mention.
+  - **Contrastive Evidence**: The true positives are mostly **bare lexicalized disease names** or simple adjective+noun forms—**“ovarian cancer,” “Sjogren-Larsson syndrome,” “fragile X syndrome,” “Coats disease”**—where the entity boundary is obvious and does not depend on a trailing PP. They avoid the ambiguous **head + of-complement** structure.
+  - **Linguistic Rule (Proposed)**: If a medical mention is headed by **disease/deficiency/syndrome/etc.** and is immediately followed by an **argument-like “of”-phrase** naming the affected organ, factor, or component, treat the **entire NP** as the disease mention when the PP is required to identify the disorder. In short: **do not automatically cut the entity off at the disease head when an “of”-PP is lexically integral to the diagnosis.**
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10484772.json):
+Snippet: "...Coats' disease of the retina (unilateral retinal telangiectasis) caused by..."
+Gold: SpecificDisease, LLM: SpecificDisease
+Entity Text: "Coats' disease"
+
+Example 2 (Doc: 6859721.json):
+Snippet: "...of functional and antigenic C7 , compatible with a complete deficiency of the seventh component of complement . Study of the patients family spanning four generations sh..."
+Gold: SpecificDisease, LLM: SpecificDisease
+Entity Text: "deficiency of the seventh component of complement"
+
+Example 3 (Doc: 6859721.json):
+Snippet: "...tients family spanning four generations showed heterozygous deficiency of C7 in five members . Chronic neisserial infection can be assoc..."
+Gold: SpecificDisease, LLM: SpecificDisease
+Entity Text: "deficiency of C7"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

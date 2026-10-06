@@ -1,0 +1,38 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: SpecificDisease (Span Boundary Error)
+
+**INFERRED PATTERNS:**
+- **Pattern Insight**
+  - **Pattern Name**: Deficiency-headed molecular disorder mentions
+  - **Confusion Trigger**: The mention is built as **“deficiency of X”**, where the head noun is the generic clinical state **“deficiency”** and **X** is a **specific biomolecular/complement component** (e.g., **C7**, **the seventh component of complement**). This structure is semantically ambiguous between a **disease name** and a **lab/biochemical finding**.
+  - **Contrastive Evidence**: The true positives mostly use **canonical disease-denoting heads** such as **disease, syndrome, cancer, telangiectasis**, or well-known eponymic names. Those forms are overtly disease-like, so they do not require the model to infer that a molecular abnormality itself names a disorder.
+  - **Linguistic Rule (Proposed)**: If a noun phrase matches **“(complete|heterozygous|etc.) deficiency of X”** and **X** is a **specific enzyme/protein/complement factor/gene product**, treat it as **SpecificDisease** when it refers to a patient’s clinical condition, even if no explicit word like *disease* or *syndrome* appears. Only leave it out as a non-disease finding when the phrase clearly describes a **measured level/activity state** rather than a diagnosed condition.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 6859721.json):
+Snippet: "...of functional and antigenic C7 , compatible with a complete deficiency of the seventh component of complement . Study of the patients family spanning four generations sh..."
+Gold: SpecificDisease, LLM: SpecificDisease
+Entity Text: "deficiency of the seventh component of complement"
+
+Example 2 (Doc: 6859721.json):
+Snippet: "...tients family spanning four generations showed heterozygous deficiency of C7 in five members . Chronic neisserial infection can be assoc..."
+Gold: SpecificDisease, LLM: SpecificDisease
+Entity Text: "deficiency of C7"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

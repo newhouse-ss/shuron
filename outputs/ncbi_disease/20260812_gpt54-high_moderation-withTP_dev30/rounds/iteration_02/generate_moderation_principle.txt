@@ -1,0 +1,53 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+- **Pattern Insight**
+  - **Pattern Name**: Implicit disease mentions headed by agent/biochemistry terms
+  - **Confusion Trigger**: The span lacks an overt disease-denoting head noun and is instead headed by a **virus/gene/enzyme/functional-abnormality term** (e.g., “Epstein-Barr virus,” “cytomegalovirus,” “human immunodeficiency virus,” “deficiency in G6PD,” “deficient activity of fatty aldehyde dehydrogenase”). The model appears to treat these as non-disease biomedical entities because the disease interpretation is only **contextually implied**.
+  - **Contrastive Evidence**: The true positives are mostly **lexicalized disease names** or phrases with clear disease morphology/semantics inside the span itself: “Zellweger syndrome,” “Coats disease,” “Li-Fraumeni syndrome,” “medulloblastoma,” “argininemia,” “ovarian cancer.” They do not require contextual inference from an etiologic agent or biochemical defect.
+  - **Linguistic Rule (Proposed)**: Tag a span as **SpecificDisease** when it denotes a **pathologic condition/infection/deficiency**, even if the surface form is built from an etiologic or biochemical noun rather than a canonical disease word. In practice: if a virus/microbe name or deficiency/enzyme-function phrase appears in a disease-diagnostic or disease-descriptive frame (“presence of X,” “negative for X,” “deficiency in X,” “deficient activity of X”), treat it as a disease mention rather than defaulting to O.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10577908.json):
+Snippet: "...rized by ichthyosis , mental retardation , spasticity , and deficient activity of fatty aldehyde dehydrogenase ( FALDH ) . To define the molecular defects causing SLS , w..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficient activity of fatty aldehyde dehydrogenase"
+
+Example 2 (Doc: 1303173.json):
+Snippet: "... coexistence of the two mutations is responsible for enzyme deficiency in G6PD A- because they act synergistically in causing instability ..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficiency in G6PD"
+
+Example 3 (Doc: 1316718.json):
+Snippet: "...l lymphoma . Studies of biopsied tissue for the presence of Epstein-Barr virus and cytomegalovirus were negative , as were studies of bloo..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "Epstein-Barr virus"
+
+Example 4 (Doc: 1316718.json):
+Snippet: "... biopsied tissue for the presence of Epstein-Barr virus and cytomegalovirus were negative , as were studies of blood , including the po..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "cytomegalovirus"
+
+Example 5 (Doc: 1316718.json):
+Snippet: "...ing the polymerase chain reaction , for the presence of the human immunodeficiency virus ( HIV ) . This is the first report of Kaposi sarcoma arisin..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "human immunodeficiency virus"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

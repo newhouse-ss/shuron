@@ -1,0 +1,54 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+- **Pattern Insight**
+  - **Pattern Name**: Descriptive clinical-condition phrases inside characterization/causal clauses
+  - **Confusion Trigger**: The missed spans are **common-noun pathology/finding expressions**—often headed by words like **deficiency**, **activity**, **telangiectasis**, or **fever**—that appear as complements of framing predicates such as **“characterized by,” “caused by,” “responsible for,”** or **“presenting with.”** In these contexts, the model seems to treat them as background description, symptoms, or biochemical consequences rather than annotatable disease mentions.
+  - **Contrastive Evidence**: The true positives are mostly **standalone diagnostic labels** or clearly lexicalized disease names/abbreviations such as **Coats disease, Norrie disease, Sjogren-Larsson syndrome, SLS, ovarian cancer, Wiskott-Aldrich syndrome**. Even the descriptive TP **“unilateral retinal telangiectasis”** is rescued by a strong appositive/title context explicitly tying it to a disease name, unlike the missed **“so-called retinal telangiectasis”** inside an explanatory clause.
+  - **Linguistic Rule (Proposed)**: Do **not require an explicit disease head word** (*disease, syndrome, cancer*) to tag a mention. If a noun phrase denotes a **pathological condition, lesion, deficiency state, or patient-presenting clinical condition**, and it is introduced in descriptive medical frames like **characterized by / caused by / presenting with / resulting in / responsible for**, it should still be considered for **SpecificDisease** under this schema.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10484772.json):
+Snippet: "...erized by abnormal retinal vascular development ( so-called retinal telangiectasis ) which results in massive intraretinal and subretinal lipi..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "retinal telangiectasis"
+
+Example 2 (Doc: 10577908.json):
+Snippet: "...rized by ichthyosis , mental retardation , spasticity , and deficient activity of fatty aldehyde dehydrogenase ( FALDH ) . To define the molecular defects causing SLS , w..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficient activity of fatty aldehyde dehydrogenase"
+
+Example 3 (Doc: 1303173.json):
+Snippet: "... coexistence of the two mutations is responsible for enzyme deficiency in G6PD A- because they act synergistically in causing instability ..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficiency in G6PD"
+
+Example 4 (Doc: 1671881.json):
+Snippet: "...enylketonuria is an autosomal recessive disease caused by a deficiency of hepatic phenylalanine hydroxylase ( PAH ) . The abolition of an invariant BamHI site located ..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficiency of hepatic phenylalanine hydroxylase"
+
+Example 5 (Doc: 6859721.json):
+Snippet: "...litis.
+A previously healthy 40-year-old man presenting with fever , arthritis , and cutaneous vasculitis was found to have ch..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "fever"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

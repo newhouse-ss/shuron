@@ -1,0 +1,92 @@
+You are an expert Computational Linguist.
+Your goal is to analyze **ONE Dominant Discrepancy Case** (a specific recurring error type) to find the underlying linguistic cause.
+
+**FOCUS:** You are analyzing ONLY the discrepancy type described below. Do not analyze other random errors.
+
+**ENTITY SCHEMA:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**INPUT DATA:**
+1. **Discrepancies (The Problem)**: Examples of the specific error type we are solving.
+2. **True Positives (The Control)**: Correct examples where the model worked (for contrast).
+
+---
+**1. DISCREPANCIES TO ANALYZE:**
+Example 1 (Doc: 10484772.json):
+Snippet: "...erized by abnormal retinal vascular development ( so-called retinal telangiectasis ) which results in massive intraretinal and subretinal lipi..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "retinal telangiectasis"
+
+Example 2 (Doc: 1671881.json):
+Snippet: "...or by the large variety of mutant genotypes associated with PAH deficiencies . . ..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "PAH deficiencies"
+
+Example 3 (Doc: 6859721.json):
+Snippet: "...ions showed heterozygous deficiency of C7 in five members . Chronic neisserial infection can be associated with C7 deficiency and must be distinguis..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "Chronic neisserial infection"
+
+**2. TRUE POSITIVE EXAMPLES (For Contrast):**
+FILE: 10196379.json
+TEXT: Germline BRCA1 alterations in a population-based series of ovarian cancer cases.
+The objective of this study was to provide more accurate frequency estimates of breast cancer susceptibility gene 1 ( BRCA1 ) germline alterations in the ovarian cancer population . To achieve this , we determined the prevalence of BRCA1 alterations in a population-based series of consecutive ovarian cancer cases . This is the first population-based ovarian cancer study reporting BRCA1 alterations derived from a comprehensive screen of the entire coding region . One hundred and seven ovarian cancer cases were analyzed for BRCA1 alterations using the RNase mismatch cleavage assay followed by direct sequencing . Two truncating mutations , 962del4 and 3600del11 , were identified . Both patients had a family history of breast or ovarian cancer . Several novel as well as previously reported uncharacterized variants were also identified , some of which were associated with a family history of cancer . The frequency distribution of common polymorphisms was determined in the 91 Caucasian cancer cases in this series and 24 sister controls using allele-specific amplification . The rare form of the Q356R polymorphism was significantly ( P = 0 . 03 ) associated with a family history of ovarian cancer , suggesting that this polymorphism may influence ovarian cancer risk . In summary , our data suggest a role for some uncharacterized variants and rare forms of polymorphisms in determining ovarian cancer risk , and highlight the necessity to screen for missense alterations as well as truncating mutations in this population . 
+MATCHED ANNOTATIONS:
+- Modifier [161, 174] "breast cancer"
+- Modifier [59, 73] "ovarian cancer"
+- SpecificDisease [1274, 1288] "ovarian cancer"
+- Modifier [570, 584] "ovarian cancer"
+- Modifier [235, 249] "ovarian cancer"
+
+FILE: 10484772.json
+TEXT: Coats' disease of the retina (unilateral retinal telangiectasis) caused by somatic mutation in the NDP gene: a role for norrin in retinal angiogenesis.
+Coats disease is characterized by abnormal retinal vascular development ( so-called retinal telangiectasis ) which results in massive intraretinal and subretinal lipid accumulation ( exudative retinal detachment ) . The classical form of Coats disease is almost invariably isolated , unilateral and seen in males . A female with a unilateral variant of Coats disease gave birth to a son affected by Norrie disease . Both carried a missense mutation within the NDP gene on chromosome Xp11 . 2 2 . Subsequently analysis of the retinas of nine enucleated eyes from males with Coats disease demonstrated in one a somatic mutation in the NDP gene which was not present within non-retinal tissue . We suggest that Coats telangiectasis is secondary to somatic mutation in the NDP gene which results in a deficiency of norrin ( the protein product of the NDP gene ) within the developing retina . This supports recent observations that the protein is critical for normal retinal vasculogenesis . 
+MATCHED ANNOTATIONS:
+- SpecificDisease [725, 738] "Coats disease"
+- SpecificDisease [505, 518] "Coats disease"
+- DiseaseClass [335, 363] "exudative retinal detachment"
+- SpecificDisease [30, 63] "unilateral retinal telangiectasis"
+- SpecificDisease [152, 165] "Coats disease"
+
+FILE: 10545613.json
+TEXT: Synergistic effect of histone hyperacetylation and DNA demethylation in the reactivation of the FMR1 gene.
+Most fragile X syndrome patients have expansion of a ( CGG ) ( n ) sequence with > 200 repeats ( full mutation ) in the FMR1 gene responsible for this condition . Hypermethylation of the expanded repeat and of the FMR1 promoter is almost always present and apparently suppresses transcription , resulting in absence of the FMR1 protein . We recently showed that transcriptional reactivation of FMR1 full mutations can be achieved by inducing DNA demethylation with 5-azadeoxycytidine ( 5-azadC ) . The level of histone acetylation is another important factor in regulating gene expression ; therefore , we treated lymphoblastoid cell lines of non-mosaic full mutation patients with three drugs capable of inducing histone hyperacetylation . We observed a consistent , although modest , reactivation of the FMR1 gene with 4-phenylbutyrate , sodium butyrate and trichostatin A , as shown by RT-PCR . However , we report that combining these drugs with 5-azadC results in a 2- to 5-fold increase in FMR1 mRNA levels obtained with 5-azadC alone , thus showing a marked synergistic effect of histone hyperacetylation and DNA demethylation in the reactivation of FMR1 full mutations . . 
+MATCHED ANNOTATIONS:
+- Modifier [112, 130] "fragile X syndrome"
+
+FILE: 10577908.json
+TEXT: The molecular basis of Sjogren-Larsson syndrome: mutation analysis of the fatty aldehyde dehydrogenase gene.
+Sjogren-Larsson syndrome ( SLS ) is an autosomal recessive disorder characterized by ichthyosis , mental retardation , spasticity , and deficient activity of fatty aldehyde dehydrogenase ( FALDH ) . To define the molecular defects causing SLS , we performed mutation analysis of the FALDH gene in probands from 63 kindreds with SLS . Among these patients , 49 different mutations-including 10 deletions , 2 insertions , 22 amino acid substitutions , 3 nonsense mutations , 9 splice-site defects , and 3 complex mutations-were found . All of the patients with SLS were found to carry mutations . Nineteen of the missense mutations resulted in a severe reduction of FALDH enzyme catalytic activity when expressed in mammalian cells , but one mutation ( 798G-- > C [ K266N ] ) seemed to have a greater effect on mRNA stability . The splice-site mutations led to exon skipping or utilization of cryptic acceptor-splice sites . Thirty-seven mutations were private , and 12 mutations were seen in two or more probands of European or Middle Eastern descent . Four single-nucleotide polymorphisms ( SNPs ) were found in the FALDH gene . At least four of the common mutations ( 551C-- > T , 682C-- > T , 733G-- > A , and 798 + 1delG ) were associated with multiple SNP haplotypes , suggesting that these mutations originated independently on more than one occasion or were ancient SLS genes that had undergone intragenic recombination . Our results demonstrate that SLS is caused by a strikingly heterogeneous group of mutations in the FALDH gene and provide a framework for understanding the genetic basis of SLS and the development of DNA-based diagnostic tests . . 
+MATCHED ANNOTATIONS:
+- DiseaseClass [194, 204] "ichthyosis"
+- SpecificDisease [23, 47] "Sjogren-Larsson syndrome"
+- SpecificDisease [1710, 1713] "SLS"
+- DiseaseClass [207, 225] "mental retardation"
+- Modifier [1481, 1484] "SLS"
+
+FILE: 10724160.json
+TEXT: Autoinhibition and activation mechanisms of the Wiskott-Aldrich syndrome protein.
+The Rho-family GTPase , Cdc42 , can regulate the actin cytoskeleton through activation of Wiskott-Aldrich syndrome protein ( WASP ) family members . Activation relieves an autoinhibitory contact between the GTPase-binding domain and the carboxy-terminal region of WASP proteins . Here we report the autoinhibited structure of the GTPase-binding domain of WASP , which can be induced by the C-terminal region or by organic co-solvents . In the autoinhibited complex , intramolecular interactions with the GTPase-binding domain occlude residues of the C terminus that regulate the Arp2 / 3 actin-nucleating complex . Binding of Cdc42 to the GTPase-binding domain causes a dramatic conformational change , resulting in disruption of the hydrophobic core and release of the C terminus , enabling its interaction with the actin regulatory machinery . These data show that intrinsically unstructured peptides such as the GTPase-binding domain of WASP can be induced into distinct structural and functional states depending on context . . 
+MATCHED ANNOTATIONS:
+- Modifier [48, 72] "Wiskott-Aldrich syndrome"
+- Modifier [172, 196] "Wiskott-Aldrich syndrome"
+---
+
+**TASK:**
+Step 1: **Deep Dive Analysis (Chain-of-Thought)**.
+- **Contrast**: Explicitly compare the "Discrepancy" cases against the "True Positives". Identify the *single* boolean feature (syntactic, positional, or semantic) that separates them.
+- **Isolate Trigger**: What specific word, phrase, or structure misled the model?
+- **Hypothesis Check**: Does this trigger explain ALL the discrepancy examples? If not, refine the pattern.
+
+Step 2: **Formulate Pattern**.
+- Define the specific linguistic pattern that triggers this confusion.
+
+**OUTPUT FORMAT:**
+Return a **Markdown List** with exactly ONE "Pattern Insight" that explains this specific discrepancy cluster.
+- **Pattern Name**: Short descriptive title.
+- **Confusion Trigger**: The specific linguistic feature causing the error (e.g., "Nouns acting as adjectives").
+- **Contrastive Evidence**: Briefly explain how the "True Positive" cases avoid this trigger.
+- **Linguistic Rule (Proposed)**: The precise logic needed to distinguish this case correctly.

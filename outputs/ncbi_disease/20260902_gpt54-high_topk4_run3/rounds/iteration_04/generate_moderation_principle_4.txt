@@ -1,0 +1,33 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: CompositeMention vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+- **Pattern Insight**
+  - **Pattern Name**: Coordinated anatomical modifiers with a non-disease head
+  - **Confusion Trigger**: The missed span is a coordinated NP of the form **“X and Y + pathological noun”** — here, **“intraretinal and subretinal lipid accumulation.”** Because the head is **“accumulation”** rather than an overt disease cue like *disease/syndrome/cancer*, the model reads it as descriptive pathology, not as an entity mention.
+  - **Contrastive Evidence**: The true-positive composite **“breast or ovarian cancer”** has the same shared-head coordination pattern, but its head noun **“cancer”** is an unmistakable disease label. The other true positives likewise contain canonical disease lexemes (*disease, syndrome, ichthyosis*), so entityhood is explicit and easier to detect.
+  - **Linguistic Rule (Proposed)**: If a coordinated phrase has **two location/site modifiers sharing one pathological-condition head** and can be expanded into two condition mentions (e.g., *intraretinal lipid accumulation* + *subretinal lipid accumulation*), tag the whole span as **CompositeMention** **even when the head is a pathology noun rather than a canonical disease word**, and even if it appears inside a causal/result clause such as **“results in …”**.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10484772.json):
+Snippet: "...so-called retinal telangiectasis ) which results in massive intraretinal and subretinal lipid accumulation ( exudative retinal detachment ) . The classical form of Co..."
+Gold: CompositeMention, LLM: O
+Entity Text: "intraretinal and subretinal lipid accumulation"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

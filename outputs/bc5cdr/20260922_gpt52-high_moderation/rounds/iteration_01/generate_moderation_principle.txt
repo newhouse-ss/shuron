@@ -1,0 +1,56 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- Chemical
+- Disease
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: O vs LLM: Disease (Added)
+
+**INFERRED PATTERNS:**
+- **Pattern Insight — “Pathology Process/Lesion Mentions Mistaken as Diseases”**
+  - **Pattern Name:** Injury/toxicity/scarring ≠ disease entity
+  - **Confusion Trigger:** The model tags **generic pathological processes or histologic findings** (often headed by nouns like **“injury,” “scarring,” “cytotoxicity”** or expressed as an **adjective** like **“glomerulosclerotic”**) as **Disease**, even when the corpus only annotates **named/diagnostic disease conditions**.
+  - **Contrastive Evidence:** The True Positives are **diagnostic condition names** (e.g., *breast cancer, ESRD, CRF, proteinuria, glomerulosclerosis, cardiomyopathy, CHF*). In the same document as the discrepancies, **“glomerulosclerosis”** is correctly annotated as Disease, while the non-diagnostic morphological adjective **“glomerulosclerotic (areas)”** and lesion/process phrases **“podocyte injury”** / **“glomerular scarring”** are *not* annotated (Gold: O).
+  - **Linguistic Rule (Proposed):**  
+    Label **Disease** only when the mention denotes a **recognized diagnosable condition** (canonical disease noun/term, incl. -osis/-oma forms, established acronyms like ESRD/CHF), **not** when it denotes:
+    1) a **mechanism/toxicity process** (*cytotoxicity*),  
+    2) a **generic injury phrase** with head noun *injury/damage* (*podocyte injury*), or  
+    3) a **morphologic finding/lesion** with head noun *scarring/fibrosis* or an **adjectival modifier** (*glomerulosclerotic areas*).  
+    Practically: if the span’s **syntactic head** is *injury/scarring/toxicity* or the form is **adjectival (-ic/-otic) modifying another noun**, output **O** unless it is part of a canonical disease name (e.g., prefer **“glomerulosclerosis”** over **“glomerulosclerotic”**).
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10704919.json):
+Snippet: "...a. Additionally, since membrane leakage is a final stage of cytotoxicity, the disruption of the structural characteristics of biomem..."
+Gold: O, LLM: Disease
+Entity Text: "cytotoxicity"
+
+Example 2 (Doc: 11961407.json):
+Snippet: "...phosphatase (Ptpro) in rat PAN nephrosis. A marker of acute podocyte injury. Glomerular epithelial protein 1 (GLEPP1) is a podocyte rec..."
+Gold: O, LLM: Disease
+Entity Text: "podocyte injury"
+
+Example 3 (Doc: 11961407.json):
+Snippet: "...stry, Western blot and RNase protection assay in a model of podocyte injury in the rat. Puromycin aminonucleoside nephrosis was induced..."
+Gold: O, LLM: Disease
+Entity Text: "podocyte injury"
+
+Example 4 (Doc: 11961407.json):
+Snippet: "...n to return towards baseline. By day 45-126, at a time when glomerular scarring was present, GLEPP1 was absent from glomerulosclerotic area..."
+Gold: O, LLM: Disease
+Entity Text: "glomerular scarring"
+
+Example 5 (Doc: 11961407.json):
+Snippet: "...hen glomerular scarring was present, GLEPP1 was absent from glomerulosclerotic areas although the total glomerular content of GLEPP1 was n..."
+Gold: O, LLM: Disease
+Entity Text: "glomerulosclerotic"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.
