@@ -8,6 +8,8 @@
 
 | 日期 | 实验 / 证据 | 设置 | 关键结果 | 状态 |
 | --- | --- | --- | --- | --- |
+| 2026-10-07 | [P2 限定作用域消融](todo-temp/p2/result.json) | R3 原则限制从句限定作用域改写，dev10 | dev F1 0.8511（原版 0.8873、P1 0.8671），低于基线会被回退；焦点漏标仍无一恢复 | 完成，假设未证实 |
+| 2026-10-06 | [P1 截短消融](todo-temp/p1/result.json) | 单变量截短 R3 原则的 "do not apply" 从句，dev10 | dev F1 0.8592 至 0.8671（原原则 0.8873）；焦点漏标无一恢复，等效限制自行再生 | 完成，假设未证实 |
 | 2026-09-22 | [BioRED moderation](outputs/biored/20260922_gpt52-high_moderation/status.json) | GPT-5.2 high，dev10 | dev F1 0.8287 至 0.8602，2 轮 | 完成，无进一步改善 |
 | 2026-09-22 | [BC5CDR moderation](outputs/bc5cdr/20260922_gpt52-high_moderation/status.json) | GPT-5.2 high，dev10 | dev F1 0.8675 至 0.8988，4 轮 | 完成，无进一步改善 |
 | 2026-09-02 | [NCBI topk4-run3](outputs/ncbi_disease/20260902_gpt54-high_topk4_run3/status.json) | Top-4 | dev F1 0.8194 至 0.8841，4 轮 | 完成，无进一步改善 |
@@ -39,6 +41,7 @@
 | 2026-08-02 | [NCBI valid-S](reproduction/results/ncbi-s-gpt54/metrics.json) | 简单提示，valid100 | F1 0.3902 | 已评分 |
 | 2026-08-02 | [NCBI valid-G](reproduction/results/ncbi-g-gpt54/metrics.json) | 原指南，valid100 | F1 0.7792 | 已评分 |
 | 2026-08-02 | [NCBI valid-M 早期批次](reproduction/results/ncbi-m-gpt54/metrics.json) | 修改后指南，valid100 | F1 0.7878 | 已评分 |
+| 2026-10-07 | [NCBI valid-topk4](reproduction/results/ncbi-valid-topk4-gpt54/metrics.json) | top-4 所得指南（dev10 0.9155 那次），valid100 | F1 0.8023 | 已评分 |
 | 2026-08-13 | [NCBI dev20-M valid](reproduction/results/ncbi-m-dev20/metrics.json) | dev20 所得指南，valid100 | F1 0.7745 | 已评分 |
 | 2026-08-13 | [NCBI dev30-M valid](reproduction/results/ncbi-m-dev30/metrics.json) | dev30 所得指南，valid100 | F1 0.8050 | 已评分 |
 | 未记录 | [size-noise 重复标注](reproduction/results/size_noise/summary.json) | 固定指南，5 次标注，dev10/20/30 | F1 SD 0.01502/0.00978/0.00921 | 已有结果，未等同于保护 TP 损失分析 |

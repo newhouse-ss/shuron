@@ -26,7 +26,7 @@
 4. 从逐实体标注重新计算的严格 TP/FP/FN/F1，与保存的循环 summary 和 PubAnnotation evaluation 相符。
 5. 以当前原框架的错误分簇函数重新分簇，结果与保存的 summary.all_clusters 一致。
 
-具体证据：[输入文档清单](../outputs/ncbi_disease/20260802_gpt54-high_moderation/inputs/sampled_train_documents.json)、[运行配置](../outputs/ncbi_disease/20260802_gpt54-high_moderation/inputs/resolved_run_config.json)、[Round 3 snapshot](../outputs/ncbi_disease/20260802_gpt54-high_moderation/rounds/iteration_03/snapshot.json)、[Round 4 snapshot](../outputs/ncbi_disease/20260802_gpt54-high_moderation/rounds/iteration_04/snapshot.json)。
+具体证据：[输入文档清单](../../outputs/ncbi_disease/20260802_gpt54-high_moderation/inputs/sampled_train_documents.json)、[运行配置](../../outputs/ncbi_disease/20260802_gpt54-high_moderation/inputs/resolved_run_config.json)、[Round 3 snapshot](../../outputs/ncbi_disease/20260802_gpt54-high_moderation/rounds/iteration_03/snapshot.json)、[Round 4 snapshot](../../outputs/ncbi_disease/20260802_gpt54-high_moderation/rounds/iteration_04/snapshot.json)。
 
 ## 2. 整体结果：得分提升包含目标簇外的变化
 
@@ -51,7 +51,7 @@ SpecificDisease 净增加 2 个 TP；Modifier 的两个 FP 消失，因为 Tay-S
 
 ## 3. 本轮实际目标与相关案例的完整历史
 
-以下案例来自各轮保存的 infer_discrepancy_patterns 提示，实际输入可核查：[Round 3 提示](../outputs/ncbi_disease/20260802_gpt54-high_moderation/rounds/iteration_03/infer_discrepancy_patterns.txt)、[Round 4 提示](../outputs/ncbi_disease/20260802_gpt54-high_moderation/rounds/iteration_04/infer_discrepancy_patterns.txt)。
+以下案例来自各轮保存的 infer_discrepancy_patterns 提示，实际输入可核查：[Round 3 提示](../../outputs/ncbi_disease/20260802_gpt54-high_moderation/rounds/iteration_03/infer_discrepancy_patterns.txt)、[Round 4 提示](../../outputs/ncbi_disease/20260802_gpt54-high_moderation/rounds/iteration_04/infer_discrepancy_patterns.txt)。
 
 - **Round 3：Gold DiseaseClass / Pred O，3 例。** abnormal retinal vascular development、deficiency of norrin、spasticity。
 - **Round 4：Gold SpecificDisease / Pred O，3 例。** deficient activity of fatty aldehyde dehydrogenase、deficiency in G6PD、deficiency of hepatic phenylalanine hydroxylase。
@@ -163,7 +163,7 @@ Tay-Sachs disease 与 TSD 来自同一上下文，不能解释为两个独立的
 | 增加 C7 deficiency 正例，并新增 deficiency of norrin 排除示例 | 第 43 至 52 行 | norrin 仍为 O；其排除文本与 gold D 不一致 |
 | 保留并改写 R3 已新增的 FALDH 排除示例，其他条目继续补充相同排除逻辑 | 第 54 至 57、167 至 168、263 至 264 行 | FALDH 仍为 O；排除文本与 gold S 不一致 |
 
-原始指南：[R3 后](../outputs/ncbi_disease/20260802_gpt54-high_moderation/rounds/iteration_03/guidelines_after.txt)、[R4 后](../outputs/ncbi_disease/20260802_gpt54-high_moderation/rounds/iteration_04/guidelines_after.txt)。
+原始指南：[R3 后](../../outputs/ncbi_disease/20260802_gpt54-high_moderation/rounds/iteration_03/guidelines_after.txt)、[R4 后](../../outputs/ncbi_disease/20260802_gpt54-high_moderation/rounds/iteration_04/guidelines_after.txt)。
 
 需要准确区分：
 
@@ -205,7 +205,7 @@ P0 已完成：核查 R4 前后标注、追踪相关案例历史、列出所有�
 
 ## 核查记录
 
-使用当前 [循环评分及分簇实现](../src/llm_guideline_moderation/iterative.py)重建保存结果；离线分析脚本与中间数据保存在 todo-temp/round4_p0/，本报告已包含关键计数和全部变化。
+使用当前 [循环评分及分簇实现](../../src/llm_guideline_moderation/iterative.py)重建保存结果；离线分析脚本与中间数据保存在 todo-temp/p0/，本报告已包含关键计数和全部变化。
 
 输入 snapshot SHA-256：
 
