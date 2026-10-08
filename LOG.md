@@ -2,12 +2,13 @@
 
 一行一个实际运行或已定义的重复实验，只记设置、结果和状态。解释、决策及下次 seminar 待办见 [PROGRESS.md](PROGRESS.md)。这是已整理实验的索引，不是 outputs 下所有目录的清单。
 
-日期取 run ID 或批次标识，不代表实际完成日期；缺失时不推测。NCBI refinement 默认 GPT-5.4 high，dev10；另行注明 dev20/30。validation F1 使用 metrics.json 的 PubAnnotation 口径，dev F1 保留循环记录的集合评分口径；吸收指新增实体字符串出现数，不是正确答案记忆数。
+日期取 run ID 或批次标识，不代表实际完成日期；缺失时不推测。NCBI refinement 默认 GPT-5.4 high，dev10；另行注明 dev20/30。validation F1 使用 metrics.json 的 PubAnnotation 口径，dev F1 保留循环记录的集合评分口径；吸收指新增实体字符串出现数，不是正确答案记忆数。2026-10-08 勘误：dev20/dev30 运行的示例上限此前误记为 10/15，resolved_run_config 与 prompt 实测均为 5（见 [P4 报告](todo-temp/p4/20261007_p4_devsize_report.md) 第 1 节）。
 
 2026-10-06 对 outputs/ 与 logs/ 做过规范化重命名：去掉与父目录重复的数据集段（如 `20260802_ncbi_gpt54-high_moderation` → `20260802_gpt54-high_moderation`），`k1` 统一为 `topk1`，`_rN` 统一为 `_runN`。reproduction/ 下旧报告和 logs/ncbi_disease/ 短标签日志中仍出现的旧名为重命名前记录。
 
 | 日期 | 实验 / 证据 | 设置 | 关键结果 | 状态 |
 | --- | --- | --- | --- | --- |
+| 2026-10-08 | [P4 规模对比整理](todo-temp/p4/20261007_p4_devsize_report.md) | 既有 10/20/30 轨迹 + valid100 配对 bootstrap，无新运行 | dev30 valid 0.8050 最高，臂间差 95% CI 均跨 0；吸收率 41%→9%→3%；dev30 指南仍含 norrin 排除 | 完成，replicate 未执行 |
 | 2026-10-07 | [P2 限定作用域消融](todo-temp/p2/result.json) | R3 原则限制从句限定作用域改写，dev10 | dev F1 0.8511（原版 0.8873、P1 0.8671），低于基线会被回退；焦点漏标仍无一恢复 | 完成，假设未证实 |
 | 2026-10-06 | [P1 截短消融](todo-temp/p1/result.json) | 单变量截短 R3 原则的 "do not apply" 从句，dev10 | dev F1 0.8592 至 0.8671（原原则 0.8873）；焦点漏标无一恢复，等效限制自行再生 | 完成，假设未证实 |
 | 2026-09-22 | [BioRED moderation](outputs/biored/20260922_gpt52-high_moderation/status.json) | GPT-5.2 high，dev10 | dev F1 0.8287 至 0.8602，2 轮 | 完成，无进一步改善 |
@@ -26,8 +27,8 @@
 | 2026-08-14 | [NCBI verified 无抽象](outputs/ncbi_disease/20260814_gpt54-high_verified_dev10_noabstraction/status.json) | 后验回归验证 | dev F1 0.8169 至 0.8169，1 轮 | 完成，无改善 |
 | 2026-08-14 | [NCBI abstraction-run2](outputs/ncbi_disease/20260814_gpt54-high_moderation-abstraction_run2/status.json) | 保留示例，要求抽象 | dev F1 0.8252 至 0.8252；吸收 0/37 | 完成，最终指南未改变 |
 | 2026-08-14 | [NCBI abstraction-run1](outputs/ncbi_disease/20260814_gpt54-high_moderation-abstraction_run1/status.json) | 保留示例，要求抽象 | dev F1 0.8227 至 0.8333，2 轮；吸收 0/37 | 完成，无进一步改善 |
-| 2026-08-13 | [NCBI withTP-dev20](outputs/ncbi_disease/20260813_gpt54-high_moderation-withTP_dev20/status.json) | dev20，示例上限 10 | dev F1 0.7821 至 0.8105，2 轮；吸收 6/68 | 完成，无进一步改善 |
-| 2026-08-12 | [NCBI withTP-dev30](outputs/ncbi_disease/20260812_gpt54-high_moderation-withTP_dev30/status.json) | dev30，示例上限 15 | dev F1 0.8092 至 0.8577，3 轮；吸收 3/115 | 完成，无进一步改善 |
+| 2026-08-13 | [NCBI withTP-dev20](outputs/ncbi_disease/20260813_gpt54-high_moderation-withTP_dev20/status.json) | dev20，示例上限 5 | dev F1 0.7821 至 0.8105，2 轮；吸收 6/68 | 完成，无进一步改善 |
+| 2026-08-12 | [NCBI withTP-dev30](outputs/ncbi_disease/20260812_gpt54-high_moderation-withTP_dev30/status.json) | dev30，示例上限 5 | dev F1 0.8092 至 0.8577，3 轮；吸收 3/115 | 完成，无进一步改善 |
 | 2026-08-06 | [NCBI noTP-run5](outputs/ncbi_disease/20260806_gpt54-high_moderation-noTP_run5/status.json) | 删除 verified-example 约束块 | dev F1 0.8085 至 0.8227，3 轮；吸收 0/37 | 完成，无进一步改善 |
 | 2026-08-06 | [NCBI noTP-run4](outputs/ncbi_disease/20260806_gpt54-high_moderation-noTP_run4/status.json) | 删除 verified-example 约束块 | dev F1 0.7391 至 0.7887，2 轮；吸收 0/37 | 完成，无进一步改善 |
 | 2026-08-06 | [NCBI noTP-run3](outputs/ncbi_disease/20260806_gpt54-high_moderation-noTP_run3-partial-1round/status.json) | 删除 verified-example 约束块 | 报告中的部分轨迹 0.7972 至 0.8611 | 中断，SSL 轮询失败 |
