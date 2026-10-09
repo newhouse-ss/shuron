@@ -7,11 +7,12 @@
 
 ## 结论（TL;DR）
 
-1. **B 阶段 valid100（核心结果）**：top-4 终版指南在 100 篇未见文档上 strict-match F1 **0.8023**，高于 top-1 对照的 **0.7878**（+0.0145）和原指南的 **0.7792**（+0.0231）。dev 上 0.9155 vs 0.9091 的差距在 dev10 噪声带（约 ±0.05）内不可信，**valid100 的 +0.0145 才是有效证据**——但仍是单点估计，未做显著性检验。
+1. 并没有解决核心问题：生成的Principle是抽象的，在guideline refinement阶段并不能看到在discrepancy analysis阶段提供的gold data entities，所以一旦这个gold data entities出现在guideline refinement阶段的TP的文本中，就有被误标为相反方向的风险。所以扩大dev集合并不能解决根本问题。
+2. **B 阶段 valid100（核心结果）**：top-4 终版指南在 100 篇未见文档上 strict-match F1 **0.8023**，高于 top-1 对照的 **0.7878**（+0.0145）和原指南的 **0.7792**（+0.0231）。dev 上 0.9155 vs 0.9091 的差距在 dev10 噪声带（约 ±0.05）内不可信，**valid100 的 +0.0145 才是有效证据**——但仍是单点估计，未做显著性检验。
 2. **A2 吸收率**：top-4 终版指南吸收了 dev10 gold 字符串的 32%（12/37），**低于** top-1 对照的 41%（15/37）；新增行中引用"已答对案例"（TP）的比例 11%，也低于 top-1 的 15%。并行改写（一次处理 4 个矛盾组）**没有加剧硬编码**，dev F1 的 0.9155 不是更多答案键泄漏造成的。
-3. **A3 gold 相反示例**：top-4 终版指南中与 gold 冲突的排除示例**恰好 2 条**，即研讨会案例分析的两个"致命"案例（`abnormal retinal vascular development`、`deficient activity of fatty aldehyde dehydrogenase`），均为 refinement 新增。补充查证显示：**top-4 第 1 轮的分析调用里这两个案例的 gold 标签明确可见，排除示例仍被写入**——输入侧加证据防不住相反规则，缺口定位在 `refine_guidelines` 调用看不到带标签的 discrepancy 证据。
+3. **A3 gold 相反示例**：top-4 终版指南中与 gold 冲突的排除示例**恰好 2 条**，即研讨会案例分析的两个"致命"案例（`abnormal retinal vascular development`、`deficient activity of fatty aldehyde dehydrogenase`），均为 refinement 新增（**牛魔的为什么又是这么两个相同的？值得分析一下**）。补充查证显示：**top-4 第 1 轮的分析调用里这两个案例的 gold 标签明确可见，排除示例仍被写入**——输入侧加证据防不住相反规则，缺口定位在 `refine_guidelines` 调用看不到带标签的 discrepancy 证据。
 4. **收益结构**：dev 收益主要来自 SpecificDisease 修复（0.79→0.93）与 Modifier 满分；valid 收益几乎全部兑现为 **Modifier 召回**（TP +26，R 0.7156→0.8349）与 CompositeMention（TP +5）；SpecificDisease 在 valid 上反而略逊于 top-1（过预测，FP 58→83），DiseaseClass 两臂均无改善。
-5. 参照系：top-4 用 10 篇开发文档达到的 valid F1（0.8023）≈ top-1 用 30 篇达到的水平（0.8050，`ncbi-m-dev30`）。
+5. 参照系：top-4 用 10 篇开发文档达到的 valid F1（0.8023）≈ top-1 用 30 篇达到的水平（0.8050，`ncbi-m-dev30`）。**Fully use the data under low-resource condition?**
 
 ## 1. 实验设计
 
