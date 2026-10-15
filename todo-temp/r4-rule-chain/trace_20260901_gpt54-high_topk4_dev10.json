@@ -1,0 +1,294 @@
+{
+  "run": "outputs\\ncbi_disease\\20260901_gpt54-high_topk4_dev10",
+  "rounds": [
+    {
+      "iteration": 1,
+      "dominant_cluster": "Gold: SpecificDisease vs LLM: O (Missed)",
+      "improved": true,
+      "reverted": false,
+      "principle": "### 1. Gold: SpecificDisease vs LLM: O (Missed) (4 cases)\n- **IF** a noun phrase or adjectival clinical-state phrase headed by a **generic pathological-state term** and optionally expanded by a **prepositional/genitive complement** is used in a **definitional, etiologic, or patient-presentation frame** to refer to an **abnormal condition/phenotype itself**, **THEN** annotate the entire expression as **SpecificDisease**, **even if it is not a canonical lexicalized disease name or fixed compound**; **DO NOT** apply this rule when the same wording is used only to describe a **mechanism, laboratory abnormality, severity/property, or an isolated non-disease finding/symptom** without functioning as the referential disease/condition mention.\n\n### 2. Gold: SpecificDisease vs LLM: DiseaseClass (Label Mismatch) (4 cases)\n- **IF** a noun phrase headed by a broad pathology noun is used **referentially** as a diagnosed/presenting condition in a patient or case context, **or** is **narrowed by subtype-defining modifiers** (e.g., etiologic, anatomic, temporal, molecular/genetic, or organism-based modifiers), **THEN** label it **SpecificDisease** rather than **DiseaseClass**; **this rule does NOT apply** when the phrase is used **non-referentially/hypernymically** to denote a general disease category or class in a definitional, taxonomic, or broadly classifying sense.\n\n### 3. Gold: DiseaseClass vs LLM: O (Missed) (2 cases)\n- **IF** a noun phrase denotes an **abnormal biological condition or pathological state**—including phrases headed by a **process/state noun** rather than an explicit nosological label—and it appears in a **disease-defining, characterizing, or causal frame** (e.g., as what a condition is characterized by or what a mutation/lesion results in), **THEN** annotate it as **DiseaseClass**; **DO NOT** apply this rule when the phrase names a **normal physiological process**, a **generic mechanistic event without abnormal-state meaning**, or an **isolated molecular/anatomical entity** that does not itself denote a disease-relevant condition.\n\n### 4. Gold: SpecificDisease vs LLM: SpecificDisease (Span Boundary Error) (2 cases)\n- **IF** a disease mention is syntactically headed by a deficiency-denoting noun phrase with an **of**-complement naming the affected substance, gene product, or biological component, and a preposed adjective/participle only contributes a clinical state attribute (e.g., extent, severity, inheritance, zygosity) rather than the disease head itself, **THEN** mark the **SpecificDisease** span from the deficiency head through its complement and exclude the preposed qualifier as an external **Modifier**; **this does NOT apply** when the preposed descriptor is part of a fixed lexicalized disease name or an officially established disease term.",
+      "insight": "### 1. Gold: SpecificDisease vs LLM: O (Missed) (4 cases)\n- **Pattern Insight**\n  - **Pattern Name**: Non-canonical pathology paraphrases\n  - **Confusion Trigger**: The missed mentions are **context-dependent clinical-state descriptions**, not canonical disease-name NPs. They are headed by generic words like **“deficiency,” “deficient activity,”** or **“fever”**, often in analytic forms such as **“deficiency of/in X”** or **“deficient activity of X”**, so the model treats them as mere findings/mechanisms instead of diseases.\n  - **Contrastive Evidence**: The true positives are mostly **lexicalized disease mentions** with strong disease-like form: **“ovarian cancer,” “Coats disease,” “SLS,” “G6PD deficiency.”** Even in the same G6PD paper, the model gets **“G6PD deficiency”** but misses **“deficiency in G6PD”**—showing the failure is not the concept *deficiency* itself, but the **non-canonical syntactic packaging**.\n  - **Linguistic Rule (Proposed)**: Do **not require a canonical disease headword or the fixed compound form** `[biomarker/enzyme] + deficiency`. If a phrase headed by a generic clinical-state noun/adjective (**deficiency, deficient activity, fever, etc.**) is used in context to denote an **abnormal pathological phenotype/condition**—especially in frames like **“characterized by,” “caused by,” “responsible for,”** or **“presenting with”**—then map it to **SpecificDisease**.\n\n### 2. Gold: SpecificDisease vs LLM: DiseaseClass (Label Mismatch) (4 cases)\n- **Pattern Insight**\n  - **Pattern Name**: Generic pathology noun mistaken for a taxonomic class\n  - **Confusion Trigger**: The model is overreacting to broad disease heads like **deficiency, infection, vasculitis, arthritis**. When these appear as common nouns—especially in relational frames like **“presenting with/as”** or **“associated with”**—it treats them as **DiseaseClass**, even when the phrase actually denotes a concrete diagnosed condition or a narrowed subtype: **PAH deficiencies**, **chronic neisserial infection**, **vasculitis**, **arthritis**.\n  - **Contrastive Evidence**: The true positives mostly have stronger **canonical disease-name cues**: eponyms (**Coats disease**, **Sjogren-Larsson syndrome**), conventional site+disease compounds (**ovarian cancer**), or fully lexicalized deficiency names (**glucose 6-phosphate dehydrogenase deficiency**). Those look like established names, so the model correctly chooses **SpecificDisease**.\n  - **Linguistic Rule (Proposed)**: Do **not** assign **DiseaseClass** just because the head noun is generic. If the mention refers to an **instantiated patient condition** or an **etiologically/anatomically delimited subtype**, label it **SpecificDisease**. Reserve **DiseaseClass** for truly **hypernymic/class-defining** expressions (e.g., *autosomal recessive disorder*), not for generic-headed NPs used referentially as diagnoses.\n\n### 3. Gold: DiseaseClass vs LLM: O (Missed) (2 cases)\n- **Pattern Insight**\n  - **Pattern Name**: Pathophysiology NP mistaken for non-entity\n  - **Confusion Trigger**: The missed mentions are **descriptive pathological-state noun phrases** headed by terms like **development** and **deficiency**, not by overt disease-class labels such as *disease*, *disorder*, or *syndrome*. In context, they appear inside explanatory frames like **“is characterized by X”** and **“results in Y”**, which makes them look like mechanisms/findings rather than annotatable DiseaseClass mentions.\n  - **Contrastive Evidence**: The true positive DiseaseClass example, **“autosomal recessive disorder,”** contains an explicit nosological head noun (**disorder**), so the model can recognize it as a disease category. The true positive SpecificDisease examples are also canonical disease names (*Coats disease, retinal telangiectasis, Sjogren-Larsson syndrome, ovarian cancer*), which avoid this ambiguity.\n  - **Linguistic Rule (Proposed)**: Tag an NP as **DiseaseClass** when it denotes a **pathological condition/abnormal state** central to disease characterization or causation, **even if its head is a biomedical state noun** (e.g., *development, deficiency, accumulation*) rather than an overt disease word. In practice: if a noun phrase in frames like **“is characterized by …”** or **“results in …”** names an abnormal biological condition, do **not** require a head noun like *disease/disorder/syndrome* to classify it as DiseaseClass.\n\n### 4. Gold: SpecificDisease vs LLM: SpecificDisease (Span Boundary Error) (2 cases)\n- **Pattern Insight**\n  - **Pattern Name**: Leading state adjectives before **deficiency-of** disease mentions\n  - **Confusion Trigger**: A non-core clinical qualifier appears before the disease head, as in **“complete deficiency of …”** and **“heterozygous deficiency of C7”**. Words like **complete** and **heterozygous** are semantically important, so the model tends to treat them as part of the disease span rather than as detachable modifiers.\n  - **Contrastive Evidence**: The true positives are mostly **bare canonical disease NPs**—e.g., **“G6PD deficiency,” “Coats disease,” “ovarian cancer”**—where the entity starts directly with the disease-denoting term. They do not force a boundary decision about whether a leading severity/zygosity word belongs inside the name.\n  - **Linguistic Rule (Proposed)**: For phrases of the form **[state/severity/zygosity adjective] + deficiency of + [protein/component]**, the **SpecificDisease** span should begin at **“deficiency”** and include the complement (**“deficiency of C7,” “deficiency of the seventh component of complement”**). Preposed adjectives such as **complete, partial, heterozygous, homozygous** should be treated as external modifiers unless they are part of a fixed lexicalized disease name.",
+      "tp_docs_in_infer": [],
+      "verified_docs_in_refine": [
+        "10196379",
+        "10484772",
+        "10577908",
+        "10724160",
+        "1303173"
+      ],
+      "cases": {
+        "FALDH": {
+          "pred_before": "O",
+          "pred_after": "O",
+          "is_discrepancy_example": false,
+          "infer_tp_block": {
+            "doc_shown": false
+          },
+          "principle_mentions": false,
+          "insight_mentions": false,
+          "refine_verified_block": {
+            "doc_shown": true,
+            "case_text_in_shown_text": true,
+            "case_span_listed": false,
+            "n_listed_annotations": 5
+          },
+          "guideline_before": [],
+          "guideline_after": [
+            {
+              "line": 224,
+              "text": "27. **Sjogren-Larsson syndrome (SLS) is an autosomal recessive disorder characterized by ichthyosis, mental retardation, spasticity, and “deficient activity of fatty aldehyde dehydrogenase (FALDH).”**"
+            },
+            {
+              "line": 225,
+              "text": "- Do **not** automatically annotate “deficient activity of fatty aldehyde dehydrogenase” when it is only a biochemical/molecular abnormality rather than the disease/condition mention itself."
+            }
+          ]
+        },
+        "G6PD": {
+          "pred_before": "O",
+          "pred_after": "O",
+          "is_discrepancy_example": false,
+          "infer_tp_block": {
+            "doc_shown": false
+          },
+          "principle_mentions": false,
+          "insight_mentions": true,
+          "refine_verified_block": {
+            "doc_shown": true,
+            "case_text_in_shown_text": true,
+            "case_span_listed": false,
+            "n_listed_annotations": 3
+          },
+          "guideline_before": [],
+          "guideline_after": []
+        },
+        "PAH": {
+          "pred_before": "O",
+          "pred_after": "overlap:SpecificDisease[138,193)\"deficiency of hepatic phenylalanine hydroxylase ( PAH )\"",
+          "is_discrepancy_example": false,
+          "infer_tp_block": {
+            "doc_shown": false
+          },
+          "principle_mentions": false,
+          "insight_mentions": false,
+          "refine_verified_block": {
+            "doc_shown": false
+          },
+          "guideline_before": [],
+          "guideline_after": []
+        },
+        "norrin": {
+          "pred_before": "O",
+          "pred_after": "O",
+          "is_discrepancy_example": false,
+          "infer_tp_block": {
+            "doc_shown": false
+          },
+          "principle_mentions": false,
+          "insight_mentions": false,
+          "refine_verified_block": {
+            "doc_shown": true,
+            "case_text_in_shown_text": true,
+            "case_span_listed": false,
+            "n_listed_annotations": 5
+          },
+          "guideline_before": [],
+          "guideline_after": []
+        },
+        "retinal_vasc": {
+          "pred_before": "O",
+          "pred_after": "O",
+          "is_discrepancy_example": false,
+          "infer_tp_block": {
+            "doc_shown": false
+          },
+          "principle_mentions": false,
+          "insight_mentions": false,
+          "refine_verified_block": {
+            "doc_shown": true,
+            "case_text_in_shown_text": true,
+            "case_span_listed": false,
+            "n_listed_annotations": 5
+          },
+          "guideline_before": [],
+          "guideline_after": [
+            {
+              "line": 27,
+              "text": "> Coats disease is characterized by abnormal retinal vascular development (so-called retinal telangiectasis)."
+            },
+            {
+              "line": 32,
+              "text": "- “abnormal retinal vascular development” when it is used only as a mechanistic/process description rather than the condition mention itself"
+            },
+            {
+              "line": 199,
+              "text": "20. **Coats disease is characterized by abnormal retinal vascular development (so-called “retinal telangiectasis”).**"
+            },
+            {
+              "line": 201,
+              "text": "- “abnormal retinal vascular development” is not annotated when it only describes a mechanism/process."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "iteration": 2,
+      "dominant_cluster": "Gold: SpecificDisease vs LLM: DiseaseClass (Label Mismatch)",
+      "improved": true,
+      "reverted": false,
+      "principle": "### 1. Gold: SpecificDisease vs LLM: DiseaseClass (Label Mismatch) (6 cases)\n- **IF** a noun phrase is headed by a **generic pathology common noun** but the **full phrase is narrowed by clinical, anatomical, etiologic, temporal, or severity modifiers** and/or is used in context as an **instantiated diagnosis or presenting condition**, **THEN** label it **SpecificDisease**; **this does NOT apply** when the phrase is used only as a **broad taxonomic, definitional, or superclass reference** with no case-specific instantiation, in which case it should be labeled **DiseaseClass**.\n\n### 2. Gold: DiseaseClass vs LLM: O (Missed) (3 cases)\n- **IF** a noun phrase denotes an abnormal clinical or pathophysiologic condition—such as a symptom, functional deficiency, or developmental abnormality—even when its head noun is a general process/state term rather than an explicit nosological label, **THEN** annotate the full phrase as **DiseaseClass**, especially when it appears as the complement of characterization/causation constructions (e.g., after verbs meaning *be characterized by*, *cause*, *result in*). **DO NOT** apply this rule when the phrase refers only to a normal biological process, an anatomical structure, an isolated molecular/genetic finding, or a purely descriptive modifier without inherent abnormality/pathology.\n\n### 3. Gold: SpecificDisease vs LLM: O (Missed) (3 cases)\n- **IF** a noun phrase or predicative/prepositional complement denotes an **abnormal pathological state** (e.g., a symptom state, deficiency state, or loss-of-function/abnormal-activity state) and is used in a **clinical or etiologic frame** to describe a patient condition, disorder manifestation, or causative abnormality, **THEN** tag that span as **SpecificDisease** **even if** it lacks canonical disease-name morphology. **DO NOT** apply this rule when the phrase refers only to a **non-disorder laboratory/experimental measurement, molecular mechanism, or descriptive modifier** without standing as an independent pathological condition mention, or when it is merely part of a larger entity whose full span should be annotated instead.\n\n### 4. Gold: SpecificDisease vs LLM: Modifier (Label Mismatch) (2 cases)\n- **IF** a disease expression is a complete disease noun phrase (including an appositive abbreviation) and any following biomedical noun is connected to it through an intervening predicative or participial relation rather than direct nominal attachment, **THEN** label the disease expression as **SpecificDisease**; **DO NOT** apply this rule when the disease term directly functions as a prenominal modifier of a separate head noun within a single noun phrase, in which case it should be **Modifier**.",
+      "insight": "### 1. Gold: SpecificDisease vs LLM: DiseaseClass (Label Mismatch) (6 cases)\n- **Pattern Insight**\n  - **Pattern Name**: Generic pathology-head NP misread as a class\n  - **Confusion Trigger**: The model overweights a **common-noun disease head**—e.g., *deficiency, infection, arthritis, vasculitis*—and treats the whole NP as a **DiseaseClass** when the mention lacks an obvious canonical naming cue such as *disease/syndrome/cancer*, an eponym, or an acronym.\n  - **Contrastive Evidence**: The true positives are mostly **lexicalized disease names** (*ovarian cancer, Coats disease, Sjogren-Larsson syndrome, SLS*) or are explicitly tied to one in apposition/definition (*retinal telangiectasis* linked to *Coats disease*). The discrepancy cases are instead **generic pathology nouns used as actual diagnoses/subtypes** (*PAH deficiencies, cutaneous vasculitis, chronic neisserial infection*), so the model defaults to the head noun’s class meaning.\n  - **Linguistic Rule (Proposed)**: Do **not** assign **DiseaseClass** purely because the head is a generic pathology noun. If the full NP is **etiologically, anatomically, or clinically delimited** (modifier like *PAH, cutaneous, neisserial, chronic*) or refers to an **instantiated diagnosis/condition** in context, label it **SpecificDisease**. Reserve **DiseaseClass** for truly taxonomic or definitional mentions (e.g., *autosomal recessive disorder*).\n\n### 2. Gold: DiseaseClass vs LLM: O (Missed) (3 cases)\n- **Pattern Insight**\n  - **Pattern Name**: Phenotypic/pathologic descriptions without explicit disease headwords\n  - **Confusion Trigger**: The missed spans are **DiseaseClass mentions expressed as manifestations or abnormalities**—e.g., *abnormal ... development*, *deficiency of ...*, *spasticity*—rather than as canonical disease names. They often appear in **“characterized by / results in”** frames, which makes them look like attributes or consequences instead of entity mentions.\n  - **Contrastive Evidence**: The true positives are mostly **lexically explicit disease labels or class nouns** such as *ovarian cancer*, *Coats disease*, *fragile X syndrome*, *autosomal recessive disorder*, or a conventional condition name like *retinal telangiectasis*. Those contain strong nosological cues; the discrepancy cases do not.\n  - **Linguistic Rule (Proposed)**: Label an expression as **DiseaseClass** when it denotes a **pathological state, symptom, developmental abnormality, or functional deficiency**, even if its head is not *disease/syndrome/disorder/cancer*. In particular, within frames like **“X is characterized by Y”** or **“mutation results in Y,”** treat **Y** as DiseaseClass if it names an abnormal clinical/pathophysiologic condition.\n\n### 3. Gold: SpecificDisease vs LLM: O (Missed) (3 cases)\n- **Pattern Insight**\n  - **Pattern Name**: Non-canonical pathology mentions without disease-name morphology\n  - **Confusion Trigger**: The gold entity is expressed as a **descriptive clinical/biochemical state**—e.g., *fever*, *deficiency in G6PD*, *deficient activity of fatty aldehyde dehydrogenase*—instead of a canonical disease label containing cues like **disease / syndrome / cancer**. This is especially misleading in frames like **“characterized by …”** or **“presenting with …”**, where the phrase looks like a symptom or lab abnormality rather than a disease mention.\n  - **Contrastive Evidence**: The true positives are mostly **lexically explicit disease names or abbreviations**: *ovarian cancer*, *Coats disease*, *Sjogren-Larsson syndrome*, *SLS*, *fragile X syndrome*. They are recognizable as disease names on the surface, so the model does not need to infer diseasehood from context.\n  - **Linguistic Rule (Proposed)**: Do **not** require explicit disease-name tokens to assign **SpecificDisease**. If a noun phrase denotes an **abnormal pathological condition**—including **symptoms** (*fever*), **deficiency states** (*deficiency in G6PD*), or **functional loss phrases** (*deficient activity of X*)—and it appears in a clinical/etiologic context describing patient condition or disorder features, it should still be tagged as **SpecificDisease**.\n\n### 4. Gold: SpecificDisease vs LLM: Modifier (Label Mismatch) (2 cases)\n- **Pattern Insight**\n  - **Pattern Name**: Reduced-relative “disease-causing mutation” trap\n  - **Confusion Trigger**: A complete disease name, often followed by its acronym, appears immediately before **“causing mutation”** (or an equivalent participial phrase), e.g. **“Tay-Sachs disease (TSD) causing mutation”**. The model overreads this as if the disease term were a simple prenominal modifier of **mutation**.\n  - **Contrastive Evidence**: In the true Modifier controls, the disease term directly modifies an external head noun: **“ovarian cancer cases”**, **“fragile X syndrome patients”**, **“Wiskott-Aldrich syndrome protein”**. In the discrepancy, **“Tay-Sachs disease / TSD”** is still a disease mention; **mutation** is introduced through the participial predicate **causing**, not by direct noun-noun modification. True positive SpecificDisease examples like **“Coats disease”** are not in this misleading modifier-like slot.\n  - **Linguistic Rule (Proposed)**: If a disease expression is a **self-contained disease NP** (or its appositive acronym) and the following biomedical noun is reached via a **participial predicate** such as **causing / associated with / linked to**, label the disease mention as **SpecificDisease**, not **Modifier**. Only use **Modifier** when the disease term **directly attaches to and modifies** the next head noun without an intervening predicate structure.",
+      "tp_docs_in_infer": [],
+      "verified_docs_in_refine": [
+        "10196379",
+        "10484772",
+        "10545613",
+        "10577908",
+        "10724160"
+      ],
+      "cases": {
+        "FALDH": {
+          "pred_before": "O",
+          "pred_after": "O",
+          "is_discrepancy_example": false,
+          "infer_tp_block": {
+            "doc_shown": false
+          },
+          "principle_mentions": false,
+          "insight_mentions": true,
+          "refine_verified_block": {
+            "doc_shown": true,
+            "case_text_in_shown_text": true,
+            "case_span_listed": false,
+            "n_listed_annotations": 5
+          },
+          "guideline_before": [
+            {
+              "line": 224,
+              "text": "27. **Sjogren-Larsson syndrome (SLS) is an autosomal recessive disorder characterized by ichthyosis, mental retardation, spasticity, and “deficient activity of fatty aldehyde dehydrogenase (FALDH).”**"
+            },
+            {
+              "line": 225,
+              "text": "- Do **not** automatically annotate “deficient activity of fatty aldehyde dehydrogenase” when it is only a biochemical/molecular abnormality rather than the disease/condition mention itself."
+            }
+          ],
+          "guideline_after": [
+            {
+              "line": 251,
+              "text": "27. **Sjogren-Larsson syndrome (SLS) is an autosomal recessive disorder characterized by ichthyosis, mental retardation, spasticity, and “deficient activity of fatty aldehyde dehydrogenase (FALDH).”**"
+            },
+            {
+              "line": 252,
+              "text": "- Do **not** automatically annotate “deficient activity of fatty aldehyde dehydrogenase” when it is only a biochemical/molecular abnormality or enzyme-activity readout rather than the disease/condition mention itself."
+            }
+          ]
+        },
+        "G6PD": {
+          "pred_before": "O",
+          "pred_after": "O",
+          "is_discrepancy_example": false,
+          "infer_tp_block": {
+            "doc_shown": false
+          },
+          "principle_mentions": false,
+          "insight_mentions": true,
+          "refine_verified_block": {
+            "doc_shown": false
+          },
+          "guideline_before": [],
+          "guideline_after": []
+        },
+        "PAH": {
+          "pred_before": "overlap:SpecificDisease[138,193)\"deficiency of hepatic phenylalanine hydroxylase ( PAH )\"",
+          "pred_after": "SpecificDisease",
+          "is_discrepancy_example": false,
+          "infer_tp_block": {
+            "doc_shown": false
+          },
+          "principle_mentions": false,
+          "insight_mentions": false,
+          "refine_verified_block": {
+            "doc_shown": false
+          },
+          "guideline_before": [],
+          "guideline_after": []
+        },
+        "norrin": {
+          "pred_before": "O",
+          "pred_after": "O",
+          "is_discrepancy_example": false,
+          "infer_tp_block": {
+            "doc_shown": false
+          },
+          "principle_mentions": false,
+          "insight_mentions": false,
+          "refine_verified_block": {
+            "doc_shown": true,
+            "case_text_in_shown_text": true,
+            "case_span_listed": false,
+            "n_listed_annotations": 5
+          },
+          "guideline_before": [],
+          "guideline_after": []
+        },
+        "retinal_vasc": {
+          "pred_before": "O",
+          "pred_after": "O",
+          "is_discrepancy_example": false,
+          "infer_tp_block": {
+            "doc_shown": false
+          },
+          "principle_mentions": false,
+          "insight_mentions": false,
+          "refine_verified_block": {
+            "doc_shown": true,
+            "case_text_in_shown_text": true,
+            "case_span_listed": false,
+            "n_listed_annotations": 5
+          },
+          "guideline_before": [
+            {
+              "line": 27,
+              "text": "> Coats disease is characterized by abnormal retinal vascular development (so-called retinal telangiectasis)."
+            },
+            {
+              "line": 32,
+              "text": "- “abnormal retinal vascular development” when it is used only as a mechanistic/process description rather than the condition mention itself"
+            },
+            {
+              "line": 199,
+              "text": "20. **Coats disease is characterized by abnormal retinal vascular development (so-called “retinal telangiectasis”).**"
+            },
+            {
+              "line": 201,
+              "text": "- “abnormal retinal vascular development” is not annotated when it only describes a mechanism/process."
+            }
+          ],
+          "guideline_after": [
+            {
+              "line": 31,
+              "text": "> Coats disease is characterized by abnormal retinal vascular development (so-called retinal telangiectasis)."
+            },
+            {
+              "line": 36,
+              "text": "- “abnormal retinal vascular development” when it is used only as a mechanistic/process description rather than the condition mention itself"
+            },
+            {
+              "line": 226,
+              "text": "20. **Coats disease is characterized by abnormal retinal vascular development (so-called “retinal telangiectasis”).**"
+            },
+            {
+              "line": 228,
+              "text": "- “abnormal retinal vascular development” is not annotated when it only describes a mechanism/process."
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "snapshot_sha256": {
+    "iteration_01": "b8229b66edd3014d40f409e5b708ba6efc629e3c673a07571b0315fbf1f50fe4",
+    "iteration_02": "76ae12bcfc7b3bfdf7017d9eea9ebb7d8f3624fe084501fd754a2cb285c27fc6"
+  }
+}

@@ -1,6 +1,6 @@
 # 研究进展
 
-更新：2026-10-08。这里沿研究主线记录阶段成果、判断变化和下次 seminar 待办；逐次实验见 [LOG.md](LOG.md)，固定背景及评价口径见 [OVERVIEW.md](OVERVIEW.md)。
+更新：2026-10-15。这里沿研究主线记录阶段成果、判断变化和下次 seminar 待办；逐次实验见 [LOG.md](LOG.md)，固定背景及评价口径见 [OVERVIEW.md](OVERVIEW.md)。
 
 ## 总体主线与阶段目标
 
@@ -75,6 +75,53 @@ BC5CDR、BioRED 的复现已完成，validation 原指南/修改后分别为 **0
 
 **2026-10-08，P4 规模对比完成（全部离线，无新运行）：** 三项结论：① 勘误——三次规模运行 n_examples 实际均为 5，"示例数 5/10/15 混杂"不存在；② 假设的硬编码端成立（吸收率 41%→9%→3% 单调塌缩），泛化端不成立——valid 0.7878/0.7745/0.8050 非单调，配对 bootstrap 显示所有臂间差 95% CI 跨 0（仅 dev30 vs 原指南 +0.026 达 97.1% 单侧），且吸收率低 ≠ valid 好（dev20 反例）；③ dev30 指南在拥有 norrin 文档的情况下仍写出其扁平排除——规模不解决 gold 相反排除，与 P3 §3.4 的结构定位一致。dev20/dev30 replicate 两臂已设计但按用户决定不执行，轨迹方差未知是主要保留。详见 [P4 报告](todo-temp/p4/20261007_p4_devsize_report.md)。**至此 2026-10-02 seminar 的五项 Todo（P0–P4）全部关闭。**
 
+**2026-10-09，seminar 汇报 P0–P4，导师反馈确定下一阶段重点：** 会上报告了五项核查结果（R4 逐例变化、P1/P2 三臂对照、Top-4 valid100、规模对比）。导师的核心要求是**逐例解释"新规则为什么没有修复目标错误"**，而不是继续扩大实验规模：R4 针对 3 个 S→O 漏标只修复 1 个，需逐案例串起"原文/gold/R3 预测 → discrepancy 解释 → 新 principle → R3→R4 指南 diff → 最终预测"的规则链，并做隔离对照（新 principle 单独重标目标案例 vs R4 完整指南），以区分修复条件不足、规则冲突与整合失真；同时解释为什么针对漏标的规则主要改变了其他类型（2 个 M→S 修复、1 个 S→D 新增回归）。术语修正：safety clause 改称 **exception rule**；流程图须区分 gold annotation 与 TP，gold 来源直接指向原始 gold 数据。Top-4 收益（recall/Modifier 驱动、precision 未改善）需重复实验确认显著性；导师提醒 FP 增加可能反映"尽量标成实体"的标注偏置。两个下一步方向获认可：refinement 阶段注入目标错误案例的 gold（输入侧）、reviewer 写后冲突检查（输出侧）；pattern explanation 阶段可直接使用原始 gold annotation（含正确案例）。下次 seminar 拟邀请 Ken 与 Kim 教授，候选时间 10/15、10/16、10/19 上午、10/20，本周收集可用性。
+
+**2026-10-14，新 P0 规则链与隔离对照完成（10/16 seminar 前）：** 计划见 [RP](docs/RP/20261014_r4_failure_attribution_plan.md)。
+
+[规则链](todo-temp/r4-rule-chain/20261014_r4_rule_chain_report.md)显示 R4 的三个目标属于三种情况：
+
+- **FALDH**：规则冲突。新规则放行，指南却有三处点名排除，其中一处是 R4 改写时新增的。
+- **G6PD**：修复条件不足。
+- **PAH**：这次"修复"其实是撤销 R3 exception rule 造成的回归。
+
+与 gold 相反的点名排除，全部出自"不许破坏的示例"区块中被展示的文档。这个区块按样本顺序取前 5 篇有 TP 的文档，展示全文，不标记 FN；改写指南这一站看不到任何 gold。dev30 中 FALDH 的文档没有被展示，指南就从未点名它。
+
+[隔离对照](todo-temp/r4-isolation/20261014_r4_isolation_report.md)（36 次，GPT-5.4 high）的结果：
+
+- **FALDH**：在"标签定义＋原则"条件下，3 次都被当作疾病标注（2 次 SpecificDisease，跨度含缩写；1 次 CompositeMention）。用 R4 完整指南为 0/3。去掉原则的 exception rule，结果不变。
+- **G6PD**：四组都没有标对。去掉 exception rule 后，模型只是改为把 "enzyme deficiency" 标成 DiseaseClass。
+- **PAH**：R3 指南下 0/3，R4 指南下 3/3。
+
+据此修正 2026-10-07 "排除示例是症状而非成因"的表述：不给完整指南时，模型会标出 FALDH，障碍在完整指南之内。
+
+追加对照 ③− 随后确认了障碍所在：R4 指南只删去点名 FALDH 的三处文字，FALDH 3/3 精确恢复，整篇 14/0/0，没有其他回归。
+
+至此形成完整的证据链：
+
+1. 改写指南这一站看不到 gold，却能看到示例文档全文。
+2. 它把未标注的 FALDH 写成了"不标注"。
+3. 这些文字阻止了新规则对 FALDH 的修复。
+
+这直接支持 10/09 seminar 认可的两个方向：给 refinement 提供 gold（方案 A），以及写后冲突检查（方案 B）。norrin 的点名排除没有做删除实验；改写那一站为什么这样写，仍是假设。
+
+保留意见：每格只有 3 次重复，只覆盖 3 篇开发文档；"方向正确"的口径是看过第 1 轮结果后才明确的。
+
+**2026-10-15，R4 非目标变化不能归因于新 principle：**
+
+- Tay-Sachs disease、TSD 的 M→S：用同一份 R4 指南重跑 5 次全是 M，R3 指南下也是 5 次 M。原 run 的 S 是不能复现的单次翻转。
+- cutaneous vasculitis 的 S→D：原指南不变时 5 次中 2 次为 S，属于波动。
+
+这对第三条优化轴（可靠评价）是直接证据。其他预测不变、只把这两处换成重跑中的 M，R4 的 dev F1 为 0.8811，低于 R3 的 0.8873，按循环规则 R4 本应被回退。R4 能复现的修复只有 PAH 一处。也就是说，接受或回退一轮修改的决定，可能被单次标注波动左右。
+
+同日完成的规则链补充：
+
+- Guideline Refinement 收到的 verified examples 是按文件名排序后的前 5 篇文档。FALDH 的文档排第 4，所以每轮都会出现，与内容无关。
+- 提示声明这些文档"currently handled CORRECTLY"，又要求"prioritize specific sub-cases to avoid regression"。这与 FALDH 被写成点名排除的过程一致，但属于推断。
+- 论文 §3.4.4 说这一步还会收到 discrepancy context，现有实现没有传入。
+
+10/16 seminar 的 slides 见 `../presentations/20261016_faldh_attribution_en.pptx`（slides 统一放在 `修論/presentations`），生成脚本为 `todo-temp/r4-isolation/build_faldh_slides.py`；非目标变化另成一份 `../presentations/20261016_r4_secondary_effects_en.pptx`，生成脚本为 `todo-temp/r4-nontarget/build_secondary_effects_slides.py`。
+
 ## 后续记录方式
 
 实验后，LOG 新增一行，PROGRESS 记录它对三条优化轴、阶段目标和当前决策的影响，并更新文档底部的 Todo。负结果和中断同样保留。
@@ -83,7 +130,7 @@ seminar 后，将会议要点及其对研究主线的推进融入对应日期的
 
 ## 下次 seminar 前的 Todo
 
-来自 [October 2 会议摘要](archive/2026-10-02_seminar-conflict-casestudy/seminar_oct2.md)，保留原优先顺序。下次会议日期未指定。本轮工作优先把冲突机制查清，并为后续提高整体标注质量提供依据。
+已关闭的一组来自 [October 2 会议摘要](archive/2026-10-02_seminar-conflict-casestudy/seminar_oct2.md)（保留原优先顺序，均已完成）；当前进行中的一组来自 2026-10-09 seminar，列在本节末尾。注意两组的 P0–P4 编号含义不同，引用时不要混淆。
 
 - [x] **P0：核查 Round 4 标注变化与回归。** 已复算整体及类别指标，整理混淆矩阵和逐例历史，区分已有错误、目标修复与新增回归。见 [P0 报告](todo-temp/p0/20261006_round4_p0_report.md)。
 - [x] **P1：检验限制条款。** 已完成单变量对照（2026-10-06）：截短 R3 原则的 "do not apply" 从句后，原 41–44 行扁平排除消失，但模型自行再生等效条件限制，norrin/FALDH/abnormal development 无一恢复；dev F1 0.8671 低于原原则的 0.8873，S→D 类型错误翻倍。假设未证实，问题指向限制条款的写法与作用域而非其存在本身。见 [P1 报告](todo-temp/p1/20261006_p1_truncated_clause_report.md)。
@@ -92,3 +139,31 @@ seminar 后，将会议要点及其对研究主线的推进融入对应日期的
 - [x] **P4：汇报 10/20/30 篇规模对比。** 已完成（2026-10-08，全部离线）：吸收率随规模单调塌缩（41%→9%→3%）但 valid 非单调且臂间差均在噪声内（bootstrap）；dev30 仍写出 norrin 的 gold 相反排除——规模解决硬编码、不解决冲突示例；n_examples 误记勘误（实际均为 5）。replicate 两臂已设计未执行。见 [P4 报告](todo-temp/p4/20261007_p4_devsize_report.md)。
 
 **本轮交付：** 逐例变化表、Round 4 混淆矩阵，以及原规则、删除限制、限定作用域三个版本的对比（P0–P4 已完成，seminar 五项 Todo 全部关闭）。**与整体目标的连接：** 三臂对照显示规则措辞路径对焦点漏标无效，P3/P4 进一步显示加证据（top-k、加数据）也防不住 gold 相反排除；共同缺口定位在 refine_guidelines 调用看不到带标签的 discrepancy 证据。若提出新的承载方式（gold 证据注入 rewrite 步、写后对照校验、CONSTRAINT 通道），需先在小样本验证可复用收益，再扩大评价，检查整体 validation 收益与稳定性，推动向 SOTA 目标前进。改善一个开发案例不直接视为达到阶段目标。
+
+### 2026-10-09 seminar Todo（当前进行中；与上方已关闭的 10-02 五项不是同一组编号）
+
+下次汇报的重点是解释"新规则为什么没有修复目标错误"，不是继续扩大实验规模。
+
+**新 P0（下次 seminar 必做）：逐例定位失败环节。**
+
+- [x] （2026-10-14 完成：与 3 个 gold 相反案例只在 FALDH 重合，未修复案例共 4 个，加上已修复的 PAH；见[规则链报告](todo-temp/r4-rule-chain/20261014_r4_rule_chain_report.md)）追踪 R4 后仍存在的 2 个 S→O 漏标（FALDH、deficiency in G6PD）；此前 3 个 gold 相反排除案例先按 case ID 核对重合（FALDH 重叠），保留完整句子与上下文。已有基础：P0 报告的逐例历史与 R4 diff 对照、P3 §3.4 的 gold 可见性核查，新增工作是归因与隔离实验，避免重复劳动。
+- [x] （2026-10-15 完成：两类变化都不能归因于 R4 新 principle。Tay-Sachs/TSD 用 R4 指南重跑 5 次全是 M，原 run 的 S 不能复现；cutaneous vasculitis 在原指南不变时 5 次中 2 次为 S，属于波动。见[非目标变化报告](todo-temp/r4-nontarget/20261015_r4_nontarget_report.md)）解释 R4 非目标变化：为什么针对漏标生成的规则主要修复了 2 个 M→S（Tay-Sachs/TSD）并新增 1 个 S→D 回归。
+- [x] （2026-10-14 完成：FALDH 为规则冲突，G6PD 为修复条件不足，PAH 为撤销 R3 副作用）逐案例串规则链：原文/gold/R3 预测 → discrepancy explanation → 新 principle → R3→R4 guideline diff → 最终预测；归类为修复条件不足（principle 太抽象）、规则冲突（新规则允许但例外仍禁止）或整合失真（principle 可用但写入时被改写弱化）。交付物是"案例—具体条款—预测变化"证据，不只是总体分数。
+- [x] （2026-10-14 完成，另加 ②b"去掉 exception rule"；见[隔离对照报告](todo-temp/r4-isolation/20261014_r4_isolation_report.md)；追加 ③− 已完成：删去三处点名排除后 FALDH 3/3 恢复）隔离对照（会上提出）：同模型同生成设置，用 ①R3 指南 ②标签定义＋新 principle（不进完整指南） ③R4 完整指南 三种条件重标 3 个原 S→O 案例；重标阶段不给 annotator gold，gold 仅用于事后评分。结果读法：principle 单独有效而整合无效 → 优先查规则冲突与整合；单独也无效 → 查 discrepancy explanation 与 principle 内容；相同条件下结果不稳 → 先少量重复，避免把随机变化当成规则效果。
+- [ ] 汇报材料：逐例对照表（原始错误、新 principle、最终相关条款、重标结果、判断依据）＋关键 guideline diff（只标真正影响目标案例的修改）＋明确区分已观察现象、实验支持的解释、尚未验证的假设。
+
+**新 P1（完成定位后有时间再测）：流程改进，一次只改一个输入位置。**
+
+- [ ] 方案 A（输入侧）：refinement 阶段提供目标错误案例对应的 gold；区分两种用途——错误案例的 gold（修复用）与此前的 TP gold（防回归）；pattern explanation 阶段可直接使用原始 gold annotation（含正确案例，帮助理解类别边界，会上已确认），不必另造集合。
+- [ ] 方案 B（输出侧）：reviewer 冲突检查，至少输出受影响案例、冲突条款、冲突来源（允许条件/排除条件/类别定义）；先验证能否可靠发现问题，再考虑"反馈 → 再 refinement"自动循环；reviewer 自述"已修复"不算数，必须重新标注验证目标错误与回归。
+- 边界：以上均为待测方向而非已确认方案；用于改规则的 gold 只能来自 dev，不能把独立评估集答案引入 refinement。
+
+**新 P2：补充验证与表达修正。**
+
+- [ ] Top-4 按原计划补 2 次重复实验确认收益稳定；同时报告 precision/recall/F1 与类别变化，检查收益是否主要来自 Modifier、FP 是否增加、是否只是"倾向标成实体"的标注偏置而非类别边界改善。
+- [ ] 术语与图表：safety clause → exception rule；区分 gold annotation 与 TP；流程图标明各阶段实际收到的文本/预测/gold/抽象解释，gold 箭头直接来自原始 gold 数据；模糊词 "recovered" 改为明确表述（如"目标漏标恢复数：0/3"）。
+- [ ] 引入 gold 后继续关注 hard-coding，不靠把答案写进指南换 dev 提分；暂缓继续扩大 dev set（当前更缺错误机制证据）。
+
+**新 P3：会议协调。**
+
+- [ ] 收集 Ken、Kim 教授可用时间（候选：10/15 周四、10/16 周五、10/19 周一上午 10–13 时、10/20 周二），确定下次 seminar 安排。

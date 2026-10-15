@@ -1,0 +1,370 @@
+{
+  "run": "outputs\\ncbi_disease\\20260812_gpt54-high_moderation-withTP_dev30",
+  "rounds": [
+    {
+      "iteration": 1,
+      "dominant_cluster": "Gold: SpecificDisease vs LLM: DiseaseClass (Label Mismatch)",
+      "improved": true,
+      "reverted": false,
+      "principle": "- **IF** a disease mention is a noun phrase headed by a generic neoplasm term, but dependent modifiers within the same mention restrict that head to a concrete subtype through diagnostic information such as anatomical site, cell lineage, morphology, or biologic behavior, **THEN** label the entire mention as **SpecificDisease** rather than **DiseaseClass**; **this rule does NOT apply** when the head remains a bare or only weakly specified hypernym, or when the added material is merely non-diagnostic/contextual description rather than subtype-defining restriction.",
+      "insight": "- **Pattern Insight**\n  - **Pattern Name**: Head-driven downcasting of neoplasm subtype phrases\n  - **Confusion Trigger**: The mention is a common-noun NP headed by a broad oncology term like **tumor(s)** or **lymphoma**, while the specificity is carried by premodifiers such as **colorectal**, **benign colorectal**, or **T-cell**. The model appears to classify from the head noun alone, so it maps these to **DiseaseClass**.\n  - **Contrastive Evidence**: The true-positive **SpecificDisease** cases are mostly lexicalized disease names or distinct technical diagnoses—e.g., **Zellweger syndrome**, **Argininemia**, **Coats disease**, **seminoma**—where specificity is inherent in the whole term rather than added onto a generic neoplasm head. In the controls, truly broad heads like **cancer** are annotated as **DiseaseClass/Modifier**, which shows the model is overgeneralizing that behavior to subtype phrases.\n  - **Linguistic Rule (Proposed)**: Do **not** assign **DiseaseClass** solely because the syntactic head is a generic neoplasm word. If a neoplasm head noun is narrowed by organ/site, cell lineage, or behavior modifiers into a concrete diagnostic subtype—pattern: **[specific modifier(s) + tumor/lymphoma/etc.]**—label the full mention as **SpecificDisease**. Reserve **DiseaseClass** for bare or only weakly specified hypernyms.",
+      "tp_docs_in_infer": [
+        "10196379",
+        "10447258",
+        "10484772",
+        "10484981",
+        "10502833"
+      ],
+      "verified_docs_in_refine": [
+        "10196379",
+        "10447258",
+        "10484772",
+        "10484981",
+        "10502833"
+      ],
+      "cases": {
+        "FALDH": {
+          "pred_before": "O",
+          "pred_after": "O",
+          "is_discrepancy_example": false,
+          "infer_tp_block": {
+            "doc_shown": false
+          },
+          "principle_mentions": false,
+          "insight_mentions": false,
+          "refine_verified_block": {
+            "doc_shown": false
+          },
+          "guideline_before": [],
+          "guideline_after": []
+        },
+        "G6PD": {
+          "pred_before": "O",
+          "pred_after": "O",
+          "is_discrepancy_example": false,
+          "infer_tp_block": {
+            "doc_shown": false
+          },
+          "principle_mentions": false,
+          "insight_mentions": false,
+          "refine_verified_block": {
+            "doc_shown": false
+          },
+          "guideline_before": [],
+          "guideline_after": []
+        },
+        "PAH": {
+          "pred_before": "SpecificDisease",
+          "pred_after": "SpecificDisease",
+          "is_discrepancy_example": false,
+          "infer_tp_block": {
+            "doc_shown": false
+          },
+          "principle_mentions": false,
+          "insight_mentions": false,
+          "refine_verified_block": {
+            "doc_shown": false
+          },
+          "guideline_before": [],
+          "guideline_after": []
+        },
+        "norrin": {
+          "pred_before": "O",
+          "pred_after": "O",
+          "is_discrepancy_example": false,
+          "infer_tp_block": {
+            "doc_shown": true,
+            "case_text_in_shown_text": true,
+            "case_span_listed": false,
+            "n_listed_annotations": 5
+          },
+          "principle_mentions": false,
+          "insight_mentions": false,
+          "refine_verified_block": {
+            "doc_shown": true,
+            "case_text_in_shown_text": true,
+            "case_span_listed": false,
+            "n_listed_annotations": 5
+          },
+          "guideline_before": [],
+          "guideline_after": []
+        },
+        "retinal_vasc": {
+          "pred_before": "O",
+          "pred_after": "O",
+          "is_discrepancy_example": false,
+          "infer_tp_block": {
+            "doc_shown": true,
+            "case_text_in_shown_text": true,
+            "case_span_listed": false,
+            "n_listed_annotations": 5
+          },
+          "principle_mentions": false,
+          "insight_mentions": false,
+          "refine_verified_block": {
+            "doc_shown": true,
+            "case_text_in_shown_text": true,
+            "case_span_listed": false,
+            "n_listed_annotations": 5
+          },
+          "guideline_before": [],
+          "guideline_after": []
+        }
+      }
+    },
+    {
+      "iteration": 2,
+      "dominant_cluster": "Gold: SpecificDisease vs LLM: O (Missed)",
+      "improved": true,
+      "reverted": false,
+      "principle": "- **IF** a noun phrase is headed by an etiologic/biochemical term (e.g., pathogen name, enzyme/protein name, or functional-abnormality/deficiency expression) **and** the surrounding syntax places it in a disease-descriptive or diagnostic frame that attributes presence/absence, abnormality, infection, or deficiency to a patient, tissue, or case, **THEN** annotate the entire span as **SpecificDisease**, even if the span lacks an explicit disease head noun; **DO NOT** apply this rule when the same phrase refers only to the underlying biological entity, laboratory analyte, or causal mechanism in a non-clinical, non-diagnostic sense rather than denoting the disorder/infection itself.",
+      "insight": "- **Pattern Insight**\n  - **Pattern Name**: Implicit disease mentions headed by agent/biochemistry terms\n  - **Confusion Trigger**: The span lacks an overt disease-denoting head noun and is instead headed by a **virus/gene/enzyme/functional-abnormality term** (e.g., “Epstein-Barr virus,” “cytomegalovirus,” “human immunodeficiency virus,” “deficiency in G6PD,” “deficient activity of fatty aldehyde dehydrogenase”). The model appears to treat these as non-disease biomedical entities because the disease interpretation is only **contextually implied**.\n  - **Contrastive Evidence**: The true positives are mostly **lexicalized disease names** or phrases with clear disease morphology/semantics inside the span itself: “Zellweger syndrome,” “Coats disease,” “Li-Fraumeni syndrome,” “medulloblastoma,” “argininemia,” “ovarian cancer.” They do not require contextual inference from an etiologic agent or biochemical defect.\n  - **Linguistic Rule (Proposed)**: Tag a span as **SpecificDisease** when it denotes a **pathologic condition/infection/deficiency**, even if the surface form is built from an etiologic or biochemical noun rather than a canonical disease word. In practice: if a virus/microbe name or deficiency/enzyme-function phrase appears in a disease-diagnostic or disease-descriptive frame (“presence of X,” “negative for X,” “deficiency in X,” “deficient activity of X”), treat it as a disease mention rather than defaulting to O.",
+      "tp_docs_in_infer": [
+        "10196379",
+        "10447258",
+        "10484772",
+        "10484981",
+        "10502833"
+      ],
+      "verified_docs_in_refine": [
+        "10196379",
+        "10447258",
+        "10484772",
+        "10484981",
+        "10502833"
+      ],
+      "cases": {
+        "FALDH": {
+          "pred_before": "O",
+          "pred_after": "O",
+          "is_discrepancy_example": true,
+          "infer_tp_block": {
+            "doc_shown": false
+          },
+          "principle_mentions": false,
+          "insight_mentions": true,
+          "refine_verified_block": {
+            "doc_shown": false
+          },
+          "guideline_before": [],
+          "guideline_after": []
+        },
+        "G6PD": {
+          "pred_before": "O",
+          "pred_after": "O",
+          "is_discrepancy_example": true,
+          "infer_tp_block": {
+            "doc_shown": false
+          },
+          "principle_mentions": false,
+          "insight_mentions": true,
+          "refine_verified_block": {
+            "doc_shown": false
+          },
+          "guideline_before": [],
+          "guideline_after": []
+        },
+        "PAH": {
+          "pred_before": "SpecificDisease",
+          "pred_after": "O",
+          "is_discrepancy_example": false,
+          "infer_tp_block": {
+            "doc_shown": false
+          },
+          "principle_mentions": false,
+          "insight_mentions": false,
+          "refine_verified_block": {
+            "doc_shown": false
+          },
+          "guideline_before": [],
+          "guideline_after": []
+        },
+        "norrin": {
+          "pred_before": "O",
+          "pred_after": "O",
+          "is_discrepancy_example": false,
+          "infer_tp_block": {
+            "doc_shown": true,
+            "case_text_in_shown_text": true,
+            "case_span_listed": false,
+            "n_listed_annotations": 5
+          },
+          "principle_mentions": false,
+          "insight_mentions": false,
+          "refine_verified_block": {
+            "doc_shown": true,
+            "case_text_in_shown_text": true,
+            "case_span_listed": false,
+            "n_listed_annotations": 5
+          },
+          "guideline_before": [],
+          "guideline_after": [
+            {
+              "line": 16,
+              "text": "- Do **not** apply this rule when the phrase refers only to the biological entity, organism, laboratory analyte, mutation, protein level/status, or causal mechanism rather than to the disorder/infection. Phrases such as “BRCA1 alterations,” “PEX1 mutations,” or “deficiency of norrin” are not disease"
+            },
+            {
+              "line": 185,
+              "text": "- “BRCA1 alterations,” “PEX1 mutations,” and “deficiency of norrin” are not annotated merely because they contain gene/protein or deficiency language."
+            }
+          ]
+        },
+        "retinal_vasc": {
+          "pred_before": "O",
+          "pred_after": "O",
+          "is_discrepancy_example": false,
+          "infer_tp_block": {
+            "doc_shown": true,
+            "case_text_in_shown_text": true,
+            "case_span_listed": false,
+            "n_listed_annotations": 5
+          },
+          "principle_mentions": false,
+          "insight_mentions": false,
+          "refine_verified_block": {
+            "doc_shown": true,
+            "case_text_in_shown_text": true,
+            "case_span_listed": false,
+            "n_listed_annotations": 5
+          },
+          "guideline_before": [],
+          "guideline_after": []
+        }
+      }
+    },
+    {
+      "iteration": 3,
+      "dominant_cluster": "Gold: SpecificDisease vs LLM: O (Missed)",
+      "improved": false,
+      "reverted": true,
+      "principle": "- **IF** a noun phrase, parenthetical label, or embedded prepositional/diagnostic expression denotes a **specific pathological state** by context—even when it is not a standalone canonical disease name, is headed by a generic abnormality noun, or is realized through an etiologic agent/tumor label that implies the corresponding infection or neoplasm—**THEN** annotate it as **SpecificDisease**; **DO NOT** apply this rule when the span refers only to a non-disease entity (e.g., a gene/protein/microorganism, specimen target, or test/analyte) **without contextual evidence that it is being used to denote the patient’s disorder, infection, or tumor**.",
+      "insight": "- **Pattern Insight**\n  - **Pattern Name**: Embedded, context-dependent disease mentions\n  - **Confusion Trigger**: The model seems to require a **standalone canonical disease NP**. It drops mentions when the disease is expressed **indirectly or in an embedded diagnostic/lab context**—e.g., as a pathology phrase headed by generic nouns like **“deficiency/activity”**, as a **pathogen name standing for infection** (“Epstein-Barr virus”, “cytomegalovirus”), or as a **parenthetical sample/tumor label** (“seminoma / medulloblastoma”).\n  - **Contrastive Evidence**: The true positives are mostly **direct disease-denoting heads** or clear appositional aliases: “Zellweger syndrome,” “Coats disease,” “Li-Fraumeni syndrome,” “argininemia.” Even “retinal telangiectasis” is presented as a direct disease label, not buried inside a test/result NP like “presence of X” or a biochemical abnormality description.\n  - **Linguistic Rule (Proposed)**: Do **not** require a disease mention to be the main clause topic or to contain overt disease words like *disease/syndrome/cancer*. Tag **SpecificDisease** whenever the span denotes a specific pathological condition, tumor, or infection **by context**, including:\n    - abnormal-state NPs such as **“deficient activity of fatty aldehyde dehydrogenase”** / **“deficiency in G6PD”**,\n    - pathogen names in diagnostic contexts where they stand for infection status (**“presence of Epstein-Barr virus … negative”**),\n    - embedded parenthetical tumor labels (**“seminoma / medulloblastoma”**).",
+      "tp_docs_in_infer": [
+        "10196379",
+        "10447258",
+        "10484772",
+        "10484981",
+        "10502833"
+      ],
+      "verified_docs_in_refine": [
+        "10196379",
+        "10447258",
+        "10484772",
+        "10484981",
+        "10502833"
+      ],
+      "cases": {
+        "FALDH": {
+          "pred_before": "O",
+          "pred_after": "O",
+          "is_discrepancy_example": true,
+          "infer_tp_block": {
+            "doc_shown": false
+          },
+          "principle_mentions": false,
+          "insight_mentions": true,
+          "refine_verified_block": {
+            "doc_shown": false
+          },
+          "guideline_before": [],
+          "guideline_after": []
+        },
+        "G6PD": {
+          "pred_before": "O",
+          "pred_after": "O",
+          "is_discrepancy_example": true,
+          "infer_tp_block": {
+            "doc_shown": false
+          },
+          "principle_mentions": false,
+          "insight_mentions": true,
+          "refine_verified_block": {
+            "doc_shown": false
+          },
+          "guideline_before": [],
+          "guideline_after": []
+        },
+        "PAH": {
+          "pred_before": "O",
+          "pred_after": "O",
+          "is_discrepancy_example": false,
+          "infer_tp_block": {
+            "doc_shown": false
+          },
+          "principle_mentions": false,
+          "insight_mentions": false,
+          "refine_verified_block": {
+            "doc_shown": false
+          },
+          "guideline_before": [],
+          "guideline_after": []
+        },
+        "norrin": {
+          "pred_before": "O",
+          "pred_after": "O",
+          "is_discrepancy_example": false,
+          "infer_tp_block": {
+            "doc_shown": true,
+            "case_text_in_shown_text": true,
+            "case_span_listed": false,
+            "n_listed_annotations": 5
+          },
+          "principle_mentions": false,
+          "insight_mentions": false,
+          "refine_verified_block": {
+            "doc_shown": true,
+            "case_text_in_shown_text": true,
+            "case_span_listed": false,
+            "n_listed_annotations": 5
+          },
+          "guideline_before": [
+            {
+              "line": 16,
+              "text": "- Do **not** apply this rule when the phrase refers only to the biological entity, organism, laboratory analyte, mutation, protein level/status, or causal mechanism rather than to the disorder/infection. Phrases such as “BRCA1 alterations,” “PEX1 mutations,” or “deficiency of norrin” are not disease"
+            },
+            {
+              "line": 185,
+              "text": "- “BRCA1 alterations,” “PEX1 mutations,” and “deficiency of norrin” are not annotated merely because they contain gene/protein or deficiency language."
+            }
+          ],
+          "guideline_after": [
+            {
+              "line": 16,
+              "text": "- Do **not** apply this rule when the phrase refers only to the biological entity, organism, laboratory analyte, mutation, protein level/status, or causal mechanism rather than to the disorder/infection. Phrases such as “BRCA1 alterations,” “PEX1 mutations,” or “deficiency of norrin” are not disease"
+            },
+            {
+              "line": 185,
+              "text": "- “BRCA1 alterations,” “PEX1 mutations,” and “deficiency of norrin” are not annotated merely because they contain gene/protein or deficiency language."
+            }
+          ]
+        },
+        "retinal_vasc": {
+          "pred_before": "O",
+          "pred_after": "O",
+          "is_discrepancy_example": false,
+          "infer_tp_block": {
+            "doc_shown": true,
+            "case_text_in_shown_text": true,
+            "case_span_listed": false,
+            "n_listed_annotations": 5
+          },
+          "principle_mentions": false,
+          "insight_mentions": false,
+          "refine_verified_block": {
+            "doc_shown": true,
+            "case_text_in_shown_text": true,
+            "case_span_listed": false,
+            "n_listed_annotations": 5
+          },
+          "guideline_before": [],
+          "guideline_after": []
+        }
+      }
+    }
+  ],
+  "snapshot_sha256": {
+    "iteration_01": "e6c1cbf5e26c64672f69caf8847c6407d9d3d35a8b38e984412214f2d04da08a",
+    "iteration_02": "eb7325cd32194c0a464aa19ae2766185677fa2a62fd7d8f405894fd88a46800a",
+    "iteration_03": "3e6876b8342cabc5fe202fda4a8d28c6e27dcce0f219dc0fb2b6687a27262957"
+  }
+}

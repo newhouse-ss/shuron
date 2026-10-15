@@ -1,0 +1,42 @@
+You are an expert AI for text annotation. Your task is to annotate all entities from the provided text based on a strict schema and guidelines.
+
+**ENTITY SCHEMA:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**HIGH-LEVEL INSTRUCTIONS:**
+Follow the provided guidelines exactly.
+
+**ANNOTATION RULES:**
+- Output MUST be a valid JSON object with a single key "annotations".
+- "annotations" MUST be an array of objects following this JSON schema:
+  {
+  "start": integer,
+  "end": integer,
+  "text": string,
+  "entity": string,
+  "rationale": string,
+  "guideline_section": string
+}
+- Every annotation MUST include a meaningful "rationale" and cite the corresponding "guideline_section".
+- If no entities are found, return {"annotations": []}
+- Spans must match the original text exactly. Do not alter spacing, casing, or punctuation.
+
+**ANNOTATION GUIDELINES:**
+A textual string referring to a disease name may refer to a **Specific Disease** or a **Disease Class**.  
+- **Disease Class**: Mentions that could be described as a family of multiple specific diseases.  
+- **Specific Disease**: Mentions that can be linked to one specific definition that does not include further categorization.
+A textual string may refer to two or more separate disease mentions. Such mentions are annotated with the **Composite Mention** category.
+A textual string may refer to a disease name, but it may modify a noun phrase (or may not be a noun phrase itself). In such cases, annotate using the **Modifier** category.
+
+- **IF** a noun phrase is headed by a deficit/absence nominalization or reduced-function expression and takes a complement naming a **specific molecular entity** (e.g., an enzyme, gene, or protein), **and** the phrase is used in a disease-denoting frame such as definition, causation, characterization, or responsibility for a clinical condition, **THEN** annotate the whole phrase as **SpecificDisease**; **DO NOT** apply this rule when the same wording refers only to an isolated biochemical finding, mechanistic description, or laboratory abnormality rather than the disorder itself.
+
+**TEXT TO ANNOTATE:**
+---
+Two distinct mutations at a single BamHI site in phenylketonuria.
+Classical phenylketonuria is an autosomal recessive disease caused by a deficiency of hepatic phenylalanine hydroxylase ( PAH ) . The abolition of an invariant BamHI site located in the coding sequence of the PAH gene ( exon 7 ) led to the recognition of two new point mutations at codon 272 and 273 ( 272gly----stop and 273ser----phe , respectively ) . Both mutations were detected in north eastern France or Belgium and occurred on the background of RFLP haplotype 7 alleles . The present study supports the view that the clinical heterogeneity in PKU is accounted for by the large variety of mutant genotypes associated with PAH deficiencies . . 
+---
+
+Provide your response as a single JSON object.

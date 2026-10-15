@@ -1,0 +1,562 @@
+{
+  "run": "outputs\\ncbi_disease\\20260802_gpt54-high_moderation",
+  "rounds": [
+    {
+      "iteration": 1,
+      "dominant_cluster": "Gold: SpecificDisease vs LLM: DiseaseClass (Label Mismatch)",
+      "improved": true,
+      "reverted": false,
+      "principle": "- **IF** a noun phrase is headed by a **generic pathology term** (e.g., a broad disease-process head) but the **full mention is used referentially** to denote an **instantiated diagnosis** or a **contextually narrowed subtype**—signaled by restrictive modifiers or by patient-case, manifestation, association, or etiologic/anatomic context—**THEN** label it **SpecificDisease**; **this does NOT apply** when the same phrase is used **generically, taxonomically, or definitionally** to describe the disease category in general rather than a particular diagnosed condition, in which case label it **DiseaseClass**.",
+      "insight": "- **Pattern Insight**\n  - **Pattern Name**: Context-dependent diagnosis hidden behind a generic pathology head\n  - **Confusion Trigger**: The mention’s **head noun is a broad disease-process term**—*deficiency, vasculitis, arthritis, infection*—so the model defaults to **DiseaseClass**, even when the full phrase is being used to denote a **specific diagnosed condition/subtype** in context.\n  - **Contrastive Evidence**: The true positives mostly contain **overtly lexicalized disease names or conventional subtype labels** such as *Coats disease, Sjogren-Larsson syndrome, ovarian cancer, retinal telangiectasis*. Those phrases signal specificity internally. In the error cases, specificity must be inferred from **clinical/etiologic context** or light modifiers: *PAH deficiencies*, *cutaneous vasculitis*, *Chronic neisserial infection*, or a patient-presentation frame like *presenting with fever, arthritis, and cutaneous vasculitis*.\n  - **Linguistic Rule (Proposed)**: If a broad pathology noun is used **referentially** to name an **instantiated diagnosis or etiologically/anatomically constrained subtype**—especially in patient-case, association, or manifestation contexts—label it **SpecificDisease**. Use **DiseaseClass** only when the same noun is used **taxonomically/definitionaly** to denote a general class rather than a particular disease mention.",
+      "tp_docs_in_infer": [
+        "10196379",
+        "10484772",
+        "10545613",
+        "10577908",
+        "10724160"
+      ],
+      "verified_docs_in_refine": [
+        "10196379",
+        "10484772",
+        "10545613",
+        "10577908",
+        "10724160"
+      ],
+      "cases": {
+        "FALDH": {
+          "pred_before": "O",
+          "pred_after": "O",
+          "is_discrepancy_example": false,
+          "infer_tp_block": {
+            "doc_shown": true,
+            "case_text_in_shown_text": true,
+            "case_span_listed": false,
+            "n_listed_annotations": 5
+          },
+          "principle_mentions": false,
+          "insight_mentions": false,
+          "refine_verified_block": {
+            "doc_shown": true,
+            "case_text_in_shown_text": true,
+            "case_span_listed": false,
+            "n_listed_annotations": 5
+          },
+          "guideline_before": [],
+          "guideline_after": []
+        },
+        "G6PD": {
+          "pred_before": "O",
+          "pred_after": "O",
+          "is_discrepancy_example": false,
+          "infer_tp_block": {
+            "doc_shown": false
+          },
+          "principle_mentions": false,
+          "insight_mentions": false,
+          "refine_verified_block": {
+            "doc_shown": false
+          },
+          "guideline_before": [],
+          "guideline_after": []
+        },
+        "PAH": {
+          "pred_before": "SpecificDisease",
+          "pred_after": "SpecificDisease",
+          "is_discrepancy_example": false,
+          "infer_tp_block": {
+            "doc_shown": false
+          },
+          "principle_mentions": false,
+          "insight_mentions": false,
+          "refine_verified_block": {
+            "doc_shown": false
+          },
+          "guideline_before": [],
+          "guideline_after": []
+        },
+        "norrin": {
+          "pred_before": "O",
+          "pred_after": "O",
+          "is_discrepancy_example": false,
+          "infer_tp_block": {
+            "doc_shown": true,
+            "case_text_in_shown_text": true,
+            "case_span_listed": false,
+            "n_listed_annotations": 5
+          },
+          "principle_mentions": false,
+          "insight_mentions": false,
+          "refine_verified_block": {
+            "doc_shown": true,
+            "case_text_in_shown_text": true,
+            "case_span_listed": false,
+            "n_listed_annotations": 5
+          },
+          "guideline_before": [],
+          "guideline_after": []
+        },
+        "retinal_vasc": {
+          "pred_before": "O",
+          "pred_after": "O",
+          "is_discrepancy_example": false,
+          "infer_tp_block": {
+            "doc_shown": true,
+            "case_text_in_shown_text": true,
+            "case_span_listed": false,
+            "n_listed_annotations": 5
+          },
+          "principle_mentions": false,
+          "insight_mentions": false,
+          "refine_verified_block": {
+            "doc_shown": true,
+            "case_text_in_shown_text": true,
+            "case_span_listed": false,
+            "n_listed_annotations": 5
+          },
+          "guideline_before": [],
+          "guideline_after": [
+            {
+              "line": 26,
+              "text": "> Coats disease is characterized by abnormal retinal vascular development (so-called retinal telangiectasis)."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "iteration": 2,
+      "dominant_cluster": "Gold: SpecificDisease vs LLM: SpecificDisease (Span Boundary Error)",
+      "improved": true,
+      "reverted": false,
+      "principle": "- **IF** a candidate **SpecificDisease** appears inside an expanded noun phrase built on a disease-denoting head noun, **THEN** annotate the **smallest contiguous span that still independently identifies the disease**, keeping a post-head complement only when it is **argumentally necessary** to specify an otherwise generic head, and excluding peripheral modifiers or prepositional material that merely add descriptive information such as degree, state, inheritance/carrier status, extent, or anatomical location; **this does NOT apply** when the modifier or complement is **lexically part of the established disease name** or is **required to distinguish the disease referent** rather than merely describe it.",
+      "insight": "- **Pattern Insight**\n  - **Pattern Name**: Expanded NP boundary confusion around disease heads\n  - **Confusion Trigger**: The mention sits inside a larger noun phrase built on a generic disease head like **disease** or **deficiency**, with nearby **non-core modifiers** before or after it—e.g., premodifiers like **complete / heterozygous** or post-head PPs like **of the retina**. This makes the model drift on span boundaries because the whole NP looks medically cohesive.\n  - **Contrastive Evidence**: The true positives are mostly **self-contained disease names** or abbreviations—e.g., **Coats disease**, **Sjogren-Larsson syndrome**, **ovarian cancer**, **SLS**—where there is no hard decision about trimming surrounding descriptive material. The discrepancy cases are harder because the disease mention is **embedded inside an expanded descriptive NP**.\n  - **Linguistic Rule (Proposed)**: Select the **minimal disease-denoting span**.  \n    - **Include** a following complement only when it is **semantically required** to identify a generic head: e.g., **deficiency of C7**, **deficiency of the seventh component of complement**.  \n    - **Exclude** surrounding descriptors that add status, extent, carrier state, or localization but do not define the disease itself: e.g., **complete**, **heterozygous**, and in a self-sufficient name like **Coats' disease**, exclude the attached locator **of the retina**.",
+      "tp_docs_in_infer": [
+        "10196379",
+        "10484772",
+        "10545613",
+        "10577908",
+        "10724160"
+      ],
+      "verified_docs_in_refine": [
+        "10196379",
+        "10484772",
+        "10545613",
+        "10577908",
+        "10724160"
+      ],
+      "cases": {
+        "FALDH": {
+          "pred_before": "O",
+          "pred_after": "O",
+          "is_discrepancy_example": false,
+          "infer_tp_block": {
+            "doc_shown": true,
+            "case_text_in_shown_text": true,
+            "case_span_listed": false,
+            "n_listed_annotations": 5
+          },
+          "principle_mentions": false,
+          "insight_mentions": false,
+          "refine_verified_block": {
+            "doc_shown": true,
+            "case_text_in_shown_text": true,
+            "case_span_listed": false,
+            "n_listed_annotations": 5
+          },
+          "guideline_before": [],
+          "guideline_after": []
+        },
+        "G6PD": {
+          "pred_before": "O",
+          "pred_after": "O",
+          "is_discrepancy_example": false,
+          "infer_tp_block": {
+            "doc_shown": false
+          },
+          "principle_mentions": false,
+          "insight_mentions": false,
+          "refine_verified_block": {
+            "doc_shown": false
+          },
+          "guideline_before": [],
+          "guideline_after": []
+        },
+        "PAH": {
+          "pred_before": "SpecificDisease",
+          "pred_after": "SpecificDisease",
+          "is_discrepancy_example": false,
+          "infer_tp_block": {
+            "doc_shown": false
+          },
+          "principle_mentions": false,
+          "insight_mentions": false,
+          "refine_verified_block": {
+            "doc_shown": false
+          },
+          "guideline_before": [],
+          "guideline_after": []
+        },
+        "norrin": {
+          "pred_before": "O",
+          "pred_after": "O",
+          "is_discrepancy_example": false,
+          "infer_tp_block": {
+            "doc_shown": true,
+            "case_text_in_shown_text": true,
+            "case_span_listed": false,
+            "n_listed_annotations": 5
+          },
+          "principle_mentions": false,
+          "insight_mentions": false,
+          "refine_verified_block": {
+            "doc_shown": true,
+            "case_text_in_shown_text": true,
+            "case_span_listed": false,
+            "n_listed_annotations": 5
+          },
+          "guideline_before": [],
+          "guideline_after": []
+        },
+        "retinal_vasc": {
+          "pred_before": "O",
+          "pred_after": "O",
+          "is_discrepancy_example": false,
+          "infer_tp_block": {
+            "doc_shown": true,
+            "case_text_in_shown_text": true,
+            "case_span_listed": false,
+            "n_listed_annotations": 5
+          },
+          "principle_mentions": false,
+          "insight_mentions": false,
+          "refine_verified_block": {
+            "doc_shown": true,
+            "case_text_in_shown_text": true,
+            "case_span_listed": false,
+            "n_listed_annotations": 5
+          },
+          "guideline_before": [
+            {
+              "line": 26,
+              "text": "> Coats disease is characterized by abnormal retinal vascular development (so-called retinal telangiectasis)."
+            }
+          ],
+          "guideline_after": [
+            {
+              "line": 27,
+              "text": "> Coats disease is characterized by abnormal retinal vascular development (so-called retinal telangiectasis)."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "iteration": 3,
+      "dominant_cluster": "Gold: DiseaseClass vs LLM: O (Missed)",
+      "improved": true,
+      "reverted": false,
+      "principle": "- **IF** a noun phrase in a definitional, characterization, or causal/etiologic context denotes an **abnormal clinical or pathological state**—even when its head is a generic state/process/symptom noun rather than a canonical disease label—**THEN** annotate it as **DiseaseClass**; **do not apply this rule** when the phrase refers only to a normal biological process, a molecular/substance entity or level, or an isolated descriptive finding that is **not** presented as a pathological condition of the patient/disorder.",
+      "insight": "- **Pattern Insight**\n  - **Pattern Name**: Compositional pathological-state phrases without explicit disease-name lexemes\n  - **Confusion Trigger**: The missed mentions are **descriptive phenotype/pathophysiology NPs**—e.g., headed by generic state/process words or symptom terms like **“development,” “deficiency,” “spasticity”**—often inside definitional frames such as **“is characterized by …”** or **“results in …”**. Because they lack overt disease cues like *disease/syndrome/cancer/disorder*, the model defaults to **O**.\n  - **Contrastive Evidence**: The true positives are mostly **canonical disease names** or fixed clinical labels with strong disease signaling, such as **“ovarian cancer,” “Coats disease,” “fragile X syndrome,” “autosomal recessive disorder,” “retinal telangiectasis.”** Even **“mental retardation”** behaves like a lexicalized clinical condition, whereas the discrepancy cases require interpreting a **compositional abnormality description** as a DiseaseClass.\n  - **Linguistic Rule (Proposed)**: If a noun phrase appears in a **disease-defining or etiologic context** and denotes an **abnormal clinical/pathological state**—including symptom nouns and phrases like **“abnormal X development,” “deficiency of Y,”** or coordinated features like **“spasticity”**—label it **DiseaseClass** **even when no explicit disease-head word is present**. The key distinction is **pathological-state meaning in a characterization frame**, not the presence of a canonical disease keyword.",
+      "tp_docs_in_infer": [
+        "10196379",
+        "10484772",
+        "10545613",
+        "10577908",
+        "10724160"
+      ],
+      "verified_docs_in_refine": [
+        "10196379",
+        "10484772",
+        "10545613",
+        "10577908",
+        "10724160"
+      ],
+      "cases": {
+        "FALDH": {
+          "pred_before": "O",
+          "pred_after": "O",
+          "is_discrepancy_example": false,
+          "infer_tp_block": {
+            "doc_shown": true,
+            "case_text_in_shown_text": true,
+            "case_span_listed": false,
+            "n_listed_annotations": 5
+          },
+          "principle_mentions": false,
+          "insight_mentions": false,
+          "refine_verified_block": {
+            "doc_shown": true,
+            "case_text_in_shown_text": true,
+            "case_span_listed": false,
+            "n_listed_annotations": 5
+          },
+          "guideline_before": [],
+          "guideline_after": [
+            {
+              "line": 41,
+              "text": "> Deficient activity of fatty aldehyde dehydrogenase"
+            },
+            {
+              "line": 241,
+              "text": "- In “deficient activity of fatty aldehyde dehydrogenase,” the phrase is **not** annotated because it refers to enzyme activity rather than a disease/pathological-state mention."
+            }
+          ]
+        },
+        "G6PD": {
+          "pred_before": "O",
+          "pred_after": "O",
+          "is_discrepancy_example": false,
+          "infer_tp_block": {
+            "doc_shown": false
+          },
+          "principle_mentions": false,
+          "insight_mentions": false,
+          "refine_verified_block": {
+            "doc_shown": false
+          },
+          "guideline_before": [],
+          "guideline_after": []
+        },
+        "PAH": {
+          "pred_before": "SpecificDisease",
+          "pred_after": "O",
+          "is_discrepancy_example": false,
+          "infer_tp_block": {
+            "doc_shown": false
+          },
+          "principle_mentions": false,
+          "insight_mentions": false,
+          "refine_verified_block": {
+            "doc_shown": false
+          },
+          "guideline_before": [],
+          "guideline_after": []
+        },
+        "norrin": {
+          "pred_before": "O",
+          "pred_after": "O",
+          "is_discrepancy_example": true,
+          "infer_tp_block": {
+            "doc_shown": true,
+            "case_text_in_shown_text": true,
+            "case_span_listed": false,
+            "n_listed_annotations": 5
+          },
+          "principle_mentions": false,
+          "insight_mentions": false,
+          "refine_verified_block": {
+            "doc_shown": true,
+            "case_text_in_shown_text": true,
+            "case_span_listed": false,
+            "n_listed_annotations": 5
+          },
+          "guideline_before": [],
+          "guideline_after": []
+        },
+        "retinal_vasc": {
+          "pred_before": "O",
+          "pred_after": "O",
+          "is_discrepancy_example": true,
+          "infer_tp_block": {
+            "doc_shown": true,
+            "case_text_in_shown_text": true,
+            "case_span_listed": false,
+            "n_listed_annotations": 5
+          },
+          "principle_mentions": false,
+          "insight_mentions": false,
+          "refine_verified_block": {
+            "doc_shown": true,
+            "case_text_in_shown_text": true,
+            "case_span_listed": false,
+            "n_listed_annotations": 5
+          },
+          "guideline_before": [
+            {
+              "line": 27,
+              "text": "> Coats disease is characterized by abnormal retinal vascular development (so-called retinal telangiectasis)."
+            }
+          ],
+          "guideline_after": [
+            {
+              "line": 29,
+              "text": "> Coats disease is characterized by abnormal retinal vascular development (so-called retinal telangiectasis)."
+            },
+            {
+              "line": 147,
+              "text": "- This also excludes mechanistic process descriptions such as “retinal angiogenesis,” “retinal vascular development,” “DNA demethylation,” or “gene reactivation” when they are discussed as processes rather than as disease/pathological-state mentions."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "iteration": 4,
+      "dominant_cluster": "Gold: SpecificDisease vs LLM: O (Missed)",
+      "improved": true,
+      "reverted": false,
+      "principle": "- **IF** a noun phrase is headed by a deficit/absence nominalization or reduced-function expression and takes a complement naming a **specific molecular entity** (e.g., an enzyme, gene, or protein), **and** the phrase is used in a disease-denoting frame such as definition, causation, characterization, or responsibility for a clinical condition, **THEN** annotate the whole phrase as **SpecificDisease**; **DO NOT** apply this rule when the same wording refers only to an isolated biochemical finding, mechanistic description, or laboratory abnormality rather than the disorder itself.",
+      "insight": "- **Pattern Insight**\n  - **Pattern Name**: Deficiency-headed disease paraphrases\n  - **Confusion Trigger**: The mention is a noun phrase headed by **“deficiency” / “deficient activity”** plus an enzyme/gene/protein complement (e.g., “deficiency of hepatic phenylalanine hydroxylase”), so it looks like a mechanistic abnormality rather than a disease name.\n  - **Contrastive Evidence**: The true positives mostly contain **canonical disease-head lexemes** such as *syndrome, disease, cancer,* or an established pathology term (*telangiectasis*). Those overt disease heads cue the model correctly, whereas the discrepancy cases lack them and are expressed as biochemical-defect descriptions.\n  - **Linguistic Rule (Proposed)**: When a phrase is **headed by deficiency/deficient activity** and its complement is a **specific enzyme/gene/protein**, treat it as **SpecificDisease** if it is used to denote the disorder/clinical condition itself—especially in disease-defining frames like **“caused by,” “characterized by,”** or **“responsible for.”** Do not require an explicit disease word for such metabolic/enzyme-deficiency mentions.",
+      "tp_docs_in_infer": [
+        "10196379",
+        "10484772",
+        "10545613",
+        "10577908",
+        "10724160"
+      ],
+      "verified_docs_in_refine": [
+        "10196379",
+        "10484772",
+        "10545613",
+        "10577908",
+        "10724160"
+      ],
+      "cases": {
+        "FALDH": {
+          "pred_before": "O",
+          "pred_after": "O",
+          "is_discrepancy_example": true,
+          "infer_tp_block": {
+            "doc_shown": true,
+            "case_text_in_shown_text": true,
+            "case_span_listed": false,
+            "n_listed_annotations": 5
+          },
+          "principle_mentions": false,
+          "insight_mentions": false,
+          "refine_verified_block": {
+            "doc_shown": true,
+            "case_text_in_shown_text": true,
+            "case_span_listed": false,
+            "n_listed_annotations": 5
+          },
+          "guideline_before": [
+            {
+              "line": 41,
+              "text": "> Deficient activity of fatty aldehyde dehydrogenase"
+            },
+            {
+              "line": 241,
+              "text": "- In “deficient activity of fatty aldehyde dehydrogenase,” the phrase is **not** annotated because it refers to enzyme activity rather than a disease/pathological-state mention."
+            }
+          ],
+          "guideline_after": [
+            {
+              "line": 54,
+              "text": "> Deficient activity of fatty aldehyde dehydrogenase"
+            },
+            {
+              "line": 167,
+              "text": "- This also excludes isolated molecular-function or laboratory-abnormality phrases such as “deficient activity of fatty aldehyde dehydrogenase” when they are used only as biochemical findings or mechanistic descriptions rather than as the pathological condition itself."
+            },
+            {
+              "line": 263,
+              "text": "- In “deficient activity of fatty aldehyde dehydrogenase,” the phrase is **not** annotated because here it refers to enzyme activity/biochemical abnormality rather than to a disease/pathological-state mention."
+            }
+          ]
+        },
+        "G6PD": {
+          "pred_before": "O",
+          "pred_after": "O",
+          "is_discrepancy_example": true,
+          "infer_tp_block": {
+            "doc_shown": false
+          },
+          "principle_mentions": false,
+          "insight_mentions": false,
+          "refine_verified_block": {
+            "doc_shown": false
+          },
+          "guideline_before": [],
+          "guideline_after": []
+        },
+        "PAH": {
+          "pred_before": "O",
+          "pred_after": "SpecificDisease",
+          "is_discrepancy_example": true,
+          "infer_tp_block": {
+            "doc_shown": false
+          },
+          "principle_mentions": false,
+          "insight_mentions": true,
+          "refine_verified_block": {
+            "doc_shown": false
+          },
+          "guideline_before": [],
+          "guideline_after": []
+        },
+        "norrin": {
+          "pred_before": "O",
+          "pred_after": "O",
+          "is_discrepancy_example": false,
+          "infer_tp_block": {
+            "doc_shown": true,
+            "case_text_in_shown_text": true,
+            "case_span_listed": false,
+            "n_listed_annotations": 5
+          },
+          "principle_mentions": false,
+          "insight_mentions": false,
+          "refine_verified_block": {
+            "doc_shown": true,
+            "case_text_in_shown_text": true,
+            "case_span_listed": false,
+            "n_listed_annotations": 5
+          },
+          "guideline_before": [],
+          "guideline_after": [
+            {
+              "line": 49,
+              "text": "> This results in a deficiency of norrin within the developing retina."
+            }
+          ]
+        },
+        "retinal_vasc": {
+          "pred_before": "O",
+          "pred_after": "O",
+          "is_discrepancy_example": false,
+          "infer_tp_block": {
+            "doc_shown": true,
+            "case_text_in_shown_text": true,
+            "case_span_listed": false,
+            "n_listed_annotations": 5
+          },
+          "principle_mentions": false,
+          "insight_mentions": false,
+          "refine_verified_block": {
+            "doc_shown": true,
+            "case_text_in_shown_text": true,
+            "case_span_listed": false,
+            "n_listed_annotations": 5
+          },
+          "guideline_before": [
+            {
+              "line": 29,
+              "text": "> Coats disease is characterized by abnormal retinal vascular development (so-called retinal telangiectasis)."
+            },
+            {
+              "line": 147,
+              "text": "- This also excludes mechanistic process descriptions such as “retinal angiogenesis,” “retinal vascular development,” “DNA demethylation,” or “gene reactivation” when they are discussed as processes rather than as disease/pathological-state mentions."
+            }
+          ],
+          "guideline_after": [
+            {
+              "line": 31,
+              "text": "> Coats disease is characterized by abnormal retinal vascular development (so-called retinal telangiectasis)."
+            },
+            {
+              "line": 166,
+              "text": "- This also excludes mechanistic process descriptions such as “retinal angiogenesis,” “retinal vascular development,” “DNA demethylation,” or “gene reactivation” when they are discussed as processes rather than as disease/pathological-state mentions."
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "snapshot_sha256": {
+    "iteration_01": "ca8be7444e34704f513db8379b1b88f0f8be585fd259647194dc736645d7767c",
+    "iteration_02": "764b5446d29d56bded193ecca68578f8831359832bc55c4dad844fcc5f8a3e86",
+    "iteration_03": "70fd43ec8e11a135dac97ce377a5bbbb0704b19c7ff1020ec5a5dae0ab3a7f67",
+    "iteration_04": "e6be9f17042a10725f0b5629ab6206d49672bbf2f905fe78f39db6ebf8c4e17f"
+  }
+}
