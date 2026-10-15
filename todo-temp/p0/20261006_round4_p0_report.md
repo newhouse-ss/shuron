@@ -80,12 +80,12 @@ SpecificDisease 净增加 2 个 TP；Modifier 的两个 FP 消失，因为 Tay-S
 
 对 10 篇文档的全部预测集合做差，发现 **4 个 gold 实体的结果发生变化，分布在 3 篇文档**。其中包含一次新增标注和三次同跨度类型改变；没有其他预测跨度或类型改变。
 
-| 文档与位置 | 实体 | Gold | R3 后 | R4 后 | 判定 |
+| position | entity | Gold | after R3 | after R4 | type |
 | --- | --- | --- | --- | --- | --- |
-| 1671881 [138,185) | deficiency of hepatic phenylalanine hydroxylase | S | O | S | 修复 |
-| 6859721 [646,666) | cutaneous vasculitis | S | S | D | 新增回归 |
-| 8326491 [193,210) | Tay-Sachs disease | S | M | S | 修复 |
-| 8326491 [213,216) | TSD | S | M | S | 修复 |
+| 1671881 [138,185) | deficiency of hepatic phenylalanine hydroxylase | S | O | S | fixed |
+| 6859721 [646,666) | cutaneous vasculitis | S | S | D | new regression |
+| 8326491 [193,210) | Tay-Sachs disease | S | M | S | fixed |
+| 8326491 [213,216) | TSD | S | M | S | fixed |
 
 三篇改变的文档及严格计数：
 
