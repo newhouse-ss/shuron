@@ -1,0 +1,107 @@
+== inputs
+valid docs 100 gold mentions 791 | train docs 593 dev10 10 dev30 (size_noise sample) 30 train minus dev30 563
+  original     strict F1 0.7792  TP 600 FP 149 FN 191
+  R4           strict F1 0.7878  TP 605 FP 140 FN 186
+  R4_rerun     strict F1 0.7789  TP 597 FP 145 FN 194
+  topk4        strict F1 0.8023  TP 629 FP 148 FN 162
+  dev20        strict F1 0.7745  TP 584 FP 133 FN 207
+  dev30        strict F1 0.8050  TP 615 FP 122 FN 176
+  noTP         strict F1 0.7716  TP 593 FP 153 FN 198
+  abstraction  strict F1 0.7844  TP 615 FP 162 FN 176
+dev10 repeats (original guideline, strict multiset; loop's set scoring gave 0.8028 0.8085 0.8252 0.7832 0.8028): [0.8028, 0.8085, 0.8252, 0.7832, 0.8028]
+
+== A  run-to-run noise on valid100: R4 guideline annotated twice
+F1 0.7878 vs 0.7789; |diff| 0.0089; SD estimate from one pair 0.0063 (2 runs only, very rough)
+predicted entities 745 / 742; identical 664; identical share of union 0.807; documents with identical output 62/100
+
+== B  vote over the 8 saved guideline runs (typed entity must appear in >= k runs)
+  k>=1: F1 0.7504  TP 711 FP 393 FN 80
+  k>=2: F1 0.8071  TP 682 FP 217 FN 109
+  k>=3: F1 0.8147  TP 655 FP 162 FN 136
+  k>=4: F1 0.8158  TP 631 FP 125 FN 160
+  k>=5: F1 0.8088  TP 605 FP 100 FN 186
+  k>=6: F1 0.7986  TP 575 FP 74 FN 216
+  k>=7: F1 0.7723  TP 529 FP 50 FN 262
+  k>=8: F1 0.7075  TP 450 FP 31 FN 341
+best single run 0.805; mean of the 8 single runs 0.7855
+
+== C  human-review effort curve (expert = gold; reviewing an entity fixes its span/type or deletes it)
+-- topk4_vs_7_other_runs: base topk4, 777 predicted entities, 148 wrong, 60 gold entities never proposed by the base run
+   agreement histogram (number of other runs with the identical entity): {0: 37, 1: 19, 2: 23, 3: 25, 4: 36, 5: 61, 6: 95, 7: 481}
+   wrong entities per agreement level: {0: 25, 1: 13, 2: 12, 3: 15, 4: 16, 5: 18, 6: 18, 7: 31}
+   review   0% (  0 entities): agreement order F1 0.8023 | random 0.8023 | oracle 0.8023
+   review  10% ( 78 entities): agreement order F1 0.8432 | random 0.8182 | oracle 0.8854
+   review  20% (155 entities): agreement order F1 0.8868 | random 0.8343 | oracle 0.9606
+   review  30% (233 entities): agreement order F1 0.9109 | random 0.8500 | oracle 0.9606
+   review  50% (388 entities): agreement order F1 0.9321 | random 0.8823 | oracle 0.9606
+   review 100% (777 entities): agreement order F1 0.9606 | random 0.9606 | oracle 0.9606
+-- R4_vs_rerun: base R4, 745 predicted entities, 140 wrong, 66 gold entities never proposed by the base run
+   agreement histogram (number of other runs with the identical entity): {0: 81, 1: 664}
+   wrong entities per agreement level: {0: 40, 1: 100}
+   review   0% (  0 entities): agreement order F1 0.7878 | random 0.7878 | oracle 0.7878
+   review  10% ( 74 entities): agreement order F1 0.8343 | random 0.8055 | oracle 0.8761
+   review  20% (149 entities): agreement order F1 0.8507 | random 0.8243 | oracle 0.9565
+   review  30% (224 entities): agreement order F1 0.8634 | random 0.8418 | oracle 0.9565
+   review  50% (372 entities): agreement order F1 0.8910 | random 0.8750 | oracle 0.9565
+   review 100% (745 entities): agreement order F1 0.9565 | random 0.9565 | oracle 0.9565
+-- missed-entity candidates: spans proposed by the 7 other runs that overlap no topk4 prediction: 59; exactly gold 21; overlapping a gold span 9
+
+== D  gold subtype consistency
+train minus dev30: strings seen >=2 times 578 (3926 mentions); with >1 subtype 199 (2579 mentions, 65.7%); with both S and D 36
+valid: strings seen >=2 times 127 (567 mentions); with >1 subtype 45 (303 mentions, 53.4%); with both S and D 2
+most frequent mixed strings in train minus dev30: [('dm', {'Modifier': 67, 'SpecificDisease': 53}), ('dmd', {'SpecificDisease': 44, 'Modifier': 62}), ('apc', {'Modifier': 80, 'SpecificDisease': 5}), ('ald', {'SpecificDisease': 53, 'Modifier': 26}), ('pws', {'SpecificDisease': 53, 'Modifier': 22}), ('myotonic dystrophy', {'Modifier': 21, 'SpecificDisease': 50}), ('was', {'SpecificDisease': 29, 'Modifier': 32}), ('pku', {'SpecificDisease': 30, 'Modifier': 21}), ('aniridia', {'SpecificDisease': 28, 'Modifier': 22}), ('hd', {'SpecificDisease': 21, 'Modifier': 26})]
+topk4 same-span S<->D confusions on valid, by train-gold precedent: {'train precedent agrees with valid gold (>=75%)': 20, 'string unseen in train gold (as S or D)': 13, 'train precedent agrees with the prediction (>=75%)': 1}
+   train precedent agrees with valid gold (>=75%): ['adrenal insufficiency [gold Dise, pred Spec, train S0/D4]', 'tumour [gold Dise, pred Spec, train S0/D3]', 'myopathy [gold Dise, pred Spec, train S0/D3]', 'cataract [gold Spec, pred Dise, train S3/D0]', 'hereditary breast cancer [gold Spec, pred Dise, train S1/D0]', 'breast cancer [gold Spec, pred Dise, train S25/D0]', 'hereditary breast cancer [gold Spec, pred Dise, train S1/D0]', 'hereditary breast cancer [gold Spec, pred Dise, train S1/D0]']
+   string unseen in train gold (as S or D): ['sporadic breast cancers [gold Spec, pred Dise, train S0/D0]', 'male-infertility [gold Spec, pred Dise, train S0/D0]', 'fibre degeneration [gold Spec, pred Dise, train S0/D0]', 'fibrosis [gold Spec, pred Dise, train S0/D0]', 'hereditary breast cancers [gold Spec, pred Dise, train S0/D0]', 'x-linked recessive neurological disorder [gold Dise, pred Spec, train S0/D0]', 'chromosomal fragmentation during meiosis [gold Spec, pred Dise, train S0/D0]', 'dtdst chondrodysplasias [gold Spec, pred Dise, train S0/D0]']
+   train precedent agrees with the prediction (>=75%): ['myotonia [gold Spec, pred Dise, train S0/D5]']
+
+== E  document-level propagation and type harmonization
+gold train: free occurrences of annotated strings 5251; annotated 5140 (97.9%); annotated with the string's majority type in that document 4483 (85.4%)
+gold valid: free occurrences of annotated strings 791; annotated 787 (99.5%); annotated with the string's majority type in that document 706 (89.3%)
+dev30 documents, 5 repeats, original guideline (base, harmonize only, add only, both): [(0.7954, 0.7533, 0.7954, 0.7533), (0.8038, 0.7543, 0.8038, 0.7543), (0.8152, 0.7657, 0.8152, 0.7657), (0.7962, 0.7467, 0.7962, 0.7467), (0.813, 0.7634, 0.813, 0.7634)]
+   mean delta harmonize -0.0480; add only +0.0000; both -0.0480
+   valid original     base 0.7792  harmonize 0.7377  add only 0.7800 (TP +1, FP +0)  both 0.7385
+   valid R4           base 0.7878  harmonize 0.7552  add only 0.7875 (TP +1, FP +2)  both 0.7550
+   valid R4_rerun     base 0.7789  harmonize 0.7397  add only 0.7784 (TP +0, FP +1)  both 0.7392
+   valid topk4        base 0.8023  harmonize 0.7653  add only 0.8008 (TP +2, FP +6)  both 0.7640
+   valid dev20        base 0.7745  harmonize 0.7321  add only 0.7748 (TP +1, FP +1)  both 0.7325
+   valid dev30        base 0.8050  harmonize 0.7605  add only 0.8142 (TP +14, FP +3)  both 0.7702
+   valid noTP         base 0.7716  harmonize 0.7378  add only 0.7724 (TP +1, FP +0)  both 0.7386
+   valid abstraction  base 0.7844  harmonize 0.7436  add only 0.7837 (TP +1, FP +3)  both 0.7430
+   mean delta over 8 valid runs: harmonize -0.0390; add only +0.0010; both -0.0378
+
+== F  dictionary baselines and precedent relabeling (reference points, not candidate methods)
+dictionary from dev10 gold only: 47 strings; valid strict F1 0.0858 (TP 41 FP 124 FN 750); span-only F1 0.1883
+dictionary from train minus dev30 gold: 1509 strings; valid strict F1 0.4504 (TP 338 FP 372 FN 453); span-only F1 0.5929
+topk4 relabeled by train precedent (n>=2, >=75%): 41 entities changed; strict F1 0.7806 (base 0.8023)
+topk4 relabeled by train precedent (n>=3, >=75%): 38 entities changed; strict F1 0.7832 (base 0.8023)
+topk4 S<->D relabeled by train precedent (n>=2, >=75% of S+D): 14 entities changed; strict F1 0.8189 (base 0.8023)
+topk4 S<->D relabeled by train precedent (n>=3, >=75% of S+D): 14 entities changed; strict F1 0.8189 (base 0.8023)
+S<->D relabeling of topk4 by precedent pools of growing size (random documents from train minus dev30; 5 draws):
+   pool  10 documents: strict F1 mean 0.8028  draws [0.8036, 0.8023, 0.8023, 0.8036, 0.8023]
+   pool  30 documents: strict F1 mean 0.8054  draws [0.8087, 0.8074, 0.8036, 0.8048, 0.8023]
+   pool 100 documents: strict F1 mean 0.8097  draws [0.8138, 0.8099, 0.8061, 0.8099, 0.8087]
+   pool 300 documents: strict F1 mean 0.8148  draws [0.8176, 0.8125, 0.8138, 0.8151, 0.8151]
+   pool 563 documents: strict F1 mean 0.8189  draws [0.8189]
+
+== H  paired document bootstrap (10,000 resamples, seed 42) and S/D confusions per run
+  topk4 - original                 diff +0.0231  95% CI [-0.0192, +0.0683]  P(diff>0) 0.846
+  topk4 - R4                       diff +0.0145  95% CI [-0.0215, +0.0507]  P(diff>0) 0.787
+  R4 - R4_rerun (same guideline)   diff +0.0089  95% CI [-0.0191, +0.0389]  P(diff>0) 0.711
+  vote>=4of8 - topk4               diff +0.0135  95% CI [-0.0137, +0.0387]  P(diff>0) 0.852
+  vote>=4of8 - dev30               diff +0.0108  95% CI [-0.0130, +0.0340]  P(diff>0) 0.825
+  vote>=4of8 - original            diff +0.0366  95% CI [+0.0059, +0.0699]  P(diff>0) 0.990
+same-span S->D and D->S confusions per run: {'original': {'Spec->Dise': 18, 'Dise->Spec': 8}, 'R4': {'Spec->Dise': 19, 'Dise->Spec': 14}, 'R4_rerun': {'Spec->Dise': 25, 'Dise->Spec': 16}, 'topk4': {'Spec->Dise': 19, 'Dise->Spec': 15}, 'dev20': {'Spec->Dise': 13, 'Dise->Spec': 29}, 'dev30': {'Spec->Dise': 8, 'Dise->Spec': 6}, 'noTP': {'Spec->Dise': 39, 'Dise->Spec': 19}, 'abstraction': {'Spec->Dise': 25, 'Dise->Spec': 13}}
+topk4 S<->D same-span confusions: ['Adrenal insufficiency (Dise->Spec)', 'DTDST chondrodysplasias (Spec->Dise)', 'Deficiency of terminal complement components (Spec->Dise)', 'T-cell lymphomas (Spec->Dise)', 'X-linked recessive neurological disorder (Dise->Spec)', 'breast cancer (Spec->Dise)', 'cancer (Dise->Spec)', 'cancers (Dise->Spec)', 'cancers (Dise->Spec)', 'cataract (Spec->Dise)', 'chromosomal fragmentation during meiosis (Spec->Dise)', 'enzyme deficiency (Dise->Spec)', 'fibre degeneration (Spec->Dise)', 'fibrosis (Spec->Dise)', 'galactosemia (Spec->Dise)', 'hereditary breast cancer (Spec->Dise)', 'hereditary breast cancer (Spec->Dise)', 'hereditary breast cancer (Spec->Dise)', 'hereditary breast cancer (Spec->Dise)', 'hereditary breast cancer (Spec->Dise)', 'hereditary breast cancers (Spec->Dise)', 'lipomas (Dise->Spec)', 'lipomas (Dise->Spec)', 'lymphadenopathy (Dise->Spec)', 'male-infertility (Spec->Dise)', 'myopathy (Dise->Spec)', 'myotonia (Spec->Dise)', 'spastic paraplegia (Dise->Spec)', 'splenomegaly (Dise->Spec)', 'sporadic breast cancers (Spec->Dise)', 'sporadic renal cell carcinomas (Spec->Dise)', 'stage III cancers (Dise->Spec)', 'tumour (Dise->Spec)', 'tumours (Dise->Spec)']
+
+== C2  review curve vs number of runs giving the agreement signal (base topk4; mean over random subsets)
+  m=1 other runs: review 10% -> 0.8405, 20% -> 0.8686, 30% -> 0.8805
+  m=2 other runs: review 10% -> 0.8446, 20% -> 0.8823, 30% -> 0.8977
+  m=3 other runs: review 10% -> 0.8453, 20% -> 0.8825, 30% -> 0.9066
+  m=7 other runs: review 10% -> 0.8435, 20% -> 0.8868, 30% -> 0.9104
+
+== G  abbreviations and boundary direction (topk4 on valid)
+discrepancies by category: {'boundary_mismatch': 45, 'false_negative': 55, 'label_mismatch': 57, 'false_positive': 45, 'unpaired_overlap': 6}
+of which the text is abbreviation-like: {'boundary_mismatch': 2, 'false_positive': 2, 'label_mismatch': 2, 'false_negative': 11, 'unpaired_overlap': 1} total 18/208
+boundary mismatches: prediction longer 23, shorter 22, shifted 0
+words the prediction adds when longer: [('classical', 4), ('idiopathic', 2), ('late', 2), ('onset', 2), ('chromophobe', 2), ('d', 2), ('with', 1), ('cerebral', 1), ('involvement', 1), ('preclinical', 1), ('androgen', 1), ('dependent', 1)]

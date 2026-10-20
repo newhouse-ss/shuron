@@ -1,6 +1,6 @@
 # 研究进展
 
-更新：2026-10-15。这里沿研究主线记录阶段成果、判断变化和下次 seminar 待办；逐次实验见 [LOG.md](LOG.md)，固定背景及评价口径见 [OVERVIEW.md](OVERVIEW.md)。
+更新：2026-10-16。这里沿研究主线记录阶段成果、判断变化和下次 seminar 待办；逐次实验见 [LOG.md](LOG.md)，固定背景及评价口径见 [OVERVIEW.md](OVERVIEW.md)。
 
 ## 总体主线与阶段目标
 
@@ -122,6 +122,37 @@ BC5CDR、BioRED 的复现已完成，validation 原指南/修改后分别为 **0
 
 10/16 seminar 的 slides 见 `../presentations/20261016_faldh_attribution_en.pptx`（slides 统一放在 `修論/presentations`），生成脚本为 `todo-temp/r4-isolation/build_faldh_slides.py`；非目标变化另成一份 `../presentations/20261016_r4_secondary_effects_en.pptx`，生成脚本为 `todo-temp/r4-nontarget/build_secondary_effects_slides.py`。
 
+**2026-10-16，seminar 反馈与当日离线核查：** 教授提出两项检验，原文见底部 Todo。
+
+- 第二项的前提已离线核对：E1 能控制的输入和设置都与 08/02 原 run 相同；无法做到相同的只有模型版本（原 run 未记录）和模型自身的随机性。见[复现一致性核查](todo-temp/r4-nontarget/20261016_replay_identity_report.md)。
+- 23 次重跑与原 run 相比，差别和重跑之间的差别处在同一水平。例外只有两处，而两处都是因为原 run 的结果特别才被挑出来的：R4 下的 Tay-Sachs/TSD，以及 R3 下的 PAH。R3 下 PAH 原 run 未标，重跑 3/3 是跨度正确的 DiseaseClass，两者都不算对。
+- 对研究主线的含义：要说某一处"被规则改变"，必须先重复确认，单次标注不够。这与 10/15 关于"接受或回退一轮修改的决定可能被单次波动左右"的判断一致。
+- 第一项已完成设计，未运行，见[设计](todo-temp/r4-isolation/20261016_r3_minus_faldh_design.md)。10/17 已运行，见下。
+
+**2026-10-17，R3 删去点名排除仍修不好 FALDH；FALDH 归因到此收尾：**
+
+- R3 指南删去点名 FALDH 的两处后，5 次都没有标出 FALDH；同批 R3 原样对照 0/3，其余 13 个 gold 每次都对。10/14 里 R4 删去点名排除后是 3/3（Fisher 单侧 p ≈ 0.018，跨日比较，两天的 R3 对照一致）。见[结果](todo-temp/r4-isolation/20261017_r3_minus_faldh_report.md)。
+- 对研究主线的含义：只去掉点名排除不够，R4 新 principle 写进指南的内容是修复 FALDH 的必要条件。连同 10/14 的"标签定义＋原则"3 次都当作疾病标注、③− 3/3 精确恢复，以及 PAH 在 R3 下 0/3、R4 下 3/3，可以说 R4 的 principle 对"缺乏/活性降低＋具体分子"这类漏标有用。FALDH 没修好，原因在改写这一站加入的点名排除（规则冲突），不在 principle 本身。
+- 口径限制：只对 FALDH、PAH 两例成立，单一模型；G6PD 在 R4 下仍未修复；R4 这一轮的 dev F1 提升本身不能复现（10/15）。
+- 决定不运行追加条件（删 R3 第 12 行的 "a molecular/substance entity or its level/activity"）。它只能区分 R4 里起作用的是收窄旧 exception rule（第 14 行），还是新增的正向规则（第 12 行）。两处都是按同一条 principle 写入的，所以不影响上面的结论。规则链显示 PAH 在 R3 的丢失与第 12 行同时发生，这与"第 12 行是 FALDH 的第二道阻挡"的推测一致，但这一点没有检验。
+
+**2026-10-19, preparation for the 10/20 meeting (Prof. Goto, Kon Woo Kim, Prof. Kim); offline only:**
+
+- Validation error breakdown of the saved runs ([error breakdown](todo-temp/meeting-20261020/error_breakdown_output.txt)). With the top-4 guideline (strict F1 0.8023), the largest single loss is subtype confusion between SpecificDisease and DiseaseClass (21 each way; F1 0.8750 if all subtype errors were fixed by gold), then boundaries (0.8597), missed mentions (0.8429) and extra mentions (0.8260). Ignoring subtypes, the same predictions score 0.8546.
+- Midterm point 4 has lower priority now: missed Modifier is 27 of 208 disagreements with top-4 (13%), against 40 with the base method.
+- Simulated expert bound: checking each of the 777 predicted entities with gold reaches 0.9606. This frames the new annotation-reviewer direction (an LLM second pass, measured between the model alone and this bound).
+- Target check: no source gives BioBERT 0.86 on NCBI Disease. Zhao and Goto 2025 (Table 4) report BioBERT-Large 0.897 with one Disease type on a different test split. The 0.86 in OVERVIEW is left unchanged until the user decides; the meeting deck uses 0.897 with its source.
+- Deck (10/20 meeting, rebuilt on 10/20 from plan v3): `../presentations/20261020_progress_and_plan_en.pptx`, builder `todo-temp/meeting-20261020/build_plan_v3_slides.py`. The 10/19 draft deck and its builder were deleted.
+
+**2026-10-19 (later), direction research and plan v2; offline only:** [report](todo-temp/direction-scan/20261019_direction_research_report.md), plan v2, superseded on 10/20 by [plan v3](docs/RP/20261020_research_plan_v3.md); v1 and v2 were deleted.
+
+- No refined guideline is yet proven better than the original on valid100: top-4 minus original +0.0231, 95% interval [−0.0192, +0.0683]. The same R4 guideline annotated twice gave 0.7878 and 0.7789. Four refined loop finals (top-1 run 3, top-4 runs 1 to 3) were never scored on validation; scoring them is the cheapest test of top-4 as a method.
+- Subtype confusion (largest loss) is convention, not noisy gold: 20 of top-4's 34 same-span S/D confusions go against consistent training precedent. It is guideline-sensitive (14 to 58 across guidelines), and refinement created part of it (two cancer patterns, 3 to 16).
+- Aggregation and routing are the strongest free levers: a vote over the 8 saved runs gives 0.8158 (+0.0366 [+0.0059, +0.0699] over original); checking the 20% / 30% least-agreed entities gives 0.887 / 0.911 with gold as the expert (random order 0.834 / 0.850).
+- Ruled out offline: document-level label propagation (−0.039 / +0.001) and lexical precedent (+0.017 even with 563 documents).
+- Plan v1 review: protocol kept, allocation changed. Track 1 targeted mechanisms with near-zero validation footprint and could only detect differences of about 0.028. Plan v2 starts with a fine-tuned yardstick on the same split (no source supports BioBERT 0.86 on NCBI Disease; no four-subtype supervised result found), scores existing guidelines, retrofits the gold-consistency check (arm 3 merged into it: gold as a check, not as writing material), pilots a subtype typing pass, and makes the review-effort curve the replacement result, with one final evaluation on the official test split if the authors agree. Core cost estimate ¥61,000 to ¥98,000 on GPT-5.4.
+- The base paper is now public (arXiv 2605.20809, ACL 2026 main) and can be cited on slides.
+
 ## 后续记录方式
 
 实验后，LOG 新增一行，PROGRESS 记录它对三条优化轴、阶段目标和当前决策的影响，并更新文档底部的 Todo。负结果和中断同样保留。
@@ -167,3 +198,15 @@ seminar 后，将会议要点及其对研究主线的推进融入对应日期的
 **新 P3：会议协调。**
 
 - [ ] 收集 Ken、Kim 教授可用时间（候选：10/15 周四、10/16 周五、10/19 周一上午 10–13 时、10/20 周二），确定下次 seminar 安排。
+
+### 2026-10-16 seminar Todo（当前进行中）
+
+教授反馈原文：
+
+> Test whether guidelines of round3 can also fix the missing FALDH is the named exceptions are removed.
+>
+> Test whether the 'M→S fixes can't be reproduced' are real noise or not. I need to make the input and settings all the same.
+
+- [x] R3 指南删去点名 FALDH 的两处（第 41 至 45 行、第 241 行）后重标 10577908，看 FALDH 能否修复。10/17 结果：**不能**，删除后 0/5，同批 R3 原样对照 0/3，其余 13 个 gold 每次都对。10/14 里 R4 删去点名排除后是 3/3，所以 FALDH 的修复靠的是 R4 新增的内容，不只是去掉点名排除。R3 第 12 行的一般性 exception rule（"a molecular/substance entity or its level/activity"）没有 R4 那样的 deficiency 例外，推测是第二道阻挡，未检验。见[结果](todo-temp/r4-isolation/20261017_r3_minus_faldh_report.md)。
+- [x] （2026-10-17 决定不运行：现有证据已足以说明 R4 新增内容是修复 FALDH 的必要条件，这一条只能细分是第 12 行还是第 14 行起作用，不改变结论）追加条件：在上一条的基础上再删去 R3 第 12 行的 "a molecular/substance entity or its level/activity"，5 次，检验它是否就是第二道阻挡。条件文本已备好（`conditions/c4b_minus_level.txt`），以后需要时可直接运行。
+- [ ] 检验 Tay-Sachs/TSD 的 M→S 不能复现是否真是波动，要求输入和设置完全相同。10/16 离线核查：能控制的都相同，模型版本无法确认。可补的三项都还没做：请管理员确认部署是否升级过；以后保存每次调用的 `model` 字段；用 R4 指南再标 8326491 15 次。10/17 补充：`model` 字段实测返回的是部署名 `eastus2-gpt-5.4`，查不出版本，版本只能问管理员。见[核查](todo-temp/r4-nontarget/20261016_replay_identity_report.md)。

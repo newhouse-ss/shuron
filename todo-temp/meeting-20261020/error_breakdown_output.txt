@@ -1,0 +1,103 @@
+== original guideline (ncbi-g-gpt54)
+strict F1 0.7792  P 0.8011  R 0.7585  TP 600 FP 149 FN 191
+strict_trimmed_spans   F1 0.7844  (TP 604 FP 145 FN 187)
+span_only              F1 0.8351  (TP 643 FP 106 FN 148)
+span_only_trimmed      F1 0.8403  (TP 647 FP 102 FN 144)
+discrepancies 229: {'boundary_mismatch': 44, 'false_negative': 73, 'label_mismatch': 67, 'false_positive': 34, 'unpaired_overlap': 11}
+label mismatch pairs (gold->pred): {'SpecificDisease->DiseaseClass': 24, 'DiseaseClass->SpecificDisease': 12, 'Modifier->CompositeMention': 10, 'SpecificDisease->CompositeMention': 6, 'DiseaseClass->Modifier': 6, 'SpecificDisease->Modifier': 3, 'CompositeMention->Modifier': 3, 'CompositeMention->SpecificDisease': 2, 'Modifier->DiseaseClass': 1}  same span: 43
+boundary by gold type: {'CompositeMention': 4, 'SpecificDisease': 29, 'Modifier': 7, 'DiseaseClass': 4}  whitespace/punctuation only: 4
+missed by gold type: {'Modifier': 38, 'DiseaseClass': 28, 'SpecificDisease': 7}  (missed Modifier = 16.6% of discrepancies)
+spurious by predicted type: {'Modifier': 24, 'SpecificDisease': 10}  unpaired gold 7 pred 4
+F1 if one kind of error were fixed by gold:
+  label mismatch fixed                             F1 0.8662  (+0.0870)
+  boundary mismatch fixed                          F1 0.8364  (+0.0572)
+  missed entities added                            F1 0.8345  (+0.0553)
+  spurious entities removed                        F1 0.7968  (+0.0176)
+  expert checks every predicted entity             F1 0.9467  (+0.1675)
+  label mismatch fixed, gold SpecificDisease only  F1 0.8221  (+0.0429)
+  missed SpecificDisease added                     F1 0.7847  (+0.0055)
+  label mismatch fixed, gold DiseaseClass only     F1 0.8026  (+0.0234)
+  missed DiseaseClass added                        F1 0.8010  (+0.0218)
+  label mismatch fixed, gold Modifier only         F1 0.7935  (+0.0143)
+  missed Modifier added                            F1 0.8086  (+0.0294)
+  label mismatch fixed, gold CompositeMention only F1 0.7857  (+0.0065)
+  missed CompositeMention added                    F1 0.7792  (+0.0000)
+predicted entities to check: 749
+
+== top-1 refined (R4) (ncbi-m-gpt54)
+strict F1 0.7878  P 0.8121  R 0.7649  TP 605 FP 140 FN 186
+strict_trimmed_spans   F1 0.793  (TP 609 FP 136 FN 182)
+span_only              F1 0.849  (TP 652 FP 93 FN 139)
+span_only_trimmed      F1 0.8542  (TP 656 FP 89 FN 135)
+discrepancies 206: {'boundary_mismatch': 57, 'label_mismatch': 63, 'false_negative': 63, 'false_positive': 17, 'unpaired_overlap': 6}
+label mismatch pairs (gold->pred): {'SpecificDisease->DiseaseClass': 22, 'DiseaseClass->SpecificDisease': 16, 'Modifier->CompositeMention': 7, 'DiseaseClass->Modifier': 7, 'SpecificDisease->Modifier': 4, 'CompositeMention->Modifier': 3, 'CompositeMention->SpecificDisease': 2, 'Modifier->DiseaseClass': 1, 'SpecificDisease->CompositeMention': 1}  same span: 47
+boundary by gold type: {'CompositeMention': 5, 'SpecificDisease': 31, 'Modifier': 14, 'DiseaseClass': 7}  whitespace/punctuation only: 4
+missed by gold type: {'Modifier': 40, 'DiseaseClass': 18, 'SpecificDisease': 5}  (missed Modifier = 19.4% of discrepancies)
+spurious by predicted type: {'Modifier': 4, 'SpecificDisease': 8, 'DiseaseClass': 5}  unpaired gold 3 pred 3
+F1 if one kind of error were fixed by gold:
+  label mismatch fixed                             F1 0.8698  (+0.0820)
+  boundary mismatch fixed                          F1 0.8620  (+0.0742)
+  missed entities added                            F1 0.8355  (+0.0477)
+  spurious entities removed                        F1 0.7966  (+0.0088)
+  expert checks every predicted entity             F1 0.9565  (+0.1687)
+  label mismatch fixed, gold SpecificDisease only  F1 0.8229  (+0.0351)
+  missed SpecificDisease added                     F1 0.7917  (+0.0039)
+  label mismatch fixed, gold DiseaseClass only     F1 0.8177  (+0.0299)
+  missed DiseaseClass added                        F1 0.8018  (+0.0140)
+  label mismatch fixed, gold Modifier only         F1 0.7982  (+0.0104)
+  missed Modifier added                            F1 0.8185  (+0.0307)
+  label mismatch fixed, gold CompositeMention only F1 0.7943  (+0.0065)
+  missed CompositeMention added                    F1 0.7878  (+0.0000)
+predicted entities to check: 745
+
+== top-4 refined (ncbi-valid-topk4-gpt54)
+strict F1 0.8023  P 0.8095  R 0.7952  TP 629 FP 148 FN 162
+strict_trimmed_spans   F1 0.8074  (TP 633 FP 144 FN 158)
+span_only              F1 0.8546  (TP 670 FP 107 FN 121)
+span_only_trimmed      F1 0.8597  (TP 674 FP 103 FN 117)
+discrepancies 208: {'boundary_mismatch': 45, 'false_negative': 55, 'label_mismatch': 57, 'false_positive': 45, 'unpaired_overlap': 6}
+label mismatch pairs (gold->pred): {'DiseaseClass->SpecificDisease': 21, 'SpecificDisease->DiseaseClass': 21, 'DiseaseClass->Modifier': 4, 'SpecificDisease->Modifier': 3, 'Modifier->CompositeMention': 3, 'SpecificDisease->CompositeMention': 3, 'CompositeMention->SpecificDisease': 1, 'CompositeMention->Modifier': 1}  same span: 41
+boundary by gold type: {'CompositeMention': 3, 'SpecificDisease': 32, 'Modifier': 6, 'DiseaseClass': 4}  whitespace/punctuation only: 4
+missed by gold type: {'Modifier': 27, 'DiseaseClass': 25, 'SpecificDisease': 3}  (missed Modifier = 13.0% of discrepancies)
+spurious by predicted type: {'SpecificDisease': 28, 'Modifier': 14, 'DiseaseClass': 2, 'CompositeMention': 1}  unpaired gold 5 pred 1
+F1 if one kind of error were fixed by gold:
+  label mismatch fixed                             F1 0.8750  (+0.0727)
+  boundary mismatch fixed                          F1 0.8597  (+0.0574)
+  missed entities added                            F1 0.8429  (+0.0406)
+  spurious entities removed                        F1 0.8260  (+0.0237)
+  expert checks every predicted entity             F1 0.9606  (+0.1583)
+  label mismatch fixed, gold SpecificDisease only  F1 0.8367  (+0.0344)
+  missed SpecificDisease added                     F1 0.8046  (+0.0023)
+  label mismatch fixed, gold DiseaseClass only     F1 0.8342  (+0.0319)
+  missed DiseaseClass added                        F1 0.8211  (+0.0188)
+  label mismatch fixed, gold Modifier only         F1 0.8061  (+0.0038)
+  missed Modifier added                            F1 0.8226  (+0.0203)
+  label mismatch fixed, gold CompositeMention only F1 0.8048  (+0.0025)
+  missed CompositeMention added                    F1 0.8023  (+0.0000)
+predicted entities to check: 777
+
+== top-1 refined, dev30 (ncbi-m-dev30)
+strict F1 0.805  P 0.8345  R 0.7775  TP 615 FP 122 FN 176
+strict_trimmed_spans   F1 0.8102  (TP 619 FP 118 FN 172)
+span_only              F1 0.8455  (TP 646 FP 91 FN 145)
+span_only_trimmed      F1 0.8508  (TP 650 FP 87 FN 141)
+discrepancies 205: {'boundary_mismatch': 48, 'false_negative': 81, 'label_mismatch': 45, 'false_positive': 24, 'unpaired_overlap': 7}
+label mismatch pairs (gold->pred): {'SpecificDisease->DiseaseClass': 12, 'DiseaseClass->SpecificDisease': 9, 'Modifier->CompositeMention': 9, 'SpecificDisease->Modifier': 6, 'SpecificDisease->CompositeMention': 3, 'DiseaseClass->Modifier': 3, 'CompositeMention->Modifier': 2, 'Modifier->DiseaseClass': 1}  same span: 31
+boundary by gold type: {'CompositeMention': 3, 'SpecificDisease': 26, 'DiseaseClass': 10, 'Modifier': 9}  whitespace/punctuation only: 4
+missed by gold type: {'Modifier': 40, 'DiseaseClass': 29, 'SpecificDisease': 12}  (missed Modifier = 19.5% of discrepancies)
+spurious by predicted type: {'Modifier': 14, 'SpecificDisease': 10}  unpaired gold 2 pred 5
+F1 if one kind of error were fixed by gold:
+  label mismatch fixed                             F1 0.8639  (+0.0589)
+  boundary mismatch fixed                          F1 0.8678  (+0.0628)
+  missed entities added                            F1 0.8651  (+0.0601)
+  spurious entities removed                        F1 0.8178  (+0.0128)
+  expert checks every predicted entity             F1 0.9446  (+0.1396)
+  label mismatch fixed, gold SpecificDisease only  F1 0.8325  (+0.0275)
+  missed SpecificDisease added                     F1 0.8143  (+0.0093)
+  label mismatch fixed, gold DiseaseClass only     F1 0.8207  (+0.0157)
+  missed DiseaseClass added                        F1 0.8272  (+0.0222)
+  label mismatch fixed, gold Modifier only         F1 0.8181  (+0.0131)
+  missed Modifier added                            F1 0.8355  (+0.0305)
+  label mismatch fixed, gold CompositeMention only F1 0.8076  (+0.0026)
+  missed CompositeMention added                    F1 0.8050  (+0.0000)
+predicted entities to check: 737

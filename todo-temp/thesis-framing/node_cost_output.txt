@@ -1,0 +1,15 @@
+per call JPY: off 0.069, on_mean 2.204, on_max 3.523
+
+Delete contradicting examples: check (2 docs x 2 conditions x 3 passes): calls 12 | off JPY 1 | on JPY 26 to 42
+Stability test: arm A thinking off 52, arm B thinking on 52: calls 104 | off JPY 118 | on JPY 118 to 187
+Main-result reproduction, baselines: valid100 x4 (original x2, GPT R4, GPT top-4): calls 400 | off JPY 27 | on JPY 881 to 1,409
+Main-result reproduction, loops: 10 x (62 dev calls + valid100 of final): calls 1620 | off JPY 111 | on JPY 3,570 to 5,707
+Subtype typing, pilot: dev30 x2 + two typing variants on dev30: calls 120 | off JPY 8 | on JPY 264 to 423
+Point 2: verified examples chosen by error cluster, 5 loops x (62 dev + valid100): calls 810 | off JPY 56 | on JPY 1,785 to 2,853
+Point 3: rationales passed to pattern explanation, 5 loops x (62 dev + valid100): calls 810 | off JPY 56 | on JPY 1,785 to 2,853
+Subtype typing, validation if gate passes: valid100 x2: calls 200 (conditional) | off JPY 14 | on JPY 441 to 705
+Test-split evaluation: frozen x2 + original x1: calls 300 (conditional) | off JPY 21 | on JPY 661 to 1,057
+TOTAL core (unconditional): calls 3876 | off JPY 377 | on JPY 8,430 to 13,475
+TOTAL all: calls 4376 | off JPY 412 | on JPY 9,532 to 15,236
+
+Main-result reproduction serial time at 46 to 489 s per call: 25.8 to 274.4 hours; with 8 parallel workers 3.2 to 34.3 hours

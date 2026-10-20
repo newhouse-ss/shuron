@@ -8,6 +8,8 @@
 
 | 日期 | 实验 / 证据 | 设置 | 关键结果 | 状态 |
 | --- | --- | --- | --- | --- |
+| 2026-10-19 | [离线方向核查](todo-temp/direction-scan/20261019_direction_research_report.md) | 既有 8 个 valid100 运行 + size_noise dev 重复 + train gold，无 API 调用；配对 bootstrap 10000 次 | 8 运行投票（≥4）F1 0.8158，较原指南 +0.0366 [+0.0059, +0.0699]（唯一不跨 0）；topk4−原指南 +0.0231 [−0.0192, +0.0683]；同一 R4 指南两次 0.7878/0.7789；按一致度复核 20%/30% 实体 → 0.887/0.911（随机 0.834/0.850）；S/D 混淆 34 例中 20 例 train 先例与 gold 一致；文档内传播 −0.039/+0.001 | 完成；结论与方向排序见报告；据此写的 plan v2 已被 docs/RP/20261020_research_plan_v3.md 取代并删除 |
+| 2026-10-17 | [R3 删去点名排除](todo-temp/r4-isolation/20261017_r3_minus_faldh_report.md) | R3 指南删去点名 FALDH 的两处（第 41 至 45、241 行），其余不变；10577908，R3 原样 × 3 与删除后 × 5 交替执行；GPT-5.4 high，设置同原 run | FALDH 删除后 0/5（全为 O），同批对照 0/3；整篇每次 13/0/1，无其他变化；输入 35,078、输出 235,345 token | 完成，8/8；10/16 首次尝试 13 个任务全部停在排队、未开始执行（无用量），10/17 重跑；追加条件未运行 |
 | 2026-10-15 | [R4 非目标变化重跑 E1](todo-temp/r4-nontarget/20261015_r4_nontarget_report.md) | 8326491 × R3 指南／R4 指南 × 5 次；GPT-5.4 high，设置同原 run | Tay-Sachs disease、TSD 两组均 M 5/5（原 run 的 R4 为 S），R4 导致改对不成立，E2 未执行；输入 45,470、输出 162,220 token | 完成，10/10；首次启动中断后重跑，事后报备 |
 | 2026-10-14 | [R4 追加对照 ③−](todo-temp/r4-isolation/20261014_r4_isolation_report.md) | R4 指南删去点名 FALDH 的三处（第 54 至 58、167、263 行），其余不变；10577908 × 3 次；GPT-5.4 high | FALDH 精确 3/3（R4 原指南 0/3），整篇 14/0/0，无其他回归；输入 14,502、输出 105,580 token | 完成，3/3 |
 | 2026-10-14 | [R4 隔离对照](todo-temp/r4-isolation/20261014_r4_isolation_report.md) | R4 目标所在 3 篇 dev 文档 × 4 种指南条件（R3 指南／标签定义＋R4 原则／同上去掉 exception rule／R4 指南）× 3 次；GPT-5.4 high | FALDH：只给原则时方向正确 2/3（另 1 次 CompositeMention），R4 指南 0/3，去掉 exception rule 无变化；G6PD 四组精确 0/3；PAH：R3 指南 0/3，R4 指南 3/3；输入 97,113、输出 959,532 token | 完成，36/36 |

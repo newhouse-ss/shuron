@@ -1,0 +1,90 @@
+== calibration on saved GPT-5.4 units ==
+chars per input token: mean 4.517 (min 4.473, max 4.562, n=28)
+visible output: 122773 chars over 378 annotations in 49 units -> 72 tokens per annotation (assumes the same chars/token)
+GPT-5.4 high output per full-guideline annotation call: n=31 mean 22,551 min 11,709 max 36,459
+
+== Part 1: Azure GPT-5.4, R3 minus named FALDH exclusion (10577908) ==
+measured R3 as-is: [33993, 29550, 32218] input 4431
+measured R4 minus FALDH: [36459, 35931, 33190] input 4834
+[Global Standard $2.5/$15.0 per 1M]
+  main 8 calls, estimate: input 35,448 output 271,728 -> $4.16 = JPY 658
+  main 8 calls, high end of measured range: input 35,448 output 291,672 -> $4.46 = JPY 706
+  main 8 calls, hard cap 64k each: input 35,448 output 512,000 -> $7.77 = JPY 1,228
+  follow-up 5 calls, estimate: input 22,155 output 175,967 -> $2.69 = JPY 426
+  follow-up 5 calls, high end: input 22,155 output 182,295 -> $2.79 = JPY 441
+[Data Zone Standard $2.75/$16.5 per 1M]
+  main 8 calls, estimate: input 35,448 output 271,728 -> $4.58 = JPY 724
+  main 8 calls, high end of measured range: input 35,448 output 291,672 -> $4.91 = JPY 776
+  main 8 calls, hard cap 64k each: input 35,448 output 512,000 -> $8.55 = JPY 1,351
+  follow-up 5 calls, estimate: input 22,155 output 175,967 -> $2.96 = JPY 469
+  follow-up 5 calls, high end: input 22,155 output 182,295 -> $3.07 = JPY 485
+
+== Part 2: DeepSeek flash, off-peak prices (peak = 2x) ==
+valid100: 100 docs, 791 gold; dev10: 10 docs, 74 gold
+guideline chars: original 7,367, refined proxy (08/02 R4) 19,940
+
+[scenario off]
+  valid100 once, original guideline: calls 100, input miss 32,900, hit 181,309, output 56,880 -> off-peak $0.04 = JPY 6, peak $0.08 = JPY 13
+  valid100 once, refined-size guideline: calls 100, input miss 35,684, hit 456,890, output 56,880 -> off-peak $0.04 = JPY 6, peak $0.08 = JPY 13
+  valid100 once, no cache: calls 100, input miss 214,210, hit 0, output 56,880 -> off-peak $0.07 = JPY 10, peak $0.13 = JPY 21
+  dev10 once, original guideline: calls 10, input miss 4,603, hit 16,483, output 5,321 -> off-peak $0.00 = JPY 1, peak $0.01 = JPY 1
+  one loop (4 iterations, dev10): calls 62, input miss 66,812, hit 182,624, output 42,357 -> off-peak $0.04 = JPY 6, peak $0.07 = JPY 11
+  one loop + valid100 of its final guideline: calls 162, input miss 102,496, hit 639,514, output 99,237 -> off-peak $0.08 = JPY 12, peak $0.15 = JPY 24
+
+[scenario on_mean]
+  valid100 once, original guideline: calls 100, input miss 32,900, hit 181,309, output 2,311,996 -> off-peak $1.39 = JPY 220, peak $2.79 = JPY 440
+  valid100 once, refined-size guideline: calls 100, input miss 35,684, hit 456,890, output 2,311,996 -> off-peak $1.39 = JPY 220, peak $2.79 = JPY 441
+  valid100 once, no cache: calls 100, input miss 214,210, hit 0, output 2,311,996 -> off-peak $1.42 = JPY 224, peak $2.84 = JPY 449
+  dev10 once, original guideline: calls 10, input miss 4,603, hit 16,483, output 230,833 -> off-peak $0.14 = JPY 22, peak $0.28 = JPY 44
+  one loop (4 iterations, dev10): calls 62, input miss 66,812, hit 182,624, output 1,440,529 -> off-peak $0.87 = JPY 138, peak $1.75 = JPY 277
+  one loop + valid100 of its final guideline: calls 162, input miss 102,496, hit 639,514, output 3,752,526 -> off-peak $2.27 = JPY 359, peak $4.54 = JPY 717
+
+[scenario on_max]
+  valid100 once, original guideline: calls 100, input miss 32,900, hit 181,309, output 3,702,780 -> off-peak $2.23 = JPY 352, peak $4.45 = JPY 704
+  valid100 once, refined-size guideline: calls 100, input miss 35,684, hit 456,890, output 3,702,780 -> off-peak $2.23 = JPY 352, peak $4.46 = JPY 705
+  valid100 once, no cache: calls 100, input miss 214,210, hit 0, output 3,702,780 -> off-peak $2.25 = JPY 356, peak $4.51 = JPY 713
+  dev10 once, original guideline: calls 10, input miss 4,603, hit 16,483, output 369,911 -> off-peak $0.22 = JPY 35, peak $0.45 = JPY 70
+  one loop (4 iterations, dev10): calls 62, input miss 66,812, hit 182,624, output 2,302,815 -> off-peak $1.39 = JPY 220, peak $2.78 = JPY 440
+  one loop + valid100 of its final guideline: calls 162, input miss 102,496, hit 639,514, output 6,005,595 -> off-peak $3.62 = JPY 572, peak $7.24 = JPY 1,145
+
+[scenario cap64k]
+  valid100 once, original guideline: calls 100, input miss 32,900, hit 181,309, output 6,400,000 -> off-peak $3.85 = JPY 608, peak $7.69 = JPY 1,216
+  valid100 once, refined-size guideline: calls 100, input miss 35,684, hit 456,890, output 6,400,000 -> off-peak $3.85 = JPY 608, peak $7.69 = JPY 1,216
+  valid100 once, no cache: calls 100, input miss 214,210, hit 0, output 6,400,000 -> off-peak $3.87 = JPY 612, peak $7.74 = JPY 1,224
+  dev10 once, original guideline: calls 10, input miss 4,603, hit 16,483, output 640,000 -> off-peak $0.38 = JPY 61, peak $0.77 = JPY 122
+  one loop (4 iterations, dev10): calls 62, input miss 66,812, hit 182,624, output 3,968,000 -> off-peak $2.39 = JPY 378, peak $4.78 = JPY 756
+  one loop + valid100 of its final guideline: calls 162, input miss 102,496, hit 639,514, output 10,368,000 -> off-peak $6.24 = JPY 986, peak $12.48 = JPY 1,972
+
+== whole plan ==
+
+[steps 2-5 with scenario on_mean; step 1 arm B always thinking on (on_mean)]
+  1 stability (4-call probe + 2 arms x 5 x dev10): calls 104, input 219,797 (miss 54,971), output 1,229,900 -> off-peak $0.75 = JPY 118, peak $1.49 = JPY 236
+  2 accuracy (valid100 x 3, original guideline): calls 300, input 642,629 (miss 98,701), output 6,935,989 -> off-peak $4.18 = JPY 660, peak $8.36 = JPY 1,321
+  3 baseline loop x 3 + valid100 each: calls 486, input 2,226,029 (miss 307,487), output 11,257,577 -> off-peak $6.81 = JPY 1,076, peak $13.61 = JPY 2,152
+  4 Scheme A loop x 3 + valid100 each: calls 486, input 2,226,029 (miss 307,487), output 11,257,577 -> off-peak $6.81 = JPY 1,076, peak $13.61 = JPY 2,152
+  5 Scheme B loop x 3 + valid100 each: calls 486, input 2,226,029 (miss 307,487), output 11,257,577 -> off-peak $6.81 = JPY 1,076, peak $13.61 = JPY 2,152
+  TOTAL: calls 1862, input 7,540,514 (miss 1,076,132), output 41,938,620 -> off-peak $25.34 = JPY 4,007, peak $50.69 = JPY 8,013
+
+[steps 2-5 with scenario on_max; step 1 arm B always thinking on (on_max)]
+  1 stability (4-call probe + 2 arms x 5 x dev10): calls 104, input 219,797 (miss 54,971), output 1,953,108 -> off-peak $1.18 = JPY 187, peak $2.36 = JPY 373
+  2 accuracy (valid100 x 3, original guideline): calls 300, input 642,629 (miss 98,701), output 11,108,341 -> off-peak $6.68 = JPY 1,056, peak $13.36 = JPY 2,112
+  3 baseline loop x 3 + valid100 each: calls 486, input 2,226,029 (miss 307,487), output 18,016,786 -> off-peak $10.86 = JPY 1,717, peak $21.72 = JPY 3,434
+  4 Scheme A loop x 3 + valid100 each: calls 486, input 2,226,029 (miss 307,487), output 18,016,786 -> off-peak $10.86 = JPY 1,717, peak $21.72 = JPY 3,434
+  5 Scheme B loop x 3 + valid100 each: calls 486, input 2,226,029 (miss 307,487), output 18,016,786 -> off-peak $10.86 = JPY 1,717, peak $21.72 = JPY 3,434
+  TOTAL: calls 1862, input 7,540,514 (miss 1,076,132), output 67,111,808 -> off-peak $40.45 = JPY 6,394, peak $80.90 = JPY 12,789
+
+[steps 2-5 with scenario off; step 1 arm B always thinking on (on_mean)]
+  1 stability (4-call probe + 2 arms x 5 x dev10): calls 104, input 219,797 (miss 54,971), output 1,229,900 -> off-peak $0.75 = JPY 118, peak $1.49 = JPY 236
+  2 accuracy (valid100 x 3, original guideline): calls 300, input 642,629 (miss 98,701), output 170,641 -> off-peak $0.12 = JPY 19, peak $0.24 = JPY 38
+  3 baseline loop x 3 + valid100 each: calls 486, input 2,226,029 (miss 307,487), output 297,712 -> off-peak $0.23 = JPY 36, peak $0.46 = JPY 73
+  4 Scheme A loop x 3 + valid100 each: calls 486, input 2,226,029 (miss 307,487), output 297,712 -> off-peak $0.23 = JPY 36, peak $0.46 = JPY 73
+  5 Scheme B loop x 3 + valid100 each: calls 486, input 2,226,029 (miss 307,487), output 297,712 -> off-peak $0.23 = JPY 36, peak $0.46 = JPY 73
+  TOTAL: calls 1862, input 7,540,514 (miss 1,076,132), output 2,293,678 -> off-peak $1.56 = JPY 246, peak $3.11 = JPY 492
+
+[steps 2-5 with scenario cap64k; step 1 arm B always thinking on (cap64k)]
+  1 stability (4-call probe + 2 arms x 5 x dev10): calls 104, input 219,797 (miss 54,971), output 3,356,620 -> off-peak $2.02 = JPY 320, peak $4.05 = JPY 640
+  2 accuracy (valid100 x 3, original guideline): calls 300, input 642,629 (miss 98,701), output 19,200,000 -> off-peak $11.54 = JPY 1,824, peak $23.07 = JPY 3,648
+  3 baseline loop x 3 + valid100 each: calls 486, input 2,226,029 (miss 307,487), output 31,104,000 -> off-peak $18.71 = JPY 2,958, peak $37.43 = JPY 5,917
+  4 Scheme A loop x 3 + valid100 each: calls 486, input 2,226,029 (miss 307,487), output 31,104,000 -> off-peak $18.71 = JPY 2,958, peak $37.43 = JPY 5,917
+  5 Scheme B loop x 3 + valid100 each: calls 486, input 2,226,029 (miss 307,487), output 31,104,000 -> off-peak $18.71 = JPY 2,958, peak $37.43 = JPY 5,917
+  TOTAL: calls 1862, input 7,540,514 (miss 1,076,132), output 115,868,620 -> off-peak $69.70 = JPY 11,019, peak $139.40 = JPY 22,038

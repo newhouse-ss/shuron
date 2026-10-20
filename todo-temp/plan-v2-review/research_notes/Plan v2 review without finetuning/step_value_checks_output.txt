@@ -1,0 +1,199 @@
+== 0  inputs, scorer check, guideline identity
+  original     strict F1 0.7792 (TP 600 FP 149 FN 191; matches ncbi-g-gpt54/metrics.json)  single-type F1 0.8351  guideline e6232d944d68 (original)  [original guideline]
+  R4           strict F1 0.7878 (TP 605 FP 140 FN 186; matches ncbi-m-gpt54/metrics.json)  single-type F1 0.8490  guideline 10e93c9dab24  [top-1 dev10 final (R4)]
+  R4_rerun     strict F1 0.7789 (TP 597 FP 145 FN 194; matches ncbi-valid-published-0824/metrics.json)  single-type F1 0.8467  guideline 10e93c9dab24  [same R4 guideline, second pass (per LOG; input identity with the first batch marked unverified)]
+  topk4        strict F1 0.8023 (TP 629 FP 148 FN 162; matches ncbi-valid-topk4-gpt54/metrics.json)  single-type F1 0.8546  guideline 24d7089c8e7e  [top-4 dev10 final]
+  dev20        strict F1 0.7745 (TP 584 FP 133 FN 207; matches ncbi-m-dev20/metrics.json)  single-type F1 0.8422  guideline 1dc6f006a1c8  [top-1 dev20 final]
+  dev30        strict F1 0.8050 (TP 615 FP 122 FN 176; matches ncbi-m-dev30/metrics.json)  single-type F1 0.8455  guideline 520311412321  [top-1 dev30 final]
+  noTP         strict F1 0.7716 (TP 593 FP 153 FN 198; matches ncbi-valid-noTP-0824/metrics.json)  single-type F1 0.8692  guideline 38f5289e4717  [no-verified-example dev10 final]
+  abstraction  strict F1 0.7844 (TP 615 FP 162 FN 176; matches ncbi-valid-abstraction-0824/metrics.json)  single-type F1 0.8431  guideline f4b25d391675  [abstraction dev10 final]
+  gold mentions 791; 8 strict F1 values mean 0.7855, sample SD 0.0123
+  distinct guidelines among the 8 runs: 7 (R4 and R4_rerun share one guideline file; all other hashes differ)
+  loop 20260802_gpt54-high_moderation                       init e6232d944d68 final 10e93c9dab24  dev F1 (loop set scoring) 0.7972 -> 0.9091
+  loop 20260902_gpt54-high_topk1_run1                       init e6232d944d68 final e6232d944d68  dev F1 (loop set scoring) 0.8451 -> 0.8451
+  loop 20260902_gpt54-high_topk1_run2                       init e6232d944d68 final e6232d944d68  dev F1 (loop set scoring) 0.8028 -> 0.8028
+  loop 20260902_gpt54-high_topk1_run3                       init e6232d944d68 final a1311085152b  dev F1 (loop set scoring) 0.8028 -> 0.8511
+  loop 20260901_gpt54-high_topk4_dev10                      init e6232d944d68 final 24d7089c8e7e  dev F1 (loop set scoring) 0.8028 -> 0.9155
+  loop 20260902_gpt54-high_topk4_run1                       init e6232d944d68 final 5f5300a5811b  dev F1 (loop set scoring) 0.7972 -> 0.8252
+  loop 20260902_gpt54-high_topk4_run2                       init e6232d944d68 final 5a2ddf57a5c7  dev F1 (loop set scoring) 0.8028 -> 0.8552
+  loop 20260902_gpt54-high_topk4_run3                       init e6232d944d68 final cc7bb3416f86  dev F1 (loop set scoring) 0.8194 -> 0.8841
+  loop 20260806_gpt54-high_moderation-noTP_run2             init e6232d944d68 final 38f5289e4717  dev F1 (loop set scoring) 0.7972 -> 0.8369
+  loop 20260806_gpt54-high_moderation-noTP_run4             init e6232d944d68 final 314d0932c770  dev F1 (loop set scoring) 0.7391 -> 0.7887
+  loop 20260806_gpt54-high_moderation-noTP_run5             init e6232d944d68 final 8eaae0911719  dev F1 (loop set scoring) 0.8085 -> 0.8227
+  loop 20260814_gpt54-high_moderation-abstraction_run1      init e6232d944d68 final f4b25d391675  dev F1 (loop set scoring) 0.8227 -> 0.8333
+  loop 20260814_gpt54-high_moderation-abstraction_run2      init e6232d944d68 final e6232d944d68  dev F1 (loop set scoring) 0.8252 -> 0.8252
+
+== S4  same-span S/D confusions of top-4 and what the original-guideline run did on the same span
+top-4 same-span S/D confusions: 34; categories: {'original has the same wrong subtype': 10, 'original has gold subtype on the same span': 19, 'original has no prediction with this exact span': 5}
+F1 if only the 19 confusions the original run types correctly were fixed: 0.8265 (+0.0242); if all 34 were fixed: 0.8457 (+0.0434); all-label-mismatch ceiling from error_breakdown_output.txt: 0.8750 (+0.0727)
+number of the 7 other runs that give the gold subtype on the same span, per confusion: {0: 7, 1: 4, 2: 6, 3: 6, 4: 8, 5: 2, 6: 1}
+   Adrenal insufficiency                         gold Dise top4 Spec original ['Spec'] other runs right 0/7
+   sporadic breast cancers                       gold Spec top4 Dise original ['Spec'] other runs right 5/7
+   tumour                                        gold Dise top4 Spec original ['Dise'] other runs right 2/7
+   myopathy                                      gold Dise top4 Spec original ['Dise'] other runs right 3/7
+   myotonia                                      gold Spec top4 Dise original ['Spec'] other runs right 3/7
+   cataract                                      gold Spec top4 Dise original ['Spec'] other runs right 3/7
+   male-infertility                              gold Spec top4 Dise original ['Spec'] other runs right 3/7
+   fibre degeneration                            gold Spec top4 Dise original [] other runs right 0/7
+   fibrosis                                      gold Spec top4 Dise original ['Dise'] other runs right 0/7
+   hereditary breast cancer                      gold Spec top4 Dise original ['Spec'] other runs right 4/7
+   breast cancer                                 gold Spec top4 Dise original [] other runs right 1/7
+   hereditary breast cancer                      gold Spec top4 Dise original ['Spec'] other runs right 4/7
+   hereditary breast cancer                      gold Spec top4 Dise original ['Spec'] other runs right 4/7
+   hereditary breast cancers                     gold Spec top4 Dise original ['Spec'] other runs right 5/7
+   hereditary breast cancer                      gold Spec top4 Dise original ['Spec'] other runs right 4/7
+   hereditary breast cancer                      gold Spec top4 Dise original ['Spec'] other runs right 4/7
+   sporadic renal cell carcinomas                gold Spec top4 Dise original ['Spec'] other runs right 3/7
+   X-linked recessive neurological disorder      gold Dise top4 Spec original ['Dise'] other runs right 6/7
+   enzyme deficiency                             gold Dise top4 Spec original [] other runs right 0/7
+   lipomas                                       gold Dise top4 Spec original ['Spec'] other runs right 1/7
+   lipomas                                       gold Dise top4 Spec original ['Spec'] other runs right 2/7
+   chromosomal fragmentation during meiosis      gold Spec top4 Dise original [] other runs right 0/7
+   cancers                                       gold Dise top4 Spec original ['Dise'] other runs right 3/7
+   stage III cancers                             gold Dise top4 Spec original ['Spec'] other runs right 2/7
+   DTDST chondrodysplasias                       gold Spec top4 Dise original [] other runs right 0/7
+   cancer                                        gold Dise top4 Spec original ['Dise'] other runs right 4/7
+   cancers                                       gold Dise top4 Spec original ['Dise'] other runs right 2/7
+   splenomegaly                                  gold Dise top4 Spec original ['Spec'] other runs right 1/7
+   lymphadenopathy                               gold Dise top4 Spec original ['Spec'] other runs right 1/7
+   Deficiency of terminal complement components  gold Spec top4 Dise original ['Dise'] other runs right 0/7
+   tumours                                       gold Dise top4 Spec original ['Dise'] other runs right 2/7
+   galactosemia                                  gold Spec top4 Dise original ['Dise'] other runs right 2/7
+   T-cell lymphomas                              gold Spec top4 Dise original ['Dise'] other runs right 4/7
+   spastic paraplegia                            gold Dise top4 Spec original ['Dise'] other runs right 4/7
+projection 'variant A types like the original run' (top-4 spans, S/D type copied from the original run where it has the same span as S or D): 37 changed, 19 fixes, 15 breaks; strict F1 0.8074 (base 0.8023); bootstrap vs top-4 {'diff': 0.0051, 'ci95': [-0.0213, 0.0328], 'p_gt0': 0.6241}
+exploratory: S/D type of top-4 replaced by the majority S/D type of the 8 runs on the same span: 6 changed, 4 fixes, 1 breaks; strict F1 0.8061; bootstrap vs top-4 {'diff': 0.0038, 'ci95': [-0.0013, 0.0096], 'p_gt0': 0.8746}
+check: fixing exactly those 19 with no breaks gives strict F1 0.8265; bootstrap vs top-4 {'diff': 0.0242, 'ci95': [0.0083, 0.0453], 'p_gt0': 1.0}
+gate-B-sized effect on valid (S/D confusions halved, 17 fixes, no breaks): strict F1 0.8240 (+0.0217)
+dev30 (size_noise, original guideline, 5 repeats): same-span S/D confusions per repeat [16, 15, 14, 15, 16]; gold S+D mentions 202; ordered repeat pairs where the second has at most half the first: 0/20
+
+== S3  validation footprint of the strings named by gold-contradicting rules
+  abnormal retinal vascular development                   {'valid_texts': 0, 'gold_exact': 0, 'gold_containing': 0, 'topk4_pred_exact': 0}
+  deficient activity of fatty aldehyde dehydrogenase      {'valid_texts': 0, 'gold_exact': 0, 'gold_containing': 0, 'topk4_pred_exact': 0}
+  fatty aldehyde dehydrogenase                            {'valid_texts': 0, 'gold_exact': 0, 'gold_containing': 0, 'topk4_pred_exact': 0}
+  FALDH                                                   {'valid_texts': 0, 'gold_exact': 0, 'gold_containing': 0, 'topk4_pred_exact': 0}
+  retinal vascular                                        {'valid_texts': 0, 'gold_exact': 0, 'gold_containing': 0, 'topk4_pred_exact': 0}
+  deficiency of norrin                                    {'valid_texts': 0, 'gold_exact': 0, 'gold_containing': 0, 'topk4_pred_exact': 0}
+  norrin                                                  {'valid_texts': 0, 'gold_exact': 0, 'gold_containing': 0, 'topk4_pred_exact': 0}
+  autosomal recessive disorder                            {'valid_texts': 2, 'gold_exact': 2, 'gold_containing': 2, 'topk4_pred_exact': 2}
+  Sjogren-Larsson syndrome                                {'valid_texts': 0, 'gold_exact': 0, 'gold_containing': 0, 'topk4_pred_exact': 0}
+quoted strings in exclusion lines of the top-4 final guideline: 8; with any valid100 occurrence: 3; gold entities whose text equals one of them: 2
+   Neisseria                                                    {'valid_texts': 2, 'gold_exact': 0, 'gold_containing': 2, 'topk4_pred_exact': 0}
+   autosomal recessive disorder                                 {'valid_texts': 2, 'gold_exact': 2, 'gold_containing': 2, 'topk4_pred_exact': 2}
+   phenotype.                                                   {'valid_texts': 2, 'gold_exact': 0, 'gold_containing': 0, 'topk4_pred_exact': 0}
+largest direct F1 change on valid100 from the two flagged rules: gold entities containing their strings 0; strict F1 0.8023 -> at most 0.8023
+
+== S2a / S5  detectable differences between loop means (alpha two-sided, power 0.8)
+  SD 0.0123  loops 4 vs 4  alpha 0.05    normal approx 0.0244  exact t test 0.0293
+  SD 0.0123  loops 4 vs 4  alpha 0.0125  normal approx 0.0290  exact t test 0.0396
+  SD 0.0123  loops 3 vs 4  alpha 0.05    normal approx 0.0263  exact t test 0.0330
+  SD 0.0123  loops 3 vs 4  alpha 0.0125  normal approx 0.0314  exact t test 0.0461
+  SD 0.0123  loops 3 vs 3  alpha 0.05    normal approx 0.0281  exact t test 0.0378
+  SD 0.0123  loops 3 vs 3  alpha 0.0125  normal approx 0.0335  exact t test 0.0556
+  SD 0.0123  loops 2 vs 2  alpha 0.05    normal approx 0.0345  exact t test 0.0700
+  SD 0.0123  loops 2 vs 2  alpha 0.0125  normal approx 0.0411  exact t test 0.1403
+  SD 0.0063  loops 4 vs 4  alpha 0.05    normal approx 0.0125  exact t test 0.0150
+  SD 0.0063  loops 4 vs 4  alpha 0.0125  normal approx 0.0149  exact t test 0.0203
+  SD 0.0063  loops 3 vs 4  alpha 0.05    normal approx 0.0135  exact t test 0.0169
+  SD 0.0063  loops 3 vs 4  alpha 0.0125  normal approx 0.0161  exact t test 0.0236
+  SD 0.0063  loops 3 vs 3  alpha 0.05    normal approx 0.0144  exact t test 0.0193
+  SD 0.0063  loops 3 vs 3  alpha 0.0125  normal approx 0.0172  exact t test 0.0285
+  SD 0.0063  loops 2 vs 2  alpha 0.05    normal approx 0.0176  exact t test 0.0358
+  SD 0.0063  loops 2 vs 2  alpha 0.0125  normal approx 0.0210  exact t test 0.0719
+top-1 loops with valid scores: R4 (two-pass mean 0.7833), runs 1 and 2 ended at the original guideline (hash e6232d944d68, e6232d944d68; valid 0.7792); SD of these 3 loop values 0.0024
+  projection: unscored finals score like the 8-run mean: top-4 mean 0.7897, top-1 mean 0.7818, difference +0.0079
+  projection: unscored top-4 finals score like top-4 (0.8023), top-1 run 3 like the 8-run mean: top-4 mean 0.8023, top-1 mean 0.7818, difference +0.0205
+  projection: unscored top-4 finals at the 8-run maximum, top-1 run 3 at the 8-run minimum: top-4 mean 0.8043, top-1 mean 0.7783, difference +0.0260
+  projection: unscored top-4 finals at the 8-run minimum, top-1 run 3 at the 8-run maximum: top-4 mean 0.7793, top-1 mean 0.7867, difference -0.0074
+  needed mean valid F1 of the 3 unscored top-4 finals for a difference of 0.0244 if top-1 run 3 scores 0.7716: 0.8029
+  needed mean valid F1 of the 3 unscored top-4 finals for a difference of 0.0292 if top-1 run 3 scores 0.7716: 0.8093
+  needed mean valid F1 of the 3 unscored top-4 finals for a difference of 0.0244 if top-1 run 3 scores 0.7855: 0.8075
+  needed mean valid F1 of the 3 unscored top-4 finals for a difference of 0.0292 if top-1 run 3 scores 0.7855: 0.8139
+  needed mean valid F1 of the 3 unscored top-4 finals for a difference of 0.0244 if top-1 run 3 scores 0.8050: 0.8140
+  needed mean valid F1 of the 3 unscored top-4 finals for a difference of 0.0292 if top-1 run 3 scores 0.8050: 0.8204
+
+== S5  dev10 round decisions (loop set scoring) against dev10 annotation noise
+size_noise summary keys: ['repeats', 'temperature', 'reasoning_effort', 'sizes']
+dev10 SD of one annotation 0.01502 (LOG, size_noise); SD of a difference of two annotations 0.0212; 1.96 x that = 0.0416
+kept rounds in the 13 loops: 18; kept with a dev gain below 0.0416: 14; rejected rounds: 11
+   kept 20260802_gpt54-high_moderation                       round 1 gain +0.0397  (inside noise band)
+   kept 20260802_gpt54-high_moderation                       round 2 gain +0.0223  (inside noise band)
+   kept 20260802_gpt54-high_moderation                       round 3 gain +0.0281  (inside noise band)
+   kept 20260802_gpt54-high_moderation                       round 4 gain +0.0218  (inside noise band)
+   kept 20260902_gpt54-high_topk1_run3                       round 1 gain +0.0483
+   kept 20260901_gpt54-high_topk4_dev10                      round 1 gain +0.0057  (inside noise band)
+   kept 20260901_gpt54-high_topk4_dev10                      round 2 gain +0.1070
+   kept 20260902_gpt54-high_topk4_run1                       round 1 gain +0.0197  (inside noise band)
+   kept 20260902_gpt54-high_topk4_run1                       round 2 gain +0.0083  (inside noise band)
+   kept 20260902_gpt54-high_topk4_run2                       round 1 gain +0.0524
+   kept 20260902_gpt54-high_topk4_run3                       round 1 gain +0.0116  (inside noise band)
+   kept 20260902_gpt54-high_topk4_run3                       round 2 gain +0.0261  (inside noise band)
+   kept 20260902_gpt54-high_topk4_run3                       round 3 gain +0.0270  (inside noise band)
+   kept 20260806_gpt54-high_moderation-noTP_run2             round 1 gain +0.0397  (inside noise band)
+   kept 20260806_gpt54-high_moderation-noTP_run4             round 1 gain +0.0496
+   kept 20260806_gpt54-high_moderation-noTP_run5             round 1 gain +0.0084  (inside noise band)
+   kept 20260806_gpt54-high_moderation-noTP_run5             round 2 gain +0.0058  (inside noise band)
+   kept 20260814_gpt54-high_moderation-abstraction_run1      round 1 gain +0.0106  (inside noise band)
+dev10 initial F1 of the original guideline across the 13 loops (repeated annotations unless cached): [0.7972, 0.8451, 0.8028, 0.8028, 0.8028, 0.7972, 0.8028, 0.8194, 0.7972, 0.7391, 0.8085, 0.8227, 0.8252]; SD 0.0243; without the lowest value (0.7391) SD 0.0148
+same guideline annotated twice on dev10 (5 saved repeats, 20 ordered pairs): second strictly higher in 9/20 pairs, so a no-change candidate would pass 'F1 rises' about that often
+
+== V  vote over saved runs: F1 against the number of runs voted (all subsets)
+  m=1 (8 subsets): keep if >= 1 runs: mean 0.7855 [min 0.7716, max 0.8050] | strict majority (>= 1): mean 0.7855 [0.7716, 0.8050] | best k chosen after the fact: mean 0.7855 [0.7716, 0.8050] | distinct-guideline subsets only, >= 1: mean 0.7855 (n=8)
+  m=2 (28 subsets): keep if >= 1 runs: mean 0.7920 [min 0.7764, max 0.8087] | strict majority (>= 2): mean 0.7779 [0.7552, 0.7983] | best k chosen after the fact: mean 0.7928 [0.7801, 0.8087] | distinct-guideline subsets only, >= 1: mean 0.7920 (n=27)
+  m=3 (56 subsets): keep if >= 2 runs: mean 0.8060 [min 0.7927, max 0.8222] | strict majority (>= 2): mean 0.8060 [0.7927, 0.8222] | best k chosen after the fact: mean 0.8060 [0.7927, 0.8222] | distinct-guideline subsets only, >= 2: mean 0.8068 (n=50)
+  m=4 (70 subsets): keep if >= 2 runs: mean 0.8112 [min 0.7992, max 0.8195] | strict majority (>= 3): mean 0.8004 [0.7887, 0.8159] | best k chosen after the fact: mean 0.8112 [0.8000, 0.8195] | distinct-guideline subsets only, >= 2: mean 0.8117 (n=55)
+  m=5 (56 subsets): keep if >= 3 runs: mean 0.8105 [min 0.8016, max 0.8232] | strict majority (>= 3): mean 0.8105 [0.8016, 0.8232] | best k chosen after the fact: mean 0.8134 [0.8067, 0.8232] | distinct-guideline subsets only, >= 3: mean 0.8115 (n=36)
+  m=6 (28 subsets): keep if >= 3 runs: mean 0.8139 [min 0.8067, max 0.8197] | strict majority (>= 4): mean 0.8068 [0.7995, 0.8156] | best k chosen after the fact: mean 0.8145 [0.8092, 0.8197] | distinct-guideline subsets only, >= 3: mean 0.8135 (n=13)
+  m=7 (8 subsets): keep if >= 4 runs: mean 0.8124 [min 0.8026, max 0.8200] | strict majority (>= 4): mean 0.8124 [0.8026, 0.8200] | best k chosen after the fact: mean 0.8162 [0.8139, 0.8200] | distinct-guideline subsets only, >= 4: mean 0.8111 (n=2)
+  m=8 (1 subsets): keep if >= 4 runs: mean 0.8158 [min 0.8158, max 0.8158] | strict majority (>= 5): mean 0.8088 [0.8088, 0.8088] | best k chosen after the fact: mean 0.8158 [0.8158, 0.8158]
+same guideline, two passes (R4 + R4_rerun): union F1 0.7906 (TP 638 FP 185 FN 153); intersection F1 0.7753 (TP 564 FP 100 FN 227); single passes 0.7878 / 0.7789
+vote >= 4 of the 7 distinct-guideline runs: F1 0.8145
+  bootstrap union(R4,R4_rerun) - R4                       diff +0.0028 95% CI [-0.0114, +0.0173] P(diff>0) 0.649
+  bootstrap union(R4,R4_rerun) - R4_rerun                 diff +0.0117 95% CI [-0.0047, +0.0302] P(diff>0) 0.916
+  bootstrap intersection(R4,R4_rerun) - R4                diff -0.0125 95% CI [-0.0315, +0.0043] P(diff>0) 0.074
+  bootstrap intersection(R4,R4_rerun) - R4_rerun          diff -0.0036 95% CI [-0.0184, +0.0106] P(diff>0) 0.310
+  bootstrap vote>=4 of 7 distinct guidelines - topk4      diff +0.0122 95% CI [-0.0167, +0.0415] P(diff>0) 0.800
+  bootstrap vote>=4 of 7 distinct guidelines - original   diff +0.0353 95% CI [+0.0053, +0.0677] P(diff>0) 0.989
+
+== R  review-effort curve: smallest share of predicted entities to check to reach each target
+-- strict four-subtype, base top-4, agreement from the 7 other runs: 777 predicted entities, 148 wrong, start F1 0.8023, ceiling after checking all 0.9606; gold entities with no overlapping prediction 60
+   reproduces offline_direction_checks_output.txt section C at [0.1, 0.2, 0.3]
+   fixed shares (agreement / random / wrong-first bound): 5% 0.8217/0.8095/0.8424; 10% 0.8431/0.8182/0.8854; 15% 0.8690/0.8255/0.9241; 20% 0.8868/0.8343/0.9606; 30% 0.9109/0.8500/0.9606; 40% 0.9266/0.8662/0.9606; 50% 0.9321/0.8822/0.9606
+   human agreement 0.875: agreement order 128 entities (16.5%; seed range [118, 132]) | random order 355 (45.7%) | wrong-first bound 69 (8.9%) | at 16.5% checked: random 0.8277, bound 0.9350
+   BioBERT 0.8971: agreement order 183 entities (23.6%; seed range [169, 187]) | random order 463 (59.6%) | wrong-first bound 91 (11.7%) | at 23.6% checked: random 0.8395, bound 0.9606
+   NEEDLE 0.9228: agreement order 287 entities (36.9%; seed range [274, 290]) | random order 592 (76.2%) | wrong-first bound 116 (14.9%) | at 36.9% checked: random 0.8620, bound 0.9606
+-- single type (exact span), base top-4, same typed agreement ordering: 777 predicted entities, 107 wrong, start F1 0.8546, ceiling after checking all 0.9606; gold entities with no overlapping prediction 60
+   fixed shares (agreement / random / wrong-first bound): 5% 0.8716/0.8592/0.8923; 10% 0.8874/0.8646/0.9281; 15% 0.8965/0.8695/0.9606; 20% 0.9067/0.8752/0.9606; 30% 0.9203/0.8870/0.9606; 40% 0.9329/0.8979/0.9606; 50% 0.9374/0.9092/0.9606
+   human agreement 0.875: agreement order 51 entities (6.6%; seed range [48, 54]) | random order 153 (19.7%) | wrong-first bound 22 (2.8%) | at 6.6% checked: random 0.8607, bound 0.9036
+   BioBERT 0.8971: agreement order 121 entities (15.6%; seed range [111, 129]) | random order 304 (39.1%) | wrong-first bound 45 (5.8%) | at 15.6% checked: random 0.8705, bound 0.9606
+   NEEDLE 0.9228: agreement order 249 entities (32.0%; seed range [221, 268]) | random order 499 (64.2%) | wrong-first bound 72 (9.3%) | at 32.0% checked: random 0.8894, bound 0.9606
+-- strict four-subtype, base R4, agreement from its own second pass: 745 predicted entities, 140 wrong, start F1 0.7878, ceiling after checking all 0.9565; gold entities with no overlapping prediction 66
+   reproduces offline_direction_checks_output.txt section C at [0.1, 0.2, 0.3]
+   fixed shares (agreement / random / wrong-first bound): 5% 0.8112/0.7972/0.8321; 10% 0.8343/0.8055/0.8761; 15% 0.8436/0.8148/0.9209; 20% 0.8507/0.8243/0.9565; 30% 0.8634/0.8418/0.9565; 40% 0.8778/0.8600/0.9565; 50% 0.8910/0.8750/0.9565
+   human agreement 0.875: agreement order 284 entities (38.1%; seed range [243, 342]) | random order 372 (49.9%) | wrong-first bound 74 (9.9%) | at 38.1% checked: random 0.8566, bound 0.9565
+   BioBERT 0.8971: agreement order 412 entities (55.3%; seed range [362, 459]) | random order 475 (63.8%) | wrong-first bound 91 (12.2%) | at 55.3% checked: random 0.8841, bound 0.9565
+   NEEDLE 0.9228: agreement order 554 entities (74.4%; seed range [472, 579]) | random order 600 (80.5%) | wrong-first bound 114 (15.3%) | at 74.4% checked: random 0.9130, bound 0.9565
+-- single type (exact span), base R4, agreement from its own second pass: 745 predicted entities, 93 wrong, start F1 0.8490, ceiling after checking all 0.9565; gold entities with no overlapping prediction 66
+   fixed shares (agreement / random / wrong-first bound): 5% 0.8621/0.8541/0.8921; 10% 0.8750/0.8597/0.9328; 15% 0.8806/0.8653/0.9565; 20% 0.8852/0.8718/0.9565; 30% 0.8936/0.8832/0.9565; 40% 0.9028/0.8941/0.9565; 50% 0.9124/0.9040/0.9565
+   human agreement 0.875: agreement order 74 entities (9.9%; seed range [70, 80]) | random order 172 (23.1%) | wrong-first bound 23 (3.1%) | at 9.9% checked: random 0.8597, bound 0.9328
+   BioBERT 0.8971: agreement order 256 entities (34.4%; seed range [207, 335]) | random order 315 (42.3%) | wrong-first bound 44 (5.9%) | at 34.4% checked: random 0.8881, bound 0.9565
+   NEEDLE 0.9228: agreement order 465 entities (62.4%; seed range [432, 541]) | random order 505 (67.8%) | wrong-first bound 64 (8.6%) | at 62.4% checked: random 0.9173, bound 0.9565
+-- strict four-subtype, base R4_rerun, agreement from R4 (roles swapped): 742 predicted entities, 145 wrong, start F1 0.7789, ceiling after checking all 0.9502; gold entities with no overlapping prediction 75
+   fixed shares (agreement / random / wrong-first bound): 5% 0.8040/0.7854/0.8202; 10% 0.8286/0.7935/0.8650; 15% 0.8373/0.8031/0.9102; 20% 0.8442/0.8123/0.9502; 30% 0.8567/0.8304/0.9502; 40% 0.8702/0.8476/0.9502; 50% 0.8818/0.8636/0.9502
+   human agreement 0.875: agreement order 326 entities (43.9%; seed range [249, 397]) | random order 419 (56.5%) | wrong-first bound 83 (11.2%) | at 43.9% checked: random 0.8540, bound 0.9502
+   BioBERT 0.8971: agreement order 447 entities (60.2%; seed range [395, 500]) | random order 522 (70.4%) | wrong-first bound 100 (13.5%) | at 60.2% checked: random 0.8809, bound 0.9502
+   NEEDLE 0.9228: agreement order 596 entities (80.3%; seed range [541, 668]) | random order 628 (84.6%) | wrong-first bound 123 (16.6%) | at 80.3% checked: random 0.9144, bound 0.9502
+-- strict, base top-4, agreement from ONE other run (each choice): entities to check for each target, and F1 at 20%
+   original     human agreement 0.875: 182 (23.4%); BioBERT 0.8971: 329 (42.3%); NEEDLE 0.9228: 514 (66.2%); F1 at 20% 0.8715
+   R4           human agreement 0.875: 214 (27.5%); BioBERT 0.8971: 360 (46.3%); NEEDLE 0.9228: 544 (70.0%); F1 at 20% 0.8666
+   R4_rerun     human agreement 0.875: 273 (35.1%); BioBERT 0.8971: 405 (52.1%); NEEDLE 0.9228: 564 (72.6%); F1 at 20% 0.8561
+   dev20        human agreement 0.875: 153 (19.7%); BioBERT 0.8971: 290 (37.3%); NEEDLE 0.9228: 483 (62.2%); F1 at 20% 0.8763
+   dev30        human agreement 0.875: 121 (15.6%); BioBERT 0.8971: 241 (31.0%); NEEDLE 0.9228: 444 (57.1%); F1 at 20% 0.8870
+   noTP         human agreement 0.875: 223 (28.7%); BioBERT 0.8971: 368 (47.4%); NEEDLE 0.9228: 551 (70.9%); F1 at 20% 0.8661
+   abstraction  human agreement 0.875: 227 (29.2%); BioBERT 0.8971: 367 (47.2%); NEEDLE 0.9228: 541 (69.6%); F1 at 20% 0.8632
+S7 headroom: wrong top-4 entities present in all 7 other runs: 31 (23 fixable, 8 delete); F1 if only these were corrected: 0.8359 (+0.0336)
+
+== S6  precision of one 100-document score (document bootstrap, 10,000 resamples)
+  original   strict F1 0.7792 95% CI [0.7329, 0.8226]
+  topk4      strict F1 0.8023 95% CI [0.7643, 0.8376]
+  R4         strict F1 0.7878 95% CI [0.7495, 0.8250]

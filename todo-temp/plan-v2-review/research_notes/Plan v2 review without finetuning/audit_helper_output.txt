@@ -1,0 +1,74 @@
+== 1 data identity
+valid docs 100 gold mentions 791 | train docs 593
+sourceid overlap valid & train: 0
+dev10 split seed 42 docs in train: 10 of 10
+first 5 valid sourceids: ['8589722', '8589723', '8595416', '8605116', '8621452'] | sourcedb values: ['PubMed']
+  original  strict 0.7792 P 0.8011 R 0.7585 TP 600 | one-type (span only) 0.8351
+  R4        strict 0.7878 P 0.8121 R 0.7649 TP 605 | one-type (span only) 0.8490
+  R4_rerun  strict 0.7789 P 0.8046 R 0.7547 TP 597 | one-type (span only) 0.8467
+  topk4     strict 0.8023 P 0.8095 R 0.7952 TP 629 | one-type (span only) 0.8546
+  dev30     strict 0.8050 P 0.8345 R 0.7775 TP 615 | one-type (span only) 0.8455
+
+== 2 SD of the 8 strict F1 values and detectable differences (normal approximation)
+values [0.7792, 0.7878, 0.7789, 0.8023, 0.7745, 0.805, 0.7716, 0.7844] mean 0.7855 SD(ddof=1) 0.0123
+  n=3 loops per arm, two-sided alpha 0.05: multiplier 2.80, detectable diff 0.0282
+  n=3 loops per arm, two-sided alpha 0.025: multiplier 3.08, detectable diff 0.0311
+  n=3 loops per arm, two-sided alpha 0.0167: multiplier 3.24, detectable diff 0.0326
+  n=3 loops per arm, two-sided alpha 0.0125: multiplier 3.34, detectable diff 0.0337
+  n=4 loops per arm, two-sided alpha 0.05: multiplier 2.80, detectable diff 0.0245
+  n=4 loops per arm, two-sided alpha 0.025: multiplier 3.08, detectable diff 0.0269
+  n=4 loops per arm, two-sided alpha 0.0167: multiplier 3.24, detectable diff 0.0282
+  n=4 loops per arm, two-sided alpha 0.0125: multiplier 3.34, detectable diff 0.0291
+  (alpha 0.0125 = first Holm step for 4 primary comparisons; 0.05 = unadjusted, as in plan v2 6.3)
+
+== 3 cancer-pattern same-span S/D confusions (regexes stated here; report 3.2 did not save its query)
+  original    hereditary/sporadic S->D 0; bare D->S strict 2, with 'stage X' 3; total 2 / 3  ['lipomas (D->S)', 'lipomas (D->S)', 'stage III cancers (D->S)']
+  R4          hereditary/sporadic S->D 0; bare D->S strict 6, with 'stage X' 7; total 6 / 7
+  R4_rerun    hereditary/sporadic S->D 7; bare D->S strict 8, with 'stage X' 9; total 15 / 16
+  topk4       hereditary/sporadic S->D 8; bare D->S strict 7, with 'stage X' 8; total 15 / 16  ['cancer (D->S)', 'cancers (D->S)', 'cancers (D->S)', 'hereditary breast cancer (S->D)', 'hereditary breast cancer (S->D)', 'hereditary breast cancer (S->D)', 'hereditary breast cancer (S->D)', 'hereditary breast cancer (S->D)', 'hereditary breast cancers (S->D)', 'lipomas (D->S)', 'lipomas (D->S)', 'sporadic breast cancers (S->D)', 'sporadic renal cell carcinomas (S->D)', 'stage III cancers (D->S)', 'tumour (D->S)', 'tumours (D->S)']
+  dev20       hereditary/sporadic S->D 1; bare D->S strict 9, with 'stage X' 9; total 10 / 10
+  dev30       hereditary/sporadic S->D 0; bare D->S strict 2, with 'stage X' 2; total 2 / 2
+  noTP        hereditary/sporadic S->D 8; bare D->S strict 8, with 'stage X' 9; total 16 / 17
+  abstraction hereditary/sporadic S->D 7; bare D->S strict 7, with 'stage X' 8; total 14 / 15
+
+== 4 review curve at 1% steps (same method as offline_direction_checks.py curve(); 20 seeds)
+  strict               base topk4  vs 7 run(s): first share reaching 0.875: agreement 17% | random 46% | wrong-first 9%
+     check rows (pct, k, agreement, random, wrong-first): [(0, 0, 0.8023, 0.8023, 0.8023), (10, 78, 0.8431, 0.8182, 0.8854), (20, 155, 0.8868, 0.8343, 0.9606), (30, 233, 0.9109, 0.85, 0.9606), (50, 388, 0.9321, 0.8822, 0.9606), (100, 777, 0.9606, 0.9606, 0.9606)]
+  strict               base R4     vs 1 run(s): first share reaching 0.875: agreement 39% | random 50% | wrong-first 10%
+     check rows (pct, k, agreement, random, wrong-first): [(0, 0, 0.7878, 0.7878, 0.7878), (10, 74, 0.8343, 0.8055, 0.8761), (20, 149, 0.8507, 0.8243, 0.9565), (30, 224, 0.8634, 0.8418, 0.9565), (50, 372, 0.891, 0.875, 0.9565), (100, 745, 0.9565, 0.9565, 0.9565)]
+  one-type (span only) base topk4  vs 7 run(s): first share reaching 0.875: agreement 7% | random 20% | wrong-first 3%
+  one-type (span only) base topk4  vs 7 run(s): first share reaching 0.897: agreement 16% | random 39% | wrong-first 6%
+  one-type (span only) base topk4  vs 7 run(s): first share reaching 0.909: agreement 22% | random 50% | wrong-first 8%
+  one-type (span only) base topk4  vs 7 run(s): first share reaching 0.9228: agreement 32% | random 65% | wrong-first 10%
+     check rows (pct, k, agreement, random, wrong-first): [(0, 0, 0.8546, 0.8546, 0.8546), (10, 78, 0.8874, 0.8646, 0.9281), (20, 155, 0.9067, 0.8752, 0.9606), (30, 233, 0.9203, 0.887, 0.9606), (50, 388, 0.9374, 0.9092, 0.9606), (100, 777, 0.9606, 0.9606, 0.9606)]
+  one-type (span only) base R4     vs 1 run(s): first share reaching 0.875: agreement 10% | random 24% | wrong-first 4%
+  one-type (span only) base R4     vs 1 run(s): first share reaching 0.897: agreement 35% | random 43% | wrong-first 6%
+  one-type (span only) base R4     vs 1 run(s): first share reaching 0.909: agreement 47% | random 54% | wrong-first 8%
+  one-type (span only) base R4     vs 1 run(s): first share reaching 0.9228: agreement 63% | random 68% | wrong-first 9%
+     check rows (pct, k, agreement, random, wrong-first): [(0, 0, 0.849, 0.849, 0.849), (10, 74, 0.875, 0.8597, 0.9328), (20, 149, 0.8852, 0.8718, 0.9565), (30, 224, 0.8936, 0.8832, 0.9565), (50, 372, 0.9124, 0.904, 0.9565), (100, 745, 0.9565, 0.9565, 0.9565)]
+
+== 5 EN vs ZH plan v2: numbers per line (line-aligned files)
+lines EN 357 ZH 357
+  line 3: EN-only {} ZH-only {'20261020': 1, '2': 1}
+  line 65: EN-only {'2': 1} ZH-only {}
+  line 72: EN-only {} ZH-only {'12': 1}
+  line 259: EN-only {} ZH-only {'1': 1}
+  line 305: EN-only {} ZH-only {'1': 1}
+  line 345: EN-only {} ZH-only {'1': 1}
+lines whose digit multisets differ: 6
+whole-file EN-only: {} | ZH-only: {'20261020': 1, '1': 3, '12': 1}
+
+== 6 cost per call (plan_v2_cost.py constants)
+  output 22551: USD 0.35035  JPY 55.39
+  output 36459: USD 0.55897  JPY 88.37
+  S4 as described (2 variants x 30 dev30 calls + 200 validation calls) = 260 calls: JPY 14,400 to 22,975
+
+== 7 S4 pilot baseline: same-span S/D confusions in the 5 saved dev30 passes (original guideline)
+size_noise doc set == dev_splits/ncbi_disease_dev30.json: True | n = 30
+  repeat 1: S->D 13 D->S 3 total 16
+  repeat 2: S->D 12 D->S 3 total 15
+  repeat 3: S->D 11 D->S 3 total 14
+  repeat 4: S->D 12 D->S 3 total 15
+  repeat 5: S->D 12 D->S 4 total 16
+  dev10 gold: hereditary/sporadic ... cancer as SpecificDisease 0; bare cancer/tumour/lipoma as DiseaseClass 1
+  dev30 gold: hereditary/sporadic ... cancer as SpecificDisease 0; bare cancer/tumour/lipoma as DiseaseClass 7
