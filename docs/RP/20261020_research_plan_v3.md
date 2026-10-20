@@ -3,6 +3,7 @@
 2026-10-20。本版取代此前的 v1、v2（含中文版），旧版已删除。
 
 - 状态：提案。第 4 节的步骤都没有运行，费用均为估算。
+- 证据汇编：`todo-temp/plan-v3/evidence_notes.md`。
 - 结构按中期发表展开：先列中期的结论，再说明目标怎么更新、六个论点各自进展到哪里、下一步怎么做。
 
 ## 1. 中期发表（9/7）的基线
@@ -122,12 +123,11 @@ English (for slides):
 - **中期内容：** `archive/2026-09-07_midterm-defense/midterm_slides.pptx`（SHA-256 前 12 位 37b19132b300）。从第 1、2、4、8、9、10 页提取文字，论点 1 的 38/52 行取自第 8 页。各论点在中期时的状态取自中期摘要 `archive/2026-08-31_midterm-abstract/47256388_周恒宇_要旨.pdf` 的 Table 1。
 - **中期之后的评语：** `archive/correspondence/email_with_professor.pdf` 第 7 页；`archive/2026-09-15_seminar-future-plan/9_15 future plan.docx`。
 - **其他数字：**
-  - `todo-temp/thesis-framing/20261020_thesis_goal_and_nodes_v2.md`、`20261020_preannotation_workflow.md`；
-  - `todo-temp/meeting-20261020/error_breakdown_output.txt`（41ca602af29f）；
-  - `todo-temp/plan-v2-review/reports/Plan v2 review without finetuning.md`；
+  - `todo-temp/plan-v3/evidence_notes.md`（各数字的出处汇总）；
+  - `todo-temp/plan-v3/error_breakdown_output.txt`（41ca602af29f）；
   - `PROGRESS.md`。
 - **费用：**
-  - DeepSeek：`todo-temp/thesis-framing/node_cost.py`（314af60bd370），输出 `node_cost_output.txt`（97e5af9d7fff）。论点 2、3 的两项探索各按"5 个循环 × 162 次调用"计价。
+  - DeepSeek：`todo-temp/plan-v3/node_cost.py`（b5c466c1396d），输出 `node_cost_output.txt`（97e5af9d7fff）。论点 2、3 的两项探索各按"5 个循环 × 162 次调用"计价。
   - 专家标注：`expert_study_size_output.txt`（6cb93b6c72ce）。
-- **漏标 55 处、分歧 208 处：** 取自 `todo-temp/meeting-20261020/error_breakdown_output.txt` 的 top-4 一节。
+- **漏标 55 处、分歧 208 处：** 取自 `todo-temp/plan-v3/error_breakdown_output.txt` 的 top-4 一节。
 - **本文件只是计划，没有调用 API。**

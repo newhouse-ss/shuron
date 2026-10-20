@@ -1,6 +1,6 @@
 """Offline token and cost estimates (no API calls).
 
-Part 1, Azure GPT-5.4: the R3-minus-FALDH check (design: todo-temp/r4-isolation/20261016_r3_minus_faldh_design.md),
+Part 1, Azure GPT-5.4: the R3-minus-FALDH check (design: todo-temp/r4-attribution/isolation/20261016_r3_minus_faldh_design.md),
 priced from the measured usage of the same kind of call on the same document.
 
 Part 2, DeepSeek flash: per-unit and whole-plan token estimates.
@@ -30,8 +30,8 @@ from llm_guideline_moderation.sampling import load_sampled_document  # noqa: E40
 from llm_guideline_moderation.types import EntityDefinition, OutputConfiguration  # noqa: E402
 
 RUN = ROOT / "outputs/ncbi_disease/20260802_gpt54-high_moderation"
-UNITS = [ROOT / "todo-temp/r4-isolation/units", ROOT / "todo-temp/r4-isolation/units_c3minus",
-         ROOT / "todo-temp/r4-nontarget/units"]
+UNITS = [ROOT / "todo-temp/r4-attribution/isolation/units", ROOT / "todo-temp/r4-attribution/isolation/units_c3minus",
+         ROOT / "todo-temp/r4-attribution/nontarget/units"]
 JPY_PER_USD = 158.086954
 AZURE = {"Global Standard": (2.50, 15.00), "Data Zone Standard": (2.75, 16.50)}  # USD per 1M (input, output)
 DS_OFF = {"miss": 0.15, "hit": 0.003, "out": 0.60}  # USD per 1M, off-peak; peak is 2x

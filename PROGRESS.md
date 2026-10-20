@@ -43,7 +43,7 @@ dev10 原方法达到开发 F1 **0.9091**，但有 **15/37** 个符合条件的�
 
 因此，问题从“提高开发分数”延伸为“如何学习能迁移的规则，同时保护正确案例”。文本吸收不等于正确答案记忆，现有结果也没有证明保护正确案例必须依靠记忆。
 
-同期开展 10/20/30 篇规模实验，validation F1 为 **0.7878/0.7745/0.8050**。各规模只有一条已报告 refinement 轨迹，尚不能隔离规模的作用。2026-10-08 勘误：三次运行的 n_examples 实际均为 5（resolved config 与 prompt 实测，见 [P4 报告](todo-temp/p4/20261007_p4_devsize_report.md)），此前"示例上限 5/10/15"为误记，规模对比不含示例数混杂。固定指南五次重复标注的 F1 标准差为 **0.01502/0.00978/0.00921**，提示需要把评价波动纳入方法优化。
+同期开展 10/20/30 篇规模实验，validation F1 为 **0.7878/0.7745/0.8050**。各规模只有一条已报告 refinement 轨迹，尚不能隔离规模的作用。2026-10-08 勘误：三次运行的 n_examples 实际均为 5（resolved config 与 prompt 实测，见 [P4 报告](todo-temp/p0-p4/p4/20261007_p4_devsize_report.md)），此前"示例上限 5/10/15"为误记，规模对比不含示例数混杂。固定指南五次重复标注的 F1 标准差为 **0.01502/0.00978/0.00921**，提示需要把评价波动纳入方法优化。
 
 8 月 20 日将中期摘要的当前结果重点放在 hard-coding，是当时的写作安排；整个研究仍沿三条优化轴展开。详见 [seminar 历史](archive/seminar_note.txt)和 [8 月实验报告](reproduction/REPORT_progress_20260814.md)，旧报告状态及过强因果结论以当前记录为准。
 
@@ -67,19 +67,19 @@ BC5CDR、BioRED 的复现已完成，validation 原指南/修改后分别为 **0
 
 材料：[Round 3 snapshot](outputs/ncbi_disease/20260802_gpt54-high_moderation/rounds/iteration_03/snapshot.json)、[Round 4 snapshot](outputs/ncbi_disease/20260802_gpt54-high_moderation/rounds/iteration_04/snapshot.json)。需分别记录原规则、实际提示证据、新增文本、模型输出和 gold；gold 不一致或错误簇排名本身不能证明冲突原因或实际选中的提示案例。
 
-**2026-10-06，P0 核查完成：** Round 4 开发 F1 从 0.8873 升至 0.9091，逐实体为 3 个修复、1 个新增回归；目标簇仅修复 1/3。norrin 与 FALDH 是较早存在的漏标，不能归为本轮新增回归。完整逐例变化和混淆矩阵见 [P0 报告](todo-temp/p0/20261006_round4_p0_report.md)。作用域的因果解释仍待 P1/P2。
+**2026-10-06，P0 核查完成：** Round 4 开发 F1 从 0.8873 升至 0.9091，逐实体为 3 个修复、1 个新增回归；目标簇仅修复 1/3。norrin 与 FALDH 是较早存在的漏标，不能归为本轮新增回归。完整逐例变化和混淆矩阵见 [P0 报告](todo-temp/p0-p4/p0/20261006_round4_p0_report.md)。作用域的因果解释仍待 P1/P2。
 
-**2026-10-07，P1/P2 三臂对照完成：** 原从句（dev F1 **0.8873**）、删除从句（P1，**0.8671**）、限定作用域改写（P2，**0.8511**，低于 R2 基线会被回退）三个原则版本下，norrin、FALDH、abnormal retinal vascular development 三个焦点漏标**均未恢复**，spasticity 均修复。结论：指南中与 gold 相反的排除示例是模型上游判断的**症状而非成因**——模型在这些 definitional/characterization 语境中本就不把这些短语读作疾病提及，限制条款的写法改变不了该判断；该从句的真实功能是压制 DiseaseClass 过度扩张的精度护栏（P1 删除后 S→D 类型错误 2→4）。详见 [P1 报告](todo-temp/p1/20261006_p1_truncated_clause_report.md)与 [P2 报告](todo-temp/p2/20261007_p2_scoped_clause_report.md)。下一步方向从"修改限制措辞"转向"更具体的语言模式原则 / 正例演示的代价权衡 / CONSTRAINT 通道承载"。
+**2026-10-07，P1/P2 三臂对照完成：** 原从句（dev F1 **0.8873**）、删除从句（P1，**0.8671**）、限定作用域改写（P2，**0.8511**，低于 R2 基线会被回退）三个原则版本下，norrin、FALDH、abnormal retinal vascular development 三个焦点漏标**均未恢复**，spasticity 均修复。结论：指南中与 gold 相反的排除示例是模型上游判断的**症状而非成因**——模型在这些 definitional/characterization 语境中本就不把这些短语读作疾病提及，限制条款的写法改变不了该判断；该从句的真实功能是压制 DiseaseClass 过度扩张的精度护栏（P1 删除后 S→D 类型错误 2→4）。详见 [P1 报告](todo-temp/p0-p4/p1/20261006_p1_truncated_clause_report.md)与 [P2 报告](todo-temp/p0-p4/p2/20261007_p2_scoped_clause_report.md)。下一步方向从"修改限制措辞"转向"更具体的语言模式原则 / 正例演示的代价权衡 / CONSTRAINT 通道承载"。
 
-**2026-10-07，P3 Top-K 对比补全：** dev 终点 0.9155 的 top-4 指南实测 valid100 F1 **0.8023**（top-1 0.7878、原指南 0.7792），增益几乎全部来自 Modifier 召回（TP +26）；dev 上 0.9155 vs 0.9091 的差距在 dev10 噪声带内，valid 的 +0.0145 才是有效证据但仍是单点估计。吸收率 32% 反低于 top-1 的 41%，排除"更多硬编码"解释。两个 gold 相反排除示例在 top-4 终版指南中同样存在，且查证 top-4 第 1 轮分析调用已展示 FALDH/retinal-vascular 的 gold 标签仍照写排除——输入侧加证据也防不住，缺口定位在 refine_guidelines 调用看不到带标签的 discrepancy 证据。详见 [P3 报告](todo-temp/p3/20261007_p3_topk4_report.md)。
+**2026-10-07，P3 Top-K 对比补全：** dev 终点 0.9155 的 top-4 指南实测 valid100 F1 **0.8023**（top-1 0.7878、原指南 0.7792），增益几乎全部来自 Modifier 召回（TP +26）；dev 上 0.9155 vs 0.9091 的差距在 dev10 噪声带内，valid 的 +0.0145 才是有效证据但仍是单点估计。吸收率 32% 反低于 top-1 的 41%，排除"更多硬编码"解释。两个 gold 相反排除示例在 top-4 终版指南中同样存在，且查证 top-4 第 1 轮分析调用已展示 FALDH/retinal-vascular 的 gold 标签仍照写排除——输入侧加证据也防不住，缺口定位在 refine_guidelines 调用看不到带标签的 discrepancy 证据。详见 [P3 报告](todo-temp/p0-p4/p3/20261007_p3_topk4_report.md)。
 
-**2026-10-08，P4 规模对比完成（全部离线，无新运行）：** 三项结论：① 勘误——三次规模运行 n_examples 实际均为 5，"示例数 5/10/15 混杂"不存在；② 假设的硬编码端成立（吸收率 41%→9%→3% 单调塌缩），泛化端不成立——valid 0.7878/0.7745/0.8050 非单调，配对 bootstrap 显示所有臂间差 95% CI 跨 0（仅 dev30 vs 原指南 +0.026 达 97.1% 单侧），且吸收率低 ≠ valid 好（dev20 反例）；③ dev30 指南在拥有 norrin 文档的情况下仍写出其扁平排除——规模不解决 gold 相反排除，与 P3 §3.4 的结构定位一致。dev20/dev30 replicate 两臂已设计但按用户决定不执行，轨迹方差未知是主要保留。详见 [P4 报告](todo-temp/p4/20261007_p4_devsize_report.md)。**至此 2026-10-02 seminar 的五项 Todo（P0–P4）全部关闭。**
+**2026-10-08，P4 规模对比完成（全部离线，无新运行）：** 三项结论：① 勘误——三次规模运行 n_examples 实际均为 5，"示例数 5/10/15 混杂"不存在；② 假设的硬编码端成立（吸收率 41%→9%→3% 单调塌缩），泛化端不成立——valid 0.7878/0.7745/0.8050 非单调，配对 bootstrap 显示所有臂间差 95% CI 跨 0（仅 dev30 vs 原指南 +0.026 达 97.1% 单侧），且吸收率低 ≠ valid 好（dev20 反例）；③ dev30 指南在拥有 norrin 文档的情况下仍写出其扁平排除——规模不解决 gold 相反排除，与 P3 §3.4 的结构定位一致。dev20/dev30 replicate 两臂已设计但按用户决定不执行，轨迹方差未知是主要保留。详见 [P4 报告](todo-temp/p0-p4/p4/20261007_p4_devsize_report.md)。**至此 2026-10-02 seminar 的五项 Todo（P0–P4）全部关闭。**
 
 **2026-10-09，seminar 汇报 P0–P4，导师反馈确定下一阶段重点：** 会上报告了五项核查结果（R4 逐例变化、P1/P2 三臂对照、Top-4 valid100、规模对比）。导师的核心要求是**逐例解释"新规则为什么没有修复目标错误"**，而不是继续扩大实验规模：R4 针对 3 个 S→O 漏标只修复 1 个，需逐案例串起"原文/gold/R3 预测 → discrepancy 解释 → 新 principle → R3→R4 指南 diff → 最终预测"的规则链，并做隔离对照（新 principle 单独重标目标案例 vs R4 完整指南），以区分修复条件不足、规则冲突与整合失真；同时解释为什么针对漏标的规则主要改变了其他类型（2 个 M→S 修复、1 个 S→D 新增回归）。术语修正：safety clause 改称 **exception rule**；流程图须区分 gold annotation 与 TP，gold 来源直接指向原始 gold 数据。Top-4 收益（recall/Modifier 驱动、precision 未改善）需重复实验确认显著性；导师提醒 FP 增加可能反映"尽量标成实体"的标注偏置。两个下一步方向获认可：refinement 阶段注入目标错误案例的 gold（输入侧）、reviewer 写后冲突检查（输出侧）；pattern explanation 阶段可直接使用原始 gold annotation（含正确案例）。下次 seminar 拟邀请 Ken 与 Kim 教授，候选时间 10/15、10/16、10/19 上午、10/20，本周收集可用性。
 
 **2026-10-14，新 P0 规则链与隔离对照完成（10/16 seminar 前）：** 计划见 [RP](docs/RP/20261014_r4_failure_attribution_plan.md)。
 
-[规则链](todo-temp/r4-rule-chain/20261014_r4_rule_chain_report.md)显示 R4 的三个目标属于三种情况：
+[规则链](todo-temp/r4-attribution/rule-chain/20261014_r4_rule_chain_report.md)显示 R4 的三个目标属于三种情况：
 
 - **FALDH**：规则冲突。新规则放行，指南却有三处点名排除，其中一处是 R4 改写时新增的。
 - **G6PD**：修复条件不足。
@@ -87,7 +87,7 @@ BC5CDR、BioRED 的复现已完成，validation 原指南/修改后分别为 **0
 
 与 gold 相反的点名排除，全部出自"不许破坏的示例"区块中被展示的文档。这个区块按样本顺序取前 5 篇有 TP 的文档，展示全文，不标记 FN；改写指南这一站看不到任何 gold。dev30 中 FALDH 的文档没有被展示，指南就从未点名它。
 
-[隔离对照](todo-temp/r4-isolation/20261014_r4_isolation_report.md)（36 次，GPT-5.4 high）的结果：
+[隔离对照](todo-temp/r4-attribution/isolation/20261014_r4_isolation_report.md)（36 次，GPT-5.4 high）的结果：
 
 - **FALDH**：在"标签定义＋原则"条件下，3 次都被当作疾病标注（2 次 SpecificDisease，跨度含缩写；1 次 CompositeMention）。用 R4 完整指南为 0/3。去掉原则的 exception rule，结果不变。
 - **G6PD**：四组都没有标对。去掉 exception rule 后，模型只是改为把 "enzyme deficiency" 标成 DiseaseClass。
@@ -120,31 +120,31 @@ BC5CDR、BioRED 的复现已完成，validation 原指南/修改后分别为 **0
 - 提示声明这些文档"currently handled CORRECTLY"，又要求"prioritize specific sub-cases to avoid regression"。这与 FALDH 被写成点名排除的过程一致，但属于推断。
 - 论文 §3.4.4 说这一步还会收到 discrepancy context，现有实现没有传入。
 
-10/16 seminar 的 slides 见 `../presentations/20261016_faldh_attribution_en.pptx`（slides 统一放在 `修論/presentations`），生成脚本为 `todo-temp/r4-isolation/build_faldh_slides.py`；非目标变化另成一份 `../presentations/20261016_r4_secondary_effects_en.pptx`，生成脚本为 `todo-temp/r4-nontarget/build_secondary_effects_slides.py`。
+10/16 seminar 的 slides 见 `../presentations/20261016_faldh_attribution_en.pptx`（slides 统一放在 `修論/presentations`），生成脚本为 `todo-temp/slides/build_faldh_slides.py`；非目标变化另成一份 `../presentations/20261016_r4_secondary_effects_en.pptx`，生成脚本为 `todo-temp/slides/build_secondary_effects_slides.py`。
 
 **2026-10-16，seminar 反馈与当日离线核查：** 教授提出两项检验，原文见底部 Todo。
 
-- 第二项的前提已离线核对：E1 能控制的输入和设置都与 08/02 原 run 相同；无法做到相同的只有模型版本（原 run 未记录）和模型自身的随机性。见[复现一致性核查](todo-temp/r4-nontarget/20261016_replay_identity_report.md)。
+- 第二项的前提已离线核对：E1 能控制的输入和设置都与 08/02 原 run 相同；无法做到相同的只有模型版本（原 run 未记录）和模型自身的随机性。见[复现一致性核查](todo-temp/r4-attribution/nontarget/20261016_replay_identity_report.md)。
 - 23 次重跑与原 run 相比，差别和重跑之间的差别处在同一水平。例外只有两处，而两处都是因为原 run 的结果特别才被挑出来的：R4 下的 Tay-Sachs/TSD，以及 R3 下的 PAH。R3 下 PAH 原 run 未标，重跑 3/3 是跨度正确的 DiseaseClass，两者都不算对。
 - 对研究主线的含义：要说某一处"被规则改变"，必须先重复确认，单次标注不够。这与 10/15 关于"接受或回退一轮修改的决定可能被单次波动左右"的判断一致。
-- 第一项已完成设计，未运行，见[设计](todo-temp/r4-isolation/20261016_r3_minus_faldh_design.md)。10/17 已运行，见下。
+- 第一项已完成设计，未运行，设计稿已于 10/20 并入[结果报告](todo-temp/r4-attribution/isolation/20261017_r3_minus_faldh_report.md)（原文见提交 d86ea17）。10/17 已运行，见下。
 
 **2026-10-17，R3 删去点名排除仍修不好 FALDH；FALDH 归因到此收尾：**
 
-- R3 指南删去点名 FALDH 的两处后，5 次都没有标出 FALDH；同批 R3 原样对照 0/3，其余 13 个 gold 每次都对。10/14 里 R4 删去点名排除后是 3/3（Fisher 单侧 p ≈ 0.018，跨日比较，两天的 R3 对照一致）。见[结果](todo-temp/r4-isolation/20261017_r3_minus_faldh_report.md)。
+- R3 指南删去点名 FALDH 的两处后，5 次都没有标出 FALDH；同批 R3 原样对照 0/3，其余 13 个 gold 每次都对。10/14 里 R4 删去点名排除后是 3/3（Fisher 单侧 p ≈ 0.018，跨日比较，两天的 R3 对照一致）。见[结果](todo-temp/r4-attribution/isolation/20261017_r3_minus_faldh_report.md)。
 - 对研究主线的含义：只去掉点名排除不够，R4 新 principle 写进指南的内容是修复 FALDH 的必要条件。连同 10/14 的"标签定义＋原则"3 次都当作疾病标注、③− 3/3 精确恢复，以及 PAH 在 R3 下 0/3、R4 下 3/3，可以说 R4 的 principle 对"缺乏/活性降低＋具体分子"这类漏标有用。FALDH 没修好，原因在改写这一站加入的点名排除（规则冲突），不在 principle 本身。
 - 口径限制：只对 FALDH、PAH 两例成立，单一模型；G6PD 在 R4 下仍未修复；R4 这一轮的 dev F1 提升本身不能复现（10/15）。
 - 决定不运行追加条件（删 R3 第 12 行的 "a molecular/substance entity or its level/activity"）。它只能区分 R4 里起作用的是收窄旧 exception rule（第 14 行），还是新增的正向规则（第 12 行）。两处都是按同一条 principle 写入的，所以不影响上面的结论。规则链显示 PAH 在 R3 的丢失与第 12 行同时发生，这与"第 12 行是 FALDH 的第二道阻挡"的推测一致，但这一点没有检验。
 
 **2026-10-19, preparation for the 10/20 meeting (Prof. Goto, Kon Woo Kim, Prof. Kim); offline only:**
 
-- Validation error breakdown of the saved runs ([error breakdown](todo-temp/meeting-20261020/error_breakdown_output.txt)). With the top-4 guideline (strict F1 0.8023), the largest single loss is subtype confusion between SpecificDisease and DiseaseClass (21 each way; F1 0.8750 if all subtype errors were fixed by gold), then boundaries (0.8597), missed mentions (0.8429) and extra mentions (0.8260). Ignoring subtypes, the same predictions score 0.8546.
+- Validation error breakdown of the saved runs ([error breakdown](todo-temp/plan-v3/error_breakdown_output.txt)). With the top-4 guideline (strict F1 0.8023), the largest single loss is subtype confusion between SpecificDisease and DiseaseClass (21 each way; F1 0.8750 if all subtype errors were fixed by gold), then boundaries (0.8597), missed mentions (0.8429) and extra mentions (0.8260). Ignoring subtypes, the same predictions score 0.8546.
 - Midterm point 4 has lower priority now: missed Modifier is 27 of 208 disagreements with top-4 (13%), against 40 with the base method.
 - Simulated expert bound: checking each of the 777 predicted entities with gold reaches 0.9606. This frames the new annotation-reviewer direction (an LLM second pass, measured between the model alone and this bound).
 - Target check: no source gives BioBERT 0.86 on NCBI Disease. Zhao and Goto 2025 (Table 4) report BioBERT-Large 0.897 with one Disease type on a different test split. The 0.86 in OVERVIEW is left unchanged until the user decides; the meeting deck uses 0.897 with its source.
-- Deck (10/20 meeting, rebuilt on 10/20 from plan v3): `../presentations/20261020_progress_and_plan_en.pptx`, builder `todo-temp/meeting-20261020/build_plan_v3_slides.py`. The 10/19 draft deck and its builder were deleted.
+- Deck (10/20 meeting, rebuilt on 10/20 from plan v3): `../presentations/20261020_progress_and_plan_en.pptx`, builder `todo-temp/slides/build_plan_v3_slides.py`. The 10/19 draft deck and its builder were deleted.
 
-**2026-10-19 (later), direction research and plan v2; offline only:** [report](todo-temp/direction-scan/20261019_direction_research_report.md), plan v2, superseded on 10/20 by [plan v3](docs/RP/20261020_research_plan_v3.md); v1 and v2 were deleted.
+**2026-10-19 (later), direction research and plan v2; offline only:** [report](todo-temp/plan-v3/evidence_notes.md), plan v2, superseded on 10/20 by [plan v3](docs/RP/20261020_research_plan_v3.md); v1 and v2 were deleted.
 
 - No refined guideline is yet proven better than the original on valid100: top-4 minus original +0.0231, 95% interval [−0.0192, +0.0683]. The same R4 guideline annotated twice gave 0.7878 and 0.7789. Four refined loop finals (top-1 run 3, top-4 runs 1 to 3) were never scored on validation; scoring them is the cheapest test of top-4 as a method.
 - Subtype confusion (largest loss) is convention, not noisy gold: 20 of top-4's 34 same-span S/D confusions go against consistent training precedent. It is guideline-sensitive (14 to 58 across guidelines), and refinement created part of it (two cancer patterns, 3 to 16).
@@ -163,11 +163,11 @@ seminar 后，将会议要点及其对研究主线的推进融入对应日期的
 
 已关闭的一组来自 [October 2 会议摘要](archive/2026-10-02_seminar-conflict-casestudy/seminar_oct2.md)（保留原优先顺序，均已完成）；当前进行中的一组来自 2026-10-09 seminar，列在本节末尾。注意两组的 P0–P4 编号含义不同，引用时不要混淆。
 
-- [x] **P0：核查 Round 4 标注变化与回归。** 已复算整体及类别指标，整理混淆矩阵和逐例历史，区分已有错误、目标修复与新增回归。见 [P0 报告](todo-temp/p0/20261006_round4_p0_report.md)。
-- [x] **P1：检验限制条款。** 已完成单变量对照（2026-10-06）：截短 R3 原则的 "do not apply" 从句后，原 41–44 行扁平排除消失，但模型自行再生等效条件限制，norrin/FALDH/abnormal development 无一恢复；dev F1 0.8671 低于原原则的 0.8873，S→D 类型错误翻倍。假设未证实，问题指向限制条款的写法与作用域而非其存在本身。见 [P1 报告](todo-temp/p1/20261006_p1_truncated_clause_report.md)。
-- [x] **P2：改写作用域。** 已完成（2026-10-07）：限定改写使 FALDH 排除从扁平变为条件式，且未再生额外排除示例，但焦点漏标仍无一恢复；dev F1 0.8511 低于 R2 基线，按循环规则会被回退。结合 P1 的三臂证据：漏标近因是标注模型的上游判断，不是限制文本。见 [P2 报告](todo-temp/p2/20261007_p2_scoped_clause_report.md)。
-- [x] **P3：整理并补充 Top-K 对比。** 已完成（2026-10-07）：0.9155 那次 top-4 指南 valid100 实测 F1 **0.8023**（top-1 0.7878、原指南 0.7792），增益集中于 Modifier 召回；吸收率 32% 低于 top-1 的 41%，硬编码解释被排除；两个 gold 相反排除示例仍在，且查明输入侧给 gold 证据也防不住。见 [P3 报告](todo-temp/p3/20261007_p3_topk4_report.md)。
-- [x] **P4：汇报 10/20/30 篇规模对比。** 已完成（2026-10-08，全部离线）：吸收率随规模单调塌缩（41%→9%→3%）但 valid 非单调且臂间差均在噪声内（bootstrap）；dev30 仍写出 norrin 的 gold 相反排除——规模解决硬编码、不解决冲突示例；n_examples 误记勘误（实际均为 5）。replicate 两臂已设计未执行。见 [P4 报告](todo-temp/p4/20261007_p4_devsize_report.md)。
+- [x] **P0：核查 Round 4 标注变化与回归。** 已复算整体及类别指标，整理混淆矩阵和逐例历史，区分已有错误、目标修复与新增回归。见 [P0 报告](todo-temp/p0-p4/p0/20261006_round4_p0_report.md)。
+- [x] **P1：检验限制条款。** 已完成单变量对照（2026-10-06）：截短 R3 原则的 "do not apply" 从句后，原 41–44 行扁平排除消失，但模型自行再生等效条件限制，norrin/FALDH/abnormal development 无一恢复；dev F1 0.8671 低于原原则的 0.8873，S→D 类型错误翻倍。假设未证实，问题指向限制条款的写法与作用域而非其存在本身。见 [P1 报告](todo-temp/p0-p4/p1/20261006_p1_truncated_clause_report.md)。
+- [x] **P2：改写作用域。** 已完成（2026-10-07）：限定改写使 FALDH 排除从扁平变为条件式，且未再生额外排除示例，但焦点漏标仍无一恢复；dev F1 0.8511 低于 R2 基线，按循环规则会被回退。结合 P1 的三臂证据：漏标近因是标注模型的上游判断，不是限制文本。见 [P2 报告](todo-temp/p0-p4/p2/20261007_p2_scoped_clause_report.md)。
+- [x] **P3：整理并补充 Top-K 对比。** 已完成（2026-10-07）：0.9155 那次 top-4 指南 valid100 实测 F1 **0.8023**（top-1 0.7878、原指南 0.7792），增益集中于 Modifier 召回；吸收率 32% 低于 top-1 的 41%，硬编码解释被排除；两个 gold 相反排除示例仍在，且查明输入侧给 gold 证据也防不住。见 [P3 报告](todo-temp/p0-p4/p3/20261007_p3_topk4_report.md)。
+- [x] **P4：汇报 10/20/30 篇规模对比。** 已完成（2026-10-08，全部离线）：吸收率随规模单调塌缩（41%→9%→3%）但 valid 非单调且臂间差均在噪声内（bootstrap）；dev30 仍写出 norrin 的 gold 相反排除——规模解决硬编码、不解决冲突示例；n_examples 误记勘误（实际均为 5）。replicate 两臂已设计未执行。见 [P4 报告](todo-temp/p0-p4/p4/20261007_p4_devsize_report.md)。
 
 **本轮交付：** 逐例变化表、Round 4 混淆矩阵，以及原规则、删除限制、限定作用域三个版本的对比（P0–P4 已完成，seminar 五项 Todo 全部关闭）。**与整体目标的连接：** 三臂对照显示规则措辞路径对焦点漏标无效，P3/P4 进一步显示加证据（top-k、加数据）也防不住 gold 相反排除；共同缺口定位在 refine_guidelines 调用看不到带标签的 discrepancy 证据。若提出新的承载方式（gold 证据注入 rewrite 步、写后对照校验、CONSTRAINT 通道），需先在小样本验证可复用收益，再扩大评价，检查整体 validation 收益与稳定性，推动向 SOTA 目标前进。改善一个开发案例不直接视为达到阶段目标。
 
@@ -177,10 +177,10 @@ seminar 后，将会议要点及其对研究主线的推进融入对应日期的
 
 **新 P0（下次 seminar 必做）：逐例定位失败环节。**
 
-- [x] （2026-10-14 完成：与 3 个 gold 相反案例只在 FALDH 重合，未修复案例共 4 个，加上已修复的 PAH；见[规则链报告](todo-temp/r4-rule-chain/20261014_r4_rule_chain_report.md)）追踪 R4 后仍存在的 2 个 S→O 漏标（FALDH、deficiency in G6PD）；此前 3 个 gold 相反排除案例先按 case ID 核对重合（FALDH 重叠），保留完整句子与上下文。已有基础：P0 报告的逐例历史与 R4 diff 对照、P3 §3.4 的 gold 可见性核查，新增工作是归因与隔离实验，避免重复劳动。
-- [x] （2026-10-15 完成：两类变化都不能归因于 R4 新 principle。Tay-Sachs/TSD 用 R4 指南重跑 5 次全是 M，原 run 的 S 不能复现；cutaneous vasculitis 在原指南不变时 5 次中 2 次为 S，属于波动。见[非目标变化报告](todo-temp/r4-nontarget/20261015_r4_nontarget_report.md)）解释 R4 非目标变化：为什么针对漏标生成的规则主要修复了 2 个 M→S（Tay-Sachs/TSD）并新增 1 个 S→D 回归。
+- [x] （2026-10-14 完成：与 3 个 gold 相反案例只在 FALDH 重合，未修复案例共 4 个，加上已修复的 PAH；见[规则链报告](todo-temp/r4-attribution/rule-chain/20261014_r4_rule_chain_report.md)）追踪 R4 后仍存在的 2 个 S→O 漏标（FALDH、deficiency in G6PD）；此前 3 个 gold 相反排除案例先按 case ID 核对重合（FALDH 重叠），保留完整句子与上下文。已有基础：P0 报告的逐例历史与 R4 diff 对照、P3 §3.4 的 gold 可见性核查，新增工作是归因与隔离实验，避免重复劳动。
+- [x] （2026-10-15 完成：两类变化都不能归因于 R4 新 principle。Tay-Sachs/TSD 用 R4 指南重跑 5 次全是 M，原 run 的 S 不能复现；cutaneous vasculitis 在原指南不变时 5 次中 2 次为 S，属于波动。见[非目标变化报告](todo-temp/r4-attribution/nontarget/20261015_r4_nontarget_report.md)）解释 R4 非目标变化：为什么针对漏标生成的规则主要修复了 2 个 M→S（Tay-Sachs/TSD）并新增 1 个 S→D 回归。
 - [x] （2026-10-14 完成：FALDH 为规则冲突，G6PD 为修复条件不足，PAH 为撤销 R3 副作用）逐案例串规则链：原文/gold/R3 预测 → discrepancy explanation → 新 principle → R3→R4 guideline diff → 最终预测；归类为修复条件不足（principle 太抽象）、规则冲突（新规则允许但例外仍禁止）或整合失真（principle 可用但写入时被改写弱化）。交付物是"案例—具体条款—预测变化"证据，不只是总体分数。
-- [x] （2026-10-14 完成，另加 ②b"去掉 exception rule"；见[隔离对照报告](todo-temp/r4-isolation/20261014_r4_isolation_report.md)；追加 ③− 已完成：删去三处点名排除后 FALDH 3/3 恢复）隔离对照（会上提出）：同模型同生成设置，用 ①R3 指南 ②标签定义＋新 principle（不进完整指南） ③R4 完整指南 三种条件重标 3 个原 S→O 案例；重标阶段不给 annotator gold，gold 仅用于事后评分。结果读法：principle 单独有效而整合无效 → 优先查规则冲突与整合；单独也无效 → 查 discrepancy explanation 与 principle 内容；相同条件下结果不稳 → 先少量重复，避免把随机变化当成规则效果。
+- [x] （2026-10-14 完成，另加 ②b"去掉 exception rule"；见[隔离对照报告](todo-temp/r4-attribution/isolation/20261014_r4_isolation_report.md)；追加 ③− 已完成：删去三处点名排除后 FALDH 3/3 恢复）隔离对照（会上提出）：同模型同生成设置，用 ①R3 指南 ②标签定义＋新 principle（不进完整指南） ③R4 完整指南 三种条件重标 3 个原 S→O 案例；重标阶段不给 annotator gold，gold 仅用于事后评分。结果读法：principle 单独有效而整合无效 → 优先查规则冲突与整合；单独也无效 → 查 discrepancy explanation 与 principle 内容；相同条件下结果不稳 → 先少量重复，避免把随机变化当成规则效果。
 - [ ] 汇报材料：逐例对照表（原始错误、新 principle、最终相关条款、重标结果、判断依据）＋关键 guideline diff（只标真正影响目标案例的修改）＋明确区分已观察现象、实验支持的解释、尚未验证的假设。
 
 **新 P1（完成定位后有时间再测）：流程改进，一次只改一个输入位置。**
@@ -207,6 +207,6 @@ seminar 后，将会议要点及其对研究主线的推进融入对应日期的
 >
 > Test whether the 'M→S fixes can't be reproduced' are real noise or not. I need to make the input and settings all the same.
 
-- [x] R3 指南删去点名 FALDH 的两处（第 41 至 45 行、第 241 行）后重标 10577908，看 FALDH 能否修复。10/17 结果：**不能**，删除后 0/5，同批 R3 原样对照 0/3，其余 13 个 gold 每次都对。10/14 里 R4 删去点名排除后是 3/3，所以 FALDH 的修复靠的是 R4 新增的内容，不只是去掉点名排除。R3 第 12 行的一般性 exception rule（"a molecular/substance entity or its level/activity"）没有 R4 那样的 deficiency 例外，推测是第二道阻挡，未检验。见[结果](todo-temp/r4-isolation/20261017_r3_minus_faldh_report.md)。
+- [x] R3 指南删去点名 FALDH 的两处（第 41 至 45 行、第 241 行）后重标 10577908，看 FALDH 能否修复。10/17 结果：**不能**，删除后 0/5，同批 R3 原样对照 0/3，其余 13 个 gold 每次都对。10/14 里 R4 删去点名排除后是 3/3，所以 FALDH 的修复靠的是 R4 新增的内容，不只是去掉点名排除。R3 第 12 行的一般性 exception rule（"a molecular/substance entity or its level/activity"）没有 R4 那样的 deficiency 例外，推测是第二道阻挡，未检验。见[结果](todo-temp/r4-attribution/isolation/20261017_r3_minus_faldh_report.md)。
 - [x] （2026-10-17 决定不运行：现有证据已足以说明 R4 新增内容是修复 FALDH 的必要条件，这一条只能细分是第 12 行还是第 14 行起作用，不改变结论）追加条件：在上一条的基础上再删去 R3 第 12 行的 "a molecular/substance entity or its level/activity"，5 次，检验它是否就是第二道阻挡。条件文本已备好（`conditions/c4b_minus_level.txt`），以后需要时可直接运行。
-- [ ] 检验 Tay-Sachs/TSD 的 M→S 不能复现是否真是波动，要求输入和设置完全相同。10/16 离线核查：能控制的都相同，模型版本无法确认。可补的三项都还没做：请管理员确认部署是否升级过；以后保存每次调用的 `model` 字段；用 R4 指南再标 8326491 15 次。10/17 补充：`model` 字段实测返回的是部署名 `eastus2-gpt-5.4`，查不出版本，版本只能问管理员。见[核查](todo-temp/r4-nontarget/20261016_replay_identity_report.md)。
+- [ ] 检验 Tay-Sachs/TSD 的 M→S 不能复现是否真是波动，要求输入和设置完全相同。10/16 离线核查：能控制的都相同，模型版本无法确认。可补的三项都还没做：请管理员确认部署是否升级过；以后保存每次调用的 `model` 字段；用 R4 指南再标 8326491 15 次。10/17 补充：`model` 字段实测返回的是部署名 `eastus2-gpt-5.4`，查不出版本，版本只能问管理员。见[核查](todo-temp/r4-attribution/nontarget/20261016_replay_identity_report.md)。

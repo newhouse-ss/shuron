@@ -2,20 +2,20 @@
 
 一行一个实际运行或已定义的重复实验，只记设置、结果和状态。解释、决策及下次 seminar 待办见 [PROGRESS.md](PROGRESS.md)。这是已整理实验的索引，不是 outputs 下所有目录的清单。
 
-日期取 run ID 或批次标识，不代表实际完成日期；缺失时不推测。NCBI refinement 默认 GPT-5.4 high，dev10；另行注明 dev20/30。validation F1 使用 metrics.json 的 PubAnnotation 口径，dev F1 保留循环记录的集合评分口径；吸收指新增实体字符串出现数，不是正确答案记忆数。2026-10-08 勘误：dev20/dev30 运行的示例上限此前误记为 10/15，resolved_run_config 与 prompt 实测均为 5（见 [P4 报告](todo-temp/p4/20261007_p4_devsize_report.md) 第 1 节）。
+日期取 run ID 或批次标识，不代表实际完成日期；缺失时不推测。NCBI refinement 默认 GPT-5.4 high，dev10；另行注明 dev20/30。validation F1 使用 metrics.json 的 PubAnnotation 口径，dev F1 保留循环记录的集合评分口径；吸收指新增实体字符串出现数，不是正确答案记忆数。2026-10-08 勘误：dev20/dev30 运行的示例上限此前误记为 10/15，resolved_run_config 与 prompt 实测均为 5（见 [P4 报告](todo-temp/p0-p4/p4/20261007_p4_devsize_report.md) 第 1 节）。
 
 2026-10-06 对 outputs/ 与 logs/ 做过规范化重命名：去掉与父目录重复的数据集段（如 `20260802_ncbi_gpt54-high_moderation` → `20260802_gpt54-high_moderation`），`k1` 统一为 `topk1`，`_rN` 统一为 `_runN`。reproduction/ 下旧报告和 logs/ncbi_disease/ 短标签日志中仍出现的旧名为重命名前记录。
 
 | 日期 | 实验 / 证据 | 设置 | 关键结果 | 状态 |
 | --- | --- | --- | --- | --- |
-| 2026-10-19 | [离线方向核查](todo-temp/direction-scan/20261019_direction_research_report.md) | 既有 8 个 valid100 运行 + size_noise dev 重复 + train gold，无 API 调用；配对 bootstrap 10000 次 | 8 运行投票（≥4）F1 0.8158，较原指南 +0.0366 [+0.0059, +0.0699]（唯一不跨 0）；topk4−原指南 +0.0231 [−0.0192, +0.0683]；同一 R4 指南两次 0.7878/0.7789；按一致度复核 20%/30% 实体 → 0.887/0.911（随机 0.834/0.850）；S/D 混淆 34 例中 20 例 train 先例与 gold 一致；文档内传播 −0.039/+0.001 | 完成；结论与方向排序见报告；据此写的 plan v2 已被 docs/RP/20261020_research_plan_v3.md 取代并删除 |
-| 2026-10-17 | [R3 删去点名排除](todo-temp/r4-isolation/20261017_r3_minus_faldh_report.md) | R3 指南删去点名 FALDH 的两处（第 41 至 45、241 行），其余不变；10577908，R3 原样 × 3 与删除后 × 5 交替执行；GPT-5.4 high，设置同原 run | FALDH 删除后 0/5（全为 O），同批对照 0/3；整篇每次 13/0/1，无其他变化；输入 35,078、输出 235,345 token | 完成，8/8；10/16 首次尝试 13 个任务全部停在排队、未开始执行（无用量），10/17 重跑；追加条件未运行 |
-| 2026-10-15 | [R4 非目标变化重跑 E1](todo-temp/r4-nontarget/20261015_r4_nontarget_report.md) | 8326491 × R3 指南／R4 指南 × 5 次；GPT-5.4 high，设置同原 run | Tay-Sachs disease、TSD 两组均 M 5/5（原 run 的 R4 为 S），R4 导致改对不成立，E2 未执行；输入 45,470、输出 162,220 token | 完成，10/10；首次启动中断后重跑，事后报备 |
-| 2026-10-14 | [R4 追加对照 ③−](todo-temp/r4-isolation/20261014_r4_isolation_report.md) | R4 指南删去点名 FALDH 的三处（第 54 至 58、167、263 行），其余不变；10577908 × 3 次；GPT-5.4 high | FALDH 精确 3/3（R4 原指南 0/3），整篇 14/0/0，无其他回归；输入 14,502、输出 105,580 token | 完成，3/3 |
-| 2026-10-14 | [R4 隔离对照](todo-temp/r4-isolation/20261014_r4_isolation_report.md) | R4 目标所在 3 篇 dev 文档 × 4 种指南条件（R3 指南／标签定义＋R4 原则／同上去掉 exception rule／R4 指南）× 3 次；GPT-5.4 high | FALDH：只给原则时方向正确 2/3（另 1 次 CompositeMention），R4 指南 0/3，去掉 exception rule 无变化；G6PD 四组精确 0/3；PAH：R3 指南 0/3，R4 指南 3/3；输入 97,113、输出 959,532 token | 完成，36/36 |
-| 2026-10-08 | [P4 规模对比整理](todo-temp/p4/20261007_p4_devsize_report.md) | 既有 10/20/30 轨迹 + valid100 配对 bootstrap，无新运行 | dev30 valid 0.8050 最高，臂间差 95% CI 均跨 0；吸收率 41%→9%→3%；dev30 指南仍含 norrin 排除 | 完成，replicate 未执行 |
-| 2026-10-07 | [P2 限定作用域消融](todo-temp/p2/result.json) | R3 原则限制从句限定作用域改写，dev10 | dev F1 0.8511（原版 0.8873、P1 0.8671），低于基线会被回退；焦点漏标仍无一恢复 | 完成，假设未证实 |
-| 2026-10-06 | [P1 截短消融](todo-temp/p1/result.json) | 单变量截短 R3 原则的 "do not apply" 从句，dev10 | dev F1 0.8592 至 0.8671（原原则 0.8873）；焦点漏标无一恢复，等效限制自行再生 | 完成，假设未证实 |
+| 2026-10-19 | [离线方向核查](todo-temp/plan-v3/evidence_notes.md) | 既有 8 个 valid100 运行 + size_noise dev 重复 + train gold，无 API 调用；配对 bootstrap 10000 次 | 8 运行投票（≥4）F1 0.8158，较原指南 +0.0366 [+0.0059, +0.0699]（唯一不跨 0）；topk4−原指南 +0.0231 [−0.0192, +0.0683]；同一 R4 指南两次 0.7878/0.7789；按一致度复核 20%/30% 实体 → 0.887/0.911（随机 0.834/0.850）；S/D 混淆 34 例中 20 例 train 先例与 gold 一致；文档内传播 −0.039/+0.001 | 完成；结论与方向排序见报告；据此写的 plan v2 已被 docs/RP/20261020_research_plan_v3.md 取代并删除 |
+| 2026-10-17 | [R3 删去点名排除](todo-temp/r4-attribution/isolation/20261017_r3_minus_faldh_report.md) | R3 指南删去点名 FALDH 的两处（第 41 至 45、241 行），其余不变；10577908，R3 原样 × 3 与删除后 × 5 交替执行；GPT-5.4 high，设置同原 run | FALDH 删除后 0/5（全为 O），同批对照 0/3；整篇每次 13/0/1，无其他变化；输入 35,078、输出 235,345 token | 完成，8/8；10/16 首次尝试 13 个任务全部停在排队、未开始执行（无用量），10/17 重跑；追加条件未运行 |
+| 2026-10-15 | [R4 非目标变化重跑 E1](todo-temp/r4-attribution/nontarget/20261015_r4_nontarget_report.md) | 8326491 × R3 指南／R4 指南 × 5 次；GPT-5.4 high，设置同原 run | Tay-Sachs disease、TSD 两组均 M 5/5（原 run 的 R4 为 S），R4 导致改对不成立，E2 未执行；输入 45,470、输出 162,220 token | 完成，10/10；首次启动中断后重跑，事后报备 |
+| 2026-10-14 | [R4 追加对照 ③−](todo-temp/r4-attribution/isolation/20261014_r4_isolation_report.md) | R4 指南删去点名 FALDH 的三处（第 54 至 58、167、263 行），其余不变；10577908 × 3 次；GPT-5.4 high | FALDH 精确 3/3（R4 原指南 0/3），整篇 14/0/0，无其他回归；输入 14,502、输出 105,580 token | 完成，3/3 |
+| 2026-10-14 | [R4 隔离对照](todo-temp/r4-attribution/isolation/20261014_r4_isolation_report.md) | R4 目标所在 3 篇 dev 文档 × 4 种指南条件（R3 指南／标签定义＋R4 原则／同上去掉 exception rule／R4 指南）× 3 次；GPT-5.4 high | FALDH：只给原则时方向正确 2/3（另 1 次 CompositeMention），R4 指南 0/3，去掉 exception rule 无变化；G6PD 四组精确 0/3；PAH：R3 指南 0/3，R4 指南 3/3；输入 97,113、输出 959,532 token | 完成，36/36 |
+| 2026-10-08 | [P4 规模对比整理](todo-temp/p0-p4/p4/20261007_p4_devsize_report.md) | 既有 10/20/30 轨迹 + valid100 配对 bootstrap，无新运行 | dev30 valid 0.8050 最高，臂间差 95% CI 均跨 0；吸收率 41%→9%→3%；dev30 指南仍含 norrin 排除 | 完成，replicate 未执行 |
+| 2026-10-07 | [P2 限定作用域消融](todo-temp/p0-p4/p2/result.json) | R3 原则限制从句限定作用域改写，dev10 | dev F1 0.8511（原版 0.8873、P1 0.8671），低于基线会被回退；焦点漏标仍无一恢复 | 完成，假设未证实 |
+| 2026-10-06 | [P1 截短消融](todo-temp/p0-p4/p1/result.json) | 单变量截短 R3 原则的 "do not apply" 从句，dev10 | dev F1 0.8592 至 0.8671（原原则 0.8873）；焦点漏标无一恢复，等效限制自行再生 | 完成，假设未证实 |
 | 2026-09-22 | [BioRED moderation](outputs/biored/20260922_gpt52-high_moderation/status.json) | GPT-5.2 high，dev10 | dev F1 0.8287 至 0.8602，2 轮 | 完成，无进一步改善 |
 | 2026-09-22 | [BC5CDR moderation](outputs/bc5cdr/20260922_gpt52-high_moderation/status.json) | GPT-5.2 high，dev10 | dev F1 0.8675 至 0.8988，4 轮 | 完成，无进一步改善 |
 | 2026-09-02 | [NCBI topk4-run3](outputs/ncbi_disease/20260902_gpt54-high_topk4_run3/status.json) | Top-4 | dev F1 0.8194 至 0.8841，4 轮 | 完成，无进一步改善 |
