@@ -1,6 +1,6 @@
-# plan v3 的证据汇编
+# plan v3、v4 的证据汇编
 
-2026-10-20 整合。`docs/RP/20261020_research_plan_v3.md` 和 10/20 会议 deck 引用的数字，出处都在本文件或本文件夹的脚本输出里。
+2026-10-20 整合。`docs/RP/20261020_research_plan_v4.md`、它的前身 plan v3（已删除）和 10/20 会议 deck 引用的数字，出处都在本文件或本文件夹的脚本输出里。
 
 本文件取代以下 7 份文档，原文保存在提交 d86ea17 中：
 - 10/19 方向核查报告（`direction-scan/20261019_direction_research_report.md`）；
@@ -136,6 +136,7 @@
   - GPT-5.4 high：¥55.39 至 ¥88.37；
   - DeepSeek V4.1 flash：开 thinking ¥2.204 至 ¥3.523，关 thinking ¥0.069。
   - 出处：`plan_cost.py`、`node_cost_output.txt`。
+- **plan v4 的调用量和费用（`node_cost_output.txt` 的 "== plan v4" 一节）：** 必做 2,124 次调用，关 thinking 约 ¥257，开 thinking ¥4,569 至 ¥7,303；每项 Track 1 改动约 810 次，¥56 或 ¥1,785 至 ¥2,853；测试集 300 次。
 - **plan v3 的调用量和费用：** 必做步骤 3,876 次调用，关 thinking 约 ¥377，开 thinking ¥8,430 至 ¥13,475；加上条件步骤 4,376 次，关 ¥412，开 ¥9,532 至 ¥15,236（`node_cost_output.txt`）。
 - **专家标注研究：**
   - 试点（1 人 40 篇）：4.9 至 12.6 小时，¥7,396 至 ¥63,159；

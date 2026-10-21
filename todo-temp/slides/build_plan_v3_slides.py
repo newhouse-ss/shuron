@@ -1,4 +1,5 @@
-"""Build the 2026-10-20 meeting deck from docs/RP/20261020_research_plan_v3.md (English).
+"""Build the 2026-10-20 meeting deck from plan v3 (English; plan v3 was superseded by
+docs/RP/20261020_research_plan_v4.md after the meeting and deleted; it is in the git history).
 
 Story: midterm baseline and feedback, how annotated corpora are built, the updated goals, where we stand,
 the case study since the midterm (terms and argument as in presentations/20261016_faldh_attribution_en.pptx:

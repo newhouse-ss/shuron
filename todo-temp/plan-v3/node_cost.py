@@ -1,4 +1,5 @@
-"""Call counts, cost ESTIMATES and serial run time for the steps in docs/RP/20261020_research_plan_v3.md.
+"""Call counts, cost ESTIMATES and serial run time for the steps of plan v3 (the 10/20 deck) and
+docs/RP/20261020_research_plan_v4.md. The plan v3 block is kept unchanged because the 10/20 deck asserts it.
 
 Nothing here is measured. Per-call DeepSeek prices reuse todo-temp/plan-v3/plan_cost.py:
     thinking on  = output length assumed equal to GPT-5.4 high (mean 22,551 / max 36,459 tokens)
@@ -34,6 +35,18 @@ NODES = [
     ("Test-split evaluation: frozen x2 + original x1", 300, 0, 0, True),
 ]
 
+# plan v4: (node, calls with thinking as chosen, fixed on, fixed off, kind) with kind core | conditional | per_change
+NODES_V4 = [
+    ("Stability test: arm A thinking off 52, arm B thinking on 52", 0, 52, 52, "core"),
+    ("Reproduction, baselines: valid100 x4 (original x2, GPT R4, GPT top-4)", 400, 0, 0, "core"),
+    ("Reproduction, loops: top-1 and top-4, 5 each, 62 dev calls + valid100 of the final", 1_620, 0, 0, "core"),
+    ("Error taxonomy and Track 2 FN/FP curves on the reproduction outputs", 0, 0, 0, "core"),
+    ("Test-split evaluation: frozen x2 + original x1", 300, 0, 0, "conditional"),
+    ("Track 1 candidate, one prompt change: 5 loops x (62 dev + valid100)", 810, 0, 0, "per_change"),
+    ("Track 1 candidate, delete gold-contradicting named exclusions: 2 docs x 2 conditions x 3", 12, 0, 0, "per_change"),
+    ("Track 1 candidate, separate subtype call: dev30 pilot 120, then valid100 x2", 320, 0, 0, "per_change"),
+]
+
 
 def yen(calls, rate):
     return calls * rate * p.JPY
@@ -61,6 +74,22 @@ def main():
     lines.append("")
     lines.append(f"Main-result reproduction serial time at 46 to 489 s per call: {repro * 46 / 3600:.1f} to {repro * 489 / 3600:.1f} hours; "
                  f"with 8 parallel workers {repro * 46 / 3600 / 8:.1f} to {repro * 489 / 3600 / 8:.1f} hours")
+
+    lines.append("")
+    lines.append("== plan v4")
+    core = {"calls": 0, "off": 0.0, "on_mean": 0.0, "on_max": 0.0}
+    for name, n, n_on, n_off, kind in NODES_V4:
+        c = {k: yen(n, RATE[k]) + yen(n_on, RATE["on_mean" if k == "off" else k]) + yen(n_off, RATE["off"])
+             for k in RATE}
+        calls = n + n_on + n_off
+        lines.append(f"[{kind}] {name}: calls {calls} | off JPY {c['off']:,.0f} | "
+                     f"on JPY {c['on_mean']:,.0f} to {c['on_max']:,.0f}")
+        if kind == "core":
+            core["calls"] += calls
+            for k in RATE:
+                core[k] += c[k]
+    lines.append(f"TOTAL v4 core: calls {core['calls']} | off JPY {core['off']:,.0f} | "
+                 f"on JPY {core['on_mean']:,.0f} to {core['on_max']:,.0f}")
     out = "\n".join(lines)
     (Path(__file__).resolve().parent / "node_cost_output.txt").write_text(out + "\n", encoding="utf-8")
     print(out)

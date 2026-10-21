@@ -4,18 +4,18 @@
 
 ## 总体主线与阶段目标
 
-**优化 guideline refinement，使 LLM 的数据标注质量首先逼近 SOTA，随后实现对人类专家标注的替代或部分替代，降低人工数据标注负担。**
+**在标注资源稀少、还不足以训练监督模型的阶段改进 guideline refinement：Track 1 让直接使用、不经人工修正的 LLM 标注质量更高；Track 2 在构建 benchmark 需要专家修正时，以 FP 换取更少的 FN，减少专家的修正量。**
 
-这是本研究的总体方向。当前的 hard-coding、规则冲突、Top-K 和开发数据规模分析，分别针对这条路线上的方法瓶颈。长期目标由用户在 2026-10-06 明确，研究脉络来自 [中期 abstract](archive/2026-08-31_midterm-abstract/47256388_周恒宇_要旨.pdf)，第 1 至 2 页。
+这是本研究的总体方向，2026-10-20 会议后确定，取代 10-06 的“先逼近 SOTA、再替代或部分替代专家标注”；计划见 [RP v4](docs/RP/20261020_research_plan_v4.md)。此前的 hard-coding、规则冲突、Top-K 和开发数据规模分析，都是这条路线上的方法诊断。研究脉络来自 [中期 abstract](archive/2026-08-31_midterm-abstract/47256388_周恒宇_要旨.pdf)，第 1 至 2 页。
 
 | 阶段 | 要解决的问题 | 当前位置 |
 | --- | --- | --- |
 | 复现与诊断 | 原指南及 refinement 能改善什么，提升被哪些环节限制？ | 已复现并开展诊断，发现开发收益、泛化收益与稳定性并不一致。 |
 | 方法优化 | 如何从少量标注证据学习可复用规则，合理整合新旧指南，并减少修改副作用？ | 当前主要阶段，三条优化轴已有探索，规则作用域是本轮重点。 |
-| 验证效果，逼近 SOTA | 改进能否稳定提升未参与修改的文档表现，并推广到同类案例及其他语料？ | 已有 validation 结果但增益有限且不一致。NCBI Disease 的比较目标是 BioBERT F1 **0.86**，尚未证明达到。 |
-| 验证专家标注替代能力 | 哪些标注可交给 LLM，哪些仍须专家复核，质量和人工负担如何变化？ | 长期目标。专家对照及人工修正负担尚未实测，不能由接近 SOTA 分数直接推定。 |
+| Track 1：直接使用的标注质量 | 在 DeepSeek 上复现主要结果，对全部错误分类，再针对占比最高的错误类别改进方法 | 未开始。GPT-5.4 上改进后指南的增益 +0.0231 [−0.0192, +0.0683] 未被证实。四子类型严格 F1 只和主论文比（0.73 / 0.76）；单一类型 F1 对照监督 SOTA（NEEDLE 0.9228）只作参照。 |
+| Track 2：构建 benchmark 时的修正量 | 用投票阈值等可调参数以 FP 换 FN，减少专家补漏标的工作 | 未开始。GPT-5.4 上 8 次运行取并集，FN 从 162 降到 80，FP 从 148 升到 393（只作说明）。 |
 
-研究同时允许完整替代与部分替代两种实际结果。达到可比的模型基准后，继续通过相同任务和规则下的专家对照、人工修正比例及时间成本，判断可自动化的范围。导师 9 月 12 日关于避免过早声称替代人工的反馈，是对现阶段证据和表达的要求，不取消这个长期目标。
+两条 track 对应 10/20 会议提出的两种场景：并非所有标注都需要专家修正，需要的主要是构建 benchmark；越来越多的场景直接使用 LLM 标注。补漏标必须通读全文，和手工标注没有区别，所以 Track 2 以 FN 为主指标。没有现成的专家标注，两条 track 都以 gold 为参照；计时的专家实验列为未来工作。不主张 LLM 可以替代独立标注者。
 
 ## 从中期 abstract 延伸的三条优化轴
 
@@ -144,7 +144,7 @@ BC5CDR、BioRED 的复现已完成，validation 原指南/修改后分别为 **0
 - Target check: no source gives BioBERT 0.86 on NCBI Disease. Zhao and Goto 2025 (Table 4) report BioBERT-Large 0.897 with one Disease type on a different test split. The 0.86 in OVERVIEW is left unchanged until the user decides; the meeting deck uses 0.897 with its source.
 - Deck (10/20 meeting, rebuilt on 10/20 from plan v3): `../presentations/20261020_progress_and_plan_en.pptx`, builder `todo-temp/slides/build_plan_v3_slides.py`. The 10/19 draft deck and its builder were deleted.
 
-**2026-10-19 (later), direction research and plan v2; offline only:** [report](todo-temp/plan-v3/evidence_notes.md), plan v2, superseded on 10/20 by [plan v3](docs/RP/20261020_research_plan_v3.md); v1 and v2 were deleted.
+**2026-10-19 (later), direction research and plan v2; offline only:** [report](todo-temp/plan-v3/evidence_notes.md), plan v2, superseded on 10/20 by plan v3 and after the meeting by [plan v4](docs/RP/20261020_research_plan_v4.md); v1 and v2 were deleted.
 
 - No refined guideline is yet proven better than the original on valid100: top-4 minus original +0.0231, 95% interval [−0.0192, +0.0683]. The same R4 guideline annotated twice gave 0.7878 and 0.7789. Four refined loop finals (top-1 run 3, top-4 runs 1 to 3) were never scored on validation; scoring them is the cheapest test of top-4 as a method.
 - Subtype confusion (largest loss) is convention, not noisy gold: 20 of top-4's 34 same-span S/D confusions go against consistent training precedent. It is guideline-sensitive (14 to 58 across guidelines), and refinement created part of it (two cancer patterns, 3 to 16).
@@ -153,6 +153,24 @@ BC5CDR、BioRED 的复现已完成，validation 原指南/修改后分别为 **0
 - Plan v1 review: protocol kept, allocation changed. Track 1 targeted mechanisms with near-zero validation footprint and could only detect differences of about 0.028. Plan v2 starts with a fine-tuned yardstick on the same split (no source supports BioBERT 0.86 on NCBI Disease; no four-subtype supervised result found), scores existing guidelines, retrofits the gold-consistency check (arm 3 merged into it: gold as a check, not as writing material), pilots a subtype typing pass, and makes the review-effort curve the replacement result, with one final evaluation on the official test split if the authors agree. Core cost estimate ¥61,000 to ¥98,000 on GPT-5.4.
 - The base paper is now public (arXiv 2605.20809, ACL 2026 main) and can be cited on slides.
 
+**2026-10-20，会议（後藤教授、Ken、Kim 教授）与会后计划 v4：**
+
+会议用 [deck](../presentations/20261020_progress_and_plan_en.pptx) 汇报了以中期发表为基线的 plan v3。会上的意见：
+
+- 後藤教授、Kim 教授：不是所有标注都需要专家修正，需要修正的主要是构建 benchmark；越来越多的场景直接使用 LLM 标注，不做修正。
+- Kim 教授：专家最终要通读全文；删多标便宜，补漏标与手工标注无异；有调节精确率和召回率的参数，就往高召回调。
+- 後藤教授：一个案例分析不够写成论文，要建立覆盖全部错误的分类体系；结论要说明与传统 ML 或微调相比，本方法只需要少量标注。
+- Ken：原方法的其他步骤（discrepancy 分类、principle 生成）也可以改；top-4 的区间包含 0；换新模型重跑，结论不变即可；手上没有专家标注。
+- 测试集、标注费用、与 Ken 当前工作的边界，会上没有谈到，待邮件确认。
+
+会后确定（[RP v4](docs/RP/20261020_research_plan_v4.md)）：
+- 按场景分两条 track：Track 1 提高直接使用的标注质量；Track 2 以 FP 换 FN，减少专家修正量。
+- 新实验全部在 DeepSeek V4.1 flash 上进行。顺序是：稳定性测试 → 复现 → 在 DeepSeek 输出上做错误分类体系和 Track 2 取舍曲线 → 按分类结果选定 Track 1 的改动。GPT-5.4 不再运行，也不再在它的输出上做新的分析。
+- 计时的专家实验不做，列为未来工作。
+- OVERVIEW 和 CLAUDE.md 中的“BioBERT 0.86”目标已删除。
+
+会议的 Todo 写在 Notion 页面 “10/20 meeting summ & todo”，下方也有一份副本。
+
 ## 后续记录方式
 
 实验后，LOG 新增一行，PROGRESS 记录它对三条优化轴、阶段目标和当前决策的影响，并更新文档底部的 Todo。负结果和中断同样保留。
@@ -160,6 +178,17 @@ BC5CDR、BioRED 的复现已完成，validation 原指南/修改后分别为 **0
 seminar 后，将会议要点及其对研究主线的推进融入对应日期的历史进展，随后更新底部 Todo。每次保留未完成项，也检查短期任务是否仍服务于方法优化和长期标注目标。OVERVIEW 只在研究目标、方法或评价定义变化时更新。
 
 ## 下次 seminar 前的 Todo
+
+### 2026-10-20 meeting Todo（当前进行中；取代下方 10-09、10-16 两组里未完成的项）
+
+- [ ] 在 DeepSeek 复现的输出上，建立覆盖全部错误的分类体系（後藤教授）。
+- [ ] Track 1：按分类体系的结果改进方法，一次只改一处（Ken、後藤教授）。
+- [ ] Track 2：以 FN 为主指标，测试投票阈值等调高召回率的方法（Kim 教授）。
+- [ ] 准备答辩时的说法：人工修正主要用于构建 benchmark；与微调相比，本方法只需要少量标注（後藤教授、Kim 教授）。
+- [ ] DeepSeek 上每种方法 5 个循环，给出统计显著性（Ken）。
+- [ ] 新实验全部使用 DeepSeek V4.1 flash，GPT-5.4 只作案例研究（Ken：换新模型重跑，结论不变即可）。
+- [ ] 没有专家标注：两条 track 都以 gold 为参照（Ken）。
+- [ ] 邮件确认：测试集能否最后用一次、标注费用、与 Ken 当前工作的边界。
 
 已关闭的一组来自 [October 2 会议摘要](archive/2026-10-02_seminar-conflict-casestudy/seminar_oct2.md)（保留原优先顺序，均已完成）；当前进行中的一组来自 2026-10-09 seminar，列在本节末尾。注意两组的 P0–P4 编号含义不同，引用时不要混淆。
 
