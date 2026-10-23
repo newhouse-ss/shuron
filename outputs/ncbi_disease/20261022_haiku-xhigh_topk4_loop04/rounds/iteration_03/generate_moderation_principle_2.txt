@@ -1,0 +1,65 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: DiseaseClass (Label Mismatch)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** The gold SpecificDisease labels in the discrepancy set (*fever, arthritis, cutaneous vasculitis, Chronic neisserial infection*) lack the nosological identity of the true-positive SpecificDisease entities (*Coats disease, Norrie disease, SLS*), which are proper eponyms or acronyms naming one entity. The true-positive DiseaseClass entities (*mental retardation, exudative retinal detachment*) are generic descriptors. The discrepancy entities are generic too, so the gold label departs from the convention the true positives follow.
+- **Isolate Trigger:** The model appears to key on lexical genericity. Each discrepancy term is a bare common noun or hypernym. *Fever* and *arthritis* are signs, not named diseases. *Cutaneous vasculitis* is a class covering many vasculitides, and Example 5 ("other causes of cutaneous vasculitis") is an explicitly generic reference. *Chronic neisserial infection* is a genus-level category. Syntax does not explain the error: coordinated lists also appear in true positives ("ichthyosis, mental retardation, spasticity"), and the model handled those correctly.
+- **Hypothesis Check:** Genericity explains all five discrepancies. The same document's named diagnosis, *chronic meningococcemia*, is not in the discrepancy set, which fits a specificity boundary. The model's behavior matches the convention the true positives reveal, so the gold labels are the outlier. A contextual explanation (these terms are part of the patient's diagnosed condition) does not hold up, because Example 5 and Example 4 are generic statements, not patient-level instances.
+
+**Step 2: Formulate Pattern**
+
+- **Pattern Name:** Generic Umbrella Disease and Symptom Terms Tagged as SpecificDisease in Case-Report Presentations
+- **Confusion Trigger:** Non-eponymous, hypernymic common nouns (*fever, arthritis, cutaneous vasculitis, neisserial infection*) that name a broad category or sign rather than one nosological entity. The model maps genericity to DiseaseClass, while the gold assigns SpecificDisease because these terms occur inside a patient-presentation narrative.
+- **Contrastive Evidence:** True-positive SpecificDisease mentions are proper names or acronyms with a unique referent (*Coats disease, Norrie disease, SLS*). True-positive DiseaseClass mentions are generic descriptors (*mental retardation, exudative retinal detachment*) that the model labeled correctly, so the model's genericity rule is consistent with them. Coordinated lists do not trigger the error on their own.
+- **Linguistic Rule (Proposed):**
+  1. Label **SpecificDisease** only if the mention denotes a single nosological entity: an eponym, an acronym, or a disease name with a fully specified etiology (e.g., "chronic meningococcemia").
+  2. Label **DiseaseClass** if the mention is a hypernym or umbrella term (e.g., "vasculitis" without a named subtype, "infection" by genus), a symptom or sign (e.g., "fever," "arthritis"), or is used in a generic statement ("other causes of X").
+  3. A presenting-complaint or case-report context does not by itself upgrade a generic term to SpecificDisease. A site modifier ("cutaneous") does not make a class term specific.
+  4. **Audit note:** Under this rule, the five discrepancies should be DiseaseClass, so the model is likely correct and the gold labels for document 6859721 should be reviewed for annotation drift.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 6859721.json):
+Snippet: "...litis.
+A previously healthy 40-year-old man presenting with fever , arthritis , and cutaneous vasculitis was found to have ch..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "fever"
+
+Example 2 (Doc: 6859721.json):
+Snippet: "... previously healthy 40-year-old man presenting with fever , arthritis , and cutaneous vasculitis was found to have chronic mening..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "arthritis"
+
+Example 3 (Doc: 6859721.json):
+Snippet: "...thy 40-year-old man presenting with fever , arthritis , and cutaneous vasculitis was found to have chronic meningococcemia . Evaluation of h..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "cutaneous vasculitis"
+
+Example 4 (Doc: 6859721.json):
+Snippet: "...ions showed heterozygous deficiency of C7 in five members . Chronic neisserial infection can be associated with C7 deficiency and must be distinguis..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "Chronic neisserial infection"
+
+Example 5 (Doc: 6859721.json):
+Snippet: "...7 deficiency and must be distinguished from other causes of cutaneous vasculitis . . ..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "cutaneous vasculitis"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

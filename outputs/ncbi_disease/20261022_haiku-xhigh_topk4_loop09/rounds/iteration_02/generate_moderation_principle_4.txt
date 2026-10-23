@@ -1,0 +1,40 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: CompositeMention vs LLM: Modifier (Label Mismatch)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** The discrepancy span "breast or ovarian cancer" is a coordinated disease phrase. Every True Positive Modifier span is a single disease name ("ovarian cancer") with no coordinator. These appear as prenominal modifiers of non-disease heads ("ovarian cancer population," "ovarian cancer cases," "ovarian cancer study," "ovarian cancer risk"). The document's own TP at [1339, 1353], "family history of ovarian cancer," is also labeled Modifier, so the family-history frame by itself does not produce CompositeMention. The single boolean feature separating the discrepancy from the controls is **whether the span conjoins two or more disease concepts**.
+- **Isolate Trigger:** The model appears to have matched the frame "family history of [disease]" and the head "ovarian cancer." In that frame, a disease name qualifies a non-disease noun, which is the Modifier pattern. The model did not register "breast or" as a second disease concept. "Breast or ovarian cancer" is a coordinated NP with a shared head: [breast cancer] or [ovarian cancer], with "cancer" elided after "breast."
+- **Hypothesis Check:** The coordination hypothesis accounts for the discrepancy and is consistent with the TP at [1339, 1353]. The frame hypothesis fails, because the identical frame is labeled Modifier in the TP. Limitation: this cluster contains only one discrepancy, so the rule is supported by contrast but not yet validated on a larger set.
+
+**Step 2: Formulate Pattern**
+
+- **Pattern Insight: Coordinated Disease Disjunction Embedded in a Non-Disease Frame**
+  - **Confusion Trigger:** A disease name that qualifies a non-disease head (e.g., "family history of ___," "___ population") is mapped to Modifier. The model ignores the coordinator "or" that joins it to a second disease concept, so the composite nature of the span ("breast or ovarian cancer," with elided shared head "cancer") is missed.
+  - **Contrastive Evidence:** The True Positive Modifiers, such as "ovarian cancer" in "ovarian cancer population" and "family history of ovarian cancer," each contain exactly one disease concept and no conjunction. Their spans denote a single disease, so the Modifier role is their only classification question. The discrepancy span denotes two diseases joined as one mention, so it fails the single-concept condition.
+  - **Linguistic Rule (Proposed):** Apply the coordination check before the syntactic-role check. If a disease mention span contains a coordinator (*or*, *and*, */*, *nor*) that joins two or more disease-denoting terms, including shared-head ellipsis such as "X or Y cancer," label it **CompositeMention**, even when the span is the complement of a non-disease head like "family history of." Assign **Modifier** only when the span contains a single disease concept functioning attributively or as a complement to a non-disease noun. Validate this rule on other conjoined spans ("breast and ovarian cancer," "colon or rectal cancer") to confirm consistent gold labeling.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10196379.json):
+Snippet: "...1 , were identified . Both patients had a family history of breast or ovarian cancer . Several novel as well as previously reported uncharacteri..."
+Gold: CompositeMention, LLM: Modifier
+Entity Text: "breast or ovarian cancer"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

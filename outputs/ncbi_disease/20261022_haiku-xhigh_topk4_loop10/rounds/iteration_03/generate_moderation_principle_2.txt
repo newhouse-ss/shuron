@@ -1,0 +1,66 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep-Dive Analysis**
+
+- **Contrast:** All five discrepancies are bare manifestation or sign terms: *telangiectasis* (×2), *deficient activity of…*, *fever*, and *arthritis*. The True Positives tagged SpecificDisease all carry a nomenclatural anchor: an eponym (*Coats*, *Norrie*), an acronym (*SLS*), or a nominal disease head (*disease*, *deficiency*). The single separating feature is whether the mention contains a disease-naming anchor.
+- **Strongest contrastive pair:** *"Coats telangiectasis"* (TP, SpecificDisease) and *"retinal telangiectasis"* (discrepancy, SpecificDisease) share the head noun *telangiectasis*. The only difference is the eponym *Coats*, which makes the model tag one and miss the other.
+- **Isolate trigger:** The model treats sign and phenotype nouns as clinical findings (O) when they appear in descriptive syntactic frames: parenthetical or "so-called" restatements, and "characterized by X, Y, and Z" or "presenting with X, Y, and Z" lists. The "deficient activity of [enzyme]" construction also lacks the nominal *deficiency* head that the TP *"G6PD deficiency"* uses.
+- **Hypothesis check:** Anchor absence explains all five discrepancies and is consistent with every SpecificDisease TP. *"Mental retardation"* is tagged DiseaseClass without an anchor, which shows phenotype terms are in scope for the schema; the error is at the SpecificDisease-vs-O boundary. *Fever* and *arthritis* fit the pattern least well and may reflect an annotation convention for presenting signs. They should be reviewed.
+
+**Step 2: Pattern Insight**
+
+- **Pattern Name:** Unanchored Manifestation Terms Used as Disease Designations
+- **Confusion Trigger:** Phenotype or sign nouns (*telangiectasis*, *arthritis*, *fever*, "deficient activity of X") that lack a nomenclatural anchor (eponym, acronym, or *disease/deficiency/syndrome* head). They appear in syntactic frames that read as clinical description: parenthetical or "so-called" aliases, and "characterized by / presenting with" feature lists. The model defaults these to O as findings.
+- **Contrastive Evidence:** *"Coats telangiectasis"* is tagged correctly because the eponym *Coats* anchors the name, while *"retinal telangiectasis"* in the same document is missed. *"G6PD deficiency"* and *"Coats disease"* are tagged correctly because they carry a nominal disease head or an eponym. The TPs and discrepancies come from the same documents, so document context does not explain the difference; the lexical anchor does.
+- **Linguistic Rule (Proposed):** Tag a bare manifestation term as SpecificDisease only when it functions as a designation of the condition, not a finding. Two conditions qualify:
+  1. It is an alias or restatement of a disease already named in the text, marked by parentheses, "so-called", or apposition (e.g., "Coats disease (…unilateral retinal telangiectasis)").
+  2. It is an enzyme-deficit construction that defines the disease, parallel to "X deficiency" (e.g., "deficient activity of FALDH" in the context of SLS).
+
+  Otherwise, if the term is a generic sign in a coordinated presenting list with no disease anchor, keep O. Flag the gold labels for *fever* and *arthritis* for annotation review, since they conflict with this rule.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10484772.json):
+Snippet: "...Coats' disease of the retina (unilateral retinal telangiectasis) caused by somatic mutation in the NDP gene: a role for nor..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "unilateral retinal telangiectasis"
+
+Example 2 (Doc: 10484772.json):
+Snippet: "...erized by abnormal retinal vascular development ( so-called retinal telangiectasis ) which results in massive intraretinal and subretinal lipi..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "retinal telangiectasis"
+
+Example 3 (Doc: 10577908.json):
+Snippet: "...rized by ichthyosis , mental retardation , spasticity , and deficient activity of fatty aldehyde dehydrogenase ( FALDH ) . To define the molecular defects causing SLS , w..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficient activity of fatty aldehyde dehydrogenase"
+
+Example 4 (Doc: 6859721.json):
+Snippet: "...litis.
+A previously healthy 40-year-old man presenting with fever , arthritis , and cutaneous vasculitis was found to have ch..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "fever"
+
+Example 5 (Doc: 6859721.json):
+Snippet: "... previously healthy 40-year-old man presenting with fever , arthritis , and cutaneous vasculitis was found to have chronic mening..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "arthritis"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

@@ -1,0 +1,75 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+## Step 1: Deep Dive Analysis
+
+**Contrast.** In the True Positives, disease spans are lexicalized disease names: "Coats disease," "Norrie disease," "fragile X syndrome," "Wiskott-Aldrich syndrome," "ovarian cancer," and the acronym "SLS." The disease is *named*. In the discrepancies, the disease is *described* as a finding or state: "deficient activity of…," "deficiency of…," "Absence of the seventh component of complement…," "fever," and "cutaneous vasculitis." Four of the five appear inside clinical-description frames such as "characterized by," "caused by," "presenting with," or "in a patient with."
+
+**Isolate Trigger.** The model reads these spans as symptoms or molecular mechanisms, not as disease entities. Two surface cues drive this:
+- The construction `[state noun] of [biological entity]` (deficiency/absence/deficient activity of an enzyme or complement component), where the head noun is a biochemical state rather than a disease noun.
+- Coordinated finding lists after a presentation or characterization predicate ("…ichthyosis, mental retardation, spasticity, and deficient activity of…"; "…fever, arthritis, and cutaneous vasculitis").
+
+**Hypothesis Check.**
+- Examples 1, 2, and 3 fit the `deficiency/absence of [protein]` construction directly.
+- Examples 1, 4, and 5 fit the finding-list frame.
+- Example 4 ("fever") fits neither well. It is a sign with no disorder-denoting head, and the same document family labels list-type items inconsistently ("mental retardation" is DiseaseClass). I treat it as a probable gold-label anomaly rather than a clean instance.
+- Control check: in 10484772, "results in a deficiency of norrin" is correctly O. Here the deficiency is a downstream mechanism following an already-named disease ("Coats telangiectasis"). In the discrepancies, the state is the disease-defining predicate of the sentence. So the same surface construction can be O or disease, and position relative to the disease-defining predicate matters.
+
+## Step 2: Pattern Insight
+
+- **Pattern Name:** Disorder Expressed as a Deficiency/Absence State or Finding in a Clinical-Description Frame
+
+- **Confusion Trigger:** A disease is denoted by a state or finding phrase rather than a named disease label. These are either `deficiency / deficient activity / absence of [gene product or component]` or a disorder-class term (e.g., "vasculitis") inside a coordinated sign list. The model treats both as symptoms or molecular descriptions and tags them O.
+
+- **Contrastive Evidence:** True Positive disease spans are nominal disease labels whose head is a disease category ("disease," "syndrome," "cancer," "telangiectasis") or an established acronym (SLS). The one deficiency phrase in the control set ("deficiency of norrin") is a pathogenic mechanism that follows an already-annotated disease and is correctly O. It is not the disease-defining predicate.
+
+- **Linguistic Rule (Proposed):**
+  1. Tag a span as SpecificDisease when its head noun is a disorder-denoting state (*deficiency, absence, deficient activity*) whose complement is a single defined biological component, **and** it occupies the disease-defining slot of the sentence (subject of a disease-topic clause, or the complement of "caused by," "characterized by," "presenting as," or "in a patient with").
+  2. Tag a disorder-class term (*vasculitis, -itis, -osis*) as SpecificDisease when it appears in a finding list within a presentation or characterization frame.
+  3. Keep O when the state follows a verb of consequence ("results in," "leads to," "causes") after a disease has already been named. Also keep O for pure sign or symptom nouns with no disorder head (e.g., "fever"), pending review of the gold label.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10577908.json):
+Snippet: "...rized by ichthyosis , mental retardation , spasticity , and deficient activity of fatty aldehyde dehydrogenase ( FALDH ) . To define the molecular defects causing SLS , w..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficient activity of fatty aldehyde dehydrogenase"
+
+Example 2 (Doc: 1671881.json):
+Snippet: "...enylketonuria is an autosomal recessive disease caused by a deficiency of hepatic phenylalanine hydroxylase ( PAH ) . The abolition of an invariant BamHI site located ..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficiency of hepatic phenylalanine hydroxylase"
+
+Example 3 (Doc: 6859721.json):
+Snippet: "...Absence of the seventh component of complement in a patient with chronic meningococcemia presenting as vas..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "Absence of the seventh component of complement"
+
+Example 4 (Doc: 6859721.json):
+Snippet: "...litis.
+A previously healthy 40-year-old man presenting with fever , arthritis , and cutaneous vasculitis was found to have ch..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "fever"
+
+Example 5 (Doc: 6859721.json):
+Snippet: "...thy 40-year-old man presenting with fever , arthritis , and cutaneous vasculitis was found to have chronic meningococcemia . Evaluation of h..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "cutaneous vasculitis"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

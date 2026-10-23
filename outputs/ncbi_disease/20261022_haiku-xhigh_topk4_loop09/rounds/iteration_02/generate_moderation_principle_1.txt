@@ -1,0 +1,69 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: Modifier (Label Mismatch)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** Every True Positive Modifier is a disease string placed directly before a head noun, with no preposition, article, or parenthesis in between: "ovarian cancer **cases**/**population**/**study**/**risk**", "fragile X syndrome **patients**", "Wiskott-Aldrich syndrome **protein**". All four discrepancies are the reverse. The disease string is the object of a preposition ("of ovarian cancer", "with SLS"), is introduced by an article ("a Tay-Sachs disease"), or is a parenthetical alias ("(TSD)").
+- **Isolated boolean feature:** Is the disease span *immediately left-adjacent to a head noun* with no intervening preposition, determiner, or parenthesis?
+  - TP Modifiers: yes.
+  - All four discrepancies: no.
+- **Isolate Trigger:** The model sees a disease token near a noun (e.g., "history", "kindreds", "mutation") and treats it as a noun-noun modifier. It ignores that the disease is attached through a prepositional complement or a parenthetical, so it is a referent rather than a classifier.
+- **Within-document control (Doc 10577908):** "ancient **SLS** genes" is correctly Modifier, while "kindreds with **SLS**" and "genetic basis of **SLS**" are SpecificDisease. The same token flips label depending only on its syntactic slot.
+- **Hypothesis check:** The trigger explains all four cases:
+  - Ex 1, "family history *of* ovarian cancer": PP complement.
+  - Ex 2, "kindreds *with* SLS": PP complement.
+  - Ex 3, "*a* Tay-Sachs disease (TSD) causing mutation": NP with article, and the head noun "mutation" is blocked by the parenthetical and participle.
+  - Ex 4, "TSD": parenthetical alias that corefers with the full name.
+- **Annotation caveat:** The control file lists a Modifier at [1339, 1353] "ovarian cancer" in the same sentence type ("associated with a family history of ovarian cancer"). This conflicts with the SpecificDisease gold for Example 1. The offsets should be verified, because the same span appears to carry both labels.
+
+**Step 2: Pattern Insight**
+
+- **Pattern Name:** Prepositional and Parenthetical Disease Mentions Misread as Noun-Noun Modifiers
+- **Confusion Trigger:** Surface proximity to a noun. A disease name sits inside a noun-attached prepositional phrase ("history *of* X", "kindreds *with* X") or a parenthetical/participial structure ("X (TSD) causing mutation"). The model reads the disease as a classifier of the nearby noun, even though the disease is a complement or alias that refers to the disease entity.
+- **Contrastive Evidence:** True Positive Modifiers occupy a strict pre-nominal slot: the disease string immediately precedes a head noun (cases, patients, population, protein, genes, risk) with no intervening function word or punctuation. The same token in a complement slot ("of SLS", "with SLS") is labeled SpecificDisease in the gold data.
+- **Linguistic Rule (Proposed):**
+  1. Assign **Modifier** only if the disease span is *directly* followed by a head noun, with no preposition, article/determiner, parenthesis, or participial clause between them, and the span is not itself governed by "of/with/by/in" or an article.
+  2. Assign **SpecificDisease** when the span is a complement of a preposition ("of X", "with X", "by X"), a subject or object, or an NP head with a determiner ("a X disease"). Also assign it to a parenthetical acronym or alias ("(TSD)") that corefers with a previously named disease.
+  3. Adjacency to a noun is not sufficient evidence for Modifier. Check the disease span's syntactic attachment (complement vs. pre-nominal adjunct) before labeling.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10196379.json):
+Snippet: "...ficantly ( P = 0 . 03 ) associated with a family history of ovarian cancer , suggesting that this polymorphism may influence ovarian c..."
+Gold: SpecificDisease, LLM: Modifier
+Entity Text: "ovarian cancer"
+
+Example 2 (Doc: 10577908.json):
+Snippet: "...nalysis of the FALDH gene in probands from 63 kindreds with SLS . Among these patients , 49 different mutations-including 1..."
+Gold: SpecificDisease, LLM: Modifier
+Entity Text: "SLS"
+
+Example 3 (Doc: 8326491.json):
+Snippet: "...from the British Isles.
+In a previous study we found that a Tay-Sachs disease ( TSD ) causing mutation in the intron 9 donor splice site ..."
+Gold: SpecificDisease, LLM: Modifier
+Entity Text: "Tay-Sachs disease"
+
+Example 4 (Doc: 8326491.json):
+Snippet: "...es.
+In a previous study we found that a Tay-Sachs disease ( TSD ) causing mutation in the intron 9 donor splice site of the..."
+Gold: SpecificDisease, LLM: Modifier
+Entity Text: "TSD"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

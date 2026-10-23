@@ -1,0 +1,45 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: DiseaseClass (Label Mismatch)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** Both discrepancies are unnamed noun phrases built from a descriptive or specifying premodifier plus a generic disease head: "Chronic *neisserial* **infection**" and "*cutaneous* **vasculitis**." Every True Positive SpecificDisease is anchored by a proper name, eponym, or acronym ("Coats disease," "Norrie disease," "SLS"). The one True Positive DiseaseClass ("mental retardation") is a bare, unmodified umbrella term that appears in a symptom list.
+- **Isolate Trigger:** The head nouns "infection" and "vasculitis" are category-level words, so the model maps a generic head to DiseaseClass. It does not credit the premodifier "neisserial" (organism/etiology) or "cutaneous" (anatomic site) as individuating the condition to one entity. "Chronic" is a course descriptor and does not individuate.
+- **Hypothesis Check:** The "generic head → DiseaseClass" heuristic explains both errors, but it cannot be the full rule, since "mental retardation" is also a generic head and is correctly labeled DiseaseClass. The refinement is that gold treats an *individuating anchor* as decisive. Anchors can be a name, eponym, or acronym, or an etiologic/anatomic specifier. "Mental retardation" has no such anchor. Both discrepancies have an etiologic or site anchor that the model overlooked. The two examples come from one document, so this is a provisional pattern.
+
+**Step 2: Pattern Insight**
+
+- **Pattern Name:** Generic-Head Disease Phrases Individuated by Etiologic or Anatomic Specifiers
+- **Confusion Trigger:** A generic disease-category head noun ("infection," "vasculitis") combined with a premodifier that names an etiology or anatomic site ("neisserial," "cutaneous"). The model reads the category head as a class term and treats the specifier as descriptive rather than individuating. Course or severity descriptors ("Chronic") and modal or generic predicates ("can be associated with," "other causes of") may further push the model toward a class reading.
+- **Contrastive Evidence:** True Positive SpecificDisease mentions are individuated by a proper name, eponym, or acronym, so the model handles them. The True Positive DiseaseClass "mental retardation" has no etiologic or site specifier and is a broad phenotypic umbrella term, so it stays DiseaseClass. The discrepancies are the only cases where a generic head is narrowed by an etiologic or anatomic specifier and no name is present.
+- **Linguistic Rule (Proposed):** Label a disease noun phrase as **SpecificDisease** if it carries an individuating anchor that fixes one nosological entity in the document. Anchors include a proper name, eponym, or acronym, or a premodifier specifying etiology (organism, gene, cause) or anatomic site, even when the head noun is generic (infection, vasculitis, disease, syndrome). Reserve **DiseaseClass** for unmodified or umbrella-level category terms and symptom or phenotype categories. Course and severity descriptors ("chronic," "acute," "severe") do not count as individuating anchors on their own. Treat this as a provisional rule, since the boundary between "cutaneous vasculitis" (specific here) and broad category terms depends on annotation convention and should be checked against more documents.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 6859721.json):
+Snippet: "...ions showed heterozygous deficiency of C7 in five members . Chronic neisserial infection can be associated with C7 deficiency and must be distinguis..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "Chronic neisserial infection"
+
+Example 2 (Doc: 6859721.json):
+Snippet: "...7 deficiency and must be distinguished from other causes of cutaneous vasculitis . . ..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "cutaneous vasculitis"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

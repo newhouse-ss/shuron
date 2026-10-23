@@ -1,0 +1,67 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: DiseaseClass (Label Mismatch)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** All five discrepancies are umbrella disease terms (*vasculitis*, *arthritis*, *infection*, *deficiencies*) that lack an eponym, acronym, or lexicalized nosological name. The True Positives tagged SpecificDisease use named forms (*Coats disease*, *Norrie disease*, *SLS*, *G6PD deficiency*). The one True Positive tagged DiseaseClass (*mental retardation*) is a trait listed in a syndrome's characterization.
+- **Isolate Trigger:** The model appears to read the hypernymic head noun as a category marker, so any broad disease-family noun becomes DiseaseClass.
+- **Hypothesis Check:** The trigger explains all five discrepancies, but it over-generalizes. *G6PD deficiency* also has the hypernym head "deficiency" and is correctly SpecificDisease, and *mental retardation* is correctly DiseaseClass. The rule therefore needs a role condition (what the term does in the sentence), not just a lexical one.
+- **Within-document control:** In doc 6859721, *chronic meningococcemia* (a named nosology with a pathogen stem) is not flagged, while *Chronic neisserial infection* (the same condition under an umbrella head noun) is flagged. This isolates the lexical form as the variable.
+
+**Step 2: Pattern Insight**
+
+- **Pattern Name:** Umbrella Disease Head Noun Used as the Case's Specific Condition
+- **Confusion Trigger:** Bare hypernymic head nouns that name a disease family (*vasculitis*, *arthritis*, *infection*, *deficiencies*, often plural or qualified only by an anatomical or pathogen adjective). The model keys on the category semantics of the head noun and assigns DiseaseClass, even when the text uses the term for one specific condition.
+- **Contrastive Evidence:** Within doc 6859721, *chronic meningococcemia* (named, pathogen-anchored) is handled correctly, but *Chronic neisserial infection* for the same condition is not. Likewise, singular *G6PD deficiency* (gene-anchored, lexicalized) is SpecificDisease, while plural *PAH deficiencies* is not. The True Positive DiseaseClass case, *mental retardation*, is a defining feature in a generic syndrome description ("characterized by… mental retardation") and does not function as a diagnosis.
+- **Linguistic Rule (Proposed):**
+  1. If the mention has a lexicalized name (eponym, acronym, or a singular gene- or pathogen-anchored nosology such as *G6PD deficiency*, *chronic meningococcemia*), label it SpecificDisease.
+  2. If the head is an umbrella term (*vasculitis*, *arthritis*, *infection*, *deficiency/deficiencies*) and the text presents it as a condition a patient has, is diagnosed with, is differentiated from, or is the object of study (e.g., "presenting with X," "found to have X," "must be distinguished from X," "PAH deficiencies" as the studied disorder), label it SpecificDisease. Pathogen, gene, anatomical, or plural qualifiers (*neisserial*, *PAH*, *cutaneous*) narrow the referent and should be read as specifiers, not as class markers.
+  3. Label it DiseaseClass only when the umbrella term is a generic trait or grouping in a characterization of a syndrome (e.g., "characterized by… mental retardation") and does not serve as a diagnosis or studied condition.
+
+*Caveat:* The boundary between rules 2 and 3 is the weakest point. Both *arthritis* (a presenting finding) and *mental retardation* (a defining feature) are symptom-like, so the separation depends on whether the sentence frames the term as the patient's diagnosis or as a syndrome trait.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 1671881.json):
+Snippet: "...or by the large variety of mutant genotypes associated with PAH deficiencies . . ..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "PAH deficiencies"
+
+Example 2 (Doc: 6859721.json):
+Snippet: "...ent in a patient with chronic meningococcemia presenting as vasculitis.
+A previously healthy 40-year-old man presenting with fever..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "vasculitis"
+
+Example 3 (Doc: 6859721.json):
+Snippet: "... previously healthy 40-year-old man presenting with fever , arthritis , and cutaneous vasculitis was found to have chronic mening..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "arthritis"
+
+Example 4 (Doc: 6859721.json):
+Snippet: "...thy 40-year-old man presenting with fever , arthritis , and cutaneous vasculitis was found to have chronic meningococcemia . Evaluation of h..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "cutaneous vasculitis"
+
+Example 5 (Doc: 6859721.json):
+Snippet: "...ions showed heterozygous deficiency of C7 in five members . Chronic neisserial infection can be associated with C7 deficiency and must be distinguis..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "Chronic neisserial infection"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

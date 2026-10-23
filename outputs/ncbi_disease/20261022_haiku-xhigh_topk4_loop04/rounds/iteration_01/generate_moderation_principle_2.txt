@@ -1,0 +1,74 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: DiseaseClass (Label Mismatch)
+
+**INFERRED PATTERNS:**
+## Step 1: Deep-Dive Analysis
+
+**Contrast:** The discrepancies are all gold-SpecificDisease mentions that the model labeled DiseaseClass. The true positives split cleanly on naming:
+- **TP SpecificDisease** mentions are individuated by a proper name, eponym, acronym, or gene-defined enzyme name: "Coats disease," "Norrie disease," "SLS," "G6PD deficiency."
+- **TP DiseaseClass** ("mental retardation") is an unanchored generic term.
+
+**Isolate the trigger:** The model appears to treat unanchored, category-type clinical head nouns ("vasculitis," "arthritis," "cutaneous vasculitis") and plural forms ("deficiencies") as taxonomic class labels.
+
+**Hypothesis check:**
+- *Unanchored-term hypothesis:* Explains Examples 2–5, but not Example 1. "PAH deficiencies" carries a gene anchor (PAH), like the TP "G6PD deficiency," so the model's error there is driven by plural morphology.
+- *Syntax hypothesis:* The discrepancy "presenting with fever, arthritis, and cutaneous vasculitis" is structurally parallel to the TP "characterized by ichthyosis, mental retardation, spasticity." Syntax alone cannot separate them.
+- *Referent hypothesis:* The discrepancies describe a single patient's diagnosed or presenting condition (instance-level). The TP "mental retardation" describes a syndrome-level feature set (generic). This accounts for Examples 2–4.
+- *Residual case:* Example 5 ("other causes of cutaneous vasculitis") is a generic differential usage. The instance rule does not explain its gold label, so it may be an annotation inconsistency. The model's DiseaseClass label is defensible there.
+
+## Step 2: Pattern Insight
+
+- **Pattern Name:** Unanchored category head nouns versus individuated disease referents (generic vs. instance reference)
+- **Confusion Trigger:** Bare or lightly modified category-level clinical nouns with no proper-name, eponym, acronym, or gene anchor (e.g., "vasculitis," "arthritis," "cutaneous vasculitis"), plus plural morphology on a deficiency term ("PAH deficiencies"). The model reads these lexical forms as class labels, even when the mention refers to one specific condition in the document.
+- **Contrastive Evidence:** TP SpecificDisease mentions name one disease entity through an anchor ("Coats disease," "SLS," "G6PD deficiency"). The TP DiseaseClass "mental retardation" is an unanchored term in a syndrome-level definition, so unanchored terms are normally DiseaseClass. The discrepancies differ from that TP in referent, not in form: they describe one patient's diagnosis.
+- **Linguistic Rule (Proposed):** Use an individuated-referent test, with names as the easy proxy.
+  1. **Anchored mention → SpecificDisease.** If the mention contains an eponym, acronym, gene symbol, or enzyme-defined deficiency name, label it SpecificDisease, even if the head is plural ("PAH deficiencies"). Plurality does not convert a named disease into a class.
+  2. **Unanchored mention in a patient-level frame → SpecificDisease.** If an unanchored clinical term denotes the individuated diagnosis or presenting condition of a described patient ("a patient presenting with fever, arthritis, and cutaneous vasculitis"; "chronic meningococcemia presenting as vasculitis"), label it SpecificDisease.
+  3. **Unanchored mention in a generic frame → DiseaseClass.** If it appears in a syndrome-level description ("characterized by X") or a generic differential ("other causes of X"), label it DiseaseClass.
+  
+  Example 5 falls under rule 3, so its gold label should be reviewed.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 1671881.json):
+Snippet: "...or by the large variety of mutant genotypes associated with PAH deficiencies . . ..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "PAH deficiencies"
+
+Example 2 (Doc: 6859721.json):
+Snippet: "...ent in a patient with chronic meningococcemia presenting as vasculitis.
+A previously healthy 40-year-old man presenting with fever..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "vasculitis"
+
+Example 3 (Doc: 6859721.json):
+Snippet: "... previously healthy 40-year-old man presenting with fever , arthritis , and cutaneous vasculitis was found to have chronic mening..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "arthritis"
+
+Example 4 (Doc: 6859721.json):
+Snippet: "...thy 40-year-old man presenting with fever , arthritis , and cutaneous vasculitis was found to have chronic meningococcemia . Evaluation of h..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "cutaneous vasculitis"
+
+Example 5 (Doc: 6859721.json):
+Snippet: "...7 deficiency and must be distinguished from other causes of cutaneous vasculitis . . ..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "cutaneous vasculitis"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

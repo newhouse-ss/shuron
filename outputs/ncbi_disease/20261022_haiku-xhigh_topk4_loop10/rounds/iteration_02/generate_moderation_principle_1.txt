@@ -1,0 +1,67 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** The True Positives are nomenclature units: eponyms ("Coats disease," "Norrie disease," "Coats telangiectasis"), acronyms ("SLS," "DTD"), stock terms ("diastrophic dysplasia," "mental retardation"), and a premodifier compound ("G6PD deficiency"). The discrepancies are compositional descriptions of a finding or enzyme state, built from modifier stacks, prepositional complements, or bare sign-nouns, with no eponym or acronym to anchor them.
+- **Isolate Trigger:** The model appears to read sign/state head nouns (*telangiectasis*, *deficiency*, *activity*, *vasculitis*) as clinical findings or descriptors rather than as condition names. The clearest evidence is the *G6PD* pair. "G6PD deficiency" (premodifier compound) is labeled correctly, but "deficiency in G6PD" (prepositional complement, same tokens) is missed. Syntax alone flips the label.
+- **Hypothesis Check:**
+  - "unilateral retinal telangiectasis" and "retinal telangiectasis" are modifier-plus-sign phrases. Notably, "Coats telangiectasis" in the same document is tagged correctly because the eponym anchors it.
+  - "deficient activity of FALDH" is a PP-complement enzyme-state description. "mental retardation," a stock term in the same list, is tagged correctly, so list position is not the cause.
+  - "presenting as vasculitis" is a bare, unanchored term in a manifestation frame. It fits the anchor hypothesis, but it is a lexicalized term, so it is the weakest fit. The gold label (SpecificDisease for a generic class term) may also be inconsistent.
+
+Overall, the single feature that separates the cases is whether the span is a **fixed nomenclature unit** or an **ad hoc descriptive phrase**. Four of the five cases fit cleanly.
+
+**Step 2: Formulate Pattern**
+
+- **Pattern Insight: Ad hoc phenotype descriptions mistaken for clinical findings (missing nomenclature anchor)**
+  - **Pattern Name:** Unanchored Disease Descriptor Misread as Finding.
+  - **Confusion Trigger:** A condition-denoting head that is a sign, process, or enzyme-state noun (*telangiectasis*, *deficiency*, *deficient activity*, *vasculitis*), realized as a compositional modifier stack or a prepositional complement ("deficiency **in** G6PD," "deficient activity **of** X"), or as a bare term following a manifestation frame ("presenting as," "characterized by"). The model treats these as descriptions of a phenotype and assigns O.
+  - **Contrastive Evidence:** The True Positives are anchored by an eponym ("Coats telangiectasis"), an acronym ("SLS"), a premodifier compound ("G6PD deficiency," the same head and gene token as the missed "deficiency in G6PD"), or a stock term ("mental retardation," tagged correctly even in a feature list where a paraphrased descriptor was missed).
+  - **Linguistic Rule (Proposed):** Label a span as SpecificDisease if its head denotes a condition and the span functions as a nomenclature unit: (a) eponym or acronym plus head, (b) gene/enzyme-premodified compound ("G6PD deficiency"), or (c) a stock term. Also label it when it is explicitly introduced as an alternative name for an already-labeled disease, signaled by "so-called" or a parenthetical restatement. Do not assign O merely because the head is a sign or state noun, or because the span follows a manifestation verb or preposition. Before defaulting to O, check whether the span names the condition or describes one of its features. For PP-complement forms, test whether the compound paraphrase ("X deficiency") is a recognized condition name.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10484772.json):
+Snippet: "...Coats' disease of the retina (unilateral retinal telangiectasis) caused by somatic mutation in the NDP gene: a role for nor..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "unilateral retinal telangiectasis"
+
+Example 2 (Doc: 10484772.json):
+Snippet: "...erized by abnormal retinal vascular development ( so-called retinal telangiectasis ) which results in massive intraretinal and subretinal lipi..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "retinal telangiectasis"
+
+Example 3 (Doc: 10577908.json):
+Snippet: "...rized by ichthyosis , mental retardation , spasticity , and deficient activity of fatty aldehyde dehydrogenase ( FALDH ) . To define the molecular defects causing SLS , w..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficient activity of fatty aldehyde dehydrogenase"
+
+Example 4 (Doc: 1303173.json):
+Snippet: "... coexistence of the two mutations is responsible for enzyme deficiency in G6PD A- because they act synergistically in causing instability ..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficiency in G6PD"
+
+Example 5 (Doc: 6859721.json):
+Snippet: "...ent in a patient with chronic meningococcemia presenting as vasculitis.
+A previously healthy 40-year-old man presenting with fever..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "vasculitis"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

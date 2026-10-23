@@ -1,0 +1,58 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: DiseaseClass vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** The discrepancy spans are all free-composed descriptions of pathological states: bare "cancer," "abnormal retinal vascular development," "exudative retinal detachment," and "deficiency of norrin." The True Positives are fixed nomenclature forms: eponyms ("Coats disease," "Norrie disease"), acronyms ("SLS"), "-syndrome" names ("fragile X syndrome," "Wiskott-Aldrich syndrome"), and established clinical terms ("mental retardation," "ovarian cancer").
+- **Single boolean feature:** *Does the span carry a canonical disease nomenclature form?* TPs: yes. All four discrepancies: no.
+- **Isolate Trigger:** The model appears to recognize disease mentions by their nomenclature shape. When the pathology is expressed compositionally, the head noun (cancer, deficiency, detachment, development) reads as ordinary descriptive vocabulary. Its syntactic frame reinforces this: "family history **of** cancer," "**characterized by** abnormal… development," "lipid accumulation **(** exudative retinal detachment **)**," and "results in a deficiency **of** norrin" all present the term as a finding, attribute, or outcome rather than a disease entity.
+- **Hypothesis Check:** This explains all four cases. "Exudative" and "abnormal" are modifiers that make the phrases look like descriptors. "Deficiency of norrin" is a molecular state that the model treats as biochemistry, even though the text presents it as the disease mechanism. The bare "cancer" is a generic class term with no site or eponym, so nothing signals a named disease.
+
+**Step 2: Pattern Formulation**
+
+- **Pattern Insight: Unnamed pathological states written as free-text descriptors**
+  - **Pattern Name:** Compositional (unnamed) disease-class and pathological-state phrases
+  - **Confusion Trigger:** Noun phrases whose head denotes a pathological condition, state, or class (cancer, deficiency, detachment, abnormal development) but which lack a nomenclature marker such as an eponym, a "-syndrome/-disease" suffix, or an acronym. The model treats them as generic descriptive wording, especially inside relational or explanatory frames ("family history of," "characterized by," "results in," parenthetical glosses).
+  - **Contrastive Evidence:** The True Positives are lexicalized disease names that the model recognizes by form (Coats disease, SLS, fragile X syndrome, mental retardation, ovarian cancer). The model succeeds when the disease is a fixed term and fails when the same kind of pathology is expressed compositionally.
+  - **Linguistic Rule (Proposed):** Tag a span as DiseaseClass when its head noun denotes a pathological condition, process, or disease class in a disease context, even without a nomenclature form. This includes bare category terms such as "cancer" when no specific disease is named, pathological tissue processes such as "retinal detachment" or "abnormal vascular development," and deficiency states presented as disease-causing mechanisms. Modifiers such as "abnormal" or "exudative" do not disqualify the span. Exclude normal physiological states, measurements, and treatments. Do not require a named or acronym form for DiseaseClass.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10196379.json):
+Snippet: "...ed , some of which were associated with a family history of cancer . The frequency distribution of common polymorphisms was de..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "cancer"
+
+Example 2 (Doc: 10484772.json):
+Snippet: "... in retinal angiogenesis.
+Coats disease is characterized by abnormal retinal vascular development ( so-called retinal telangiectasis ) which results in massi..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "abnormal retinal vascular development"
+
+Example 3 (Doc: 10484772.json):
+Snippet: "...in massive intraretinal and subretinal lipid accumulation ( exudative retinal detachment ) . The classical form of Coats disease is almost invariabl..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "exudative retinal detachment"
+
+Example 4 (Doc: 10484772.json):
+Snippet: "...dary to somatic mutation in the NDP gene which results in a deficiency of norrin ( the protein product of the NDP gene ) within the developi..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "deficiency of norrin"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

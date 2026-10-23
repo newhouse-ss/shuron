@@ -1,0 +1,61 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: DiseaseClass (Label Mismatch)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** All five discrepancies come from one case report and share a diagnostic frame. "Presenting as vasculitis," "presenting with fever, arthritis, and cutaneous vasculitis… was found to have chronic meningococcemia," and "must be distinguished from other causes of cutaneous vasculitis" all treat the disease term as the clinical condition being diagnosed or ruled out. The DiseaseClass true positive, "mental retardation," sits in a definitional list ("SLS is… characterized by ichthyosis, mental retardation, spasticity…") that describes a syndrome's general phenotype. The two contexts share a comma-separated symptom-list shape, so list syntax alone does not separate them. The governing predicate and the referential role do.
+- **Isolate Trigger:** The model appears to key on lexical genericity. "Vasculitis," "arthritis," and "neisserial infection" are non-eponymous, organ-, process-, or genus-level category nouns. "Neisserial" is a taxonomic modifier that reads like a class label. These forms resemble the DiseaseClass prototype ("mental retardation"), and the "causes of X" construction invites a set-level reading.
+- **Hypothesis Check:** Generic form explains all five errors, but it is not sufficient. Applied alone, it would also misfire on true SpecificDisease mentions that are generic in form. The true SpecificDisease mentions in the controls (Coats disease, Norrie disease, diastrophic dysplasia, SLS) are named entities, so the control set is consistent with a lexical heuristic. The discrepancies are not, which means the gold label tracks referential role rather than lexical form. Adding the diagnostic/presentation predicate explains 5/5 and keeps the true-positive DiseaseClass case correct.
+
+**Step 2: Formulate Pattern**
+
+- **Pattern Name:** Generic Disease Nouns in Diagnostic or Presentation Frames Mislabeled as DiseaseClass
+- **Confusion Trigger:** Non-eponymous, organ- or process-level disease nouns (*vasculitis*, *arthritis*, *X infection* with a genus-level modifier such as *neisserial*) that appear in symptom enumerations. The model maps their generic form to the DiseaseClass "category/phenotype" prototype.
+- **Contrastive Evidence:** The DiseaseClass control ("mental retardation") is a feature inside a definitional, syndrome-level characterization and is not the disease the case is diagnosing. The SpecificDisease controls are named disorders (eponyms, acronyms, full formal names). The discrepancy mentions are the disease the patient presents with, has been diagnosed with, or is being distinguished from, which is a referential role the model does not weigh.
+- **Linguistic Rule (Proposed):** If a disease-denoting head noun, even a generic one, is the argument of a patient-level presentation, diagnosis, or differential-diagnosis predicate (*presenting with/as X*, *found to have X*, *diagnosed with X*, *distinguished from X*, *causes of X* in a differential context), label it **SpecificDisease**, regardless of lexical genericity or list position. Reserve **DiseaseClass** for phenotypic features or hypernym categories in definitional, non-patient statements (*X is characterized by…*, *X is a disorder with…*). Modifiers such as *cutaneous* or *neisserial* should not, by themselves, convert a head disease mention into a class.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 6859721.json):
+Snippet: "...ent in a patient with chronic meningococcemia presenting as vasculitis.
+A previously healthy 40-year-old man presenting with fever..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "vasculitis"
+
+Example 2 (Doc: 6859721.json):
+Snippet: "... previously healthy 40-year-old man presenting with fever , arthritis , and cutaneous vasculitis was found to have chronic mening..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "arthritis"
+
+Example 3 (Doc: 6859721.json):
+Snippet: "...thy 40-year-old man presenting with fever , arthritis , and cutaneous vasculitis was found to have chronic meningococcemia . Evaluation of h..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "cutaneous vasculitis"
+
+Example 4 (Doc: 6859721.json):
+Snippet: "...ions showed heterozygous deficiency of C7 in five members . Chronic neisserial infection can be associated with C7 deficiency and must be distinguis..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "Chronic neisserial infection"
+
+Example 5 (Doc: 6859721.json):
+Snippet: "...7 deficiency and must be distinguished from other causes of cutaneous vasculitis . . ..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "cutaneous vasculitis"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

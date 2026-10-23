@@ -1,0 +1,54 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: SpecificDisease (Span Boundary Error)
+
+**INFERRED PATTERNS:**
+## Step 1: Deep Dive Analysis
+
+**Contrast.** Both discrepancies have the same construction: the head noun *deficiency* governs an *of*-phrase that names a complement or gene-product component ("deficiency of the seventh component of complement", "deficiency of C7"). The true positives contain only named diseases ("Coats disease", "Norrie disease", "SLS", "Sjogren-Larsson syndrome", "Wiskott-Aldrich syndrome"). Each of these is a lexicalized name, headed by *disease* or *syndrome* or given as an acronym, with no prepositional argument.
+
+**Isolate the trigger.** The model appears to read "deficiency of C7" as an inverted form of "C7 deficiency," which is a real disease name (complement C7 deficiency). It then labels the whole noun phrase as SpecificDisease and extends the span across the preposition into the molecular argument. Example 1 is worse because its nested "X of Y of Z" chain pulls in "component of complement."
+
+**Hypothesis check.**
+- The trigger explains both examples.
+- The true positives contain the same trigger construction without a disease label. "results in a deficiency of norrin" (10484772) and "deficient activity of fatty aldehyde dehydrogenase" (10577908) are not annotated as diseases. This is the strongest control evidence: the same head-plus-*of* structure is not a disease in the gold standard.
+- Caveat: gold and LLM both carry the label SpecificDisease. So the error is most likely in span extent (the LLM span includes the "deficiency of X" clause), not in the class decision. The gold span should be verified before applying the rule.
+
+## Step 2: Pattern Formulation
+
+- **Pattern Insight: Generic "deficiency of [molecule]" phrases over-extended as SpecificDisease spans**
+  - **Confusion Trigger:** The state noun "deficiency" heads an *of*-PP that names a complement or gene-product component (C7, "the seventh component of complement"). The model treats the whole NP as a disease name, which extends the span across the preposition and includes the molecular argument.
+  - **Contrastive Evidence:** In 10484772, "a deficiency of norrin," and in 10577908, "deficient activity of fatty aldehyde dehydrogenase," use the same head-plus-*of*-plus-molecule construction and are not annotated as diseases. The true disease mentions are lexicalized names whose spans are the names themselves (Coats disease, Norrie disease, SLS), with no *of*-argument.
+  - **Linguistic Rule (Proposed):**
+    1. A SpecificDisease span must be the minimal lexicalized name. Do not extend it across "of" to include a molecular or component argument.
+    2. Treat "deficiency" as part of a disease name only in the premodifier-head compound form (e.g., "C7 deficiency"), where the molecule modifies a fixed head and the whole is a recognized disease name. Treat "deficiency of [molecule]" as a descriptive state, not a disease span, and trim the span to the compound form if one is recognized.
+    3. Exclude determiners, ordinals, and descriptive adjectives ("the", "seventh", "complete", "heterozygous") from disease spans, since these belong to Modifier or to no entity.
+    4. Confirm the gold span before applying rules 1–3, because both labels currently match and the error appears to be at the boundary.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 6859721.json):
+Snippet: "...of functional and antigenic C7 , compatible with a complete deficiency of the seventh component of complement . Study of the patients family spanning four generations sh..."
+Gold: SpecificDisease, LLM: SpecificDisease
+Entity Text: "deficiency of the seventh component of complement"
+
+Example 2 (Doc: 6859721.json):
+Snippet: "...tients family spanning four generations showed heterozygous deficiency of C7 in five members . Chronic neisserial infection can be assoc..."
+Gold: SpecificDisease, LLM: SpecificDisease
+Entity Text: "deficiency of C7"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

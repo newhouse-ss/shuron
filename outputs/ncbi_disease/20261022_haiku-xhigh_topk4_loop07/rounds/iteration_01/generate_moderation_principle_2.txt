@@ -1,0 +1,62 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: SpecificDisease (Span Boundary Error)
+
+**INFERRED PATTERNS:**
+## Step 1: Deep Dive Analysis
+
+- **Label agreement:** In all four cases, Gold and LLM both assign SpecificDisease. The discrepancy therefore lies in span extent (where the mention starts and ends), not in classification.
+- **Contrast:** In the True Positives, disease names appear as bare noun phrases ("Coats disease is characterized…", "affected by Norrie disease", "diastrophic dysplasia") or as complete proper names where "deficiency" is internal to the name ("glucose 6-phosphate dehydrogenase (G6PD) deficiency"). None is governed by an "of"-phrase whose head is a type or state noun. Every discrepancy has that structure: [Qualifier] + [type/state noun] + "of" + [disease].
+- **Single separating feature:** Is the disease mention the complement of an "of"-PP governed by a subtype/state noun (form, variant, deficiency) that carries a clinical premodifier? TP: no. Discrepancy: yes, in all four.
+- **Isolated trigger:** The chain "classical form of," "unilateral variant of," "complete deficiency of," and "heterozygous deficiency of" wraps the disease head. The model apparently places the boundary at the disease head itself:
+  - Ex 1–2: the span is cut to "Coats disease," dropping "classical form of" / "unilateral variant of."
+  - Ex 3–4: the span starts at "deficiency" but drops the premodifier ("complete," "heterozygous"). Here "deficiency" is kept because it is disease-defining, unlike the taxonomic "form" and "variant."
+- **Hypothesis check:** This explains all four cases. It needs one refinement. The "of"-frame alone is not the trigger. In the True Positives, "family history of ovarian cancer" is an "of"+disease frame, but the gold label is Modifier, because "history" is a context head rather than a subtype head. The model handles context frames correctly, so the failure is specific to subtype/state heads.
+
+## Step 2: Formulate Pattern
+
+- **Pattern Insight: Subtype/State-Head Nominal Frame Causes Span Truncation**
+  - **Pattern Name:** Subtype/State-Head "[Qualifier] N of [Disease]" Frame (Span Truncation)
+  - **Confusion Trigger:** A disease name serving as the complement of "of" under a type or state noun (form, variant, deficiency) that is premodified by a clinical qualifier (classical, unilateral, complete, heterozygous). The disease head is the salient entity, so the model truncates the span to the bare name or drops the premodifier.
+  - **Contrastive Evidence:** True Positive disease spans are either bare sentence-level names with no governing "of"-phrase, or complete proper names in which "deficiency" is part of the name. The TP "family history of ovarian cancer" shows that "of"+disease frames are handled correctly when the governing head is a context noun (history, risk, population), which is labeled Modifier.
+  - **Linguistic Rule (Proposed):** If disease D is the complement of "of," the governing head N is a subtype/state noun (form, variant, deficiency, type), and N is premodified by a qualifier Q, then the SpecificDisease span is the maximal nominal phrase [Q N of D], not D alone. If N is a context noun (history, risk, population, cases), keep the span on D and label it Modifier.
+
+*Verification note:* Check the gold character offsets for these four mentions. If the gold spans include the qualifier chain, the rule holds as stated. If the gold spans are bare disease names, the qualifier-inclusion rule should be reversed for zygosity and laterality qualifiers, which describe the patient rather than the disease.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10484772.json):
+Snippet: "...on ( exudative retinal detachment ) . The classical form of Coats disease is almost invariably isolated , unilateral and seen in male..."
+Gold: SpecificDisease, LLM: SpecificDisease
+Entity Text: "Coats disease"
+
+Example 2 (Doc: 10484772.json):
+Snippet: "...l and seen in males . A female with a unilateral variant of Coats disease gave birth to a son affected by Norrie disease . Both carri..."
+Gold: SpecificDisease, LLM: SpecificDisease
+Entity Text: "Coats disease"
+
+Example 3 (Doc: 6859721.json):
+Snippet: "...of functional and antigenic C7 , compatible with a complete deficiency of the seventh component of complement . Study of the patients family spanning four generations sh..."
+Gold: SpecificDisease, LLM: SpecificDisease
+Entity Text: "deficiency of the seventh component of complement"
+
+Example 4 (Doc: 6859721.json):
+Snippet: "...tients family spanning four generations showed heterozygous deficiency of C7 in five members . Chronic neisserial infection can be assoc..."
+Gold: SpecificDisease, LLM: SpecificDisease
+Entity Text: "deficiency of C7"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

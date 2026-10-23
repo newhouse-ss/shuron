@@ -1,0 +1,44 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: Modifier vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+- **Pattern Insight: Disease Term Absorbed into a Gene/Protein Nomenclature Span**
+  - **Pattern Name:** Full-form disease name as the leading constituent of an official gene/protein name.
+  - **Confusion Trigger:** The discrepancy strings are lexicalized, multi-token gene/protein names whose first constituent is a disease expression: "breast cancer susceptibility gene 1" (BRCA1) and "Wiskott-Aldrich syndrome protein" (WASP). The model reads the whole string as one gene/protein entity, a category outside the schema, and assigns O, so the embedded disease substring is never labeled. The disease-internal head nouns ("cancer," "syndrome") are absorbed into the protein name. The parenthetical symbols (BRCA1, WASP) reinforce this reading, but they are not required: Example 2 is a title occurrence with no parenthesis and fails the same way. The nomenclature itself is the trigger.
+  - **Contrastive Evidence:** The True Positives use the disease term as a premodifier of a generic, non-nomenclature head: "ovarian cancer cases / population / risk" (Modifier). Where a gene head follows a disease term, as in "DTD gene" and "ancient SLS genes," the disease appears as a short abbreviation that was defined earlier in the same document (e.g., "diastrophic dysplasia (DTD)"). That prior definition anchors the abbreviation as a disease reference, so it is not absorbed into a gene name. "G6PD deficient" and "Coats disease" are standalone disease expressions, not nested in gene names.
+  - **Linguistic Rule (Proposed):** Evaluate the disease substring independently of any enclosing gene/protein name. The schema has no gene class, so the nomenclature span is out of scope and must not suppress an in-scope disease token. If a disease expression (a full form containing a disease noun such as cancer, syndrome, disease, or dystrophy, or a document-defined abbreviation) functions as an attributive premodifier of a non-disease head (gene, protein, cases, risk, family members), label the disease substring **Modifier**, not O. The O label should apply only when no disease expression is present in the span, not because the enclosing span is a gene or protein name.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10196379.json):
+Snippet: "...s study was to provide more accurate frequency estimates of breast cancer susceptibility gene 1 ( BRCA1 ) germline alterations in the..."
+Gold: Modifier, LLM: O
+Entity Text: "breast cancer"
+
+Example 2 (Doc: 10724160.json):
+Snippet: "...Autoinhibition and activation mechanisms of the Wiskott-Aldrich syndrome protein.
+The Rho-family GTPase , Cdc42 , can regulate the a..."
+Gold: Modifier, LLM: O
+Entity Text: "Wiskott-Aldrich syndrome"
+
+Example 3 (Doc: 10724160.json):
+Snippet: "..., can regulate the actin cytoskeleton through activation of Wiskott-Aldrich syndrome protein ( WASP ) family members . Activation relieves an au..."
+Gold: Modifier, LLM: O
+Entity Text: "Wiskott-Aldrich syndrome"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

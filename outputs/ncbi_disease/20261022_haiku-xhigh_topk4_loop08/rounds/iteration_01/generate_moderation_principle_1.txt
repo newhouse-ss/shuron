@@ -1,0 +1,67 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: DiseaseClass (Label Mismatch)
+
+**INFERRED PATTERNS:**
+## Step 1: Deep Dive Analysis
+
+- **Contrast:** The gold-SpecificDisease discrepancies and the True Positives differ less in form than in what the mention refers to. "Mental retardation" (TP, DiseaseClass) is a generic descriptor used kind-level: "*is characterized by* ichthyosis, mental retardation, spasticity." The discrepancy mentions name concrete conditions: a patient's diagnosis ("presenting *with* … arthritis, and cutaneous vasculitis"; "presenting *as* vasculitis"), a differential target ("distinguished from other causes of cutaneous vasculitis"), or a gene-defined disorder ("mutant genotypes associated with PAH deficiencies").
+- **Isolate Trigger:** The LLM appears to read surface taxonomy cues as class markers: the "-itis" head noun (*vasculitis*, *arthritis*), a type modifier that looks like a subtype (*cutaneous* vasculitis), and a plural count noun (*PAH deficiencies*). It also appears to pick up the coordinated symptom list in the case report, which resembles the SLS list that was correctly labeled DiseaseClass.
+- **Hypothesis Check:**
+  - *Surface morphology alone fails.* "Mental retardation" is also generic, unnamed, and list-embedded, yet it is correctly DiseaseClass. So generic form cannot be the sole trigger.
+  - *Referential anchoring explains all cases.* Every discrepancy refers to a specific, identifiable disorder instance in a patient or gene context. The True Positive DiseaseClass refers to a kind-level phenotype category.
+  - *Internal check:* "G6PD deficiency" (TP, SpecificDisease) is gene-anchored and singular. "PAH deficiencies" is gene-anchored but plural, and the LLM misclassified only the plural form. This suggests the plural is the surface cue that overrode the anchoring.
+
+## Step 2: Pattern Insight
+
+- **Pattern Name:** Generic-Form Disease Nouns Anchored to a Specific Patient or Gene Labeled as Class
+- **Confusion Trigger:** Taxonomy-like surface morphology (the "-itis" head *vasculitis/arthritis*, a type-modifier + head *cutaneous vasculitis*, or a plural count *deficiencies*) is read as a hypernym or class label, even when the term denotes one concrete disorder.
+- **Contrastive Evidence:** The True Positive DiseaseClass ("mental retardation") is a kind-level phenotype descriptor inside a generic syndrome characterization, with no referent to a particular patient's or gene's disorder. The SpecificDisease True Positives (Coats disease, Norrie disease, SLS, G6PD deficiency, diastrophic dysplasia) are anchored by an eponym, acronym, or gene name. The discrepancies are anchored by a patient's diagnosis, a diagnostic target, or a gene-defined disorder, even though they lack those names.
+- **Linguistic Rule (Proposed):**
+  1. Use a **referential anchoring** test: does the mention denote a concrete disorder being diagnosed, manifested, or ruled out in a specific patient ("presenting with/as X," "distinguished from … X," "patient has X"), or a disorder defined by a specific gene or enzyme (e.g., "PAH deficiencies")? If yes, label **SpecificDisease**, regardless of generic morphology (-itis, plural -ies, or a type modifier).
+  2. Reserve **DiseaseClass** for kind-level, umbrella, or phenotype descriptors used generically ("characterized by … mental retardation"), not tied to a specific case or gene.
+  3. Do not treat plural number, the -itis suffix, or coordination in a symptom list as evidence of class membership on their own. Those cues only apply after the referential anchoring test.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 1671881.json):
+Snippet: "...or by the large variety of mutant genotypes associated with PAH deficiencies . . ..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "PAH deficiencies"
+
+Example 2 (Doc: 6859721.json):
+Snippet: "...ent in a patient with chronic meningococcemia presenting as vasculitis.
+A previously healthy 40-year-old man presenting with fever..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "vasculitis"
+
+Example 3 (Doc: 6859721.json):
+Snippet: "... previously healthy 40-year-old man presenting with fever , arthritis , and cutaneous vasculitis was found to have chronic mening..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "arthritis"
+
+Example 4 (Doc: 6859721.json):
+Snippet: "...thy 40-year-old man presenting with fever , arthritis , and cutaneous vasculitis was found to have chronic meningococcemia . Evaluation of h..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "cutaneous vasculitis"
+
+Example 5 (Doc: 6859721.json):
+Snippet: "...7 deficiency and must be distinguished from other causes of cutaneous vasculitis . . ..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "cutaneous vasculitis"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

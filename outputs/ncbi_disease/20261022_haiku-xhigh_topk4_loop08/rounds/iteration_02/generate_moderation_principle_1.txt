@@ -1,0 +1,61 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** The True Positives have nosological heads: "syndrome" (fragile X syndrome, Wiskott-Aldrich syndrome), "disease" (Coats disease, Norrie disease), "cancer" (ovarian cancer), or an established abbreviation (SLS). The discrepancies have heads that describe a biochemical state or a sign: "deficiency" (G6PD deficiency, deficiency in G6PD), "deficient activity" (deficient activity of fatty aldehyde dehydrogenase), "absence" (Absence of the seventh component of complement), and "fever." The single separating feature is the **semantic type of the disease-denoting head noun**: a named disease class versus a functional or phenotypic state noun.
+- **Isolate Trigger:** In every discrepancy, a gene, enzyme, or protein name (G6PD, fatty aldehyde dehydrogenase, complement component C7) sits inside the span, either as premodifier or as the object of "of/in." The model appears to read the molecular name as the entity and treat the generic state noun ("deficiency," "absence," "activity") as non-disease vocabulary. Because the state noun is not in its disease lexicon, the whole phrase falls to O.
+- **Hypothesis Check:** The trigger explains Examples 1–4, where a deficiency or absence state is defined by a missing molecular component. It does not explain Example 5 ("fever"), which has no molecular entity and is a bare clinical sign. I treat that case as a secondary, lower-confidence group: gold appears to annotate presenting manifestations as SpecificDisease. The primary pattern is deficiency/absence states, with signs as a residual.
+
+**Step 2: Pattern Formulation**
+
+- **Pattern Insight: Molecular Deficiency States Mislabeled as Non-Disease**
+  - **Confusion Trigger:** A disease expressed as a deficiency, absence, or deficient-activity noun phrase whose complement or premodifier is a gene, enzyme, or component name (e.g., "G6PD deficiency," "deficiency in G6PD A-," "Absence of the seventh component of complement," "deficient activity of fatty aldehyde dehydrogenase"). The model's disease cues (syndrome, disease, -emia) are absent, so it tags the molecular name as non-disease or leaves the phrase as O.
+  - **Contrastive Evidence:** The True Positives name the disease with a nosological head ("Wiskott-Aldrich syndrome," "Coats disease," "fragile X syndrome"). Where a disease name precedes a protein ("Wiskott-Aldrich syndrome protein"), it is labeled Modifier because the protein is the head. In the discrepancies, the head is the state noun, so the phrase denotes the disease.
+  - **Linguistic Rule (Proposed):** Label the full noun phrase as SpecificDisease when its head noun is a deficiency, absence, or deficient-activity term and it is modified by a gene, enzyme, or complement-component name, either as a premodifier ("[GENE] deficiency") or as a PP complement ("deficiency in / absence of / deficient activity of [PROTEIN]"). Include the state noun in the span, rather than tagging only the molecular name. Do not apply this rule to mutation or variant nouns (e.g., "68 Val→Met mutation"), which denote genetic causes, not the disease. Treat bare clinical signs such as "fever" as a separate, lower-confidence category pending gold-convention review.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10577908.json):
+Snippet: "...rized by ichthyosis , mental retardation , spasticity , and deficient activity of fatty aldehyde dehydrogenase ( FALDH ) . To define the molecular defects causing SLS , w..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficient activity of fatty aldehyde dehydrogenase"
+
+Example 2 (Doc: 1303173.json):
+Snippet: "...he 68 Val-- > Met mutation alone is not sufficient to cause G6PD deficiency . We have approached this question by producing G6PD B , A ..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "G6PD deficiency"
+
+Example 3 (Doc: 1303173.json):
+Snippet: "... coexistence of the two mutations is responsible for enzyme deficiency in G6PD A- because they act synergistically in causing instability ..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficiency in G6PD"
+
+Example 4 (Doc: 6859721.json):
+Snippet: "...Absence of the seventh component of complement in a patient with chronic meningococcemia presenting as vas..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "Absence of the seventh component of complement"
+
+Example 5 (Doc: 6859721.json):
+Snippet: "...litis.
+A previously healthy 40-year-old man presenting with fever , arthritis , and cutaneous vasculitis was found to have ch..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "fever"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

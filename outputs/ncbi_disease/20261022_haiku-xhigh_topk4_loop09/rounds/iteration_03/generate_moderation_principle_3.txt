@@ -1,0 +1,40 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: DiseaseClass vs LLM: Modifier (Label Mismatch)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** The Modifier true positives are specific disease names with a discriminating specifier ("ovarian cancer," "Wiskott-Aldrich syndrome," "fragile X syndrome") that premodify a non-disease head noun: *ovarian cancer population / study / cases / risk*, *Wiskott-Aldrich syndrome protein*, *fragile X syndrome patients*. The DiseaseClass true positive "mental retardation" is a bare generic category term, which is the same kind of mention as the discrepant "cancer."
+- **Isolate Trigger:** "...associated with a family history of **cancer**." The disease noun is the complement of the relational noun "history," so it qualifies another noun's content rather than naming a disease that is the subject of the study. The model appears to have read "disease noun describing a non-disease noun" as the Modifier role. The bare form "cancer" also lacks the specifier that every Modifier true positive has.
+- **Hypothesis Check:** The trigger does not explain everything by itself. The TP document contains the same frame, "associated with a family history of ovarian cancer," and gold labels "ovarian cancer" there as Modifier. The "of"-complement frame therefore cannot be the sole determinant. The refined discriminator is the specificity of the disease string combined with its syntactic position: a specified name premodifying a head versus a bare generic term in complement position. This refinement also accounts for the apparent gold inconsistency.
+
+**Step 2: Formulate Pattern**
+
+- **Pattern Insight: Bare generic disease noun in a "history/risk of" qualifier frame mislabeled as Modifier**
+  - **Confusion Trigger:** A bare superordinate disease noun ("cancer") serving as the complement of a relational noun ("family history of ___"). The model reads the disease as attributively modifying the relational noun and assigns Modifier, even though the mention is a generic class term heading a PP.
+  - **Contrastive Evidence:** True-positive Modifier spans are specified disease names ("ovarian cancer," "Wiskott-Aldrich syndrome," "fragile X syndrome") functioning as noun-noun premodifiers of non-disease heads (population, risk, protein, patients). The true-positive DiseaseClass "mental retardation" is an unspecified generic term, the same profile as "cancer," and it is labeled DiseaseClass.
+  - **Linguistic Rule (Proposed):** Assign **Modifier** only when the disease string is a specified or named disease (a discriminating premodifier or a proper/acronym name) that acts as a noun-noun premodifier immediately preceding a non-disease head. Assign **DiseaseClass** when the mention is a bare generic category term (*cancer*, *disease*, *mental retardation*) in a complement or PP position, regardless of the qualifier frame around it. Caveat: the TP sentence "family history of ovarian cancer" is labeled Modifier despite the frame, so the specified-name case within this frame should be treated as Modifier.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10196379.json):
+Snippet: "...ed , some of which were associated with a family history of cancer . The frequency distribution of common polymorphisms was de..."
+Gold: DiseaseClass, LLM: Modifier
+Entity Text: "cancer"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

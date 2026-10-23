@@ -1,0 +1,71 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: DiseaseClass vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** The gold DiseaseClass cases are anchorless generic condition phrases: "cancer," "ichthyosis," "exudative retinal detachment," "abnormal retinal vascular development," and "deficiency of norrin." The True Positive SpecificDisease mentions (Coats disease, Norrie disease, SLS, DTD, G6PD deficiency) carry a named anchor such as an eponym, proper name, or acronym. The Modifier TPs ("ovarian cancer population," "ovarian cancer cases") are site-specified attributive nouns. The one DiseaseClass TP, "mental retardation," is a stable nosological label.
+- **Isolate Trigger:** Four of the five misses occur in a relational or consequence slot describing what a named disease causes, shows, or is associated with: "associated with a family history of…", "characterized by…", "results in a deficiency of…", and a parenthetical gloss "( exudative retinal detachment )." The model appears to read these as clinical findings or mechanisms rather than disease entities, and it has no anchor to fall back on.
+- **Hypothesis Check:**
+  - Ex 1 ("family history of cancer"): relational cue "associated with," bare "cancer," no anchor. Covered.
+  - Ex 2 ("characterized by abnormal retinal vascular development"): covered.
+  - Ex 3 (parenthetical gloss): covered.
+  - Ex 4 ("results in a deficiency of norrin"): covered.
+  - Ex 5 ("characterized by ichthyosis, mental retardation…"): covered, but the TP "mental retardation" sits in the identical list and was caught. The trigger is therefore a probabilistic bias, not an absolute syntactic rule. "Ichthyosis" is also a less recognizable condition term, which may add to the miss.
+
+**Step 2: Formulate Pattern**
+
+- **Pattern Insight: Anchorless generic condition terms in manifestation or consequence slots**
+  - **Confusion Trigger:** Generic, anchorless condition nouns or pathological-state phrases (no eponym, acronym, or named-disease head) that occur as complements of relational predicates ("characterized by," "results in," "associated with," "of"-complements) or inside parenthetical glosses. The model treats them as descriptive clinical findings and labels them O.
+  - **Contrastive Evidence:** True Positive SpecificDisease mentions are anchored names that serve as sentence subjects or topics ("Coats disease is characterized by…," "Sjogren-Larsson syndrome (SLS) is…"). Modifier TPs are site-specified attributive nouns ("ovarian cancer cases"). The only DiseaseClass TP, "mental retardation," shows the annotation standard does apply to generic phenotype labels in these same lists, so the model is inconsistent rather than systematically blind.
+  - **Linguistic Rule (Proposed):** Label a span as DiseaseClass when all of the following hold:
+    1. The head is a generic condition noun or pathological-state phrase (e.g., "cancer," "-osis" terms, "detachment," "deficiency of X," "abnormal … development").
+    2. The span has no named-disease anchor (eponym, proper name, acronym, or gene-linked disease name) within the phrase.
+    3. The span fills a manifestation, consequence, or association slot, or sits in a parenthetical gloss describing a named disease's features.
+
+    Do not apply this rule when the term is an attributive modifier of a site-specified or named disease noun ("ovarian cancer population"), since that pattern is Modifier.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10196379.json):
+Snippet: "...ed , some of which were associated with a family history of cancer . The frequency distribution of common polymorphisms was de..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "cancer"
+
+Example 2 (Doc: 10484772.json):
+Snippet: "... in retinal angiogenesis.
+Coats disease is characterized by abnormal retinal vascular development ( so-called retinal telangiectasis ) which results in massi..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "abnormal retinal vascular development"
+
+Example 3 (Doc: 10484772.json):
+Snippet: "...in massive intraretinal and subretinal lipid accumulation ( exudative retinal detachment ) . The classical form of Coats disease is almost invariabl..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "exudative retinal detachment"
+
+Example 4 (Doc: 10484772.json):
+Snippet: "...dary to somatic mutation in the NDP gene which results in a deficiency of norrin ( the protein product of the NDP gene ) within the developi..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "deficiency of norrin"
+
+Example 5 (Doc: 10577908.json):
+Snippet: "...( SLS ) is an autosomal recessive disorder characterized by ichthyosis , mental retardation , spasticity , and deficient activity ..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "ichthyosis"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

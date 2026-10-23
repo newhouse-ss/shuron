@@ -1,0 +1,61 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: DiseaseClass (Label Mismatch)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** The five discrepancies are all bare, generic disease nouns: "PAH deficiencies," "vasculitis," "arthritis," "cutaneous vasculitis," and "Chronic neisserial infection." None has an eponym, syndrome name, or acronym. Four of the five come from one case report (6859721) in which the nouns name a specific patient's diagnosed or presenting condition. The SpecificDisease true positives are named entities ("Coats disease," "Norrie disease," "SLS," "DTD," "diastrophic dysplasia," "G6PD deficiency"). The one DiseaseClass true positive, "mental retardation," is a trait listed generically in a definitional sentence ("is characterized by ichthyosis, mental retardation, spasticity").
+- **Isolate Trigger:** The model reads the hypernym-like head noun (-itis, infection, deficiency) as a superordinate category, meaning "a kind of vasculitis/infection/deficiency," and assigns DiseaseClass without checking whether the term refers to a specific condition.
+- **Hypothesis Check:** The trigger explains most cases, but "Chronic neisserial infection" and "PAH deficiencies" carry an etiologic anchor (organism or gene) that makes them specific. A referential test covers all five: each term denotes a condition borne by an identified patient, case, or genotype.
+
+**Step 2: Formulated Pattern**
+
+- **Pattern Name:** Bare Generic Disease Head Noun Anchored to a Patient or Genotype
+- **Confusion Trigger:** Unmodified, hypernym-sounding disease head nouns (vasculitis, arthritis, infection, deficiencies, including the plural "deficiencies") with no proper name, eponym, or acronym. The model responds to their superordinate lexical meaning and defaults to DiseaseClass.
+- **Contrastive Evidence:** SpecificDisease true positives are anchored by a proper name or acronym, such as "Coats disease," "SLS," or "G6PD deficiency." The DiseaseClass true positive, "mental retardation," is a generic trait in a syndrome's feature list, not a condition attributed to a patient. The discrepancies instead attribute the term to a particular individual or genotype: "presenting as vasculitis," "was found to have chronic meningococcemia," "mutant genotypes associated with PAH deficiencies."
+- **Linguistic Rule (Proposed):** For a generic disease head noun without a proper name or acronym, assign SpecificDisease when the term is referentially anchored to a particular patient, case, or genotype. Anchoring cues include predicates such as "presenting with/as," "was found to have," and "associated with [gene] mutations," and an etiologic qualifier such as an organism or gene name. Assign DiseaseClass only when the term is a superordinate category that groups multiple named diseases, or a generic trait listed across a syndrome population. Caveat: gold labels for symptom-list terms are inconsistent ("arthritis" is SpecificDisease here, while "mental retardation" is DiseaseClass), so these cases should be adjudicated for consistency.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 1671881.json):
+Snippet: "...or by the large variety of mutant genotypes associated with PAH deficiencies . . ..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "PAH deficiencies"
+
+Example 2 (Doc: 6859721.json):
+Snippet: "...ent in a patient with chronic meningococcemia presenting as vasculitis.
+A previously healthy 40-year-old man presenting with fever..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "vasculitis"
+
+Example 3 (Doc: 6859721.json):
+Snippet: "... previously healthy 40-year-old man presenting with fever , arthritis , and cutaneous vasculitis was found to have chronic mening..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "arthritis"
+
+Example 4 (Doc: 6859721.json):
+Snippet: "...thy 40-year-old man presenting with fever , arthritis , and cutaneous vasculitis was found to have chronic meningococcemia . Evaluation of h..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "cutaneous vasculitis"
+
+Example 5 (Doc: 6859721.json):
+Snippet: "...ions showed heterozygous deficiency of C7 in five members . Chronic neisserial infection can be associated with C7 deficiency and must be distinguis..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "Chronic neisserial infection"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

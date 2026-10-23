@@ -1,0 +1,75 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+## Step 1: Deep Dive Analysis
+
+**Contrast**
+- **Discrepancies (4 of 5 cases):** The gold disease mention has no lexicalized disease marker. It has no eponym, no "disease/syndrome/cancer" head, and no standard acronym. The disease reading rests on a deficiency or absence state over a molecular entity ("deficiency in G6PD", "Absence of the seventh component of complement", "deficiency of the seventh component of complement") or on a parenthetical synonym ("so-called retinal telangiectasis").
+- **True Positives:** Every disease mention carries a lexicalized marker: "Coats disease", "Norrie disease", "Sjogren-Larsson syndrome"/"SLS", "Wiskott-Aldrich syndrome", "ovarian cancer". The TP "Coats telangiectasis" is labeled SpecificDisease only because the eponym "Coats" anchors it. The head "telangiectasis" is the same word as in the discrepancy "retinal telangiectasis."
+- **Separating boolean feature:** *Does the mention contain a lexicalized disease-name marker (eponym, disease/syndrome/cancer head, or acronym)?*
+
+**Isolate Trigger**
+The model appears to key on lexical disease markers. When the head is a state or finding noun ("deficiency," "absence," "telangiectasis") and the complement is a biological entity (a gene/enzyme symbol or a complement component), the phrase reads as a biochemical description. The model then assigns O, or assigns a non-schema class such as gene/protein.
+
+**Hypothesis Check**
+- The trigger explains Examples 1, 2, 3, and 5.
+- Example 4 ("fever") does not fit. It is a presenting symptom in a list, and the schema has no symptom class. This looks like annotation noise, and the model's O is defensible.
+- The gold standard is also inconsistent for the same surface construction. "results in a deficiency of norrin," "absence of the FMR1 protein," and "deficient activity of FALDH" are all unlabeled in the TP files. The difference appears to be framing. Labeled cases describe the deficiency as the patient's diagnosed condition ("compatible with a complete deficiency... Study of the patient's family," "a patient with... presenting as"). Unlabeled cases describe it as a mechanism ("results in," "responsible for," "absence of protein" as a causal step). The refinement therefore needs a clinical-versus-mechanistic test, not a purely lexical one.
+
+## Step 2: Pattern Formulation
+
+- **Pattern Insight: Descriptive and Molecular-Deficiency Disease Names Without a Disease Head**
+  - **Confusion Trigger:** Disease names built from a state noun ("deficiency," "absence," "telangiectasis") over a molecular or physiological entity (a gene/enzyme symbol such as G6PD, an ordinal-spelled complement component such as "seventh component of complement"), or from a parenthetical synonym ("so-called retinal telangiectasis"). These lack an eponym, "disease/syndrome/cancer" head, or acronym, so the model reads them as biochemical or finding descriptions rather than condition names.
+  - **Contrastive Evidence:** The TPs name the condition with an explicit marker: "Coats disease," "Norrie disease," "Sjogren-Larsson syndrome"/"SLS," "Wiskott-Aldrich syndrome," "ovarian cancer." The TP "Coats telangiectasis" is tagged because the eponym anchors the phrase, which shows that the lexical marker drives the disease reading.
+  - **Linguistic Rule (Proposed):**
+    1. If the mention has an eponym, a disease/syndrome/cancer head, or a standard acronym, tag it as SpecificDisease. This is the default path.
+    2. If the head is a state noun ("deficiency," "absence") over a molecular entity, tag the whole noun phrase as SpecificDisease only when it is framed as the patient's or family's diagnosed condition (for example, "a patient with," "presenting as," "compatible with a complete deficiency," "family study") and it names a recognized clinical entity. If it is framed mechanistically ("results in," "responsible for," "causes the absence of"), leave it as O.
+    3. A bare gene, enzyme, or protein symbol (G6PD, NDP, FMR1) is never a disease on its own. It counts only as part of a condition name.
+    4. A "so-called X" or "(X)" appositive that restates an already-labeled disease in the same passage inherits SpecificDisease for the restatement.
+    5. Presenting symptoms such as "fever" are excluded from SpecificDisease. Treat Example 4 as annotation noise rather than a pattern to learn.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10484772.json):
+Snippet: "...erized by abnormal retinal vascular development ( so-called retinal telangiectasis ) which results in massive intraretinal and subretinal lipi..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "retinal telangiectasis"
+
+Example 2 (Doc: 1303173.json):
+Snippet: "... coexistence of the two mutations is responsible for enzyme deficiency in G6PD A- because they act synergistically in causing instability ..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficiency in G6PD"
+
+Example 3 (Doc: 6859721.json):
+Snippet: "...Absence of the seventh component of complement in a patient with chronic meningococcemia presenting as vas..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "Absence of the seventh component of complement"
+
+Example 4 (Doc: 6859721.json):
+Snippet: "...litis.
+A previously healthy 40-year-old man presenting with fever , arthritis , and cutaneous vasculitis was found to have ch..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "fever"
+
+Example 5 (Doc: 6859721.json):
+Snippet: "...of functional and antigenic C7 , compatible with a complete deficiency of the seventh component of complement . Study of the patients family spanning four generations sh..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficiency of the seventh component of complement"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

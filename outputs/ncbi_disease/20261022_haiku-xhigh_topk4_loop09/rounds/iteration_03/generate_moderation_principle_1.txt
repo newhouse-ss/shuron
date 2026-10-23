@@ -1,0 +1,68 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+## Step 1: Deep Dive Analysis
+
+**Contrast**
+- **True positives** are mostly lexicalized disease names with a recognizable disease-type head or form: "Coats disease," "Norrie disease," "fragile X syndrome," "Wiskott-Aldrich syndrome," and the acronym "SLS." The head word ("disease," "syndrome") or an acronym signals disease status.
+- **Discrepancies** are compositional descriptions. The disease is identified by a clinical manifestation ("unilateral retinal telangiectasis") or an enzymatic defect ("deficiency in G6PD") rather than by a disease name.
+- The boolean feature that separates them is whether the span is a **lexicalized disease name** (head-final "disease/syndrome," eponym, or acronym) or a **non-lexicalized description** of a disease.
+
+**Isolate Trigger**
+- **Example 1:** The span is a parenthetical gloss that re-describes an already-named disease ("Coats' disease of the retina (unilateral retinal telangiectasis)"). The model likely read it as explanatory text, not as a name. The premodifier "unilateral" reads as a laterality qualifier, and "telangiectasis" is a finding noun.
+- **Example 2:** The span is "deficiency in G6PD." The head "deficiency" is generic, and the disease anchor is an enzyme/gene symbol. The span also sits next to the generic "enzyme deficiency" and the allele-style "G6PD A-," which make the phrase look like a biochemical description rather than a disease mention.
+
+**Hypothesis Check**
+- Examples 1 and 2 are explained by one trigger: a **generic pathology or deficiency head noun whose disease identity comes from a non-head specifier or complement** (a gloss or a PP).
+- Example 3 ("fever") is not explained. "Fever" is a sign, listed in a "presenting with" coordination. Under this schema, the model's O is arguably correct, so the gold label is suspect. I exclude it from the pattern and flag it for annotation review.
+- Partial contradiction: the same document (10484772) contains "so-called retinal telangiectasis" unannotated, while the parenthetical version is annotated. This suggests the gold is inconsistent for the same concept.
+- Also note that "deficiency of norrin" is correctly labeled DiseaseClass in a TP. The model can handle "deficiency of X" in some cases, so the failure seems tied to the "in [symbol]" configuration and the parenthetical gloss.
+
+## Step 2: Formulate Pattern
+
+- **Pattern Name:** Disease Mentions Expressed as Pathology or Deficiency Descriptions (Non-Lexicalized Disease Phrases)
+- **Confusion Trigger:** A generic pathology or deficiency head noun ("telangiectasis," "deficiency") whose disease identity is supplied by a premodifier, parenthetical gloss, or prepositional complement ("unilateral retinal," "in G6PD"). The model reads these as clinical or biochemical descriptions and defaults to O, especially when the phrase is a gloss of a named disease or the anchor is an enzyme or gene symbol.
+- **Contrastive Evidence:** True positives carry lexical disease markers, such as a "disease" or "syndrome" head, an eponym, or an acronym, so the model recognizes them. Where the model did tag phenotype or deficiency phrases in TPs ("mental retardation," "exudative retinal detachment," "deficiency of norrin"), they were in canonical, frequently seen forms. The failures occur only in the non-canonical configurations: an appositive gloss, or "deficiency in [gene/enzyme]."
+- **Linguistic Rule (Proposed):**
+  - Label a span as **SpecificDisease** when a pathology or deficiency noun phrase either:
+    1. is a parenthetical or appositive gloss that co-refers with a named disease in the same sentence (e.g., "X disease (Y)"), or
+    2. has the form "deficiency in/of [gene, enzyme, or allele symbol]."
+  - Label the **full span**, including the complement, and do not truncate to the generic head ("enzyme deficiency").
+  - Keep isolated sign or symptom nouns in clinical presentation lists (e.g., "fever") as **O**. Flag such gold labels for review rather than encoding them as SpecificDisease.
+  - Before finalizing, check the rule against unannotated co-referent mentions in the same document, such as "so-called retinal telangiectasis," for consistency.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10484772.json):
+Snippet: "...Coats' disease of the retina (unilateral retinal telangiectasis) caused by somatic mutation in the NDP gene: a role for nor..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "unilateral retinal telangiectasis"
+
+Example 2 (Doc: 1303173.json):
+Snippet: "... coexistence of the two mutations is responsible for enzyme deficiency in G6PD A- because they act synergistically in causing instability ..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficiency in G6PD"
+
+Example 3 (Doc: 6859721.json):
+Snippet: "...litis.
+A previously healthy 40-year-old man presenting with fever , arthritis , and cutaneous vasculitis was found to have ch..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "fever"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

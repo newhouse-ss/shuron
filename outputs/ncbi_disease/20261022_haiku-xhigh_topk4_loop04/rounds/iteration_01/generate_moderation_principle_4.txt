@@ -1,0 +1,40 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: Modifier vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+- **Pattern Name:** Disease Term Absorbed into a Gene-Locus Designation
+
+- **Confusion Trigger:** The disease term is the prenominal constituent of a gene-designation noun phrase, such as "breast cancer susceptibility gene 1" or "the DTD gene." The string reads as a gene identifier, a category outside the schema, so the model tags the whole span O instead of splitting off the disease as a Modifier. The head noun ("gene," "gene 1") denotes a chromosomal locus, which pulls the reading away from disease.
+
+- **Contrastive Evidence:** The True Positives use the same Modifier structure with non-locus heads. "Ovarian cancer" modifies "cases," "population," "risk," and "family history." "G6PD deficient" modifies "phenotype," and "Wiskott-Aldrich syndrome" modifies "protein." In each, the phrase denotes a patient group, a risk, a phenotype, or a protein, so the gene-name reading is never triggered. The boundary case is "ancient SLS genes" (TP), which has a gene head but was tagged correctly. The difference is that SLS is a disease abbreviation defined earlier in the document and used repeatedly as a disease. The discrepancy DTD is also defined as a disease abbreviation earlier ("diastrophic dysplasia (DTD)"), so the earlier definition is the discriminating factor, not the head noun alone.
+
+- **Linguistic Rule (Proposed):** When a disease name (spelled out, or an acronym already defined in the document as a disease) appears in attributive position before a gene-designator head ("gene," "genes," "gene N"), label the disease span as **Modifier**. The gene-designator head does not convert the disease span into an O span. Reserve O for the gene locus itself (e.g., "BRCA1") and for symbols with no established disease referent. Operationally: if the head is a gene noun and the premodifier is a disease term, tag the premodifier as Modifier. This rule covers both discrepancies ("breast cancer" in "breast cancer susceptibility gene 1," and "DTD" in "the DTD gene") and the SLS True Positive.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10196379.json):
+Snippet: "...s study was to provide more accurate frequency estimates of breast cancer susceptibility gene 1 ( BRCA1 ) germline alterations in the..."
+Gold: Modifier, LLM: O
+Entity Text: "breast cancer"
+
+Example 2 (Doc: 1345170.json):
+Snippet: "...iastrophic dysplasia ( DTD ) in Finland indicating that the DTD gene should lie within 0 . 06 centimorgans ( or about 60 ki..."
+Gold: Modifier, LLM: O
+Entity Text: "DTD"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

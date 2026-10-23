@@ -1,0 +1,64 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: SpecificDisease (Span Boundary Error)
+
+**INFERRED PATTERNS:**
+## Step 1: Deep Dive Analysis
+
+**Contrast**
+- **Discrepancies:** Both spans have the form *[deficiency / deficient activity] + of + [enzyme full name]*, and the enzyme is followed by its abbreviation in parentheses (FALDH, PAH). The span names a molecular defect in a gene product. It does not name a disorder. Each occurs in a clinical-description frame: a symptom enumeration ("characterized by ichthyosis, mental retardation, ..., and deficient activity of...") or an etiology clause ("a disease caused by a deficiency of...").
+- **True Positives:** SpecificDisease spans are proper disease names ("Coats disease," "Norrie disease," "Sjogren-Larsson syndrome") or disease-denoting heads ("ovarian cancer"). When a disease name precedes a gene product ("Wiskott-Aldrich syndrome protein"), the gold label is Modifier, not SpecificDisease. This shows the gold standard reserves the disease label for the disorder itself, not for the gene product or defect.
+- **Single boolean feature:** *Does the span's semantic head denote the disorder itself (True), or a molecular entity or defect that causes or characterizes it (False)?* All discrepancies are False. All TPs are True.
+
+**Isolate Trigger**
+- The head noun "deficiency" / "deficient activity" is a pathological-state noun that sits semantically close to "disease."
+- The enzyme name is long and multi-word, and it sounds like a disorder compound ("fatty aldehyde dehydrogenase," "hepatic phenylalanine hydroxylase").
+- The phrase appears in the disease-defining sentence, next to the disease name, so the model assigns the disease label to the nearest pathology-sounding noun phrase.
+
+**Hypothesis Check**
+- Example 1: The gold annotations for this document cover "SLS" (several positions) and "mental retardation," which is labeled DiseaseClass. No gold entity covers "deficient activity of fatty aldehyde dehydrogenase." Both labels read SpecificDisease, so the error is most likely a false-positive span, not a type error. The model treated a symptom item as a disease mention.
+- Example 2: The sentence contains one disease head, "phenylketonuria." The etiology phrase "a deficiency of hepatic phenylalanine hydroxylase" describes the cause and was not the disease mention. The model extended the disease slot to the cause.
+- **Refinement:** "X deficiency" is not always non-disease. Lexicalized names such as "G6PD deficiency" are SpecificDisease. The distinguishing feature is therefore the descriptive, non-lexicalized frame: an indefinite article or "deficient activity of," followed by an enzyme or gene-product name, in a causal or feature role.
+
+## Step 2: Pattern Formulation
+
+Descriptive "deficiency of [enzyme/gene product]" phrases, used as the cause or a clinical feature of a named disorder, are being labeled as SpecificDisease. The model is reading the disease-like head noun and the pathology context, not checking whether the span names the disorder.
+
+## Output
+
+- **Pattern Name:** Enzyme/Gene-Product Deficiency Phrases Mislabeled as Disease
+- **Confusion Trigger:** A pathological-state noun ("deficiency," "deficient activity") governing a long enzyme or gene-product name ("of hepatic phenylalanine hydroxylase"), placed in a disease-defining or symptom-listing clause. The phrase describes the molecular cause or feature of the disorder but is structurally similar to a disease name.
+- **Contrastive Evidence:** True Positives reserve SpecificDisease for disease-denoting heads (proper disease names, "syndrome," "disease," "cancer"). Where a disease name modifies a gene product ("Wiskott-Aldrich syndrome protein"), the gold label is Modifier, so the gene product is never labeled as the disorder. Discrepant spans have no disease-denoting head. Their head is a molecular defect.
+- **Linguistic Rule (Proposed):**
+  1. If a noun phrase has the form *deficiency / deficient activity / defect of [enzyme or gene-product name]*, especially with an indefinite article ("a deficiency of") or a trailing abbreviation in parentheses, do not label it SpecificDisease. The disorder is the separately named syndrome or disease elsewhere in the sentence.
+  2. Treat the enzyme as a non-disease entity. If the gold scheme needs a label for mixed defect-plus-gene phrases, CompositeMention is the candidate, but no TP in this cluster uses it, so confirm against the annotation guidelines.
+  3. Exception: a lexicalized, fixed disease name ("G6PD deficiency," "alpha-1 antitrypsin deficiency") remains SpecificDisease. Check whether the phrase is a known disease name before applying the rule.
+  4. Symptom-list items in a "characterized by" enumeration are not automatically disease mentions. Apply the head-denotes-disorder test to each item.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10577908.json):
+Snippet: "...rized by ichthyosis , mental retardation , spasticity , and deficient activity of fatty aldehyde dehydrogenase ( FALDH ) . To define the molecular defects causing SLS , w..."
+Gold: SpecificDisease, LLM: SpecificDisease
+Entity Text: "deficient activity of fatty aldehyde dehydrogenase"
+
+Example 2 (Doc: 1671881.json):
+Snippet: "...enylketonuria is an autosomal recessive disease caused by a deficiency of hepatic phenylalanine hydroxylase ( PAH ) . The abolition of an invariant BamHI site located ..."
+Gold: SpecificDisease, LLM: SpecificDisease
+Entity Text: "deficiency of hepatic phenylalanine hydroxylase"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

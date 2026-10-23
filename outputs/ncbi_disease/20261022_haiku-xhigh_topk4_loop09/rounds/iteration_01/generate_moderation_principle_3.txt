@@ -1,0 +1,55 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: SpecificDisease (Span Boundary Error)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** The three discrepancies share the same type label (Gold = LLM = SpecificDisease), so the error is in span extent or in whether the span should be tagged at all. The true positives are standalone nomenclature: "Coats disease," "Norrie disease," "Sjogren-Larsson syndrome," "SLS," "G6PD deficiency," and the fixed eponymous term "Coats telangiectasis." Each could appear as a diagnosis label or title. The discrepancy spans are descriptions that characterize a case or genotype: a parenthetical gloss restating "Coats' disease," an "of"-phrase defining a deficiency by its gene product, and a "heterozygous … of C7" phrase describing carrier status in family members.
+- **Single boolean feature:** *Is the span a self-contained disease name (compact, fixed, no internal "of"-complement, no parenthetical restatement), or a compositional description of a case, defect, or genotype?*
+- **Isolate trigger:** The head nouns "deficiency" and "telangiectasis" are strongly disease-associated. The model fires on the head and extends the span across qualifiers ("unilateral," "heterozygous," "complete") and complements ("of C7," "of the seventh component of complement," "(…)").
+- **Hypothesis check:** This explains all three cases. It also refines the rule. "Coats telangiectasis" is a true positive even though it is compositional, because it is a fixed, eponym-anchored term the paper uses as the disease name. "G6PD deficiency" (true positive) versus "deficiency of C7" (discrepancy) shows the contrast between a head-final name and an "X of Y" phrase.
+
+**Step 2: Pattern Insight**
+
+- **Pattern Name:** Descriptive Defect/Phenotype Paraphrase Mistaken for a Disease Name
+- **Confusion Trigger:** A disease-like head noun ("deficiency," "telangiectasis") that carries qualifiers (unilateral, heterozygous, complete) and either an "of"-complement naming a gene product or anatomical site, or a parenthetical/appositive restatement of a disease already named. The model treats the whole phrase as one disease entity.
+- **Contrastive Evidence:** True positives use compact head-final names ("G6PD deficiency," "Coats disease," "Norrie disease") or fixed eponymous terms ("Coats telangiectasis") that stand alone as nomenclature. The discrepancy spans are ad hoc descriptions that exist only to characterize a specific patient, family member, or gene-level defect.
+- **Linguistic Rule (Proposed):** Tag a span as SpecificDisease only if it is a standalone nomenclature unit (eponym, abbreviation, or fixed head-final compound). Do not tag it when:
+  (a) it is an "X of Y" construction where Y is a gene, protein, or anatomical structure (e.g., "deficiency of C7");
+  (b) it is a parenthetical or appositive restatement of a disease already named (e.g., "(unilateral retinal telangiectasis)" after "Coats' disease"); or
+  (c) it is a qualified genotype or laterality description of an individual (e.g., "heterozygous deficiency of …," "unilateral … variant").
+  In these cases, tag only the canonical disease name if one exists, and treat qualifiers as Modifier or leave them untagged.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10484772.json):
+Snippet: "...Coats' disease of the retina (unilateral retinal telangiectasis) caused by somatic mutation in the NDP gene: a role for nor..."
+Gold: SpecificDisease, LLM: SpecificDisease
+Entity Text: "unilateral retinal telangiectasis"
+
+Example 2 (Doc: 6859721.json):
+Snippet: "...of functional and antigenic C7 , compatible with a complete deficiency of the seventh component of complement . Study of the patients family spanning four generations sh..."
+Gold: SpecificDisease, LLM: SpecificDisease
+Entity Text: "deficiency of the seventh component of complement"
+
+Example 3 (Doc: 6859721.json):
+Snippet: "...tients family spanning four generations showed heterozygous deficiency of C7 in five members . Chronic neisserial infection can be assoc..."
+Gold: SpecificDisease, LLM: SpecificDisease
+Entity Text: "deficiency of C7"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

@@ -1,0 +1,46 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: Modifier (Label Mismatch)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** In the True Positives, every "ovarian cancer" labeled Modifier is a premodifier, a noun adjunct that precedes a head noun and describes it: "ovarian cancer population," "ovarian cancer cases," "ovarian cancer risk." The discrepancy is a post-prepositional complement: "a family history **of** ovarian cancer." Here the disease is the referent of the "of"-phrase, and the gold label is SpecificDisease. The same document's family-history sentence ("family history of breast or ovarian cancer") also does not appear among the Modifier spans, which is consistent with argument-position disease mentions being SpecificDisease.
+- **Single separating feature:** The syntactic role of the disease span relative to its head. Premodifier (noun adjunct) gives Modifier. Complement of a preposition, heading a referential NP that names the condition, gives SpecificDisease. The string itself is identical across both cases, so the label cannot be determined lexically.
+- **Isolate trigger:** The surrounding semantics of the sentence: "family history," "associated with," "influence ... risk," and "polymorphism." These are risk and heredity qualifier cues, and the model appears to read the whole qualifier frame as Modifier-like. It also seems to be pulled by the high-frequency Modifier pattern "ovarian cancer risk/cases" in the same document.
+- **Hypothesis check:** The trigger explains the discrepancy. Only one discrepancy example is visible, so the generalization to other "history of / risk of / associated with" frames is a hypothesis to validate, not a confirmed finding.
+
+**Step 2: Formulate Pattern**
+
+The disease name is an argument of a preposition inside a risk/heredity frame, but the model labels it as a qualifier because of the frame's semantics rather than the span's syntactic role.
+
+- **Pattern Name:** Disease Name as Prepositional Complement in a Risk/History Frame Mislabeled as Modifier
+- **Confusion Trigger:** A disease name that is the object of "of" (for example, "family history of ovarian cancer") is read as a qualifier. The sentence's risk and heredity vocabulary ("family history," "associated," "influence ... risk") and the same document's Modifier-labeled "ovarian cancer risk/cases" phrases push the model toward a Modifier label on the surface string.
+- **Contrastive Evidence:** The True Positives label "ovarian cancer" as Modifier only when it directly premodifies a head noun ("population," "cases," "risk") and describes that head. No TP Modifier span occupies a prepositional-complement slot. Disease names in that slot are not labeled Modifier, which matches the discrepancy's gold SpecificDisease.
+- **Linguistic Rule (Proposed):**
+  1. Assign **Modifier** only when the disease span is a premodifying noun adjunct that is immediately followed by a head noun (e.g., risk, cases, population, study) and specifies a property of that head.
+  2. Assign **SpecificDisease** when the disease span is the complement of a preposition ("of," "for," "with") and heads a referential NP that names the condition, even inside risk or history frames such as "family history of X" or "risk of X."
+  3. Do not let context words (family history, risk, associated, influence) override the dependency relation. Decide by the span's head-modifier relation, not by the sentence's topic, and do not generalize from the string's labels elsewhere in the document.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10196379.json):
+Snippet: "...ficantly ( P = 0 . 03 ) associated with a family history of ovarian cancer , suggesting that this polymorphism may influence ovarian c..."
+Gold: SpecificDisease, LLM: Modifier
+Entity Text: "ovarian cancer"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

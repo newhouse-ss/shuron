@@ -1,0 +1,43 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: Modifier (Label Mismatch)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** In every True Positive for "ovarian cancer" (the "population," "cases," "study," and "influence/determining ... risk" mentions), the disease term is a premodifier. It attributively modifies a following non-disease head noun. In the discrepancy, "ovarian cancer" is the terminal noun of a prepositional complement ("a family history **of** ovarian cancer ,") and names the disease itself. The same split appears across the other documents: "patients **with** SLS" is SpecificDisease, while "SLS genes" is Modifier. "Fragile X syndrome patients" and "Wiskott-Aldrich syndrome protein" are Modifier because the disease term premodifies a head noun.
+- **Isolate Trigger:** The model appears to be keying on the surface string and frame. "Ovarian cancer" is labeled Modifier several times in the same document, and the immediately following clause ("influence ovarian cancer risk") is also a Modifier. The "family history of [X]" frame also invites reading the disease as a qualifier of "history," which is an attribute-like reading.
+- **Hypothesis Check:** The trigger explains the discrepancy. The same "family history of breast or ovarian cancer" frame appears elsewhere in this abstract without a True Positive annotation, which is consistent with the same syntactic rule. I could only verify one discrepancy, so the rule is supported by cross-document contrast rather than by a full set of discrepancy examples.
+
+**Step 2: Pattern Insight**
+
+- **Pattern Name:** Disease Term as Attributive Premodifier vs. Referential NP-Final Head in a Prepositional Complement
+- **Confusion Trigger:** The disease string "ovarian cancer" is a lexically frequent Modifier in this document, and the model over-weights string identity and the adjacent "ovarian cancer risk" context. The "family history of [disease]" frame encourages reading the disease as a qualifier of "history," so the model labels the span Modifier even though it is the NP-final head of an "of"-complement that refers to the disease entity.
+- **Contrastive Evidence:** Every True Positive Modifier has the disease term followed inside the same NP by a non-disease head noun it modifies (cases, population, study, risk, patients, genes, protein). The discrepancy has the disease term as the rightmost noun before a clause boundary (a comma), serving as the object of "of." This matches the SpecificDisease pattern in "patients **with** SLS" and "Coats disease is characterized…," where the disease term stands as a referent rather than a premodifier.
+- **Linguistic Rule (Proposed):**
+  1. Label the disease span **Modifier** only if it is immediately followed, within the same noun phrase, by a non-disease head noun that it attributively modifies (e.g., cases, population, study, risk, patients, genes, protein).
+  2. Label it **SpecificDisease** if the span is the NP-final head, the complement of "of," "with," or a similar preposition, or a subject or object that refers to the disease entity itself, even when the preceding context is "family history," "risk," or "patients."
+  3. Do not use repetition of the same string elsewhere in the document as evidence. Decide by syntactic role (premodifier vs. head/complement), not by how the string was labeled in other positions.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10196379.json):
+Snippet: "...ficantly ( P = 0 . 03 ) associated with a family history of ovarian cancer , suggesting that this polymorphism may influence ovarian c..."
+Gold: SpecificDisease, LLM: Modifier
+Entity Text: "ovarian cancer"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

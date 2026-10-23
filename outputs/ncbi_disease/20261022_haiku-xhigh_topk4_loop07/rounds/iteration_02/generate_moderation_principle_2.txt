@@ -1,0 +1,57 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: DiseaseClass vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** All three discrepancies come from one passage (10484772) and share a construction. Each is an open-class, compositional noun phrase that describes a pathological state or manifestation of Coats disease: "abnormal [retinal vascular development]," "[exudative retinal] detachment," and "[deficiency of] norrin." Each is built from a generic head noun (*development, detachment, deficiency*) plus an anatomical or molecular modifier. The True Positive DiseaseClass, "mental retardation," is a fixed, lexicalized nosological term that the model recognizes as a single disease concept.
+- **Single boolean feature:** *Is the span a lexicalized clinical term (dictionary-level concept) or a novel compositional description of a pathological state?* The discrepancies are the second kind, and the model defaults to O for them.
+- **Isolate trigger:** The discrepancy spans have no disease-name markers: no eponym, no "disease/syndrome/cancer" head, no capitalization, no suffix. Their heads are generic process or state nouns that also appear in neutral biomedical prose. The model reads them as ordinary descriptive text rather than as condition labels.
+- **Hypothesis check:** The trigger explains Examples 1 and 3 well. Example 2 ("exudative retinal detachment") is closer to a recognized clinical finding, so the trigger is only partly satisfied. It also appears in a parenthetical gloss, which is a secondary cue that may lower the model's entity confidence. "Mental retardation" appears in a "characterized by" list, the same structural slot as Example 1, so position alone does not explain the error. The lexicalization criterion is what separates the cases.
+
+**Pattern Insight**
+
+- **Pattern Name:** Compositional Pathological-State Phrases Labeled as DiseaseClass
+- **Confusion Trigger:** Open-class noun phrases with a generic pathology-state head (abnormality/development process, detachment, deficiency) and anatomical or molecular modifiers, appearing as the manifestation or mechanism of a named disease in causal or descriptive clauses ("is characterized by…", "results in…", "secondary to…", or parenthetical glosses). These lack disease-name morphology, so the model treats them as neutral prose (O).
+- **Contrastive Evidence:** The True Positive DiseaseClass "mental retardation" is a fixed, recognized clinical term, so the model tags it. The True Positive Modifiers ("ovarian cancer," "Wiskott-Aldrich syndrome," "G6PD deficient") are lexicalized condition names in noun-modifier position. The model handles these because it can recognize them as known entities. The discrepancy spans are not in a known lexicon and must be identified from their compositional semantics.
+- **Linguistic Rule (Proposed):** Label a span as DiseaseClass when all of the following hold:
+  1. The head noun denotes a pathological state, process, or finding (e.g., abnormality, detachment, deficiency, telangiectasis, lesion), not a normal physiological process, reagent, or measurement.
+  2. The modifiers are anatomical, tissue-level, or molecular, and the full phrase describes a condition in a patient or tissue.
+  3. The phrase names a manifestation or mechanism of a SpecificDisease mentioned in the same passage (e.g., "Coats disease is characterized by X," "X results in Y," "[Y] deficiency…").
+  
+  Parenthetical glosses of disease manifestations should be checked under this rule rather than skipped. The rule should be applied cautiously for this class because gold annotation is inconsistent: "retinal telangiectasis" in the same document, which matches this pattern, is unlabeled.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10484772.json):
+Snippet: "... in retinal angiogenesis.
+Coats disease is characterized by abnormal retinal vascular development ( so-called retinal telangiectasis ) which results in massi..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "abnormal retinal vascular development"
+
+Example 2 (Doc: 10484772.json):
+Snippet: "...in massive intraretinal and subretinal lipid accumulation ( exudative retinal detachment ) . The classical form of Coats disease is almost invariabl..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "exudative retinal detachment"
+
+Example 3 (Doc: 10484772.json):
+Snippet: "...dary to somatic mutation in the NDP gene which results in a deficiency of norrin ( the protein product of the NDP gene ) within the developi..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "deficiency of norrin"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

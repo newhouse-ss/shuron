@@ -1,0 +1,60 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: DiseaseClass (Label Mismatch)
+
+**INFERRED PATTERNS:**
+## Step 1: Deep Dive Analysis
+
+**Contrast**
+- **Discrepancies (gold = SpecificDisease, LLM = DiseaseClass):** "arthritis" and "vasculitis" are bare, unqualified, superordinate disease nouns. Each names a broad family of conditions. They appear in an episodic case report with a patient subject: "A previously healthy 40-year-old man presenting with fever, arthritis, and cutaneous vasculitis..." and "...chronic meningococcemia presenting as vasculitis."
+- **True Positive, DiseaseClass ("mental retardation"):** Also a superordinate phenotype term, but it appears in a generic, type-level description of a syndrome: "...disorder characterized by ichthyosis, mental retardation, spasticity..."
+- **True Positives, SpecificDisease:** Named entities (eponyms, acronyms): "Coats disease," "Norrie disease," "SLS."
+- **True Positives, Modifier:** Noun phrases in attributive or relational positions: "family history of ovarian cancer," "Wiskott-Aldrich syndrome protein."
+
+**Isolate Trigger**
+The model appears to apply a lexical-semantic shortcut: a hypernym-like disease noun (arthritis, vasculitis) maps to DiseaseClass. The gold standard instead reads these terms as concrete conditions diagnosed in one patient.
+
+**Hypothesis Check**
+- "Superordinate lexical meaning → DiseaseClass" explains both discrepancies. It also agrees with the "mental retardation" TP, but it cannot explain why the gold labels the discrepancies SpecificDisease, so it is incomplete.
+- Refined hypothesis: the decisive cue is the reference frame. Episodic, patient-level diagnosis or manifestation ("patient presenting with X") yields SpecificDisease. Type-level, generic feature description yields DiseaseClass. This explains both discrepancies and the "mental retardation" TP.
+
+## Step 2: Pattern Insight
+
+- **Pattern Name:** Episodic Patient-Diagnosis Override of Superordinate Disease Terms
+- **Confusion Trigger:** Bare, unqualified superordinate disease nouns (e.g., "arthritis," "vasculitis") that denote broad disease families. The model assigns DiseaseClass on lexical generality alone and ignores that the term is used as a concrete condition of an individual patient.
+- **Contrastive Evidence:** The DiseaseClass TP ("mental retardation") is a type-level feature in a generic syndrome description with no patient instance. The discrepancy mentions occur in an episodic case narrative with a patient subject and "presenting with/as" framing, where the term names a specific diagnosed condition of a particular individual. The SpecificDisease TPs are named entities, which is a separate cue.
+- **Linguistic Rule (Proposed):** Resolve the label by reference frame before weighing lexical generality.
+  1. If the disease noun phrase is anchored to a specific patient or case instance (e.g., "A [age]-year-old [patient] presenting with X," "presenting as X," "X was found/diagnosed"), label it **SpecificDisease**, even if the head noun is a superordinate category term.
+  2. If the disease noun phrase is a type-level feature or category in a generic, non-episodic description (e.g., "disorder characterized by X," "a class of Y"), label it **DiseaseClass**.
+  3. Named entities (eponyms, acronyms, named syndromes) default to **SpecificDisease**.
+
+*Note:* The gold label for "arthritis" and "vasculitis" as SpecificDisease is debatable, since both are manifestations of meningococcemia. The rule above reflects the annotation convention in this dataset, so these items may be worth a guideline review.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 6859721.json):
+Snippet: "...ent in a patient with chronic meningococcemia presenting as vasculitis.
+A previously healthy 40-year-old man presenting with fever..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "vasculitis"
+
+Example 2 (Doc: 6859721.json):
+Snippet: "... previously healthy 40-year-old man presenting with fever , arthritis , and cutaneous vasculitis was found to have chronic mening..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "arthritis"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

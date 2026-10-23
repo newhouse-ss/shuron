@@ -1,0 +1,57 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: Modifier vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** In all four discrepancies, the disease string is a prenominal modifier of a gene or protein head noun: "breast cancer susceptibility gene 1," "Wiskott-Aldrich syndrome protein" (×2), and "DTD gene." The gold label is Modifier, but the model outputs O. The true positives also contain Modifier labels on prenominal disease strings, such as "ovarian cancer cases/population/risk" and "ancient SLS genes." Their head nouns are clinical or population nouns, or a generic plural gene noun.
+- **Boolean feature:** Is the disease string a prenominal (attributive) modifier that is directly followed by a head noun? Every Modifier label, in both the discrepancies and the true positives, satisfies this. The SpecificDisease labels, such as "Coats disease" or "Sjogren-Larsson syndrome," are NP heads or appositive definitions.
+- **Trigger:** The gene/protein head. The schema has no gene or protein class, so the model treats the whole compound as an out-of-schema proper name and assigns O to the entire span. It never evaluates the disease sub-span. "DTD" shows the same problem: the parenthetical "(DTD)" is SpecificDisease, but "the DTD gene" is Modifier, so the label depends on syntactic position rather than string identity.
+- **Hypothesis check:** The gene/protein head explains all four discrepancies. The "ancient SLS genes" true positive shows that a gene head alone does not block Modifier. The failure appears to occur when the compound reads as a fixed nomenclature name (e.g., "Wiskott-Aldrich syndrome protein").
+
+**Step 2: Formulate Pattern**
+
+- **Pattern Insight:** Disease Name Embedded as a Prenominal Modifier of a Gene/Protein Head
+  - **Confusion Trigger:** A disease name or acronym is followed by a gene or protein noun, forming a nomenclature-like compound ("Wiskott-Aldrich syndrome protein," "breast cancer susceptibility gene 1," "DTD gene"). The model treats the compound as a non-disease gene/protein name and labels the disease span O, even though the schema has no gene class to absorb it.
+  - **Contrastive Evidence:** The true-positive Modifiers ("ovarian cancer cases," "ovarian cancer population," "ovarian cancer risk," "ancient SLS genes," "G6PD deficient phenotype") also place the disease term prenominally. The model recognizes these because the disease reads as a descriptor of a clinical or genetic context, not as part of a protein or gene name.
+  - **Linguistic Rule (Proposed):** If a disease name, full form or acronym, occurs immediately before a noun in a noun–noun compound, label the disease span as **Modifier**, even when the whole compound names a gene, protein, or locus. Do not let the gene/protein nomenclature suppress the disease sub-span. Reserve **SpecificDisease** for disease mentions that are the NP head or an appositive definition. Decide by syntactic position, not by string identity: "(DTD)" is SpecificDisease, while "the DTD gene" is Modifier.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10196379.json):
+Snippet: "...s study was to provide more accurate frequency estimates of breast cancer susceptibility gene 1 ( BRCA1 ) germline alterations in the..."
+Gold: Modifier, LLM: O
+Entity Text: "breast cancer"
+
+Example 2 (Doc: 10724160.json):
+Snippet: "...Autoinhibition and activation mechanisms of the Wiskott-Aldrich syndrome protein.
+The Rho-family GTPase , Cdc42 , can regulate the a..."
+Gold: Modifier, LLM: O
+Entity Text: "Wiskott-Aldrich syndrome"
+
+Example 3 (Doc: 10724160.json):
+Snippet: "..., can regulate the actin cytoskeleton through activation of Wiskott-Aldrich syndrome protein ( WASP ) family members . Activation relieves an au..."
+Gold: Modifier, LLM: O
+Entity Text: "Wiskott-Aldrich syndrome"
+
+Example 4 (Doc: 1345170.json):
+Snippet: "...iastrophic dysplasia ( DTD ) in Finland indicating that the DTD gene should lie within 0 . 06 centimorgans ( or about 60 ki..."
+Gold: Modifier, LLM: O
+Entity Text: "DTD"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

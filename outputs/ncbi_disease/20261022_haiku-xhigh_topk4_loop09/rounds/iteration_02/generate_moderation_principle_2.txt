@@ -1,0 +1,70 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+## Step 1: Deep Dive Analysis
+
+**Contrast:** The three clearest discrepancies (Ex. 1–3) share a disease mention whose head noun is a clinical-finding or biochemical-state word, "telangiectasis" or "deficiency," with no nosological marker such as *disease*, *syndrome*, or *cancer*. The true positives mark disease identity explicitly: *Coats disease*, *Norrie disease*, *Wiskott-Aldrich syndrome*, *fragile X syndrome*, and the acronym *SLS*. The TPs also show that finding-headed phrases are not inherently missed. *Exudative retinal detachment* and *deficiency of norrin* are correctly labeled DiseaseClass. The separating feature is therefore **referential**: whether the finding-headed phrase names the specific disease under discussion (an alias) or describes a generic manifestation.
+
+**Isolate Trigger:**
+- **Ex. 1:** "(unilateral retinal telangiectasis)" is a parenthetical gloss that restates "Coats' disease of the retina." The model reads it as a pathological description.
+- **Ex. 2:** "(so-called retinal telangiectasis)" uses a metalinguistic marker, "so-called," that signals a name. The model ignores this and treats the phrase as a finding.
+- **Ex. 3:** "enzyme deficiency in G6PD A-" puts the disease name in a prepositional complement. The model sees a gene/enzyme symbol and assigns O, missing that "G6PD deficiency" is the eponymous disease.
+- **Ex. 4:** "fever" in a coordinated symptom list (fever, arthritis, vasculitis) is a sign, not a disease name.
+
+**Hypothesis Check:** The finding-as-alias trigger explains Ex. 1–3. Ex. 4 does not fit. A sign in a presentation list is not an alias of a named disease, and under the stated schema it would normally be O. This looks like a gold-standard inconsistency, not a linguistic pattern, so I treat it as an outlier and exclude it from the rule.
+
+## Step 2: Formulate Pattern
+
+The model fails when a disease is referred to by a finding- or deficiency-headed alias that lacks a nosological suffix. The alias appears either as a parenthetical or "so-called" gloss, or as a "deficiency in [enzyme/gene]" complement. Generic finding phrases elsewhere are handled correctly as DiseaseClass.
+
+---
+
+- **Pattern Name:** Finding- or Deficiency-Headed Aliases of a Named Disease (Parenthetical/"so-called" Glosses and "Deficiency in [Gene]" Complements)
+- **Confusion Trigger:** A clinical-finding or biochemical-state head noun (*telangiectasis*, *deficiency*) with an anatomical or gene modifier and no nosological suffix (*disease*, *syndrome*) reads as a manifestation description and is labeled O. The trigger is strongest when the phrase sits in a parenthetical gloss, follows "so-called," or takes a gene/enzyme complement ("in G6PD").
+- **Contrastive Evidence:** True positives mark disease identity with explicit nosological heads (*Coats disease*, *Norrie disease*, *Wiskott-Aldrich syndrome*), acronyms (*SLS*), or eponyms. Where finding heads appear in TPs (*exudative retinal detachment*, *deficiency of norrin*, *mental retardation*), they describe a generic condition and are labeled DiseaseClass. The discrepancies are the cases where a finding head is the specific-disease alias.
+- **Linguistic Rule (Proposed):**
+  1. If a finding- or deficiency-headed phrase (telangiectasis, deficiency, detachment) is (a) inside a parenthetical gloss, or introduced by "so-called" or "also known as," and co-refers with a named disease in the same sentence or immediately preceding sentence, label the full head+modifier span as **SpecificDisease**, not O.
+  2. If the phrase is "deficiency in/of [GENE/enzyme]" and that enzyme is the eponym of a recognized disease (G6PD → G6PD deficiency), label the span **SpecificDisease**.
+  3. Otherwise, generic finding phrases → **DiseaseClass**.
+  4. Bare sign nouns in coordinated presentation lists (e.g., "fever, arthritis") → O. Ex. 4 contradicts this and should be sent for gold review rather than used to train the rule.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10484772.json):
+Snippet: "...Coats' disease of the retina (unilateral retinal telangiectasis) caused by somatic mutation in the NDP gene: a role for nor..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "unilateral retinal telangiectasis"
+
+Example 2 (Doc: 10484772.json):
+Snippet: "...erized by abnormal retinal vascular development ( so-called retinal telangiectasis ) which results in massive intraretinal and subretinal lipi..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "retinal telangiectasis"
+
+Example 3 (Doc: 1303173.json):
+Snippet: "... coexistence of the two mutations is responsible for enzyme deficiency in G6PD A- because they act synergistically in causing instability ..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficiency in G6PD"
+
+Example 4 (Doc: 6859721.json):
+Snippet: "...litis.
+A previously healthy 40-year-old man presenting with fever , arthritis , and cutaneous vasculitis was found to have ch..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "fever"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

@@ -1,0 +1,73 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: DiseaseClass vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+## Step 1: Deep Dive Analysis
+
+**Contrast**
+- **Discrepancies (all gold DiseaseClass, predicted O):** "cancer" (generic, no site), "abnormal retinal vascular development" (descriptive pathology), "exudative retinal detachment" (lesion descriptor), "deficiency of norrin" (molecular deficiency state), and "ichthyosis" (bare symptom term in a feature list).
+- **True Positives:** SpecificDisease mentions are all named entities ("Coats disease," "Norrie disease," "diastrophic dysplasia," "G6PD deficiency," "SLS"). Modifiers are anchored, site-specific terms ("ovarian cancer cases," "family history of ovarian cancer"). The one DiseaseClass TP, "mental retardation," is a generic phenotype term.
+- **Key contrast:** The schema separates *anchored, named* disease mentions from *generic or descriptive* condition mentions. The gold standard labels a generic term "cancer" as DiseaseClass, while the same disease with a site specifier ("ovarian cancer") is Modifier. The model handles the anchored cases but misses the unanchored ones.
+
+**Isolate Trigger**
+The model reads unanchored condition terms as clinical description rather than entity mentions. These terms often sit in explanatory clauses about manifestations or associations ("associated with a family history of," "characterized by," "results in," parenthetical glosses), where no eponym, site-plus-disease name, or disease/syndrome nominal identifies a particular disorder.
+
+**Hypothesis Check**
+- Ex 1 "cancer": generic, no site specifier. Explained.
+- Ex 2 "abnormal retinal vascular development": descriptive pathology, no name. Explained.
+- Ex 3 "exudative retinal detachment": lesion descriptor, no eponym or disease suffix. Explained.
+- Ex 4 "deficiency of norrin": molecular state, not a named disease. Explained.
+- Ex 5 "ichthyosis": bare single-word symptom, while the named disease is SLS. Explained.
+- **Counterexample:** "mental retardation" in the same sentence as Ex 5 was tagged correctly. The model's recognition of generic phenotype terms is therefore inconsistent, which suggests fixed multi-word clinical terms get more reliable recognition than single-word or paraphrased ones. The unanchored-generic rule still covers all five discrepancies.
+
+## Step 2: Pattern Formulation
+
+- **Pattern Name:** Unanchored Generic or Phenotypic Condition Terms Missed as DiseaseClass
+- **Confusion Trigger:** Condition terms that are generic categories (bare "cancer"), single-word symptoms (bare "ichthyosis"), or descriptive pathological/molecular states ("exudative retinal detachment," "deficiency of norrin") that lack a named-disease anchor and appear in manifestation or association clauses. The model interprets them as descriptive clinical text, not entity mentions.
+- **Contrastive Evidence:** True Positive DiseaseClass and SpecificDisease mentions are either named or anchored: "mental retardation" is a fixed nominal term, and the named diseases carry eponyms or disease/syndrome/dysplasia heads. The Modifier TP "family history of ovarian cancer" is labeled Modifier because "ovarian" anchors the disease, whereas the discrepancy "family history of cancer" is unanchored and receives DiseaseClass.
+- **Linguistic Rule (Proposed):** Boolean feature: *Is the condition mention unanchored to a specific named disease?* If yes (generic category, symptom, lesion, or pathological/molecular state with no eponym, site-plus-disease name, or disease/syndrome/dysplasia head identifying a particular entity), label it **DiseaseClass** when it is not prenominal. If it is anchored to a named disease, label it **SpecificDisease**. If it is prenominal and modifies another noun (e.g., "ovarian cancer cases," "DTD gene"), label it **Modifier**. Apply this regardless of whether the phrase sits in a clause describing a manifestation, association, or consequence.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10196379.json):
+Snippet: "...ed , some of which were associated with a family history of cancer . The frequency distribution of common polymorphisms was de..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "cancer"
+
+Example 2 (Doc: 10484772.json):
+Snippet: "... in retinal angiogenesis.
+Coats disease is characterized by abnormal retinal vascular development ( so-called retinal telangiectasis ) which results in massi..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "abnormal retinal vascular development"
+
+Example 3 (Doc: 10484772.json):
+Snippet: "...in massive intraretinal and subretinal lipid accumulation ( exudative retinal detachment ) . The classical form of Coats disease is almost invariabl..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "exudative retinal detachment"
+
+Example 4 (Doc: 10484772.json):
+Snippet: "...dary to somatic mutation in the NDP gene which results in a deficiency of norrin ( the protein product of the NDP gene ) within the developi..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "deficiency of norrin"
+
+Example 5 (Doc: 10577908.json):
+Snippet: "...( SLS ) is an autosomal recessive disorder characterized by ichthyosis , mental retardation , spasticity , and deficient activity ..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "ichthyosis"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

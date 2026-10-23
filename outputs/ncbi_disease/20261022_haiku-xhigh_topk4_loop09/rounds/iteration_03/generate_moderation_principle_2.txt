@@ -1,0 +1,57 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: DiseaseClass (Label Mismatch)
+
+**INFERRED PATTERNS:**
+## Step 1: Deep Dive Analysis
+
+**Contrast:** Both discrepancies share one surface form. Each is a generic condition head noun ("activity" with "deficient" in Ex. 1, "infection" in Ex. 2) whose disease identity comes from a specific qualifier: a named enzyme (*fatty aldehyde dehydrogenase*) or a pathogen genus plus course adjective (*Chronic neisserial*). The gold label is SpecificDisease in both cases. The true positives avoid this form. Their SpecificDisease labels are proper names, eponyms, or acronyms (*Coats disease*, *Norrie disease*, *SLS*). Their DiseaseClass labels are signs or causal intermediates (*exudative retinal detachment*, *mental retardation*, *deficiency of norrin*).
+
+**Isolate Trigger:** The model appears to treat the generic head noun ("deficiency," "infection," "activity") as a class-level term and assigns DiseaseClass. It does not let the qualifier individuate one disease entity.
+
+**Hypothesis Check:**
+- *Hypothesis A: a generic head noun triggers DiseaseClass.* This explains both discrepancies but fails on the control "deficiency of norrin," which is also a generic head + *of*-phrase and is gold DiseaseClass. The lexical head alone is not decisive.
+- *Hypothesis B: list position triggers DiseaseClass.* Ex. 1 sits in a feature list ("ichthyosis, mental retardation, spasticity, and deficient activity of FALDH"). "Mental retardation" in the same list is gold DiseaseClass, while the FALDH item is gold SpecificDisease. Position does not separate them.
+- *Refined hypothesis:* The deciding factor is the discourse role of the NP. In Ex. 1 the FALDH deficiency is the defining molecular lesion of the disease being defined (SLS). In Ex. 2 "Chronic neisserial infection" is a disease entity in a differential-diagnosis predicate ("associated with… must be distinguished"). In the control, "deficiency of norrin" is a causal result ("results in a deficiency of norrin"), and the disease under discussion is Coats disease. Signs and mechanistic intermediates map to DiseaseClass. Disease entities being defined, diagnosed, or differentiated map to SpecificDisease.
+
+**Annotation caveat:** "deficiency of norrin" (DiseaseClass) and "deficient activity of FALDH" (SpecificDisease) are structurally near-identical. Some of the gold labeling here is probably inconsistent, so the rule below should be applied with that in mind.
+
+## Step 2: Formulated Pattern
+
+- **Pattern Insight**
+  - **Pattern Name:** Generic condition head with etiological qualifier (deficiency / infection / activity NPs) mislabeled as DiseaseClass
+  - **Confusion Trigger:** Lexically generic, unnamed condition nouns ("deficiency," "infection," "activity") that are modified by an etiological identifier (a gene product or enzyme name, a pathogen genus, a complement component, or a course adjective such as "Chronic"). The model reads the generic head as a class term and ignores that the qualifier picks out a single disease entity.
+  - **Contrastive Evidence:** The true-positive DiseaseClass cases are signs or causal intermediates ("exudative retinal detachment," "mental retardation," "results in a deficiency of norrin"), not the disease under discussion. The true-positive SpecificDisease cases are proper names, eponyms, or acronyms ("Coats disease," "Norrie disease," "SLS"), so none relies on a generic head plus qualifier to name the disease.
+  - **Linguistic Rule (Proposed):**
+    1. Do not assign DiseaseClass based on a generic condition head noun (deficiency, infection, activity, disorder) alone.
+    2. If the NP is modified by an etiological identifier (named enzyme, gene product, pathogen genus, or complement component) and its referent is the disease entity itself, i.e., the subject, object, or defining lesion in a predicate such as "is characterized by," "is associated with," "must be distinguished from," or "is caused by," label it SpecificDisease.
+    3. Keep DiseaseClass when the NP denotes a sign, symptom, or mechanistic intermediate that is the result or consequence of a named disease (e.g., "results in a deficiency of X," or a manifestation listed beside other clinical signs).
+    4. Where rules 2 and 3 conflict, decide by the NP's discourse role (disease being defined or diagnosed versus consequence or sign), not by its lexical head.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10577908.json):
+Snippet: "...rized by ichthyosis , mental retardation , spasticity , and deficient activity of fatty aldehyde dehydrogenase ( FALDH ) . To define the molecular defects causing SLS , w..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "deficient activity of fatty aldehyde dehydrogenase"
+
+Example 2 (Doc: 6859721.json):
+Snippet: "...ions showed heterozygous deficiency of C7 in five members . Chronic neisserial infection can be associated with C7 deficiency and must be distinguis..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "Chronic neisserial infection"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

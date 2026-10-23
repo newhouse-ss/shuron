@@ -1,0 +1,62 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: DiseaseClass vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+### Step 1: Deep Dive Analysis
+
+**Contrast**
+- **Discrepancies:** All three spans describe a clinical or pathological *state* (an abnormality, a deficit, a symptom) rather than naming a disorder. They appear in characterization or causation frames: "is characterized by abnormal retinal vascular development," "results in a deficiency of norrin," and "characterized by ... spasticity." None is an eponym, acronym, or fixed disease label.
+- **True Positives:** The DiseaseClass control, "mental retardation," is a fixed diagnostic term. The SpecificDisease controls ("Coats disease," "Norrie disease," "SLS," "G6PD deficiency") are named disorders. The Modifier controls ("ovarian cancer," "Wiskott-Aldrich syndrome") are disease names used attributively.
+- **Single boolean feature:** Does the span function as a *label for a condition as a whole* (yes for the TPs) or as a *description of a state or finding within a condition* (yes for the discrepancies)?
+
+**Isolate Trigger**
+- The model appears to require a nosological frame: a disease-type head noun such as *disease*, *syndrome*, or *disorder*, or a recognized term. The discrepancy spans lack these and read as ordinary descriptive prose, so the model defaults to O.
+- "Deficiency" is not the trigger by itself. "G6PD deficiency" is tagged SpecificDisease. The difference is that "G6PD deficiency" names an established enzymopathy, while "deficiency of norrin" describes an unnamed molecular deficit.
+
+**Hypothesis Check**
+- Examples 1 and 2 fit well. Both are unnamed pathological states embedded in causal or characterizing clauses.
+- Example 3 fits less cleanly. "Spasticity" is a bare, single-word sign, and it sits in the same coordinated symptom list as "mental retardation," which the model did tag. The model is therefore inconsistent: it accepts some clinical-manifestation terms as DiseaseClass but not others. The gold standard evidently treats the clinical features that define a syndrome as DiseaseClass, so the trigger is the bare manifestation term in a syndrome-defining list, not only the descriptive phrasing.
+
+### Step 2: Formulate Pattern
+
+The confusion arises when a generic clinical manifestation or pathological state, without a disease name, is used to define or cause a disorder. The model treats it as non-entity prose, while gold labels it DiseaseClass.
+
+- **Pattern Name:** Unnamed Pathological States and Clinical Manifestations as DiseaseClass
+- **Confusion Trigger:** Descriptive, non-nosological noun phrases (abnormality or deficit phrases such as "abnormal ... development" and "deficiency of norrin," and bare sign terms such as "spasticity") that appear as the complement of characterization or causation verbs ("characterized by," "results in," "secondary to"). These lack disease head nouns, so the model fails to recognize them as disease-level concepts.
+- **Contrastive Evidence:** The True Positive DiseaseClass ("mental retardation") and the SpecificDisease spans ("G6PD deficiency") are either fixed diagnostic terms or named disorders, and the model recognizes them. The discrepancies are ad hoc state descriptions or bare signs without a designated disorder label.
+- **Linguistic Rule (Proposed):** Label a noun phrase as DiseaseClass when it denotes a pathological condition, abnormal state, deficit, or clinical manifestation *of the patient or tissue* and is used to characterize or cause a disorder in the same sentence (for example, as a listed feature after "characterized by," or as the outcome of "results in" or "secondary to"). Exclude the names of intact biological entities (such as the gene or protein itself, e.g., "norrin," "NDP gene") and attributive disease-name modifiers (e.g., "ovarian cancer" used as a Modifier). Require a defining or causal frame to prevent over-tagging generic mechanism descriptions.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10484772.json):
+Snippet: "... in retinal angiogenesis.
+Coats disease is characterized by abnormal retinal vascular development ( so-called retinal telangiectasis ) which results in massi..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "abnormal retinal vascular development"
+
+Example 2 (Doc: 10484772.json):
+Snippet: "...dary to somatic mutation in the NDP gene which results in a deficiency of norrin ( the protein product of the NDP gene ) within the developi..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "deficiency of norrin"
+
+Example 3 (Doc: 10577908.json):
+Snippet: "...disorder characterized by ichthyosis , mental retardation , spasticity , and deficient activity of fatty aldehyde dehydrogenase ( ..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "spasticity"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

@@ -1,0 +1,54 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: SpecificDisease (Span Boundary Error)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** Both discrepancies are built around "deficiency" plus a postmodifying prepositional phrase naming a gene, enzyme, or protein ("deficiency in G6PD", "deficiency of hepatic phenylalanine hydroxylase"). The control set handles this construction differently. In TP 10484772, the sentence "results in a **deficiency of norrin** (the protein product of the NDP gene)" is left unannotated. That is the same construction, and the gold standard treats it as a molecular state, not a disorder. The single feature separating the cases is whether the gene/enzyme name is a **premodifier of a disorder-name head** ("G6PD deficiency," "Coats disease") or a **postmodifying PP argument that names the deficient molecule** ("deficiency of norrin").
+- **Isolate Trigger:** The lexeme "deficiency" acts as a disease-cue word. Combined with a gene or enzyme name, it looks like a disorder name, so the model tags the whole phrase. The model also ignores that the PP is the argument of a causal or mechanistic clause ("caused by," "responsible for"), where the deficiency describes how the disease works.
+- **Hypothesis Check:** The trigger explains both cases. In Example 1, the LLM span is a reversed-order re-mention of the canonical gold name "G6PD deficiency" (token 772–787), which is a premodifier compound. The mechanistic phrase "enzyme deficiency in G6PD A-" is not a disorder name. In Example 2, the snippet names the disorder ("phenylketonuria") and then describes its cause ("caused by a deficiency of hepatic PAH"). The model selected the causal phrase instead of the disorder name. (I'm inferring the gold span for Example 2 from the snippet, since its gold annotation isn't in the input.)
+
+**Step 2: Formulate Pattern**
+
+- The model labels "deficiency + [of/in] + gene/enzyme/protein" as SpecificDisease when the phrase is a relational or causal description of a molecular deficit. Gold reserves SpecificDisease for the nosological name, which is either a premodifier compound or a disorder named elsewhere in the text.
+
+---
+
+**Pattern Insight: Enzyme/Protein "Deficiency of X" as Mechanism vs. Named Disorder**
+
+- **Confusion Trigger:** The disease-cue head noun "deficiency" followed by a postmodifying PP ("of/in" + gene, enzyme, or protein name), often inside a causal frame ("caused by," "responsible for," "results in"). The model treats the phrase as a disorder name.
+- **Contrastive Evidence:** In TP 10484772, "a deficiency of norrin (the protein product of the NDP gene)" is correctly left unannotated because it describes a molecular state. Also in TP 10484772, the span for "Coats' disease of the retina" stops at "Coats' disease," which shows that a trailing PP is excluded from a disease span. In 1303173, the gold SpecificDisease "glucose 6-phosphate dehydrogenase (G6PD) deficiency" uses the gene/enzyme as a premodifier of the head, which is the form that names a disorder.
+- **Linguistic Rule (Proposed):**
+  1. Tag "deficiency" as part of a SpecificDisease span only when the gene/enzyme/protein name is a **premodifier** of "deficiency" and the compound names a condition (e.g., "G6PD deficiency").
+  2. If "deficiency" is followed by a **postmodifying PP** ("of/in" + gene/enzyme/protein) in a causal, mechanistic, or lab-finding context, **do not** tag the phrase. The PP names the deficient molecule, and the disorder is tagged separately wherever it is named (e.g., "phenylketonuria").
+  3. Never extend a SpecificDisease span across a trailing PP ("Coats' disease **of the retina**" → span ends at "disease").
+  4. Adjectival "deficient" or "deficiency-related" describing a phenotype is a Modifier, not a SpecificDisease (cf. "G6PD deficient" in 1303173).
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 1303173.json):
+Snippet: "... coexistence of the two mutations is responsible for enzyme deficiency in G6PD A- because they act synergistically in causing instability ..."
+Gold: SpecificDisease, LLM: SpecificDisease
+Entity Text: "deficiency in G6PD"
+
+Example 2 (Doc: 1671881.json):
+Snippet: "...enylketonuria is an autosomal recessive disease caused by a deficiency of hepatic phenylalanine hydroxylase ( PAH ) . The abolition of an invariant BamHI site located ..."
+Gold: SpecificDisease, LLM: SpecificDisease
+Entity Text: "deficiency of hepatic phenylalanine hydroxylase"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

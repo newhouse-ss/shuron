@@ -1,0 +1,43 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: DiseaseClass vs LLM: Modifier (Label Mismatch)
+
+**INFERRED PATTERNS:**
+## Deep Dive Analysis
+
+- **Contrast:** The discrepancy and TP 10196379 (the "family history of ovarian cancer" span, offsets ~1339-1353) share the same syntactic frame: *"a family history of [disease]"*. The control labels "ovarian cancer" as Modifier, while the discrepancy labels "cancer" as DiseaseClass. Syntax therefore cannot be the separating feature. The separating boolean is **lexical specificity**: does the mention carry a discriminating site, etiology, or proper-name qualifier (True), or is it a bare superordinate class noun (False)?
+- **Isolate Trigger:** The model appears to have keyed on the "family history of ___" frame and the shared head noun "cancer," copying the Modifier label from the control. It did not check whether the head noun was specified or generic.
+- **Hypothesis Check:** The rule explains the discrepancy. The DiseaseClass control, "mental retardation" (10577908), is a bare generic class term with no site or etiology qualifier, and it is labeled DiseaseClass, not Modifier. The Modifier controls are all specified forms ("ovarian cancer," "Wiskott-Aldrich syndrome," "G6PD deficient"). One caveat: "breast cancer susceptibility gene" in the control is unannotated, so Modifier labeling is not automatic for every site-qualified term. It appears to apply when the disease term qualifies a disease-relevant entity such as a population, risk, or family history.
+
+## Pattern Insight
+
+- **Pattern Name:** Bare generic disease noun in a "family history of" frame mislabeled as Modifier
+- **Confusion Trigger:** The prepositional complement "of [cancer]" in a "family history of" construction. This is the same frame as the Modifier control "family history of ovarian cancer," and the bare head noun "cancer" matches the lexical head of "ovarian cancer." The model keyed on frame and surface string rather than on whether the noun was specified.
+- **Contrastive Evidence:** Every Modifier control is a site- or name-qualified disease expression ("ovarian cancer," "Wiskott-Aldrich syndrome," "G6PD deficient") that qualifies another noun (population, cases, risk, protein, phenotype). The DiseaseClass control, "mental retardation," is an unqualified superordinate term. In the discrepancy, "cancer" has no site qualifier and refers to cancer as a class, generalizing over the breast and ovarian cancers mentioned earlier in the abstract. It therefore takes DiseaseClass.
+- **Linguistic Rule (Proposed):** Check lexical specificity before assigning Modifier, and do not let syntactic role decide the label.
+  1. If the mention is a bare superordinate category noun (e.g., *cancer, disease, retardation, tumor*) with no discriminating site, etiology, or proper-name premodifier, label it **DiseaseClass**, regardless of whether it sits in "family history of," "history of," or any other "of"-complement slot.
+  2. Assign **Modifier** only when the mention is a specific disease name (site-qualified, named syndrome, or adjectival specific form) that functions as a qualifier of another noun.
+  3. Syntactic frames such as "family history of" are not sufficient triggers for Modifier on their own.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10196379.json):
+Snippet: "...ed , some of which were associated with a family history of cancer . The frequency distribution of common polymorphisms was de..."
+Gold: DiseaseClass, LLM: Modifier
+Entity Text: "cancer"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

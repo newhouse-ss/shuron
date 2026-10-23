@@ -1,0 +1,65 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: Modifier vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+## Step 1: Deep Dive Analysis
+
+**Contrast**
+- **Discrepancies:** The disease term is the premodifier of a gene or protein head noun, and the combined string reads as a named molecular identifier: "breast cancer susceptibility gene 1," "Wiskott-Aldrich syndrome protein," and "the DTD gene."
+- **True Positives:** The disease term is the premodifier of an epidemiological or clinical head noun: "ovarian cancer cases / population / risk / study." The model correctly tags these as Modifier.
+- **Separating feature:** The head noun after the disease term denotes a molecular entity (gene/protein nomenclature) rather than a clinical or population concept.
+
+**Isolate Trigger**
+- The model appears to treat the disease token plus the gene/protein head as one lexicalized gene or protein name, so it assigns O to the disease span.
+- The DTD case shows that the token itself is not the problem. In the same document, the parenthetical "(DTD)" is correctly labeled SpecificDisease. Only the bare "DTD" followed by "gene" is missed, so the trigger is the following head noun, not the acronym.
+
+**Hypothesis Check**
+- The gene/protein-head hypothesis explains all four discrepancies.
+- The control SLS example ("ancient SLS genes") has a gene head and is correctly Modifier, so a bare "gene/protein head" rule is too broad. The refinement is that the discrepancies are specific, named identifiers (singular, definite, or lexicalized with a number or "syndrome protein"), while the SLS control is a generic plural class use in which the acronym works as a disease adjective.
+
+## Step 2: Formulate Pattern
+
+- **Pattern Insight: Disease Name as Premodifier of a Gene/Protein Nomenclature Head**
+  - **Confusion Trigger:** A disease name, full or acronym, directly precedes a gene or protein head noun ("gene," "protein," "gene 1") that forms a fixed nomenclature-style identifier. The model reads the whole string as a gene or protein name and suppresses the disease span as O. A bare all-caps acronym followed by "gene" (e.g., "the DTD gene") also resembles a gene symbol and reinforces this error.
+  - **Contrastive Evidence:** In the True Positives, the disease term ("ovarian cancer") precedes epidemiological or clinical heads ("cases," "population," "risk," "study"). It is not part of a molecular identifier, so the model correctly labels it Modifier. The SLS control ("ancient SLS genes") shows that an acronym before a generic gene head is still labeled Modifier, which means the trigger is the fixed-name reading, not the gene noun alone.
+  - **Linguistic Rule (Proposed):** When a disease mention (full form or acronym) is the leftmost noun-adjunct of a noun phrase, tag the disease span as Modifier even if the phrase head is a gene or protein name. Do not let the molecular-entity status of the head suppress the disease span to O. Gene or protein names are not schema entities here, so the disease token should not be absorbed into an O-labeled identifier. Apply this especially to a disease acronym that was defined earlier in parentheses and reappears before "gene."
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10196379.json):
+Snippet: "...s study was to provide more accurate frequency estimates of breast cancer susceptibility gene 1 ( BRCA1 ) germline alterations in the..."
+Gold: Modifier, LLM: O
+Entity Text: "breast cancer"
+
+Example 2 (Doc: 10724160.json):
+Snippet: "...Autoinhibition and activation mechanisms of the Wiskott-Aldrich syndrome protein.
+The Rho-family GTPase , Cdc42 , can regulate the a..."
+Gold: Modifier, LLM: O
+Entity Text: "Wiskott-Aldrich syndrome"
+
+Example 3 (Doc: 10724160.json):
+Snippet: "..., can regulate the actin cytoskeleton through activation of Wiskott-Aldrich syndrome protein ( WASP ) family members . Activation relieves an au..."
+Gold: Modifier, LLM: O
+Entity Text: "Wiskott-Aldrich syndrome"
+
+Example 4 (Doc: 1345170.json):
+Snippet: "...iastrophic dysplasia ( DTD ) in Finland indicating that the DTD gene should lie within 0 . 06 centimorgans ( or about 60 ki..."
+Gold: Modifier, LLM: O
+Entity Text: "DTD"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

@@ -1,0 +1,59 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: Modifier (Label Mismatch)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** The True Positive Modifiers (e.g., "consecutive ovarian cancer cases," "population-based ovarian cancer study," "fragile X syndrome patients," "SLS genes," "Wiskott-Aldrich syndrome protein") all use a disease name as a bare classifier of a head noun that denotes a population, research unit, gene, or protein. The disease is not the thing the sentence is about. The True Positive SpecificDisease cases (e.g., "Coats disease," "Norrie disease") are the topics or referents of their clauses.
+- **Isolate the trigger:** The three discrepancies share a structure where the disease name is the content of a relational construction rather than a classifier:
+  - Ex. 1: "a **family history of** ovarian cancer." The disease is the object of a clinical-history noun.
+  - Ex. 2 and 3: "a Tay-Sachs disease (TSD) **causing** mutation." The disease is the causal target of the mutation, so "disease-causing mutation" is read as a relation.
+
+  The model appears to rely on a surface heuristic: a disease string adjacent to another noun is a noun-adjunct Modifier. The TP Modifiers are also adjacent to nouns, so adjacency alone does not separate the cases.
+- **Hypothesis check:** Relational role explains all three discrepancies, and the two TSD mentions come from one sentence. It is less clean for "ovarian cancer risk" (labeled Modifier in the same document), so the relational category is probably narrower than "any argument of a noun." The same string "ovarian cancer" also receives both labels within doc 10196379, which suggests some annotation inconsistency.
+
+**Step 2: Pattern Formulation**
+
+- **Pattern Insight: Relational-Argument Disease Mentions Mislabeled as Attributive Modifiers**
+  - **Confusion Trigger:** A disease name sitting next to a noun in a noun–noun or participial string (e.g., "family history of ovarian cancer," "Tay-Sachs disease causing mutation"). The model keys on this attributive-looking adjacency and labels it Modifier, without checking whether the disease is the argument of a relational head.
+  - **Contrastive Evidence:** The TP Modifiers use the disease as a classifier of a group, study, case set, or molecule ("cases," "population," "study," "patients," "genes," "protein"). The disease restricts the head but is not the entity being related or discussed. The discrepancies instead make the disease the content of a relation ("history of X," "X-causing"), so it is the disease entity being referenced and should be SpecificDisease.
+  - **Linguistic Rule (Proposed):**
+    1. If the disease string is a premodifier that classifies a head denoting a population, case set, study, patient group, gene, or protein, label **Modifier**.
+    2. If the disease string is the complement of a relational or clinical-history noun ("history of X," "associated with X") or the object of a causal participle ("X-causing mutation," "caused by X"), label **SpecificDisease**, even when it sits directly next to a noun.
+    3. Boundary caveat: "X risk" is labeled Modifier in gold, so treat "risk" as a classifier compound. Given the within-document inconsistency for "ovarian cancer," verify these cases against annotation guidelines before treating them as model errors.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10196379.json):
+Snippet: "...ficantly ( P = 0 . 03 ) associated with a family history of ovarian cancer , suggesting that this polymorphism may influence ovarian c..."
+Gold: SpecificDisease, LLM: Modifier
+Entity Text: "ovarian cancer"
+
+Example 2 (Doc: 8326491.json):
+Snippet: "...from the British Isles.
+In a previous study we found that a Tay-Sachs disease ( TSD ) causing mutation in the intron 9 donor splice site ..."
+Gold: SpecificDisease, LLM: Modifier
+Entity Text: "Tay-Sachs disease"
+
+Example 3 (Doc: 8326491.json):
+Snippet: "...es.
+In a previous study we found that a Tay-Sachs disease ( TSD ) causing mutation in the intron 9 donor splice site of the..."
+Gold: SpecificDisease, LLM: Modifier
+Entity Text: "TSD"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

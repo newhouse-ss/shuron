@@ -1,0 +1,62 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: Modifier vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+## Step 1: Deep-Dive Analysis
+
+**Contrast:**
+- **Discrepancies:** The disease string is embedded in a larger noun phrase whose head is a gene/protein name ("breast cancer susceptibility **gene 1**", "Wiskott-Aldrich syndrome **protein**"), or it is a bare, unqualified "cancer" modifying "cases" ("91 Caucasian **cancer cases**").
+- **True Positives:** The disease term is either a site-specific phrase acting as an attributive modifier of an epidemiological noun ("**ovarian cancer** cases/population/risk"), a disease adjective ("**G6PD deficient**"), or a short abbreviation directly preceding the generic noun "gene" ("**DTD** gene", "**SLS** genes"). In each case the disease token remains a visible, self-contained span.
+
+**Isolate the Trigger:** The model appears to treat a disease string that is part of an official gene or protein nomenclature as a single non-disease identifier. It assigns O to the whole string and never considers the nested disease span. Examples 1, 3, and 4 fit this pattern. Example 2 does not, because "91 Caucasian cancer cases" is a cohort descriptor, not a nomenclature label.
+
+**Hypothesis Check:** The nomenclature trigger explains 3 of 4 cases. To cover Example 2, I refined the trigger to include a generic, unqualified disease category term ("cancer") used attributively. The model likely fails to treat a bare category word as a disease mention. "Ovarian cancer" in the true positives is specific, which is one reason it is recognized.
+
+## Step 2: Pattern Insight
+
+- **Pattern Name:** Nested Disease Span Inside a Non-Disease Label (Gene/Protein Nomenclature and Bare Category Modifiers)
+- **Confusion Trigger:** A disease-denoting span is embedded as a pre-head constituent of a larger noun phrase. Two variants occur:
+  1. The phrase is official gene/protein nomenclature whose name contains a disease string (e.g., "breast cancer susceptibility gene 1", "Wiskott-Aldrich syndrome protein"). The model absorbs the whole string into one gene/protein identifier and emits O.
+  2. A generic, unqualified category term ("cancer") modifies a cohort noun ("Caucasian cancer cases"). The model does not recognize it as a disease mention.
+- **Contrastive Evidence:** The true positives keep the disease span visible and separate from any nomenclature wrapper. "Ovarian cancer" is site-specific and modifies epidemiological nouns (cases, population, risk). "DTD gene" and "SLS genes" use short disease tokens before the generic noun "gene," with no nomenclature string around them. All of these are labelled Modifier.
+- **Linguistic Rule (Proposed):** When a disease-denoting span (full name, abbreviation, or category noun such as "cancer") appears pre-nominally inside a larger noun phrase, label that span **Modifier**, even if the phrase head is a gene, protein, or cohort noun. Do not absorb the span into a gene/protein O-label. If the disease string is part of official nomenclature (e.g., "Wiskott-Aldrich syndrome protein"), it does not refer to a disease entity, so it should be Modifier rather than SpecificDisease. A bare "cancer" before "cases" should also be Modifier.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10196379.json):
+Snippet: "...s study was to provide more accurate frequency estimates of breast cancer susceptibility gene 1 ( BRCA1 ) germline alterations in the..."
+Gold: Modifier, LLM: O
+Entity Text: "breast cancer"
+
+Example 2 (Doc: 10196379.json):
+Snippet: "... of common polymorphisms was determined in the 91 Caucasian cancer cases in this series and 24 sister controls using allele-sp..."
+Gold: Modifier, LLM: O
+Entity Text: "cancer"
+
+Example 3 (Doc: 10724160.json):
+Snippet: "...Autoinhibition and activation mechanisms of the Wiskott-Aldrich syndrome protein.
+The Rho-family GTPase , Cdc42 , can regulate the a..."
+Gold: Modifier, LLM: O
+Entity Text: "Wiskott-Aldrich syndrome"
+
+Example 4 (Doc: 10724160.json):
+Snippet: "..., can regulate the actin cytoskeleton through activation of Wiskott-Aldrich syndrome protein ( WASP ) family members . Activation relieves an au..."
+Gold: Modifier, LLM: O
+Entity Text: "Wiskott-Aldrich syndrome"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

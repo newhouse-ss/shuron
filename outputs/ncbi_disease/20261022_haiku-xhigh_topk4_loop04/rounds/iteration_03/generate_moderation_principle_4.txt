@@ -1,0 +1,46 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: DiseaseClass vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** The True Positive DiseaseClass spans ("mental retardation," "exudative retinal detachment") have heads that are clinical-condition or phenotype nouns. The discrepancy's head, "deficiency," is a relational/quantity noun, so its disease status comes only from causal context. Its complement, "of norrin," is a gene product, which is outside the schema.
+- **Single boolean feature:** *Does the NP's head noun lexically denote a clinical condition?* TP DiseaseClass = Yes. "deficiency of norrin" = No.
+- **Isolate trigger:** The model sees "deficiency of [gene product]" as a molecular or biochemical description, similar to the unannotated "NDP gene" and "norrin" mentions, and does not find a disease lexeme.
+- **Positional cue the model misses:** "deficiency of norrin" is the causal endpoint of "somatic mutation … which results in ___." In the TP file 10484772, the parallel slot "which results in massive … accumulation (exudative retinal detachment)" is already DiseaseClass. The annotator treats pathological consequences in this slot as disease states.
+- **Hypothesis check:** The lexical trigger explains this example, but it over-generalizes. In 10577908, "deficient activity of fatty aldehyde dehydrogenase" has the same deficiency-of-protein structure and is not annotated. The gold seems to separate an organism-level pathological deficit from a measured enzymatic or biochemical quantity. This is an inference from one discrepancy plus one contrast, so the boundary may be noisy in the gold data.
+
+**Step 2: Pattern Insight**
+
+- **Pattern Name:** Deficiency-of-Gene-Product as a Causal Pathological State
+- **Confusion Trigger:** A relational/quantity head noun ("deficiency") governing a gene-product complement ("of norrin"). The model reads the NP as a molecular quantity outside the schema rather than as a disease state, because no disease-denoting lexeme is present.
+- **Contrastive Evidence:** The TP DiseaseClass spans have lexical clinical-condition heads ("retardation," "detachment") and no molecular complement, so the model handles them. The TP "exudative retinal detachment" also occupies the same causal "results in" slot, which shows that the annotation depends on the NP's role as a pathological consequence, not only on its lexical form.
+- **Linguistic Rule (Proposed):** Tag the full NP "deficiency/loss/absence of [gene product]" as DiseaseClass only when both conditions hold:
+  1. It is the object of a causal or consequence verb (e.g., *results in*, *leads to*, *causes*) whose subject is a mutation or disease-causing event.
+  2. It denotes an organism-level pathological state (a tissue or organ deficit).
+
+  Do not tag it when it is a quantified assay or measurement (activity, level, expression, mRNA stability) or when the NP is only the gene product itself, which remains O. The span covers the whole NP, including the complement.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10484772.json):
+Snippet: "...dary to somatic mutation in the NDP gene which results in a deficiency of norrin ( the protein product of the NDP gene ) within the developi..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "deficiency of norrin"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

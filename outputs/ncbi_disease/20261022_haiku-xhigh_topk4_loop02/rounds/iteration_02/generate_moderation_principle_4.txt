@@ -1,0 +1,45 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: CompositeMention vs LLM: Modifier (Label Mismatch)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** The True Positives are single, unitary disease names used attributively before a non-disease head noun: "ovarian cancer **cases**," "ovarian cancer **population**," "ovarian cancer **study**," "fragile X syndrome **patients**," "Wiskott-Aldrich syndrome **protein**." Each span names one disease. The discrepancy span, "breast or ovarian cancer," contains two distinct disease-site names joined by a coordinator ("or") and sharing an elliptical head ("breast [cancer] or ovarian cancer").
+- **Separating feature (boolean):** Does the span contain a coordinator linking two disease names? Single-disease span → Modifier. Coordinated disease names → CompositeMention.
+- **Isolate Trigger:** The model appears to have keyed on the surrounding frame, "family history of ___ cancer," and on the attributive, non-head position of the disease noun. That frame resembles the Modifier-labeled attributive uses in the TP set. The model did not register the "or" as a composite marker, so it defaulted to Modifier.
+- **Hypothesis Check:** The coordination explains this discrepancy. The "family history of" frame is incidental, since a single disease name in the same frame would still be Modifier. The rule should therefore be driven by coordination, not by the syntactic role of the disease noun.
+
+**Step 2: Formulate Pattern**
+
+- **Pattern Insight: Coordinated Disease Names Misread as Attributive Modifiers**
+  - **Pattern Name:** Coordinated (Disjunctive) Disease-Site Modifiers in Family-History Frames
+  - **Confusion Trigger:** A disjunctive coordinator ("or"/"and"/"/") joining two disease-type or disease-site names under one shared head noun ("breast or ovarian cancer"). The surrounding "family history of ___" frame and the attributive position make the span look like a single Modifier, which masks the two-entity composite structure.
+  - **Contrastive Evidence:** The True Positive Modifiers each contain a single disease name ("ovarian cancer," "fragile X syndrome," "Wiskott-Aldrich syndrome") with no coordinator, so there is no composite structure to detect. The discrepancy span is the only case with two distinct diseases in one span.
+  - **Linguistic Rule (Proposed):**
+    1. If a disease-name span contains a coordinator (or/and/slash) that links two or more distinct disease names or disease-site adjectives sharing a head noun, label the entire span **CompositeMention**, regardless of its syntactic position (including "family history of," prepositional-object, or attributive positions).
+    2. Assign **Modifier** only when a single disease name functions attributively before a non-disease head noun (e.g., "cases," "population," "study," "risk," "patients," "protein").
+    3. Assign **SpecificDisease** to a standalone disease name that is not a pre-nominal modifier of another noun.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10196379.json):
+Snippet: "...1 , were identified . Both patients had a family history of breast or ovarian cancer . Several novel as well as previously reported uncharacteri..."
+Gold: CompositeMention, LLM: Modifier
+Entity Text: "breast or ovarian cancer"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

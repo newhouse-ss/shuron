@@ -1,0 +1,74 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: Modifier (Label Mismatch)
+
+**INFERRED PATTERNS:**
+## Step 1: Deep Dive Analysis
+
+**Contrast.** Every Modifier true positive is a disease phrase that sits directly before a common noun it classifies:
+- "ovarian cancer **population** / **cases** / **study** / **risk**"
+- "Wiskott-Aldrich syndrome **protein**"
+- "fragile X syndrome **patients**"
+- "SLS **genes**" (1481)
+
+Every SpecificDisease true positive is a head, a complement of a preposition, or a subject:
+- "variant **of** Coats disease gave birth"
+- "affected **by** Norrie disease."
+- "patients **with** SLS"
+- "the genetic basis **of** SLS"
+
+**Isolate the trigger.** The model treats the disease string as a noun-compound premodifier, based on surface form and nearby lexical cues, without checking whether the disease phrase directly precedes the noun it modifies.
+- *Ex 1:* "ovarian cancer" recurs as a Modifier five times in the same document, so the string itself is primed. The next word "risk" (in "influence ovarian cancer risk") is a further cue.
+- *Ex 2:* "Tay-Sachs disease ( TSD ) causing mutation" resembles the compound "disease-causing mutation," so the model attaches the disease to "mutation."
+- *Ex 3:* "TSD" is an acronym that appears in parentheses after the full name. The model labels it from its local context ("TSD causing ≈ disease-causing") rather than inheriting the antecedent's class.
+
+**Hypothesis check.**
+- The right-hand word ("risk," "mutation") cannot be the discriminator. The Modifier true positives "influence ovarian cancer risk" and "determining ovarian cancer risk" also end in "risk" and are labeled Modifier. The discriminator must be syntactic.
+- The adjacency test works for all three discrepancies:
+  - Ex 1: "of ovarian cancer **,**" is followed by a comma, and the phrase is the object of "of."
+  - Ex 2: "Tay-Sachs disease **(**" is followed by a parenthesis. "Disease" is the head of its NP, and "causing mutation" postmodifies it.
+  - Ex 3: "TSD **causing**" is followed by a participle, not a noun it modifies, and it is an alias.
+- The test also holds for the true positives. Coats disease, Norrie disease, and "SLS" are followed by verbs, punctuation, or nothing, and they are SpecificDisease.
+- In doc 10196379, the five matched Modifier mentions are all premodifiers. The family-history mention is the only non-premodifier occurrence, so the label depends on role, not on the string.
+
+## Step 2: Pattern Formulation
+
+- **Pattern Insight: Disease Name as Attributive Premodifier vs. Disease as Referent Head/Complement**
+  - **Confusion Trigger:** Disease strings with an N+N shape ("ovarian cancer," "Tay-Sachs disease … causing") and co-occurring cues such as "risk," "mutation," or "causing" lead the model to label the disease as a Modifier. The model relies on lexical co-occurrence rather than the syntactic position of the disease phrase. Parenthetical acronyms are also labeled from local context rather than inheriting the class of their expanded antecedent.
+  - **Contrastive Evidence:** The true-positive Modifier mentions are all immediately followed by a common noun they classify (population, cases, study, risk, protein, patients, genes). The true-positive SpecificDisease mentions are objects of prepositions ("of," "with"), subjects, or are followed by verbs or punctuation. None of the three discrepancy disease phrases is directly followed by a noun it modifies. Each is followed by a comma, a parenthesis, or a participle.
+  - **Linguistic Rule (Proposed):** Label a disease mention as **Modifier** only if it is *immediately* followed by a common-noun head that it attributively modifies, with no intervening comma, parenthesis, participle, verb, or preposition. Otherwise label it **SpecificDisease**, including when it heads its own NP, is the complement of "of/with," or is the argument of a verb. Parenthetical acronyms take the class of their expanded antecedent. Do not use the semantic content of the following noun (risk, mutation) as evidence for the label.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10196379.json):
+Snippet: "...ficantly ( P = 0 . 03 ) associated with a family history of ovarian cancer , suggesting that this polymorphism may influence ovarian c..."
+Gold: SpecificDisease, LLM: Modifier
+Entity Text: "ovarian cancer"
+
+Example 2 (Doc: 8326491.json):
+Snippet: "...from the British Isles.
+In a previous study we found that a Tay-Sachs disease ( TSD ) causing mutation in the intron 9 donor splice site ..."
+Gold: SpecificDisease, LLM: Modifier
+Entity Text: "Tay-Sachs disease"
+
+Example 3 (Doc: 8326491.json):
+Snippet: "...es.
+In a previous study we found that a Tay-Sachs disease ( TSD ) causing mutation in the intron 9 donor splice site of the..."
+Gold: SpecificDisease, LLM: Modifier
+Entity Text: "TSD"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

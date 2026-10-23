@@ -1,0 +1,56 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: DiseaseClass (Label Mismatch)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** The True Positives include a bare category term labeled DiseaseClass ("mental retardation," no premodifier). They also include deficiency-headed mentions labeled SpecificDisease: "G6PD deficiency" and "glucose 6-phosphate dehydrogenase (G6PD) deficiency." The head noun "deficiency" is not what decides the label. The gene/enzyme specifier before it is.
+- **Isolate Trigger:** In all three discrepancies, the model labels the NP by its generic category head (*deficiencies*, *infection*, *vasculitis*) and ignores the premodifier. The premodifiers are *PAH* (gene symbol), *neisserial* (pathogen genus), and *cutaneous* (anatomical site). Because the premodifiers are not disease vocabulary, the model reads the phrase as "[qualifier] + generic disease class."
+- **Hypothesis Check:** The specifier-plus-category-head pattern explains all three cases:
+  - Ex 1: *PAH* (gene) + *deficiencies* → one named enzyme-deficiency disease. The plural does not make it a set of diseases.
+  - Ex 2: *neisserial* (pathogen) + *infection* (with *Chronic* as course) → one specific infectious disease.
+  - Ex 3: *cutaneous* (site) + *vasculitis* → one clinical entity in context. The "of" construction is incidental.
+
+  The plural in Ex 1 and the prepositional frame in Ex 3 are secondary. The shared factor is the specifier.
+
+**Step 2: Formulate Pattern**
+
+- **Pattern Insight: Specifier-Anchored Category Heads**
+  - **Pattern Name:** Category head noun individuated by an etiologic or locus specifier
+  - **Confusion Trigger:** A generic disease-category head noun (*infection*, *vasculitis*, *deficiency(ies)*) premodified by a gene symbol, pathogen name, or anatomical site. The category-noun head pulls the label toward DiseaseClass, while the specifier, which is not disease vocabulary, goes unweighted.
+  - **Contrastive Evidence:** True Positives labeled DiseaseClass, such as "mental retardation," are bare hypernyms with no specifier that could anchor them to one entity. Named deficiencies such as "G6PD deficiency" and "glucose 6-phosphate dehydrogenase (G6PD) deficiency" carry a specifier and are correctly labeled SpecificDisease. The same head noun gets a different label depending on whether the specifier individuates it.
+  - **Linguistic Rule (Proposed):** If a disease-category head (*infection, vasculitis, deficiency, disorder, syndrome*) is premodified by a gene symbol, pathogen/genus name, or anatomical/etiologic qualifier that picks out one clinical entity, label the whole NP as SpecificDisease, even when the head is a generic category word or appears in plural form. Reserve DiseaseClass for bare, unspecified hypernyms or groupings ("mental retardation," "genetic diseases"). Borderline site-only qualifiers (e.g., "cutaneous") should be checked for whether the NP names a recognized clinical entity in context.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 1671881.json):
+Snippet: "...or by the large variety of mutant genotypes associated with PAH deficiencies . . ..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "PAH deficiencies"
+
+Example 2 (Doc: 6859721.json):
+Snippet: "...ions showed heterozygous deficiency of C7 in five members . Chronic neisserial infection can be associated with C7 deficiency and must be distinguis..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "Chronic neisserial infection"
+
+Example 3 (Doc: 6859721.json):
+Snippet: "...7 deficiency and must be distinguished from other causes of cutaneous vasculitis . . ..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "cutaneous vasculitis"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

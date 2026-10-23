@@ -1,0 +1,56 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: DiseaseClass vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** The True Positive entity spans are disease-name nominals: "ovarian cancer," "fragile X syndrome," "SLS," "G6PD deficiency," and "mental retardation." The three discrepancies are descriptive phenotype or pathophysiological-state phrases: "abnormal retinal vascular development" (adjective + process noun), "deficiency of norrin" (N-of-N protein-level state), and "spasticity" (bare symptom noun). None has a disease-name head such as *disease*, *syndrome*, *-osis*, or *disorder*.
+- **Isolate Trigger:** The model appears to key on disease-nomenclature surface form. Each discrepancy is the complement of a disease-characterizing or causal predicate ("is characterized by," "results in," "secondary to"), so it reads as a clinical description of the disease rather than a disease label, and it is tagged O.
+- **Hypothesis Check:** The trigger explains all three discrepancies. It is refined by the one DiseaseClass True Positive, "mental retardation," which sits in the same "characterized by" symptom list as "spasticity." The model labeled "mental retardation" correctly and missed "spasticity," which suggests it learned the lexical disorder marker "retardation," not the role. Note also that "ichthyosis" in the same list has no annotation, so gold consistency there should be verified.
+
+**Step 2: Formulate Pattern**
+
+- **Pattern Insight:**
+  - **Pattern Name:** Clinical Manifestations or Pathological States Labeled as DiseaseClass
+  - **Confusion Trigger:** Bare symptom or pathological-state phrases ("spasticity," "abnormal [organ] development," "deficiency of [gene product]") that appear as the complement of disease-characterizing or causal predicates ("characterized by," "results in," "secondary to") and lack a disease-name head. The model treats these as descriptive context and defaults to O.
+  - **Contrastive Evidence:** The True Positive DiseaseClass "mental retardation" is the same kind of item (a symptom in a "characterized by" list), but it carries an established disorder term, so the model recognized it. The True Positive SpecificDisease "G6PD deficiency" is a named disease, while "deficiency of norrin" is a protein-level state, so the two differ in form and role.
+  - **Linguistic Rule (Proposed):** Label a span as DiseaseClass when both conditions hold:
+    1. It denotes a clinical sign, symptom, or pathophysiological abnormality, including "abnormal + [process/organ]," "deficiency of [gene product]," or a symptom noun.
+    2. It is the object of a disease-characterizing or causal predicate ("characterized by," "results in," "secondary to"), or is a coordinated item in a symptom list under such a predicate.
+
+    Do not require disease-suffix morphology. Keep the span as SpecificDisease if it is a named disease (e.g., "[X] deficiency" as a recognized disease name), and do not label general mechanistic descriptors that are not predicated of a disease.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10484772.json):
+Snippet: "... in retinal angiogenesis.
+Coats disease is characterized by abnormal retinal vascular development ( so-called retinal telangiectasis ) which results in massi..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "abnormal retinal vascular development"
+
+Example 2 (Doc: 10484772.json):
+Snippet: "...dary to somatic mutation in the NDP gene which results in a deficiency of norrin ( the protein product of the NDP gene ) within the developi..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "deficiency of norrin"
+
+Example 3 (Doc: 10577908.json):
+Snippet: "...disorder characterized by ichthyosis , mental retardation , spasticity , and deficient activity of fatty aldehyde dehydrogenase ( ..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "spasticity"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

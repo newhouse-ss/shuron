@@ -1,0 +1,296 @@
+You are an expert AI Moderator.
+
+**GOAL:**
+Update the official Annotation Guidelines to incorporate new "Moderation Principles" discovered from error analysis.
+
+**CURRENT GUIDELINES:**
+# Biomedical Annotation Guidelines
+
+## What to Annotate
+
+### 1. Annotate all **Specific Disease** mentions
+A textual string referring to a disease name may refer to a **Specific Disease** or a **Disease Class**.
+- **Disease Class**: Mentions that could be described as a family of multiple specific diseases. Population-level or feature-list phenotype labels that describe a disorder or syndrome in general, rather than a described patient's diagnosed condition, also belong to this category.
+- **Specific Disease**: Mentions that can be linked to one specific definition that does not include further categorization.
+
+**Example**
+> Diastrophic dysplasia is an autosomal recessive disease characterized by short stature, very short limbs and joint problems that restrict mobility.
+
+- **Annotate**:
+  - "Diastrophic dysplasia" as **Specific Disease**
+  - "autosomal recessive disease" as **Disease Class**
+
+**Generic head nouns with an instance anchor**
+A mention whose head noun is a generic category noun (an inflammatory, infectious, or deficiency-type noun with no proper name, such as "infection," "pericarditis," or "deficiency," including plurals) is not a **Disease Class** merely because its head is generic. Such a mention is annotated as **Specific Disease** (covering the full mention) when it is anchored to one identifiable case-level condition through at least one of the following:
+- (a) a gene symbol, organism, or pathogen modifier that identifies that condition (e.g., "C7 deficiency," "Neisseria gonorrhoeae infection");
+- (b) an anatomical or etiologic modifier applied to the described patient's condition (e.g., "left hip infection");
+- (c) a case-attributing predicate whose subject is the described patient, i.e., a diagnostic or presentational verb or participle phrase (e.g., "presenting with X," "found to have X"). The predicate provides the anchor but is not part of the annotated span.
+
+The following limits apply:
+- **Negative constraint:** Do not apply this rule to population-level or feature-list phenotype labels that describe a disorder or syndrome in general and are not attributed to a described patient's diagnosed condition. These remain **Disease Class**.
+- Do not apply this rule when no instance anchor is present. Unanchored generic terms are handled by the general-term exclusion under "What NOT to Annotate."
+- Proper-named or eponymic mentions (e.g., "Coats disease") are governed by their name and need no anchor.
+- This rule covers only inflammatory-, infectious-, and deficiency-type head nouns. Other feature labels, such as "mental retardation" or "convulsive disorders," are classified by the **Disease Class** examples below.
+- **Scope:** This rule refines the **Specific Disease** / **Disease Class** boundary only. It does not change the span boundaries or categories of **Modifier** or **Composite Mention** annotations (Sections 2 and 3).
+
+---
+
+### 2. Annotate **contiguous text strings**
+A textual string may refer to two or more separate disease mentions. Such mentions are annotated with the **Composite Mention** category.
+
+**Example**
+> The text phrase "Duchenne and Becker muscular dystrophy" refers to two separate diseases. If this phrase is separated into two strings: "Duchenne" and "Becker muscular dystrophy," it results in information loss, because the word "Duchenne" on its own is not a disease mention.
+
+---
+
+### 3. Annotate disease mentions that are used as **Modifiers** for other concepts
+A textual string may refer to a disease name, but it may modify a noun phrase (or may not be a noun phrase itself). In such cases, annotate using the **Modifier** category.
+
+**Example**
+> Although this mutation was initially detected in four of 33 colorectal cancer families analysed from eastern England, more extensive analysis has reduced the frequency to four of 52 English HNPCC kindreds analysed.
+
+- **Annotate**:
+  - "colorectal cancer" as **Modifier**
+  - "HNPCC" as **Modifier**
+
+The generic-head rule in Section 1 affects only the **Specific Disease** / **Disease Class** label. It does not alter the span or category decisions for **Modifier** annotations.
+
+**Disease terms premodifying molecular or biological-entity heads**
+When a disease-denoting token sequence (a full-name phrase or an acronym) directly premodifies a head noun from the molecular or biological-entity class (such as gene, protein, enzyme, mutation, variant, allele, or polymorphism), annotate only the disease-denoting tokens as **Modifier**. Keep the head noun, locus numerals, and any parenthetical symbols outside the span. Disease tokens are not assigned O merely because the surrounding nomenclature reads as a molecular identifier.
+
+- **Trigger:** The disease term must directly premodify the head. Between the two, there may be only a short run of locus numerals, hyphenated affixes, or nomenclature suffixes. A content word in between (e.g., "susceptibility" in "breast cancer susceptibility gene") means the disease term modifies that word rather than the head, and the trigger is not met.
+- **Scope of the label:** The label depends on the syntactic relation (direct premodifier of a head) and the semantic class of that head. It applies to any disease-denoting premodifier of any molecular-entity head, regardless of the specific disease, locus number, or acronym, and regardless of whether the string resembles a gene symbol or proper name.
+- **General terms stay excluded:** "Disease," "syndrome," and similar general terms remain excluded under "What NOT to Annotate" (item 4). "Disease genes" or "a disease locus" therefore receives no annotation.
+- **Negative constraints.** Do not apply this subsection when:
+  - (a) the disease term is the standalone referent, such as an acronym defined in parentheses or a bare disease noun phrase with no molecular head. Such mentions are **Specific Disease** (Section 6). The parenthetical acronym in "diastrophic dysplasia (DTD)" therefore remains **Specific Disease**. Later uses of that acronym as a direct premodifier are handled by this subsection;
+  - (b) the head noun is clinical or epidemiological, such as cases, patients, families, risk, population, or study. The ordinary Modifier rule applies;
+  - (c) the string contains no disease-denoting content and is a pure molecular identifier. Tag O;
+  - (d) the disease term is not a direct premodifier but appears inside a prepositional or relative phrase attached to the head. The ordinary Modifier rule applies;
+  - (e) the disease term is coordinated with another term. The Composite Mention rule (Section 2) governs.
+- **Official gene names are excepted.** A full gene name, or the expansion of an approved gene symbol, that contains disease words is a gene identifier and is not annotated (see "What NOT to Annotate," item 7). In "breast cancer susceptibility gene 1 (BRCA1)," which is the official name of BRCA1, nothing is annotated. This is the one case in which a disease term inside a molecular-entity phrase is left unannotated.
+- **Examples:** In "ancient SLS genes," "SLS" is **Modifier**, and "genes" stays outside the span. In "the DTD gene," "DTD" is **Modifier**, and "gene" stays outside the span.
+
+---
+
+### 4. Annotate **duplicate mentions**
+For each sentence in the PubMed abstract and title, the locations of all disease mentions are marked, including duplicates within the same sentence.
+
+---
+
+### 5. Annotate **minimum necessary span of text**
+Use the smallest span necessary to include all tokens expressing the most specific form of the disease.
+
+**Example**
+> In the case of "insulin-dependent diabetes mellitus," the disease mention including the whole phrase was preferred over its substrings such as "diabetes mellitus" or "diabetes."
+
+For anchored generic-head mentions (Section 1), the span includes the generic head and its anchoring gene, organism, pathogen, anatomical, or etiologic modifier. It does not include the predicate that attributes the condition to the patient.
+
+For **Modifier** mentions under Section 3 that premodify a molecular-entity head, the span covers only the disease-denoting tokens (e.g., "SLS" in "SLS genes"). The head noun is excluded.
+
+---
+
+### 6. Annotate all **synonymous mentions**
+Abbreviation definitions such as "Huntington disease" ("HD") are separated into two annotated mentions (one for the long form, one for the abbreviation). Later uses of such an acronym as a direct premodifier of a molecular-entity head follow Section 3.
+
+---
+
+## What NOT to Annotate
+
+1. **Do not annotate organism names**
+   - Organism names such as "human" were excluded from the preferred mention.
+   - Viruses, bacteria, and other organism names were not annotated **unless** it was clear that the disease caused by these organisms is being discussed.
+   - Where an organism or pathogen modifies a generic infectious head noun that is anchored to a described patient's condition (see Section 1), the whole phrase (e.g., "Epstein-Barr virus infection") is annotated as **Specific Disease**. This rule does not, by itself, make a bare organism name a disease mention.
+   - **Example**
+     > Studies of biopsied tissue for the presence of Epstein-Barr virus and cytomegalovirus were negative.
+
+     In this case: "Epstein-Barr virus" and "cytomegalovirus" are annotated as **Specific Disease** category **only** if the context clearly indicates the diseases they cause, otherwise not. Here, no disease is attributed to a patient, so neither is annotated.
+
+2. **Do not annotate gender**
+   - Tokens such as "male" and "female" were only included if they specifically identified a new form of the disease.
+   - **Example**
+     > "male breast cancer"
+
+3. **Do not annotate overlapping mentions**
+   - **Example**: The phrase "von Hippel-Lindau (VHL) disease" is annotated as **one single disease mention** (Specific Disease category).
+
+4. **Do not annotate general terms**
+   - Very general terms such as "disease," "syndrome," "deficiency," "complications," "abnormalities," etc. were excluded when they appear without an instance anchor.
+   - This includes general terms used as premodifiers of molecular heads, such as "disease gene" or "disease locus."
+   - A generic inflammatory, infectious, or deficiency-type head noun that is anchored to a described patient's identifiable condition is not excluded. It is annotated as **Specific Disease** under Section 1 of "What to Annotate" (e.g., "left hip infection" in a patient who was admitted with it).
+   - Generic terms outside that class (e.g., "disease," "syndrome," "complications") remain excluded when used alone. A proper name that contains such a word, such as "Huntington disease" or "Coats disease," is governed by its name.
+   - However, the terms "cancer" and "tumor" were retained.
+
+5. **Do not annotate references to **biological processes**
+   - e.g. Terms corresponding to biological processes such as "tumorigenesis" or "cancerogenesis."
+
+6. **Do not annotate disease mentions interrupted by nested mentions**
+   - Essentially, do not break the contiguous text rule.
+   - **Example**
+     > WT1 dysfunction is implicated in both neoplastic (Wilms tumor, mesothelioma, leukemia, and breast cancer) and nonneoplastic (glomerulosclerosis) disease.
+
+     Here, the mentions "neoplastic disease" and "nonneoplastic disease" are not annotated because other tokens break up these phrases.
+
+7. **Do not annotate official gene names**
+   - A disease word that is part of an official gene name (a full gene name or the expansion of an approved gene symbol) belongs to a gene identifier and is not annotated.
+   - **Example**: "breast cancer susceptibility gene 1 ( BRCA1 )" is not annotated.
+   - This is the only exception to the molecular-head rule in Section 3. Proper disease names such as "Coats disease" are not gene names and remain governed by Section 1.
+
+---
+
+## Examples
+
+1. **"Insulin-dependent diabetes mellitus"**
+   - **Specific Disease**
+   - Prefer the whole string.
+
+2. CDH1 mutations predispose to early onset **"colorectal cancer."**
+   - "early onset" may or may not be part of the disease mention, depending on:
+     1. If there is a UMLS concept specifying this as a separate form of disease
+     2. If the annotator believes it should be included
+
+3. Human **"X-linked recessive disorder"**
+
+4. Her fresh serum lacked complement-mediated bactericidal activity against **Neisseria gonorrhoeae**.
+
+5. **"Huntington disease" ("HD")**
+   - The long form and the short form constitute two separate mentions.
+
+6. **C7 deficiency**
+   - "This report represents the first cases of C7 deficiency associated with infectious complications."
+   - "C7 deficiency" is a **Specific Disease**. "C7" is a gene symbol, so the deficiency mention is anchored under Section 1.
+   - "infectious complications" is too general a term and remains excluded. The head noun "complications" is not an inflammatory-, infectious-, or deficiency-type noun, so the anchoring rule does not apply.
+
+7. **"colorectal, endometrial, and ovarian cancers"**
+   - Considered one **Composite Mention** of several Specific Diseases.
+
+8. WT1 dysfunction is implicated in both neoplastic ("Wilms tumor," "mesothelioma," "leukemias," and "breast cancer") and nonneoplastic ("glomerulosclerosis") disease.
+   - Potential disease mentions include: "neoplastic disease," "nonneoplastic disease," "Wilms tumor," "mesothelioma," "leukemias," "breast cancer," and "glomerulosclerosis."
+   - "neoplastic disease" and "nonneoplastic disease" are **not** annotated because these phrases are interrupted by nested mentions.
+
+9. **Tumorigenesis and cancerogenesis**
+   - These refer to processes, not diseases.
+
+10. **"autosomal recessive disease"**
+    - Refers to a family of diseases that can be passed down genetically → **Disease Class** category.
+
+11. Large phenotypic variability with **"convulsive disorders," "motor retardation," and "mental retardation."**
+    - These are "grey area" terms: they may not correspond to a single **Specific Disease**, so they are annotated as **Disease Class** category if appropriate.
+
+12. **Borjeson-Forssman-Lehmann syndrome (BFLS)** is a **syndromal X-linked mental retardation**.
+    - "Borjeson-Forssman-Lehmann syndrome" = **Specific Disease**
+    - "X-linked mental retardation syndrome" = a family of diseases (i.e., **Disease Class**)
+
+13. **Acute meningococcal pericarditis**
+    - Exists as a separate concept in UMLS.
+    - The organism modifier "meningococcal" also anchors the inflammatory head noun "pericarditis" (Section 1).
+
+14. **Acute Neisseria infection**
+    - The generic head "infection" is anchored by the organism modifier "Neisseria," so the full mention is a **Specific Disease** (Section 1).
+    - May or may not include "acute" depending on context.
+
+15. **Classical galactosemia**
+    - Includes "classical" because it corresponds to a particular form of the disease.
+
+16. **Inherited spinocerebellar ataxia**
+    - May or may not include "inherited," depending on the annotator.
+
+17. **"Adenomatous polyps of the colon and rectum"**
+    - **Composite Mention**
+
+18. **Fibroepithelial or epithelial hyperplasias**
+    - **Composite Mention**
+
+19. **Stage II or stage III colorectal cancer**
+    - **Composite Mention**
+
+20. **"The patient was found to have a *Neisseria gonorrhoeae* infection."**
+    - "Neisseria gonorrhoeae infection" = **Specific Disease**. The organism modifier (a) is applied to a case-level condition, and the predicate "was found to have" (c) attributes it to the patient. The predicate is outside the annotated span.
+
+21. **"She was admitted with a left hip infection."**
+    - "left hip infection" = **Specific Disease**. The anatomical modifier (b) applies to the patient's condition, and "admitted with" is a presentational predicate (c).
+
+22. **"Enzyme deficiencies are listed among the features of this syndrome."**
+    - "Enzyme deficiencies" is **not** anchored to a described patient's diagnosed condition. It is a population-level feature-list label, so it remains **Disease Class** and is not **Specific Disease**.
+
+23. **"...were ancient SLS genes that had undergone intragenic recombination."**
+    - "SLS" = **Modifier**. It directly premodifies the molecular head "genes" (Section 3), which stays outside the span.
+
+24. **"...linkage disequilibrium for diastrophic dysplasia (DTD) in Finland indicating that the DTD gene should lie within..."**
+    - "diastrophic dysplasia" and the parenthetical "DTD" = **Specific Disease** (Sections 1 and 6).
+    - The later "DTD" directly premodifies "gene" = **Modifier** (Section 3). "gene" stays outside the span.
+    - "disease genes" elsewhere in the same abstract is not annotated, because "disease" is a general term (What NOT to Annotate, item 4).
+
+25. **"Germline breast cancer susceptibility gene 1 ( BRCA1 ) alterations in ... ovarian cancer cases."**
+    - "breast cancer susceptibility gene 1" is an official gene name, so nothing is annotated (What NOT to Annotate, item 7).
+    - "ovarian cancer cases" = **Modifier**. The head "cases" is clinical, so the ordinary Modifier rule applies (Section 3, negative constraint (b)).
+
+**NEW MODERATION PRINCIPLES:**
+- **Principle: Disorder-Denoting State or Finding Nominal in a Disease-Defining Slot**
+  - **IF** a candidate span's head is a state nominal that names a disorder (an absence, deficiency, or deficient-activity noun governing a single defined biological component), or a disorder-class suffix form used as a finding noun, **AND** the span fills the disease-defining slot of its clause (the subject of a disease-topic predication, or the complement of a characterizing, etiological, or presentational predicate such as "characterized by," "caused by," "presenting with," or "in a patient with"), **AND** it is not embedded in a consequence frame,
+  - **THEN** tag the full span, including the state head and its complement, as **SpecificDisease** rather than O.
+  - **Does NOT apply when:**
+    1. The state nominal is the object or complement of a consequence predicate ("results in," "leads to," "causes") whose subject is an already-annotated disease. It is a downstream mechanism, so keep O.
+    2. The item is a bare sign or symptom noun with no disorder-denoting head. Keep O, and flag for guideline review rather than forcing a disease label.
+    3. The span modifies or classifies a disorder without denoting one in its own right. Route it to the Modifier or DiseaseClass definitions instead.
+    4. The span is a lexicalized disease name (a disorder noun such as disease, syndrome, or cancer, or an established acronym). Standard SpecificDisease labeling applies, and this rule is not needed.
+
+**CONSTRAINT: DO NOT BREAK THESE EXAMPLES:**
+The following examples are currently handled CORRECTLY. Your new guidelines MUST NOT cause these to be annotated incorrectly.
+FILE: 10196379.json
+TEXT: Germline BRCA1 alterations in a population-based series of ovarian cancer cases.
+The objective of this study was to provide more accurate frequency estimates of breast cancer susceptibility gene 1 ( BRCA1 ) germline alterations in the ovarian cancer population . To achieve this , we determined the prevalence of BRCA1 alterations in a population-based series of consecutive ovarian cancer cases . This is the first population-based ovarian cancer study reporting BRCA1 alterations derived from a comprehensive screen of the entire coding region . One hundred and seven ovarian cancer cases were analyzed for BRCA1 alterations using the RNase mismatch cleavage assay followed by direct sequencing . Two truncating mutations , 962del4 and 3600del11 , were identified . Both patients had a family history of breast or ovarian cancer . Several novel as well as previously reported uncharacterized variants were also identified , some of which were associated with a family history of cancer . The frequency distribution of common polymorphisms was determined in the 91 Caucasian cancer cases in this series and 24 sister controls using allele-specific amplification . The rare form of the Q356R polymorphism was significantly ( P = 0 . 03 ) associated with a family history of ovarian cancer , suggesting that this polymorphism may influence ovarian cancer risk . In summary , our data suggest a role for some uncharacterized variants and rare forms of polymorphisms in determining ovarian cancer risk , and highlight the necessity to screen for missense alterations as well as truncating mutations in this population . 
+MATCHED ANNOTATIONS:
+- Modifier [235, 249] "ovarian cancer"
+- Modifier [375, 389] "ovarian cancer"
+- Modifier [1479, 1493] "ovarian cancer"
+- Modifier [1339, 1353] "ovarian cancer"
+- Modifier [433, 447] "ovarian cancer"
+
+FILE: 10484772.json
+TEXT: Coats' disease of the retina (unilateral retinal telangiectasis) caused by somatic mutation in the NDP gene: a role for norrin in retinal angiogenesis.
+Coats disease is characterized by abnormal retinal vascular development ( so-called retinal telangiectasis ) which results in massive intraretinal and subretinal lipid accumulation ( exudative retinal detachment ) . The classical form of Coats disease is almost invariably isolated , unilateral and seen in males . A female with a unilateral variant of Coats disease gave birth to a son affected by Norrie disease . Both carried a missense mutation within the NDP gene on chromosome Xp11 . 2 2 . Subsequently analysis of the retinas of nine enucleated eyes from males with Coats disease demonstrated in one a somatic mutation in the NDP gene which was not present within non-retinal tissue . We suggest that Coats telangiectasis is secondary to somatic mutation in the NDP gene which results in a deficiency of norrin ( the protein product of the NDP gene ) within the developing retina . This supports recent observations that the protein is critical for normal retinal vasculogenesis . 
+MATCHED ANNOTATIONS:
+- SpecificDisease [152, 165] "Coats disease"
+- SpecificDisease [0, 14] "Coats' disease"
+- SpecificDisease [551, 565] "Norrie disease"
+- SpecificDisease [390, 403] "Coats disease"
+- SpecificDisease [860, 880] "Coats telangiectasis"
+
+FILE: 10545613.json
+TEXT: Synergistic effect of histone hyperacetylation and DNA demethylation in the reactivation of the FMR1 gene.
+Most fragile X syndrome patients have expansion of a ( CGG ) ( n ) sequence with > 200 repeats ( full mutation ) in the FMR1 gene responsible for this condition . Hypermethylation of the expanded repeat and of the FMR1 promoter is almost always present and apparently suppresses transcription , resulting in absence of the FMR1 protein . We recently showed that transcriptional reactivation of FMR1 full mutations can be achieved by inducing DNA demethylation with 5-azadeoxycytidine ( 5-azadC ) . The level of histone acetylation is another important factor in regulating gene expression ; therefore , we treated lymphoblastoid cell lines of non-mosaic full mutation patients with three drugs capable of inducing histone hyperacetylation . We observed a consistent , although modest , reactivation of the FMR1 gene with 4-phenylbutyrate , sodium butyrate and trichostatin A , as shown by RT-PCR . However , we report that combining these drugs with 5-azadC results in a 2- to 5-fold increase in FMR1 mRNA levels obtained with 5-azadC alone , thus showing a marked synergistic effect of histone hyperacetylation and DNA demethylation in the reactivation of FMR1 full mutations . . 
+MATCHED ANNOTATIONS:
+- Modifier [112, 130] "fragile X syndrome"
+
+FILE: 10577908.json
+TEXT: The molecular basis of Sjogren-Larsson syndrome: mutation analysis of the fatty aldehyde dehydrogenase gene.
+Sjogren-Larsson syndrome ( SLS ) is an autosomal recessive disorder characterized by ichthyosis , mental retardation , spasticity , and deficient activity of fatty aldehyde dehydrogenase ( FALDH ) . To define the molecular defects causing SLS , we performed mutation analysis of the FALDH gene in probands from 63 kindreds with SLS . Among these patients , 49 different mutations-including 10 deletions , 2 insertions , 22 amino acid substitutions , 3 nonsense mutations , 9 splice-site defects , and 3 complex mutations-were found . All of the patients with SLS were found to carry mutations . Nineteen of the missense mutations resulted in a severe reduction of FALDH enzyme catalytic activity when expressed in mammalian cells , but one mutation ( 798G-- > C [ K266N ] ) seemed to have a greater effect on mRNA stability . The splice-site mutations led to exon skipping or utilization of cryptic acceptor-splice sites . Thirty-seven mutations were private , and 12 mutations were seen in two or more probands of European or Middle Eastern descent . Four single-nucleotide polymorphisms ( SNPs ) were found in the FALDH gene . At least four of the common mutations ( 551C-- > T , 682C-- > T , 733G-- > A , and 798 + 1delG ) were associated with multiple SNP haplotypes , suggesting that these mutations originated independently on more than one occasion or were ancient SLS genes that had undergone intragenic recombination . Our results demonstrate that SLS is caused by a strikingly heterogeneous group of mutations in the FALDH gene and provide a framework for understanding the genetic basis of SLS and the development of DNA-based diagnostic tests . . 
+MATCHED ANNOTATIONS:
+- SpecificDisease [1710, 1713] "SLS"
+- SpecificDisease [348, 351] "SLS"
+- SpecificDisease [437, 440] "SLS"
+- Modifier [1481, 1484] "SLS"
+- DiseaseClass [207, 225] "mental retardation"
+
+FILE: 10724160.json
+TEXT: Autoinhibition and activation mechanisms of the Wiskott-Aldrich syndrome protein.
+The Rho-family GTPase , Cdc42 , can regulate the actin cytoskeleton through activation of Wiskott-Aldrich syndrome protein ( WASP ) family members . Activation relieves an autoinhibitory contact between the GTPase-binding domain and the carboxy-terminal region of WASP proteins . Here we report the autoinhibited structure of the GTPase-binding domain of WASP , which can be induced by the C-terminal region or by organic co-solvents . In the autoinhibited complex , intramolecular interactions with the GTPase-binding domain occlude residues of the C terminus that regulate the Arp2 / 3 actin-nucleating complex . Binding of Cdc42 to the GTPase-binding domain causes a dramatic conformational change , resulting in disruption of the hydrophobic core and release of the C terminus , enabling its interaction with the actin regulatory machinery . These data show that intrinsically unstructured peptides such as the GTPase-binding domain of WASP can be induced into distinct structural and functional states depending on context . . 
+MATCHED ANNOTATIONS:
+- Modifier [48, 72] "Wiskott-Aldrich syndrome"
+- Modifier [172, 196] "Wiskott-Aldrich syndrome"
+
+**INSTRUCTIONS:**
+1. Read the Current Guidelines and the New Principles.
+2. Integrate the New Principles into the Guidelines naturally.
+   - Do NOT just append them at the end unless it makes sense.
+   - If an existing rule contradicts the new principle, update it.
+   - **Conflict Resolution**: If the new principle necessitates changing an existing rule, explicitly justify (in your internal thought process) why the new rule is superior (e.g., more specific, resolves an ambiguity).
+   - If the new principle clarifies a specific section, add it there.
+3. **CONSTRAINT CHECK**:
+   - Review the "CONSTRAINT" examples above.
+   - Ensure your changes strictly support the New Principles WITHOUT invalidating the "CONSTRAINT" examples.
+   - If a trade-off is required, prioritize specific sub-cases to avoid regression.
+4. Maintain the original formatting and structure.
+5. Return the FULL updated Guidelines text.
+6. **CRITICAL INSTRUCTION**: Models often try to summarize or use placeholders like "(...)" to save tokens. **DO NOT DO THIS.** YOU MUST OUTPUT THE COMPLETED DOCUMENT IN FULL. If you leave out any section, the file will be corrupted.
+7. Output ONLY the guideline text. Do not start with "Here are the updated guidelines:".

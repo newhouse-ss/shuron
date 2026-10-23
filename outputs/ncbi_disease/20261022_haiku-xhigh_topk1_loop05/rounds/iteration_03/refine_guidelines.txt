@@ -1,0 +1,340 @@
+You are an expert AI Moderator.
+
+**GOAL:**
+Update the official Annotation Guidelines to incorporate new "Moderation Principles" discovered from error analysis.
+
+**CURRENT GUIDELINES:**
+# Biomedical Annotation Guidelines
+
+## What to Annotate
+
+### 1. Annotate all **Specific Disease** mentions
+A textual string referring to a disease name may refer to a **Specific Disease** or a **Disease Class**.  
+- **Disease Class**: Mentions that could be described as a family of multiple specific diseases, unless Section 1.2 applies.  
+- **Specific Disease**: Mentions that can be linked to one specific definition that does not include further categorization. Unnamed descriptive pathology terms that denote a patient's condition, or that are pinned to a single organism or etiology, are also Specific Disease under Section 1.2, even when their form is category-like.  
+
+**Example**  
+> Diastrophic dysplasia is an autosomal recessive disease characterized by short stature, very short limbs and joint problems that restrict mobility.
+
+- **Annotate**:  
+  - “Diastrophic dysplasia” as **Specific Disease**  
+  - “autosomal recessive disease” as **Disease Class**
+
+#### 1.1 Lack-nominal disease names with gene-product arguments
+A noun phrase headed by a state noun of absence or insufficiency (“deficiency,” “deficiencies,” or “absence”) that takes a gene-product argument (a protein, enzyme, or complement component, named in full or abbreviated form) is annotated as one **Specific Disease** span, including the state noun, when the clause presents the lack as a condition of a patient or population: as its cause, its manifestation, or a genotype-linked state.
+
+The gene-product argument may appear as:
+- a premodifier: “C7 deficiency”
+- a prepositional complement: “deficiency of C7”
+- part of a genitive chain: “deficiency of the C7 component”
+
+The span covers the whole chain from its first token to its last, including any determiner or ordinal inside the chain. Leading articles outside the chain are not included (see Section 5).
+
+**Negative constraints.** This rule does **not** apply, and the phrase is handled as follows, when:
+- **(a) Adjectival use.** The lack term is an adjective describing a phenotype or patient (e.g., “G6PD deficient phenotype”). The adjective is annotated as **Modifier** (see Section 3).
+- **(b) Molecular or biochemical state.** The phrase describes a property of a protein, enzyme, or complement component rather than a condition of the patient: its activity level, catalytic yield, thermal stability, kinetics, or abundance within a cell or tissue. This includes a mechanistic consequence of a mutation stated at the molecular level, and applies to purified or recombinant proteins as well as patient-derived material. Phrases such as “deficient activity of [enzyme]” fall under this sub-case, even when listed among a disease’s features. Such phrases remain **O**; the disease is labeled by its own mention.
+- **(c) Disorder-class head.** The head noun is itself a disorder-class noun (e.g., “disease,” “syndrome,” “cancer”). The phrase is labeled by that head under the existing rules.
+- **(d) No gene-product argument.** The argument is not a gene product, or the lack has no molecular argument (e.g., “vitamin D deficiency,” “iron deficiency”). The general-term exclusion applies (see “What NOT to Annotate,” item 4).
+
+**Tie-breaker.** When a phrase could be read either as a named condition of the patient or as a measured molecular state, annotate it as a condition only if the text uses it to name the patient’s or population’s disorder (e.g., “patients with C7 deficiency,” “G6PD deficiency in African populations”). Otherwise, leave it **O**.
+
+This section takes precedence over Section 1.2 for any phrase it governs.
+
+Verb forms such as “lacked” are not state nouns and are not covered by this rule.
+
+**Example**  
+> The high prevalence of glucose 6-phosphate dehydrogenase (G6PD) deficiency in African populations is due almost entirely to the enzyme variant A-.
+
+- **Annotate**:  
+  - “glucose 6-phosphate dehydrogenase (G6PD) deficiency” as **Specific Disease** (whole span, state noun included; names a population-level condition)
+
+#### 1.2 Patient-level condition labeling for descriptive pathology terms
+An unnamed, descriptive pathology head noun (for example, “cardiomyopathy,” “pneumonia,” “lymphoma,” or “retinal detachment”), with no proper name, eponym, or abbreviation and with or without a site, organism, or etiology modifier, is labeled **Specific Disease** rather than **Disease Class**, even when its form is generic or category-like, if either of the following holds:
+
+- **(i) Patient-level condition.** The term names a condition that a specific patient has, is diagnosed with, or is being differentiated from. This is signaled by one of these predicate types:
+  - *Presentation predicate:* “presented with,” “presenting with,” “admitted with,” “developed,” “suffered from,” “affected by,” “affected with,” “had” or “has” when the condition itself is the object, or a patient-group noun followed by its condition (“patients with,” “children with,” “cases of”).
+  - *Diagnostic-finding predicate:* “diagnosed with,” “diagnosed as,” “found to have,” “confirmed,” “revealed.”
+  - *Differential-exclusion predicate:* “to rule out,” “to exclude,” “differentiated from,” “distinguished from,” “differential diagnosis of.”
+- **(ii) Single organism or etiology.** The modifier pins the term to one named organism (species or genus) or to one named causal agent, such as a specific pathogen, toxin, drug, or chemical, or a named causative gene or gene variant. No predicate is needed. Inheritance patterns (“autosomal recessive,” “X-linked,” “inherited,” “familial”), onset or sex descriptors, and broad class descriptors (“viral,” “bacterial,” “fungal,” “genetic”) are **not** single etiologies. For those terms, (i) is required.
+
+**Predicates that do not count.** The following do not, by themselves, make a term patient-level:
+- Copular definitions, such as “X is an autosomal recessive disorder.”
+- Trait, consequence, and association predicates, such as “characterized by,” “defined by,” “marked by,” “featuring,” “consisting of,” “which results in,” “predisposes to,” “implicated in,” and “associated with.” Trait frames are also governed by negative constraint (a).
+- Test and presence frames, such as “analyzed for,” “screened for,” “tested for,” and “presence of,” unless the sentence reports that a patient was diagnosed with the condition.
+
+**Negative constraints.** This rule does **not** apply, and the mention keeps the label it would receive under Sections 1–3 without this rule, when:
+- **(a) Defining trait or umbrella phenotype.** The term is a defining trait of a named syndrome or disorder, introduced by a “characterized by”-type predicate (including consequence clauses inside that description), or it is listed as an umbrella phenotype with no individuated diagnosis. A trait is a feature of the named disorder, not a separate diagnosis of the patient, so this exclusion takes precedence over (ii). Such a term is not promoted. It keeps the label it would receive under Section 1 without this rule (Disease Class where it names a family of disorders; otherwise not annotated).
+- **(b) Generic category.** The term is used generically for a family of disorders, with no patient-level predicate and no single-organism or etiology modifier. It remains **Disease Class**.
+- **(c) Proper name, eponym, or abbreviation.** These are **Specific Disease** by default (see Section 1 and Example 1). This rule adds no test for them.
+- **(d) Family-history or relative frame.** The condition belongs to relatives rather than to the patients, as in “had a family history of ...” or “relatives with ...”. Such a term keeps its existing treatment (Modifier under Section 3).
+- **(e) Unframed list.** A bare pathology noun in a list, with no presentation, diagnostic, or differential-exclusion predicate and no single-organism or etiology modifier, is ambiguous. Do not force this rule. Keep the existing label and flag the mention for guideline review.
+
+**Precedence.** Apply the following before this rule:
+1. **Section 1.1 and item 7 of “What NOT to Annotate.”** Lack phrases with gene-product arguments and molecular or biochemical lack states are not promoted, even when they contain a patient-level predicate or a single-etiology modifier.
+2. **Section 3 (Modifier).** A term that premodifies or otherwise modifies another noun phrase keeps its Modifier tag, even if it meets (i) or (ii).
+3. **“What NOT to Annotate,” items 1, 4, and 5.** Bare organism names, general terms (“disease,” “syndrome,” “deficiency,” “complications,” “abnormalities”), and biological processes are never promoted. “Deficiency” and “absence” are governed only by Section 1.1.
+
+**Scope.** This rule governs label choice only. It does not change span boundaries (see Section 5), and the predicate (for example, “presented with”) is never part of the span. It can move a mention from Disease Class to Specific Disease, but it never demotes a Specific Disease mention and never changes a Modifier tag.
+
+---
+
+### 2. Annotate **contiguous text strings**
+A textual string may refer to two or more separate disease mentions. Such mentions are annotated with the **Composite Mention** category.
+
+**Example**  
+> The text phrase “Duchenne and Becker muscular dystrophy” refers to two separate diseases. If this phrase is separated into two strings: “Duchenne” and “Becker muscular dystrophy,” it results in information loss, because the word “Duchenne” on its own is not a disease mention.
+
+---
+
+### 3. Annotate disease mentions that are used as **Modifiers** for other concepts
+A textual string may refer to a disease name, but it may modify a noun phrase (or may not be a noun phrase itself). In such cases, annotate using the **Modifier** category.
+
+**Example**  
+> Although this mutation was initially detected in four of 33 colorectal cancer families analysed from eastern England, more extensive analysis has reduced the frequency to four of 52 English HNPCC kindreds analysed.
+
+- **Annotate**:  
+  - “colorectal cancer” as **Modifier**  
+  - “HNPCC” as **Modifier**
+
+- Lack terms used as adjectives that describe a phenotype or patient (e.g., “G6PD deficient” in “G6PD deficient phenotype”) are annotated as **Modifier**, not as lack-nominal **Specific Disease** spans (see Section 1.1(a)).
+
+- Section 1.2 does not change this tagging. A descriptive pathology term that premodifies another noun phrase (for example, “ovarian cancer cases” or “SLS genes”) stays **Modifier**, even when it names a patient’s condition or is pinned to a single organism or etiology.
+
+---
+
+### 4. Annotate **duplicate mentions**
+For each sentence in the PubMed abstract and title, the locations of all disease mentions are marked, including duplicates within the same sentence.
+
+---
+
+### 5. Annotate **minimum necessary span of text**
+Use the smallest span necessary to include all tokens expressing the most specific form of the disease.
+
+**Example**  
+> In the case of “insulin-dependent diabetes mellitus,” the disease mention including the whole phrase was preferred over its substrings such as “diabetes mellitus” or “diabetes.”
+
+---
+
+### 6. Annotate all **synonymous mentions**
+Abbreviation definitions such as “Huntington disease” (“HD”) are separated into two annotated mentions (one for the long form, one for the abbreviation).
+
+---
+
+## What NOT to Annotate
+
+1. **Do not annotate organism names**  
+   - Organism names such as “human” were excluded from the preferred mention.  
+   - Viruses, bacteria, and other organism names were not annotated **unless** it was clear that the disease caused by these organisms is being discussed.  
+   - A pathology noun pinned to a single organism (e.g., “Neisseria infection”) is governed by Section 1.2(ii). This item still excludes bare organism names.  
+   - **Example**  
+     > Studies of biopsied tissue for the presence of Epstein-Barr virus and cytomegalovirus were negative.  
+     
+     In this case: “Epstein-Barr virus” and “cytomegalovirus” are annotated as **Specific Disease** category **only** if the context clearly indicates the diseases they cause, otherwise not.
+
+2. **Do not annotate gender**  
+   - Tokens such as “male” and “female” were only included if they specifically identified a new form of the disease.  
+   - **Example**  
+     > “male breast cancer”
+
+3. **Do not annotate overlapping mentions**  
+   - **Example**: The phrase “von Hippel-Lindau (VHL) disease” is annotated as **one single disease mention** (Specific Disease category).
+
+4. **Do not annotate general terms**  
+   - Very general terms such as “disease,” “syndrome,” “deficiency,” “complications,” “abnormalities,” etc. were excluded.  
+   - A bare “deficiency” or “absence” is excluded in the same way. When either term takes a gene-product argument, the phrase is governed by Section 1.1 instead.  
+   - However, the terms “cancer” and “tumor” were retained.  
+   - General terms stay excluded even when a patient-level predicate is present (for example, “patients with complications”). Descriptive pathology head nouns such as “cardiomyopathy” are not general terms and are governed by Section 1.2.
+
+5. **Do not annotate references to **biological processes**  
+   - e.g. Terms corresponding to biological processes such as “tumorigenesis” or “cancerogenesis.”
+
+6. **Do not annotate disease mentions interrupted by nested mentions**  
+   - Essentially, do not break the contiguous text rule.  
+   - **Example**  
+     > WT1 dysfunction is implicated in both neoplastic (Wilms tumor, mesothelioma, leukemia, and breast cancer) and nonneoplastic (glomerulosclerosis) disease.  
+     
+     Here, the mentions “neoplastic disease” and “nonneoplastic disease” are not annotated because other tokens break up these phrases.
+
+7. **Do not annotate molecular or biochemical lack states**  
+   - Lack phrases that describe a molecular or biochemical property of a gene product remain **O**, even when they contain a state noun and a gene-product argument.  
+   - **Examples**: “deficient activity of fatty aldehyde dehydrogenase,” “absence of the FMR1 protein,” “a deficiency of norrin within the developing retina.”  
+   - See Section 1.1(b). Section 1.2 does not promote these phrases.
+
+---
+
+## Examples
+
+1. **“Insulin-dependent diabetes mellitus”**  
+   - **Specific Disease**  
+   - Prefer the whole string.
+
+2. **CDH1 mutations predispose to early onset “colorectal cancer.”**  
+   - “early onset” may or may not be part of the disease mention, depending on:  
+     1. If there is a UMLS concept specifying this as a separate form of disease  
+     2. If the annotator believes it should be included
+
+3. **Human “X-linked recessive disorder”**  
+   - “X-linked” is an inheritance pattern, not a single-etiology pin (Section 1.2(ii)). With no patient-level predicate, the term remains **Disease Class**.
+
+4. **Her fresh serum lacked complement-mediated bactericidal activity against Neisseria gonorrhoeae.**
+   - Remains **O**: “lacked” is a verb, not a state noun, and the span describes a functional property (Section 1.1).
+
+5. **“Huntington disease” (“HD”)**  
+   - The long form and the short form constitute two separate mentions.
+
+6. **C7 deficiency**  
+   - “This report represents the first cases of C7 deficiency associated with infectious complications.”  
+   - “infectious complications” is too general a term; C7 deficiency is a **Specific Disease**.  
+   - Consistent with Section 1.1: “C7 deficiency” is one **Specific Disease** span because C7 is a complement-component argument and the phrase names a patient condition.
+
+7. **“colorectal, endometrial, and ovarian cancers”**  
+   - Considered one **Composite Mention** of several Specific Diseases.
+
+8. **WT1 dysfunction is implicated in both neoplastic (“Wilms tumor,” “mesothelioma,” “leukemias,” and “breast cancer”) and nonneoplastic (“glomerulosclerosis”) disease.**  
+   - Potential disease mentions include: “neoplastic disease,” “nonneoplastic disease,” “Wilms tumor,” “mesothelioma,” “leukemias,” “breast cancer,” and “glomerulosclerosis.”  
+   - “neoplastic disease” and “nonneoplastic disease” are **not** annotated because these phrases are interrupted by nested mentions.  
+   - “mesothelioma,” “leukemias,” “breast cancer,” and “glomerulosclerosis” are bare nouns in an unframed list (Section 1.2(e)). Their existing labels are kept, and they are flagged for guideline review.
+
+9. **Tumorigenesis and cancerogenesis**  
+   - These refer to processes, not diseases.
+
+10. **“autosomal recessive disease”**  
+    - Refers to a family of diseases that can be passed down genetically → **Disease Class** category.
+
+11. **Large phenotypic variability with “convulsive disorders,” “motor retardation,” and “mental retardation.”**  
+    - These are “grey area” terms: they may not correspond to a single **Specific Disease**, so they are annotated as **Disease Class** category if appropriate. A list of phenotypic variability terms is an umbrella phenotype (Section 1.2(a)).
+
+12. **Borjeson-Forssman-Lehmann syndrome (BFLS) is a syndromal X-linked mental retardation.**  
+    - “Borjeson-Forssman-Lehmann syndrome” = **Specific Disease**  
+    - “X-linked mental retardation syndrome” = a family of diseases (i.e., **Disease Class**). The copula “is a” is not a patient-level predicate (Section 1.2).
+
+13. **Acute meningococcal pericarditis**  
+    - Exists as a separate concept in UMLS.  
+    - “meningococcal” pins the term to a single organism (Section 1.2(ii)).
+
+14. **Acute Neisseria infection**  
+    - May or may not include “acute” depending on context.  
+    - “Neisseria” pins the term to a single organism, so “Neisseria infection” is a **Specific Disease** (Section 1.2(ii)).
+
+15. **Classical galactosemia**  
+    - Includes “classical” because it corresponds to a particular form of the disease.
+
+16. **Inherited spinocerebellar ataxia**  
+    - May or may not include “inherited,” depending on the annotator.  
+    - “inherited” is an inheritance pattern, not a single-etiology pin, and does not make the term patient-level (Section 1.2(ii)).
+
+17. **“Adenomatous polyps of the colon and rectum”**  
+    - **Composite Mention**
+
+18. **Fibroepithelial or epithelial hyperplasias**  
+    - **Composite Mention**
+
+19. **Stage II or stage III colorectal cancer**  
+    - **Composite Mention**
+
+20. **“glucose 6-phosphate dehydrogenase (G6PD) deficiency” in “The high prevalence of glucose 6-phosphate dehydrogenase (G6PD) deficiency in African populations”**  
+    - **Specific Disease** (Section 1.1). The whole chain, including the state noun, is one span. It names a population-level condition.
+
+21. **“G6PD deficient phenotype”**  
+    - “G6PD deficient” → **Modifier** (adjective describing a phenotype; Section 1.1(a)). “phenotype” is not annotated.
+
+22. **“…resulting in absence of the FMR1 protein”**  
+    - Remains **O**: “absence of the FMR1 protein” is a molecular consequence of promoter hypermethylation (Section 1.1(b)). The disease is labeled by its own mention, not by this phrase.
+
+23. **“…results in a deficiency of norrin (the protein product of the NDP gene) within the developing retina”**  
+    - Remains **O**: this is a tissue-level protein abundance stated as a mechanism (Section 1.1(b)). Disease mentions in the same sentence are labeled separately.
+
+24. **“…sister controls…” / “Sjogren-Larsson syndrome … characterized by ichthyosis, mental retardation, spasticity, and deficient activity of fatty aldehyde dehydrogenase (FALDH)”**  
+    - “Sjogren-Larsson syndrome” → **Specific Disease**, labeled by its own mention.  
+    - “deficient activity of fatty aldehyde dehydrogenase (FALDH)” → **O**: an enzymatic activity level, even though it appears among the disease’s features (Section 1.1(b)).
+
+25. **“…the coexistence of the two mutations is responsible for enzyme deficiency in G6PD A-…” (recombinant expression study)**  
+    - Remains **O**: the span describes biochemical instability of a recombinant enzyme (Section 1.1(b)).
+
+26. **“Twelve patients presented with cardiomyopathy.”**  
+    - “cardiomyopathy” → **Specific Disease**. It is an unnamed pathology head noun with a category-like form, but the presentation predicate makes it a patient-level condition (Section 1.2(i)).
+
+27. **“Epstein-Barr virus-associated lymphoma”**  
+    - One **Specific Disease** span. The organism modifier pins the term to a single named organism, so no predicate is needed (Section 1.2(ii)). “Epstein-Barr virus” on its own remains unannotated (What NOT to Annotate, item 1).
+
+28. **“Cultures were obtained to rule out bacterial pneumonia.”**  
+    - “bacterial pneumonia” → **Specific Disease**. The differential-exclusion predicate (“to rule out”) makes it a condition being differentiated. “Bacterial” names a class of organisms, so it does not supply the single-etiology pin, but (i) is satisfied (Section 1.2(i)).
+
+29. **“Coats disease is characterized by abnormal retinal vascular development (so-called retinal telangiectasis), which results in massive intraretinal and subretinal lipid accumulation (exudative retinal detachment).”**  
+    - “Coats disease” → **Specific Disease** (eponym).  
+    - “retinal telangiectasis” and “exudative retinal detachment” are defining-trait and consequence clauses of a named disorder. They are not promoted (Section 1.2(a)) and remain unannotated.
+
+30. **“Patients with infectious complications were excluded from the analysis.”**  
+    - Nothing is annotated. “complications” is a general term (What NOT to Annotate, item 4) and is not promoted even with a patient-level predicate. “infectious” describes a broad class, not a single organism or etiology.
+
+31. **“Forty-two colorectal cancer cases were enrolled.”**  
+    - “colorectal cancer” → **Modifier**. Although it names the enrolled patients’ condition, it premodifies “cases,” so the Modifier tag stands (Section 3; Section 1.2 precedence).
+
+32. **“Both patients had a family history of breast or ovarian cancer.”**  
+    - The “had” predicate attaches the condition to relatives, not to the patients. The mention is not promoted under Section 1.2(i) and keeps its existing treatment (Section 3).
+
+**NEW MODERATION PRINCIPLES:**
+- **Principle (Disease-Manifestation Spans as DiseaseClass):** IF a noun phrase's head denotes a disease manifestation (a sign, symptom, abnormality, deficiency, or other pathological state), whether or not it carries a nosological head noun, AND the phrase occupies a disease-defining or consequence position relative to a named disease in the passage describing that disease, namely (a) the complement of a predicate that characterizes or defines the disease, (b) the object of a predicate stating that the disease produces or leads to an outcome, or (c) a parenthetical or appositive gloss of an effect of that disease, THEN label the entire noun phrase, including its premodifiers and postmodifiers such as prepositional complements, as DiseaseClass.
+  - **Does NOT apply when:** (i) the phrase denotes a cause or causal agent, such as a gene, mutation, gene product, or exposure described as the origin of the disease, even when it appears in the same clause as a consequence; (ii) the phrase is itself a named disease, which is governed by its own entity definition; (iii) the phrase appears in a diagnostic, testing, measurement, or methodological context rather than describing the disease's features; (iv) the phrase is a free-standing descriptive or background statement not anchored to a disease-defining or consequence predicate; (v) the phrase functions only as a modifier within a larger disease mention, or falls within a CompositeMention, in which case the composite span determines the boundary.
+
+**CONSTRAINT: DO NOT BREAK THESE EXAMPLES:**
+The following examples are currently handled CORRECTLY. Your new guidelines MUST NOT cause these to be annotated incorrectly.
+FILE: 10196379.json
+TEXT: Germline BRCA1 alterations in a population-based series of ovarian cancer cases.
+The objective of this study was to provide more accurate frequency estimates of breast cancer susceptibility gene 1 ( BRCA1 ) germline alterations in the ovarian cancer population . To achieve this , we determined the prevalence of BRCA1 alterations in a population-based series of consecutive ovarian cancer cases . This is the first population-based ovarian cancer study reporting BRCA1 alterations derived from a comprehensive screen of the entire coding region . One hundred and seven ovarian cancer cases were analyzed for BRCA1 alterations using the RNase mismatch cleavage assay followed by direct sequencing . Two truncating mutations , 962del4 and 3600del11 , were identified . Both patients had a family history of breast or ovarian cancer . Several novel as well as previously reported uncharacterized variants were also identified , some of which were associated with a family history of cancer . The frequency distribution of common polymorphisms was determined in the 91 Caucasian cancer cases in this series and 24 sister controls using allele-specific amplification . The rare form of the Q356R polymorphism was significantly ( P = 0 . 03 ) associated with a family history of ovarian cancer , suggesting that this polymorphism may influence ovarian cancer risk . In summary , our data suggest a role for some uncharacterized variants and rare forms of polymorphisms in determining ovarian cancer risk , and highlight the necessity to screen for missense alterations as well as truncating mutations in this population . 
+MATCHED ANNOTATIONS:
+- Modifier [235, 249] "ovarian cancer"
+- Modifier [375, 389] "ovarian cancer"
+- Modifier [1479, 1493] "ovarian cancer"
+- Modifier [1339, 1353] "ovarian cancer"
+- Modifier [433, 447] "ovarian cancer"
+
+FILE: 10484772.json
+TEXT: Coats' disease of the retina (unilateral retinal telangiectasis) caused by somatic mutation in the NDP gene: a role for norrin in retinal angiogenesis.
+Coats disease is characterized by abnormal retinal vascular development ( so-called retinal telangiectasis ) which results in massive intraretinal and subretinal lipid accumulation ( exudative retinal detachment ) . The classical form of Coats disease is almost invariably isolated , unilateral and seen in males . A female with a unilateral variant of Coats disease gave birth to a son affected by Norrie disease . Both carried a missense mutation within the NDP gene on chromosome Xp11 . 2 2 . Subsequently analysis of the retinas of nine enucleated eyes from males with Coats disease demonstrated in one a somatic mutation in the NDP gene which was not present within non-retinal tissue . We suggest that Coats telangiectasis is secondary to somatic mutation in the NDP gene which results in a deficiency of norrin ( the protein product of the NDP gene ) within the developing retina . This supports recent observations that the protein is critical for normal retinal vasculogenesis . 
+MATCHED ANNOTATIONS:
+- SpecificDisease [152, 165] "Coats disease"
+- SpecificDisease [0, 14] "Coats' disease"
+- SpecificDisease [551, 565] "Norrie disease"
+- SpecificDisease [390, 403] "Coats disease"
+- SpecificDisease [860, 880] "Coats telangiectasis"
+
+FILE: 10545613.json
+TEXT: Synergistic effect of histone hyperacetylation and DNA demethylation in the reactivation of the FMR1 gene.
+Most fragile X syndrome patients have expansion of a ( CGG ) ( n ) sequence with > 200 repeats ( full mutation ) in the FMR1 gene responsible for this condition . Hypermethylation of the expanded repeat and of the FMR1 promoter is almost always present and apparently suppresses transcription , resulting in absence of the FMR1 protein . We recently showed that transcriptional reactivation of FMR1 full mutations can be achieved by inducing DNA demethylation with 5-azadeoxycytidine ( 5-azadC ) . The level of histone acetylation is another important factor in regulating gene expression ; therefore , we treated lymphoblastoid cell lines of non-mosaic full mutation patients with three drugs capable of inducing histone hyperacetylation . We observed a consistent , although modest , reactivation of the FMR1 gene with 4-phenylbutyrate , sodium butyrate and trichostatin A , as shown by RT-PCR . However , we report that combining these drugs with 5-azadC results in a 2- to 5-fold increase in FMR1 mRNA levels obtained with 5-azadC alone , thus showing a marked synergistic effect of histone hyperacetylation and DNA demethylation in the reactivation of FMR1 full mutations . . 
+MATCHED ANNOTATIONS:
+- Modifier [112, 130] "fragile X syndrome"
+
+FILE: 10577908.json
+TEXT: The molecular basis of Sjogren-Larsson syndrome: mutation analysis of the fatty aldehyde dehydrogenase gene.
+Sjogren-Larsson syndrome ( SLS ) is an autosomal recessive disorder characterized by ichthyosis , mental retardation , spasticity , and deficient activity of fatty aldehyde dehydrogenase ( FALDH ) . To define the molecular defects causing SLS , we performed mutation analysis of the FALDH gene in probands from 63 kindreds with SLS . Among these patients , 49 different mutations-including 10 deletions , 2 insertions , 22 amino acid substitutions , 3 nonsense mutations , 9 splice-site defects , and 3 complex mutations-were found . All of the patients with SLS were found to carry mutations . Nineteen of the missense mutations resulted in a severe reduction of FALDH enzyme catalytic activity when expressed in mammalian cells , but one mutation ( 798G-- > C [ K266N ] ) seemed to have a greater effect on mRNA stability . The splice-site mutations led to exon skipping or utilization of cryptic acceptor-splice sites . Thirty-seven mutations were private , and 12 mutations were seen in two or more probands of European or Middle Eastern descent . Four single-nucleotide polymorphisms ( SNPs ) were found in the FALDH gene . At least four of the common mutations ( 551C-- > T , 682C-- > T , 733G-- > A , and 798 + 1delG ) were associated with multiple SNP haplotypes , suggesting that these mutations originated independently on more than one occasion or were ancient SLS genes that had undergone intragenic recombination . Our results demonstrate that SLS is caused by a strikingly heterogeneous group of mutations in the FALDH gene and provide a framework for understanding the genetic basis of SLS and the development of DNA-based diagnostic tests . . 
+MATCHED ANNOTATIONS:
+- SpecificDisease [348, 351] "SLS"
+- SpecificDisease [437, 440] "SLS"
+- Modifier [1481, 1484] "SLS"
+- DiseaseClass [207, 225] "mental retardation"
+- SpecificDisease [1566, 1569] "SLS"
+
+FILE: 1303173.json
+TEXT: Both mutations in G6PD A- are necessary to produce the G6PD deficient phenotype.
+The high prevalence of glucose 6-phosphate dehydrogenase ( G6PD ) deficiency in African populations is due almost entirely to the enzyme variant A- , which differs from the wild-type G6PD B by two amino acid replacements , 68 Val-- > Met and 126 Asn-- > Asp . The non-deficient polymorphic variant G6PD A contains only the mutation 126 Asn-- > Asp . The frequencies of the G6PD A and of the G6PD A- genes in parts of Africa are both about 0 . 2 . The 68 Val-- > Met mutation has not been found in a B background . This could be because the 68 Val-- > Met mutation happened to arise in an A gene in the first instance , or because the 68 Val-- > Met mutation alone is not sufficient to cause G6PD deficiency . We have approached this question by producing G6PD B , A , A- , and G6PD 68 Val-- > Met in a bacterial expression system and analysing their biochemical properties . With each single mutation we found a slight decrease in both the specific activity and the yield of enzyme when compared to G6PD B . When both mutations were introduced together , there was a roughly additive effect on specific activity , but a much more drastic effect on enzyme yield ( 4 % of normal ) . This synergistic effect was also demonstrated on thermal stability , especially at low NADP concentrations . Comparable results were produced when the replacement 119 Gln-- > Glu was studied instead of 126 Asn-- > Asp . We infer that the coexistence of the two mutations is responsible for enzyme deficiency in G6PD A- because they act synergistically in causing instability of the enzyme . 
+MATCHED ANNOTATIONS:
+- SpecificDisease [104, 157] "glucose 6-phosphate dehydrogenase ( G6PD ) deficiency"
+- SpecificDisease [772, 787] "G6PD deficiency"
+- Modifier [55, 69] "G6PD deficient"
+
+**INSTRUCTIONS:**
+1. Read the Current Guidelines and the New Principles.
+2. Integrate the New Principles into the Guidelines naturally.
+   - Do NOT just append them at the end unless it makes sense.
+   - If an existing rule contradicts the new principle, update it.
+   - **Conflict Resolution**: If the new principle necessitates changing an existing rule, explicitly justify (in your internal thought process) why the new rule is superior (e.g., more specific, resolves an ambiguity).
+   - If the new principle clarifies a specific section, add it there.
+3. **CONSTRAINT CHECK**:
+   - Review the "CONSTRAINT" examples above.
+   - Ensure your changes strictly support the New Principles WITHOUT invalidating the "CONSTRAINT" examples.
+   - If a trade-off is required, prioritize specific sub-cases to avoid regression.
+4. Maintain the original formatting and structure.
+5. Return the FULL updated Guidelines text.
+6. **CRITICAL INSTRUCTION**: Models often try to summarize or use placeholders like "(...)" to save tokens. **DO NOT DO THIS.** YOU MUST OUTPUT THE COMPLETED DOCUMENT IN FULL. If you leave out any section, the file will be corrupted.
+7. Output ONLY the guideline text. Do not start with "Here are the updated guidelines:".

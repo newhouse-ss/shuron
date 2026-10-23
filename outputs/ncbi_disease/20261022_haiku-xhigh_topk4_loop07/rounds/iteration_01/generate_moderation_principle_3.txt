@@ -1,0 +1,70 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** The three deficiency cases (Examples 1-3) and the sign case (Example 4) all place a state or manifestation noun as the complement of a disease-characterizing or etiologic predicate: "characterized by...", "caused by...", "responsible for...", "presenting with...". The True Positive disease spans are lexicalized disease names used as noun-phrase heads ("Coats disease", "Norrie disease", "diastrophic dysplasia", "ovarian cancer") or as parenthetical appositives ("so-called retinal telangiectasis"). The one TP that uses "deficiency" ("G6PD deficiency") is a compact, fixed disease name.
+- **Isolate Trigger:** "deficiency of / deficient activity of [enzyme or gene product]" reads as a biochemical mechanism or measurement, not a nosological label. "Fever" reads as a generic clinical finding. Neither has disease-name morphology or head-noun structure, so the model defaults to O.
+- **Hypothesis Check:**
+  - Examples 1-3 fit well. Each sentence names the disease (SLS, PKU, G6PD A-) and then gives its defining deficiency.
+  - Example 4 fits only under the broader "manifestation complement" umbrella, and it is the weakest case. In the same document, "ichthyosis" and "spasticity" in a similar sign list are gold O.
+  - Gold is also inconsistent within the control set. In TP 10484772, "results in a deficiency of norrin" and "abnormal retinal vascular development" are gold O. The trigger is therefore necessary but not sufficient, and the boundary is only partly syntactic.
+
+**Step 2: Formulate Pattern**
+
+- The recurring structure is a *state/manifestation noun phrase* (deficiency-of-X or a clinical sign) placed inside a disease-defining predicate. The model treats the phrase as description rather than disease.
+
+**Pattern Insight**
+
+- **Pattern Name:** Deficiency/Sign Phenotype as Disease-Defining Complement
+- **Confusion Trigger:** Nominal "deficiency / deficient activity of [enzyme or gene]" phrases, and bare clinical sign nouns such as "fever", used as the complement of a disease-characterizing or etiologic predicate ("characterized by", "caused by", "responsible for", "presenting with"). The model reads them as molecular mechanisms or clinical findings rather than nosological labels.
+- **Contrastive Evidence:** True Positive disease spans are either fixed disease names with disease-lexicon heads ("Coats disease", "diastrophic dysplasia", "G6PD deficiency") or parenthetical appositive names. They are not state descriptions embedded in a causal clause. The control set also shows the model correctly leaving descriptive phenotypes unlabeled ("abnormal retinal vascular development", "a deficiency of norrin"), which marks the boundary of the pattern.
+- **Linguistic Rule (Proposed):** Tag the span as SpecificDisease when all of the following hold:
+  1. The head is "deficiency / deficient activity" with an enzyme or gene complement, or the span is a clinical sign noun.
+  2. The span is the direct complement of a disease-characterizing or etiologic predicate ("characterized by", "caused by", "due to", "responsible for", "presenting with").
+  3. The clause identifies the state as the defining feature of a named disease.
+  
+  Extend the span over the full "deficiency of [enzyme name]" construction and exclude parenthetical acronyms, as in the gold spans. Otherwise keep O.
+  
+  *Caveat:* Because the gold labels for this frame are inconsistent (see the norrin and ichthyosis/spasticity cases), this rule is low-confidence. Route the cluster to annotation review before encoding it as a hard constraint.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10577908.json):
+Snippet: "...rized by ichthyosis , mental retardation , spasticity , and deficient activity of fatty aldehyde dehydrogenase ( FALDH ) . To define the molecular defects causing SLS , w..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficient activity of fatty aldehyde dehydrogenase"
+
+Example 2 (Doc: 1303173.json):
+Snippet: "... coexistence of the two mutations is responsible for enzyme deficiency in G6PD A- because they act synergistically in causing instability ..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficiency in G6PD"
+
+Example 3 (Doc: 1671881.json):
+Snippet: "...enylketonuria is an autosomal recessive disease caused by a deficiency of hepatic phenylalanine hydroxylase ( PAH ) . The abolition of an invariant BamHI site located ..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficiency of hepatic phenylalanine hydroxylase"
+
+Example 4 (Doc: 6859721.json):
+Snippet: "...litis.
+A previously healthy 40-year-old man presenting with fever , arthritis , and cutaneous vasculitis was found to have ch..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "fever"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

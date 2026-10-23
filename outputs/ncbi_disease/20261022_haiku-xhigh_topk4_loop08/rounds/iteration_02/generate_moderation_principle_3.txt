@@ -1,0 +1,53 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: Modifier (Label Mismatch)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** In the discrepancies, the disease name is either a complement of a preposition or a closed NP. Example 1 is "family history **of** [ovarian cancer]," and Example 2 is "a [Tay-Sachs disease] (TSD)," where the acronym closes the name. The gold label is SpecificDisease in both. In the True Positives, Modifier labels go to disease names used as unbroken premodifiers before a non-disease head: "ovarian cancer **population** / **cases** / **study** / **risk**," "fragile X syndrome **patients**," "Wiskott-Aldrich syndrome **protein**," and "ancient SLS **genes**." SpecificDisease labels in the controls go to complement positions: "variant **of** Coats disease," "patients **with** SLS," and "genetic basis **of** SLS."
+- **Single boolean feature:** Is the disease string directly attributive, with no intervening preposition, parenthesis, or punctuation, immediately preceding a non-disease head noun? Yes gives Modifier. No gives SpecificDisease.
+- **Isolate trigger:**
+  - *Example 1:* "ovarian cancer" is followed by "suggesting… may influence ovarian cancer **risk**" in the same sentence. The string also appears as a premodifier five times in this document. The model appears to have been primed by both the adjacent "risk" premodifier and the document-level Modifier pattern. The "family history" risk frame may also have pushed it toward a modifier reading.
+  - *Example 2:* "disease **causing**" resembles the compound adjective "disease-causing." The model ignored that the "(TSD)" parenthesis closes the name, so the disease cannot be a compound premodifier.
+- **Hypothesis check:** The attributive-versus-closed-complement rule explains both discrepancies and all True Positives. It also shows that the same surface string ("ovarian cancer") in the same document is labeled differently depending on syntactic slot, so the gold labels are positionally consistent.
+
+**Step 2: Pattern Insight**
+
+- **Pattern Name:** Attributive Premodifier vs. Closed-NP/Complement Disease Mention
+- **Confusion Trigger:** A disease name that is followed by a risk, case, or participle cue ("…ovarian cancer risk," "…TSD) causing mutation") or that recurs as a premodifier elsewhere in the document. The model reads the name as a noun-noun adjunct (Modifier) based on local surface adjacency and document-level priming, rather than checking whether the name is a complement of a preposition or closed off as its own NP.
+- **Contrastive Evidence:** The True Positive Modifiers are unbroken premodifiers directly before heads such as population, cases, study, risk, patients, protein, and genes. The same string after "of" or "with" (for example, "family history of ovarian cancer," "patients with SLS," "genetic basis of SLS") is labeled SpecificDisease in the controls. An acronym parenthesis such as "( TSD )" closes the name, so it cannot function as a compound premodifier.
+- **Linguistic Rule (Proposed):**
+  1. Label the span **Modifier** only if the disease name is an unbroken attributive string immediately preceding a non-disease head noun, with no intervening preposition, parenthesis, comma, or other punctuation.
+  2. Label the span **SpecificDisease** if the name is the head of its NP, is the complement of a preposition ("of," "with," "in," "from"), or is closed by an acronym parenthesis.
+  3. A following participle such as "causing" does not trigger Modifier when an acronym parenthesis or other closure intervenes between the name and the participle.
+  4. The syntactic slot takes precedence over document-level lexical frequency and over the semantic risk or family-history frame.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10196379.json):
+Snippet: "...ficantly ( P = 0 . 03 ) associated with a family history of ovarian cancer , suggesting that this polymorphism may influence ovarian c..."
+Gold: SpecificDisease, LLM: Modifier
+Entity Text: "ovarian cancer"
+
+Example 2 (Doc: 8326491.json):
+Snippet: "...from the British Isles.
+In a previous study we found that a Tay-Sachs disease ( TSD ) causing mutation in the intron 9 donor splice site ..."
+Gold: SpecificDisease, LLM: Modifier
+Entity Text: "Tay-Sachs disease"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

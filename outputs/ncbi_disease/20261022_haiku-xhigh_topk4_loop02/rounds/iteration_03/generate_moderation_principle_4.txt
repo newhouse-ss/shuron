@@ -1,0 +1,44 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: DiseaseClass vs LLM: Modifier (Label Mismatch)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** The discrepancy is "...associated with a family history of **cancer**." The matching True Positive, "...associated with a family history of **ovarian cancer**," is labeled Modifier. Both sit in the same "family history of [disease]" frame. The separating feature is **lexical specificity**: the TP span is site-qualified ("ovarian"), while the discrepancy span is bare. Bare "cancer" names the disease category, not a specific disease.
+- **Isolate Trigger:** The model appears to have keyed on the syntactic frame ("family history of ___") and the head noun "cancer," which it learned as Modifier from site-qualified spans. It did not check whether the span was qualified at all.
+- **Hypothesis Check:** The TP "mental retardation" is a bare category term, correctly labeled DiseaseClass, which supports the view that unqualified category terms are DiseaseClass regardless of context. The Modifier TPs ("ovarian cancer" in several sentences, "Wiskott-Aldrich syndrome protein," "ancient SLS genes," "fragile X syndrome patients") all carry a site, eponym, or acronym qualifier. The provided data contains only one discrepancy, so this is a hypothesis. The untested boundary is a bare term used prenominally (e.g., "cancer cases"), which appears unannotated in the TPs.
+
+**Step 2: Formulate Pattern**
+
+- **Pattern Insight**
+  - **Pattern Name:** Bare Generic Disease Category Term Inside a Specific-Disease Context Frame ("family history of cancer")
+  - **Confusion Trigger:** The "history of [disease]" frame, which hosts Modifier-labeled specific diseases in the TPs ("family history of ovarian cancer"), combined with the head noun "cancer," which the model has seen labeled Modifier when site-qualified. The model weighted the syntactic frame and the lexical head over the absence of any specifier.
+  - **Contrastive Evidence:** The TPs labeled Modifier ("ovarian cancer," "Wiskott-Aldrich syndrome," "fragile X syndrome," "SLS genes") each carry a site, eponym, or acronym qualifier that names a specific disease. The TP "mental retardation" is a bare generic term and is correctly labeled DiseaseClass, even though it appears in a clinical description frame. The discrepancy's "cancer" has no qualifier, so it matches the DiseaseClass pattern.
+  - **Linguistic Rule (Proposed):** Determine entity type from the lexical specificity of the disease span before considering its syntactic context.
+    1. If the span is a bare generic category label (e.g., cancer, disease, syndrome, tumor, mental retardation) with no organ, etiologic, eponymous, or acronym qualifier, label it **DiseaseClass**, even inside "family history of," "associated with," or "characterized by" frames.
+    2. Assign **Modifier** only when the span is a specific, qualified disease name (site, eponym, or acronym) functioning as an attributive or history/context qualifier of another noun.
+    3. Flag bare prenominal category terms ("cancer cases") for manual verification, because the provided data does not resolve them.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10196379.json):
+Snippet: "...ed , some of which were associated with a family history of cancer . The frequency distribution of common polymorphisms was de..."
+Gold: DiseaseClass, LLM: Modifier
+Entity Text: "cancer"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

@@ -1,0 +1,45 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: DiseaseClass vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** The True Positive DiseaseClass case, "mental retardation," is an unmodified, lexicalized disorder term. Both discrepancies are compositional noun phrases: "exudative retinal detachment" (a modifier stack with an anatomical site) and "deficiency of norrin" (a condition head plus an "of"-PP naming a protein). Both sit in explanatory or mechanistic clauses rather than in a plain list of named conditions.
+- **Isolate Trigger:** The model appears to anchor on the non-disease dependents, "retinal" (anatomy) and "norrin" (protein), and reads the span as a tissue or molecule description. The disorder-denoting heads, "detachment" and "deficiency," are not treated as disease cues. Neither span contains "disease" or "syndrome," so the model falls back to O.
+- **Hypothesis Check:** The head-noun hypothesis explains both cases, since both heads denote pathological states. It alone does not explain why "mental retardation" (also a suffix-free condition noun) is caught. The refinement is that "mental retardation" is a fixed, standalone nosological term the model recognizes as a unit, while the discrepancies are compositional, and the model parses them by their modifiers rather than their heads.
+
+**Step 2: Output**
+
+- **Pattern Name:** Compositional Condition Phrases Headed by Generic Pathological-State Nouns
+- **Confusion Trigger:** A generic disorder-denoting head noun ("detachment," "deficiency") that is not a disease-name suffix, embedded in a compositional phrase whose modifiers are anatomical or molecular ("retinal," "of norrin"). The model attends to the modifier's entity type and misses the disorder head.
+- **Contrastive Evidence:** The TP DiseaseClass "mental retardation" is a fixed, unmodified condition term that the model recognizes as a whole. The TP SpecificDisease and Modifier spans ("G6PD deficiency," "ovarian cancer," "Wiskott-Aldrich syndrome") are either named diseases or disease terms used attributively, so the model's disease cues are intact. The discrepancies lack both a named-disease marker and a lexicalized unit.
+- **Linguistic Rule (Proposed):** Label a headed phrase as DiseaseClass when its head noun denotes a pathological state or disorder (e.g., detachment, deficiency, retardation) and the phrase names a condition in context, even without "disease" or "syndrome" and even when modified by an anatomical site or an "of [molecule]" PP. Do not let the anatomical or molecular dependent determine the label. Boundary check: "deficient activity of FALDH" in the same corpus is an enzymatic measurement and is not annotated, so the rule should require the deficiency to denote a disease-level condition rather than a measured quantity.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10484772.json):
+Snippet: "...in massive intraretinal and subretinal lipid accumulation ( exudative retinal detachment ) . The classical form of Coats disease is almost invariabl..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "exudative retinal detachment"
+
+Example 2 (Doc: 10484772.json):
+Snippet: "...dary to somatic mutation in the NDP gene which results in a deficiency of norrin ( the protein product of the NDP gene ) within the developi..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "deficiency of norrin"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

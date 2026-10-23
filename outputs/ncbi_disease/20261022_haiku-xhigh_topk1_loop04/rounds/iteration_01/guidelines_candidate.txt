@@ -1,0 +1,195 @@
+# Biomedical Annotation Guidelines
+
+## What to Annotate
+
+### 1. Annotate all **Specific Disease** mentions
+A textual string referring to a disease name may refer to a **Specific Disease** or a **Disease Class**.  
+- **Disease Class**: Mentions that could be described as a family of multiple specific diseases.  
+- **Specific Disease**: Mentions that can be linked to one specific definition that does not include further categorization.
+
+**Example**  
+> Diastrophic dysplasia is an autosomal recessive disease characterized by short stature, very short limbs and joint problems that restrict mobility.
+
+- **Annotate**:  
+  - “Diastrophic dysplasia” as **Specific Disease**  
+  - “autosomal recessive disease” as **Disease Class**  
+- **Do not annotate** the descriptive traits listed in the definition (“short stature,” “very short limbs,” “joint problems”).
+
+#### Assigning labels by referential role
+Specific Disease and Disease Class labels are assigned according to how a disease noun phrase functions in the sentence, not according to its lexical form alone. Decide each mention on the basis of its referential role.
+
+- **Patient-level frames → Specific Disease.** If a disease-denoting noun phrase is the argument of a patient-level predicate, label the full phrase **Specific Disease**, even when its head noun is generic, organ- or process-level, or preceded by a taxonomic, anatomical, or other classifying premodifier. Patient-level predicates include:
+  - *Presentation:* “presented with X,” “affected by X,” “developed X,” “suffering from X”
+  - *Confirmed or working diagnosis:* “diagnosed with X,” “patients with X,” “males with X,” “a diagnosis of X,” “suspected X”
+  - *Differential exclusion:* “ruled out X,” “to exclude X,” “excluded X,” “differential diagnosis included X”
+
+  In these frames, referential role takes precedence over the Disease Class definition: a class-type term that names a patient’s condition is labeled **Specific Disease**.
+
+- **Non-patient frames → existing rules apply unchanged.** The patient-level rule does not apply to the following frames, which remain governed by Sections 1–3 as before:
+  - *Family history or risk:* “family history of X,” “X risk”
+  - *Cohort or study design:* “X cases,” “X families,” “the X population,” “the first X study”
+  - *Molecular variant phenotype:* “the G6PD deficient phenotype” (describes a property of an enzyme variant, not an individual patient’s condition)
+
+  The grammatical contrast is the key test. “Patients with X” (disease as a prepositional complement marking a diagnosis) triggers the rule. “X patients” or “X cases” (disease as a premodifier of a cohort noun) does not.
+
+- **Negative constraint: definitional or generic statements.** The patient-level rule does **not** apply when a disorder is the subject of a definitional or generic statement, a characterization predicate links it to a list of its typical phenotypic traits, and no individual patient is the referent. In that case:
+  - The disorder itself keeps the label given by the standard rules (e.g., “Coats disease” and “Sjogren-Larsson syndrome” remain **Specific Disease**).
+  - A phenotypic term in the trait list that names a family of diseases is labeled **Disease Class** (e.g., “mental retardation” in “characterized by ichthyosis, mental retardation, spasticity…”).
+  - Descriptive clinical findings that do not name a family of diseases are not annotated (e.g., “abnormal retinal vascular development,” “retinal telangiectasis,” and “exudative retinal detachment” in the Coats disease definition).
+  - A hypernym category term not attributed to any patient is governed by the Disease Class rule above (e.g., “autosomal recessive disease”).
+
+- **Premodifiers and list position do not decide the label.** A premodifier alone does not convert a head disease mention into a Disease Class (e.g., “acute meningococcal pericarditis” remains a **Specific Disease**; see Example 13). Commas or list position alone do not determine the label; referential role does.
+
+- **Contiguity still applies.** The referential-role principle does not override the contiguity rule in “What NOT to Annotate,” item 6.
+
+---
+
+### 2. Annotate **contiguous text strings**
+A textual string may refer to two or more separate disease mentions. Such mentions are annotated with the **Composite Mention** category.
+
+**Example**  
+> The text phrase “Duchenne and Becker muscular dystrophy” refers to two separate diseases. If this phrase is separated into two strings: “Duchenne” and “Becker muscular dystrophy,” it results in information loss, because the word “Duchenne” on its own is not a disease mention.
+
+---
+
+### 3. Annotate disease mentions that are used as **Modifiers** for other concepts
+A textual string may refer to a disease name, but it may modify a noun phrase (or may not be a noun phrase itself). In such cases, annotate using the **Modifier** category. A disease mention that is the patient-level argument described in Section 1 is not a Modifier and is labeled as a **Specific Disease**.
+
+**Example**  
+> Although this mutation was initially detected in four of 33 colorectal cancer families analysed from eastern England, more extensive analysis has reduced the frequency to four of 52 English HNPCC kindreds analysed.
+
+- **Annotate**:  
+  - “colorectal cancer” as **Modifier**  
+  - “HNPCC” as **Modifier**
+
+---
+
+### 4. Annotate **duplicate mentions**
+For each sentence in the PubMed abstract and title, the locations of all disease mentions are marked, including duplicates within the same sentence.
+
+---
+
+### 5. Annotate **minimum necessary span of text**
+Use the smallest span necessary to include all tokens expressing the most specific form of the disease.
+
+**Example**  
+> In the case of “insulin-dependent diabetes mellitus,” the disease mention including the whole phrase was preferred over its substrings such as “diabetes mellitus” or “diabetes.”
+
+---
+
+### 6. Annotate all **synonymous mentions**
+Abbreviation definitions such as “Huntington disease” (“HD”) are separated into two annotated mentions (one for the long form, one for the abbreviation).
+
+---
+
+## What NOT to Annotate
+
+1. **Do not annotate organism names**  
+   - Organism names such as “human” were excluded from the preferred mention.  
+   - Viruses, bacteria, and other organism names were not annotated **unless** it was clear that the disease caused by these organisms is being discussed.  
+   - **Example**  
+     > Studies of biopsied tissue for the presence of Epstein-Barr virus and cytomegalovirus were negative.  
+     
+     In this case: “Epstein-Barr virus” and “cytomegalovirus” are annotated as **Specific Disease** category **only** if the context clearly indicates the diseases they cause, otherwise not.
+
+2. **Do not annotate gender**  
+   - Tokens such as “male” and “female” were only included if they specifically identified a new form of the disease.  
+   - **Example**  
+     > “male breast cancer”
+
+3. **Do not annotate overlapping mentions**  
+   - **Example**: The phrase “von Hippel-Lindau (VHL) disease” is annotated as **one single disease mention** (Specific Disease category).
+
+4. **Do not annotate general terms**  
+   - Very general terms such as “disease,” “syndrome,” “deficiency,” “complications,” “abnormalities,” etc. were excluded.  
+   - However, the terms “cancer” and “tumor” were retained.  
+   - A generic head noun is annotated only when the full phrase names a disease (e.g., “X-linked recessive disorder”) and fills a patient-level role (Section 1). Outcome and descriptive nouns such as “complications,” “abnormalities,” “problems,” and “manifestations” do not denote a disease and remain unannotated, even with a premodifier and even in patient-level frames.
+
+5. **Do not annotate references to **biological processes**  
+   - e.g. Terms corresponding to biological processes such as “tumorigenesis” or “cancerogenesis.”  
+   - The organ- or process-level clause in Section 1 applies to disease names with an organ or process head noun (e.g., “exudative retinal detachment” in a presentation frame). It does not make bare biological process terms annotatable.
+
+6. **Do not annotate disease mentions interrupted by nested mentions**  
+   - Essentially, do not break the contiguous text rule. This requirement applies even inside patient-level frames.  
+   - **Example**  
+     > WT1 dysfunction is implicated in both neoplastic (Wilms tumor, mesothelioma, leukemia, and breast cancer) and nonneoplastic (glomerulosclerosis) disease.  
+     
+     Here, the mentions “neoplastic disease” and “nonneoplastic disease” are not annotated because other tokens break up these phrases.
+
+---
+
+## Examples
+
+1. **“Insulin-dependent diabetes mellitus”**  
+   - **Specific Disease**  
+   - Prefer the whole string.
+
+2. **CDH1 mutations predispose to early onset “colorectal cancer.”**  
+   - “early onset” may or may not be part of the disease mention, depending on:  
+     1. If there is a UMLS concept specifying this as a separate form of disease  
+     2. If the annotator believes it should be included
+
+3. **Human “X-linked recessive disorder”**  
+   - Label by referential role (Section 1). As a generic description of the disorder class, it is a **Disease Class**. When it is attributed to an individual patient, it is a **Specific Disease** (see Example 21).
+
+4. **Her fresh serum lacked complement-mediated bactericidal activity against Neisseria gonorrhoeae.**
+
+5. **“Huntington disease” (“HD”)**  
+   - The long form and the short form constitute two separate mentions.
+
+6. **C7 deficiency**  
+   - “This report represents the first cases of C7 deficiency associated with infectious complications.”  
+   - “infectious complications” is too general a term; C7 deficiency is a **Specific Disease**.
+
+7. **“colorectal, endometrial, and ovarian cancers”**  
+   - Considered one **Composite Mention** of several Specific Diseases.
+
+8. **WT1 dysfunction is implicated in both neoplastic (“Wilms tumor,” “mesothelioma,” “leukemias,” and “breast cancer”) and nonneoplastic (“glomerulosclerosis”) disease.**  
+   - Potential disease mentions include: “neoplastic disease,” “nonneoplastic disease,” “Wilms tumor,” “mesothelioma,” “leukemias,” “breast cancer,” and “glomerulosclerosis.”  
+   - “neoplastic disease” and “nonneoplastic disease” are **not** annotated because these phrases are interrupted by nested mentions.
+
+9. **Tumorigenesis and cancerogenesis**  
+   - These refer to processes, not diseases.
+
+10. **“autosomal recessive disease”**  
+    - Refers to a family of diseases that can be passed down genetically → **Disease Class** category.
+
+11. **Large phenotypic variability with “convulsive disorders,” “motor retardation,” and “mental retardation.”**  
+    - These are “grey area” terms: they may not correspond to a single **Specific Disease**, so they are annotated as **Disease Class** category if appropriate.
+
+12. **Borjeson-Forssman-Lehmann syndrome (BFLS) is a syndromal X-linked mental retardation.**  
+    - “Borjeson-Forssman-Lehmann syndrome” = **Specific Disease**  
+    - “X-linked mental retardation syndrome” = a family of diseases (i.e., **Disease Class**)
+
+13. **Acute meningococcal pericarditis**  
+    - Exists as a separate concept in UMLS.
+
+14. **Acute Neisseria infection**  
+    - May or may not include “acute” depending on context.
+
+15. **Classical galactosemia**  
+    - Includes “classical” because it corresponds to a particular form of the disease.
+
+16. **Inherited spinocerebellar ataxia**  
+    - May or may not include “inherited,” depending on the annotator.
+
+17. **“Adenomatous polyps of the colon and rectum”**  
+    - **Composite Mention**
+
+18. **Fibroepithelial or epithelial hyperplasias**  
+    - **Composite Mention**
+
+19. **Stage II or stage III colorectal cancer**  
+    - **Composite Mention**
+
+20. **“The patient presented with exudative retinal detachment.”**  
+    - Presentation frame: “exudative retinal detachment” is labeled **Specific Disease** despite its organ-level head noun. The same phrase in a generic definition of Coats disease is not annotated (Section 1, negative constraint).
+
+21. **“She was diagnosed with X-linked recessive disorder.”**  
+    - Confirmed-diagnosis frame: the full phrase is labeled **Specific Disease** despite its generic head noun and taxonomic premodifier. Contrast with Example 3.
+
+22. **“Sweat chloride testing was performed to exclude cystic fibrosis.”**  
+    - Differential-exclusion frame: “cystic fibrosis” is labeled **Specific Disease**.
+
+23. **“One hundred and seven ovarian cancer cases were analyzed for BRCA1 alterations.”** and **“… associated with a family history of ovarian cancer.”**  
+    - Cohort and family-history frames are not patient-level predicates. “ovarian cancer” remains **Modifier** and is not promoted to **Specific Disease**.

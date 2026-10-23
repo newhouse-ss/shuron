@@ -1,0 +1,64 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: SpecificDisease (Span Boundary Error)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** The True Positives are named, self-contained disease labels: "Coats disease," "Norrie disease," "SLS," "fragile X syndrome." Their spans end at the disease head, and the causal gene (NDP, FALDH, FMR1) sits outside the span. The Discrepancies are all "deficiency" nominals whose complement is a gene product, enzyme, or complement component: "G6PD," "C7," "the seventh component of complement."
+- **Single separating feature:** Is the disease noun headed by *deficiency*, with a gene, protein, or enzyme as its complement? TPs: no. Discrepancies: yes.
+- **Isolate trigger:** The head noun *deficiency* combined with a protein-naming complement. This appears in two forms:
+  1. A spelled-out gene product plus a parenthetical abbreviation: "glucose 6-phosphate dehydrogenase ( G6PD ) deficiency."
+  2. An *of*-PP naming a protein: "deficiency of the seventh component of complement," "deficiency of C7."
+- **Hypothesis check:** Both types are covered. Examples 1–2 show the gold type is already correct (SpecificDisease). In the same document, gold labels the compact "G6PD deficiency" (chars 772–787) as SpecificDisease and "G6PD deficient" as Modifier. So the model's type is right, and the error is the span: it expands the mention to the spelled-out name and the parenthetical. For Examples 3–4, gold and LLM agree on the type, so the discrepancy must lie in the span. The gold spans for doc 6859721 are not in the input, so this boundary diagnosis is an inference.
+
+**Step 2: Pattern Formulation**
+
+- **Pattern Insight**
+  - **Pattern Name:** Gene/Protein-Complement "Deficiency" Span Over-Extension
+  - **Confusion Trigger:** The head noun *deficiency* takes a gene, protein, or complement-component complement, either as a spelled-out name with a parenthetical abbreviation ("glucose 6-phosphate dehydrogenase ( G6PD ) deficiency") or as an *of*-PP ("deficiency of the seventh component of complement," "deficiency of C7"). The model reads the whole string as one disease name and absorbs the molecular argument into the SpecificDisease span.
+  - **Contrastive Evidence:** True Positives never absorb a gene or protein argument into a disease span. "Coats disease" excludes "NDP gene," "fragile X syndrome" excludes "FMR1 gene," and "SLS" excludes "FALDH gene." Their boundaries stop at the nosological head.
+  - **Linguistic Rule (Proposed):** When a SpecificDisease candidate is headed by *deficiency* and its complement names a gene, protein, enzyme, or complement component:
+    1. Anchor the span on the compact disease-naming unit, [gene or abbreviation] + "deficiency" (e.g., "G6PD deficiency"). Exclude the spelled-out expansion of the abbreviation, its parenthetical, and any "of"-PP naming the protein, since these are referent expansions, not part of the disease label.
+    2. Keep the type SpecificDisease only if the phrase denotes the condition (a nominal state). If it is adjectival ("G6PD deficient"), label it Modifier.
+    3. Apply the same boundary rule to "deficiency of [protein]" constructions, and verify against gold spans before assuming a type error.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 1303173.json):
+Snippet: "...roduce the G6PD deficient phenotype.
+The high prevalence of glucose 6-phosphate dehydrogenase ( G6PD ) deficiency in African populations is due almost entirely to the enzyme..."
+Gold: SpecificDisease, LLM: SpecificDisease
+Entity Text: "glucose 6-phosphate dehydrogenase ( G6PD ) deficiency"
+
+Example 2 (Doc: 1303173.json):
+Snippet: "...roduce the G6PD deficient phenotype.
+The high prevalence of glucose 6-phosphate dehydrogenase ( G6PD ) deficiency in African populations is due almost entirely to the enzyme..."
+Gold: SpecificDisease, LLM: SpecificDisease
+Entity Text: "glucose 6-phosphate dehydrogenase ( G6PD ) deficiency"
+
+Example 3 (Doc: 6859721.json):
+Snippet: "...of functional and antigenic C7 , compatible with a complete deficiency of the seventh component of complement . Study of the patients family spanning four generations sh..."
+Gold: SpecificDisease, LLM: SpecificDisease
+Entity Text: "deficiency of the seventh component of complement"
+
+Example 4 (Doc: 6859721.json):
+Snippet: "...tients family spanning four generations showed heterozygous deficiency of C7 in five members . Chronic neisserial infection can be assoc..."
+Gold: SpecificDisease, LLM: SpecificDisease
+Entity Text: "deficiency of C7"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

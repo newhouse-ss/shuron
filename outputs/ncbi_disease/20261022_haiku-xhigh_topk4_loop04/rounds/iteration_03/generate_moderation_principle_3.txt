@@ -1,0 +1,41 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: SpecificDisease (Span Boundary Error)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** The True Positive SpecificDisease spans are names of disease entities: eponyms ("Coats disease," "Norrie disease"), named syndromes ("Sjogren-Larsson syndrome"), and acronyms ("SLS"). The discrepant span, "retinal telangiectasis," describes a vascular abnormality, a physical lesion or feature of the disease. The gold schema treats such descriptors differently: "exudative retinal detachment" and "mental retardation" are both DiseaseClass, not SpecificDisease.
+- **Isolate Trigger:** The span is a disease-like pathology noun ("-ectasis," meaning vessel dilation) with an anatomical modifier ("retinal"). It sits in a parenthetical "so-called" gloss, which makes it look like an alias for a disease. The model reads the condition-sounding noun phrase plus the alias framing as a named disease.
+- **Hypothesis Check:** The trigger explains this case. The same document supports the gold behavior: the title's "(unilateral retinal telangiectasis)" and the abstract's "Coats telangiectasis" are also unannotated, so the gold standard consistently reserves the disease label for "Coats disease." This case is borderline, since the abstract does use "Coats telangiectasis" as a near-synonym. Also, the record lists Gold as SpecificDisease, but the matched annotations contain no gold span at this offset. This may be a span-alignment problem, but the linguistic error is the same either way: the model over-typed a finding as a named disease.
+
+**Step 2: Pattern Formulation**
+
+- **Pattern Insight: Generic Pathological Descriptor Mistaken for a Named Disease**
+  - **Pattern Name:** Lesion/Finding Descriptor in a Parenthetical Gloss Typed as SpecificDisease
+  - **Confusion Trigger:** A disease-like pathology noun phrase ("retinal telangiectasis," where "-ectasis" denotes vessel dilation) introduced through a parenthetical "so-called" gloss. Its disease-sounding morphology and alias framing lead the model to assign SpecificDisease.
+  - **Contrastive Evidence:** True Positives tag only nosological names: eponyms, named syndromes, and acronyms that refer to the disease as a whole ("Coats disease," "Sjogren-Larsson syndrome," "SLS"). Generic condition or finding descriptors in the same schema ("exudative retinal detachment," "mental retardation") fall under DiseaseClass.
+  - **Linguistic Rule (Proposed):** Assign SpecificDisease only when the span is a nosological name (an eponym, a proper-noun disease or syndrome name, or an acronym for one) that refers to the disease entity itself. If the span is a descriptive pathological noun phrase (lesion, sign, or feature, such as "X-ectasis," "X-detachment," or "X-retardation") denoting a manifestation or mechanism, do not tag it as SpecificDisease, even inside a "so-called," "also known as," or parenthetical gloss. Use DiseaseClass if it names a generic condition, and otherwise leave it untagged.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10484772.json):
+Snippet: "...erized by abnormal retinal vascular development ( so-called retinal telangiectasis ) which results in massive intraretinal and subretinal lipi..."
+Gold: SpecificDisease, LLM: SpecificDisease
+Entity Text: "retinal telangiectasis"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

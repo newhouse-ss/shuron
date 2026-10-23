@@ -1,0 +1,71 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: DiseaseClass (Label Mismatch)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** The gold SpecificDisease true positives are proper names, eponyms, or abbreviations (*Coats disease*, *Norrie disease*, *SLS*, *DTD*) or etiologically pinned entities (*G6PD deficiency*). The gold DiseaseClass true positive, *mental retardation*, is a generic phenotype term. It appears in the SLS text as a defining trait ("is an autosomal recessive disorder **characterized by** ichthyosis, mental retardation…"). The discrepancies are all unnamed pathology labels (*vasculitis*, *arthritis*, *cutaneous vasculitis*, *chronic neisserial infection*) that the model mapped onto the DiseaseClass prototype.
+- **Isolate Trigger:** The model keys on the head noun's generic, category-like form: the *-itis* suffix (a broad class of inflammatory disorders) and the generic process noun *infection*. Site or organism qualifiers (*cutaneous*, *neisserial*) look like subtype partitioning of a class. Example 5, *"other causes of cutaneous vasculitis,"* frames the term as a category with many etiologies, which is the strongest class cue in the cluster.
+- **Hypothesis Check:**
+  - Examples 1, 3, and 5 fit the trigger well.
+  - Example 4 fits only partially. *Chronic neisserial infection* names one concrete disease in context (chronic meningococcemia), so the qualifiers narrow it to a single entity.
+  - Example 2 (bare *arthritis*) is the residual conflict. It sits in a symptom list, which resembles the *mental retardation* control, but it is labeled SpecificDisease.
+  - The refined trigger is that the model cannot tell a class noun used as an umbrella over many diseases from the same noun used for one concrete, patient-level condition.
+- **Discriminating feature:** The verb frame separates the two readings. The control uses *"characterized by"* (a syndrome's defining trait). The discrepancies use *"presenting with/as"* or *"found to have"* (this patient's clinical condition).
+
+**Step 2: Pattern Insight**
+
+- **Pattern Name:** Generic Pathology Head Nouns Reported as a Patient's Clinical Condition
+- **Confusion Trigger:** Descriptive pathology nouns with no proper name, such as *-itis* terms (*vasculitis*, *arthritis*) and *infection*, often with a site or organism qualifier (*cutaneous*, *neisserial*). The model reads them as superordinate taxonomic class labels, the DiseaseClass prototype, especially inside "[causes/types] of X" or symptom-list frames.
+- **Contrastive Evidence:** The SpecificDisease controls are named, eponymous, abbreviated, or etiologically unique. The DiseaseClass control, *mental retardation*, is an umbrella phenotype term introduced as a defining trait of a syndrome, with no individual diagnosis. The discrepancies instead describe concrete conditions this patient has ("presenting with fever, arthritis, and cutaneous vasculitis," "found to have chronic meningococcemia," "distinguished from other causes of cutaneous vasculitis").
+- **Linguistic Rule (Proposed):** Before assigning DiseaseClass to a pathology-category noun, check the following in order:
+  1. If the mention is a proper name, eponym, or abbreviation, label it SpecificDisease.
+  2. If the mention is the patient-level diagnosis or presentation, marked by a predicate such as *presenting with/as*, *found to have*, or *distinguished from*, label it SpecificDisease, even when the head noun is generic.
+  3. If the qualifier pins a single etiology or organism, label it SpecificDisease.
+  4. Reserve DiseaseClass for umbrella or heterogeneous descriptors used as defining traits (*characterized by*) or as categories with no individuated diagnosis.
+  - **Caveat:** Bare *arthritis* in a symptom list matches the *mental retardation* control structurally. This cluster may reflect annotation inconsistency, so flag Example 2 for guideline review rather than forcing a rule that overfits it.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 6859721.json):
+Snippet: "...ent in a patient with chronic meningococcemia presenting as vasculitis.
+A previously healthy 40-year-old man presenting with fever..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "vasculitis"
+
+Example 2 (Doc: 6859721.json):
+Snippet: "... previously healthy 40-year-old man presenting with fever , arthritis , and cutaneous vasculitis was found to have chronic mening..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "arthritis"
+
+Example 3 (Doc: 6859721.json):
+Snippet: "...thy 40-year-old man presenting with fever , arthritis , and cutaneous vasculitis was found to have chronic meningococcemia . Evaluation of h..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "cutaneous vasculitis"
+
+Example 4 (Doc: 6859721.json):
+Snippet: "...ions showed heterozygous deficiency of C7 in five members . Chronic neisserial infection can be associated with C7 deficiency and must be distinguis..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "Chronic neisserial infection"
+
+Example 5 (Doc: 6859721.json):
+Snippet: "...7 deficiency and must be distinguished from other causes of cutaneous vasculitis . . ..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "cutaneous vasculitis"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

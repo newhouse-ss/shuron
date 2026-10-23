@@ -1,0 +1,81 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+## Step 1: Deep Dive Analysis
+
+**Contrast**
+
+- **Discrepancies:** Three of the four misses are prepositional "deficiency" nominals, where a state noun takes a PP complement naming an enzyme or protein:
+  - "deficient activity **of** fatty aldehyde dehydrogenase"
+  - "deficiency **in** G6PD"
+  - "deficiency **of** hepatic phenylalanine hydroxylase"
+- **True Positives:** Disease mentions are lexicalized names or fixed compounds with a disease-category head: "Coats disease," "Norrie disease," "fragile X syndrome," "ovarian cancer," "Coats telangiectasis," and "G6PD deficiency."
+- **Single separating feature:** Whether the disease head is a fixed nominal name (premodifier + head) or a free-standing, head-first construction whose complement is a protein/enzyme.
+
+**Isolate Trigger**
+
+The model reads "deficiency/deficient activity of/in [gene product]" as a biochemical finding or mechanism rather than a disease name. The enzyme complement looks like a protein entity outside the schema, so the model returns O for the whole span. The gold span covers the entire phrase, including the enzyme name, so the model's miss is both a label and a boundary error.
+
+**Internal evidence from the same documents**
+
+- **Same head, different syntax (doc 1303173):** "G6PD deficiency" [772–787] is annotated SpecificDisease and is not a discrepancy. "deficiency in G6PD A-" is missed. The head noun is identical; the syntax differs.
+- **Same construction, gold O (doc 10484772):** "results in a **deficiency of norrin**" is not annotated. This is a true negative for the same surface construction, so "deficiency of X" alone cannot trigger SpecificDisease.
+- **Disease-defining frame (doc 10577908):** The deficiency phrase sits inside the "characterized by ... " list that defines SLS. In that same list, "ichthyosis" and "spasticity" are O, so the gold does not treat every list item as a disease.
+
+**Hypothesis Check**
+
+- The deficiency-nominal trigger explains three of the four discrepancies.
+- **Fever (doc 6859721)** is a residual outlier. It is a sign, not a deficiency construction, and the model's O is consistent with the gold convention in the same schema, where "ichthyosis" and "spasticity" are O. The SpecificDisease label on "fever" looks like gold annotation noise and should not be folded into this pattern.
+- The norrin true negative shows the rule needs a context condition. The construction is not a disease trigger by itself.
+
+## Step 2: Pattern Formulation
+
+- **Pattern Name:** Enzyme-Deficiency State Nominals Read as Biochemical Findings
+- **Confusion Trigger:** The head noun "deficiency" or "deficient activity" is followed by a prepositional complement (*of/in*) naming an enzyme or protein. The model treats the construction as a measurable molecular state, so it labels the span O and drops the enzyme name from the span. Free-standing, head-first syntax does not match the fixed compound disease-name pattern the model has learned.
+- **Contrastive Evidence:** True positives use fixed, lexicalized disease names with a disease-category head: "Coats disease," "fragile X syndrome," "ovarian cancer," and the compound "G6PD deficiency." In the G6PD document, "G6PD deficiency" is correctly tagged while "deficiency in G6PD A-" is missed. Those true positives do not depend on a PP-complement construction, and the model handles them correctly.
+- **Linguistic Rule (Proposed):**
+  1. If the span is a fixed compound of the form [gene/enzyme] + "deficiency" (e.g., "G6PD deficiency"), label SpecificDisease.
+  2. If the head is "deficiency" or "deficient activity" followed by *of/in* + [enzyme/protein], label the full phrase, including the enzyme name, as SpecificDisease only when the sentence frames the deficiency as the defining condition of a named disease or phenotype (e.g., "disease caused by a deficiency of…," "characterized by… deficient activity of…," "enzyme deficiency in G6PD A-" as the phenotype).
+  3. If the deficiency is a downstream mechanistic intermediate with no disease-defining frame (e.g., "results in a deficiency of norrin"), keep O and label the protein as O.
+  4. Symptoms and signs (fever, ichthyosis, spasticity) are not triggered by this rule and remain O. The fever label should be audited as possible annotation noise.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10577908.json):
+Snippet: "...rized by ichthyosis , mental retardation , spasticity , and deficient activity of fatty aldehyde dehydrogenase ( FALDH ) . To define the molecular defects causing SLS , w..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficient activity of fatty aldehyde dehydrogenase"
+
+Example 2 (Doc: 1303173.json):
+Snippet: "... coexistence of the two mutations is responsible for enzyme deficiency in G6PD A- because they act synergistically in causing instability ..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficiency in G6PD"
+
+Example 3 (Doc: 1671881.json):
+Snippet: "...enylketonuria is an autosomal recessive disease caused by a deficiency of hepatic phenylalanine hydroxylase ( PAH ) . The abolition of an invariant BamHI site located ..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficiency of hepatic phenylalanine hydroxylase"
+
+Example 4 (Doc: 6859721.json):
+Snippet: "...litis.
+A previously healthy 40-year-old man presenting with fever , arthritis , and cutaneous vasculitis was found to have ch..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "fever"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

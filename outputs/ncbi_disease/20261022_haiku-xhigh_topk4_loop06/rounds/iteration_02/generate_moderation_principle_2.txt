@@ -1,0 +1,64 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: SpecificDisease (Span Boundary Error)
+
+**INFERRED PATTERNS:**
+## Step 1: Deep-Dive Analysis
+
+**Contrast**
+- **Discrepancies:** Each flagged span has the form *[deficiency | deficient activity] of [gene product / enzyme / protein]*: "deficient activity of fatty aldehyde dehydrogenase," "deficiency of hepatic phenylalanine hydroxylase," "complete deficiency of the seventh component of complement," and "deficiency of C7." The "of"-complement names a molecular entity, and the phrase describes a biochemical defect, a causal mechanism, a clinical feature, or carrier status. None of these is a nosological disease name.
+- **True Positives:** The deficiency mentions that are tagged as SpecificDisease, such as "glucose 6-phosphate dehydrogenase (G6PD) deficiency" and "G6PD deficiency," are fixed nominal compounds. The enzyme is a premodifier, and the whole string names a recognized clinical condition. Where "deficient" appears in the TP text ("G6PD deficient phenotype"), it is an adjective modifying a phenotype and is tagged as Modifier, not disease.
+- **Single boolean feature:** Does the "deficiency" head take an *"of"-complement denoting a gene product or protein*? Discrepancies: yes. TPs: no. The TP disease mentions are enzyme-as-premodifier compounds or named disorders (Coats disease, SLS, Norrie disease).
+
+**Isolate Trigger**
+The head noun "deficiency" (and its adjective "deficient") is strongly associated with disorders in the model's prior. The model sees that lexical cue, extends the span over the whole noun phrase including the protein name, and tags it as a disease. It does not check whether the phrase describes a molecular state rather than a disorder name.
+
+**Hypothesis Check**
+- The "deficiency of [protein/gene product]" construction explains all four cases.
+- The disease in each document is named separately (SLS, phenylketonuria). The deficiency phrase is the molecular cause, feature, or carrier state, so the correct SpecificDisease mention is the named disease, not the deficiency phrase.
+- **Caveat:** The gold and LLM labels both read SpecificDisease, which suggests the error is partly span-level (the model's span overreaches to include the molecular description) or a false positive on a span gold leaves untagged. The rule below covers both. Gold also tags the parallel clinical feature "mental retardation" in the same SLS definition as DiseaseClass, which supports treating defining features as non-disease.
+
+## Output
+
+- **Pattern Insight: Molecular-Defect "Deficiency of [Gene Product]" Mislabeled as Disease**
+  - **Confusion Trigger:** The disease-associated head noun "deficiency"/"deficient" takes a prepositional complement naming a protein, enzyme, or gene product ("deficiency of PAH," "deficiency of C7"). The construction describes a biochemical defect, causal mechanism, clinical feature, or carrier state, but the model tags the whole noun phrase as SpecificDisease because of the lexical cue "deficiency."
+  - **Contrastive Evidence:** True positives tag "G6PD deficiency" because the enzyme is a premodifier in a fixed compound naming a disorder. They do not tag the "of"-complement form. "G6PD deficient phenotype" is correctly a Modifier, showing that "deficient" as an adjective on a phenotype or activity noun is not a disease. Disease TPs (Coats disease, SLS, Norrie disease) are named disorders, not descriptions of gene-level losses.
+  - **Linguistic Rule (Proposed):** Tag a deficiency expression as SpecificDisease only when "deficiency" forms a fixed nominal compound naming a disorder (*[entity] deficiency* as a recognized condition, with no "of"-complement naming a protein). If the expression takes the form *deficiency / deficient [activity] of [gene product, enzyme, or component]*, do not tag the phrase as SpecificDisease. Instead, tag the named disease in the same context (e.g., "SLS," "phenylketonuria") if one exists, and treat "deficient" modifying a phenotype or activity as Modifier. Exclude carrier-state descriptions such as "heterozygous deficiency of C7."
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10577908.json):
+Snippet: "...rized by ichthyosis , mental retardation , spasticity , and deficient activity of fatty aldehyde dehydrogenase ( FALDH ) . To define the molecular defects causing SLS , w..."
+Gold: SpecificDisease, LLM: SpecificDisease
+Entity Text: "deficient activity of fatty aldehyde dehydrogenase"
+
+Example 2 (Doc: 1671881.json):
+Snippet: "...enylketonuria is an autosomal recessive disease caused by a deficiency of hepatic phenylalanine hydroxylase ( PAH ) . The abolition of an invariant BamHI site located ..."
+Gold: SpecificDisease, LLM: SpecificDisease
+Entity Text: "deficiency of hepatic phenylalanine hydroxylase"
+
+Example 3 (Doc: 6859721.json):
+Snippet: "...of functional and antigenic C7 , compatible with a complete deficiency of the seventh component of complement . Study of the patients family spanning four generations sh..."
+Gold: SpecificDisease, LLM: SpecificDisease
+Entity Text: "deficiency of the seventh component of complement"
+
+Example 4 (Doc: 6859721.json):
+Snippet: "...tients family spanning four generations showed heterozygous deficiency of C7 in five members . Chronic neisserial infection can be assoc..."
+Gold: SpecificDisease, LLM: SpecificDisease
+Entity Text: "deficiency of C7"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

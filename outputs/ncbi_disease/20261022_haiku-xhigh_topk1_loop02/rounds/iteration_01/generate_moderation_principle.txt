@@ -1,0 +1,72 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: DiseaseClass (Label Mismatch)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep-Dive Analysis**
+
+- **Contrast:** The discrepancies are all SpecificDisease in gold, but the model read them as DiseaseClass. The true positives split into two groups. The SpecificDisease TPs are anchored by identifiers: eponyms ("Coats disease," "Norrie disease"), an acronym ("SLS"), or a gene-defined enzyme deficiency ("G6PD deficiency"). The one DiseaseClass TP ("mental retardation") is a generic phenotype term listed as a feature of a syndrome class.
+- **Isolate Trigger:** Every discrepancy is headed by a superordinate disorder-category noun: *vasculitis, arthritis, infection, deficiencies*. These nouns name families of disorders, so the model assigns the category label from lexical hypernymy. Gold instead labels the mention by its referent in context. In each case the noun picks out one individuated condition the document is about: the patient's diagnosis, the infection under study, or a single gene-defined deficiency.
+- **Hypothesis Check:**
+  - *Ex. 1, "PAH deficiencies":* The plural is a red herring. It counts patients with one named condition, not a set of different disorders. The gene-defined structure matches the TP "G6PD deficiency," which the model got right.
+  - *Ex. 2–4, "vasculitis," "arthritis," "cutaneous vasculitis":* Each is the patient's presenting diagnosis, a case-bound referent. "Arthritis" is the weakest fit, since it sits in a symptom list, which is closer to the TP "mental retardation." It may reflect annotation inconsistency.
+  - *Ex. 5, "Chronic neisserial infection":* This refers to the chronic meningococcemia that the case centres on. The organism-level modifier makes it look like a taxonomic class, but it is the focal condition.
+  - The trigger is the lexical category semantics of the head noun. The gold standard depends on whether the mention individuates a condition in context. Plurality and modifiers do not decide the label.
+
+**Step 2: Formulate Pattern**
+
+The confusion arises when a generic disorder-category head noun (vasculitis, arthritis, infection, deficiency) is used as a case-bound referring expression. The model labels it by its hypernymic class meaning rather than by the individuated condition it denotes.
+
+**Pattern Insight**
+
+- **Pattern Name:** Superordinate Category Head Noun Used as a Case-Specific Referent
+- **Confusion Trigger:** A generic disorder-category head noun (*vasculitis, arthritis, infection, deficiencies*) that names a family of disorders. Its lexical hypernymy pulls the model toward DiseaseClass, even though it is unmodified or only lightly modified (e.g., "cutaneous vasculitis," "Chronic neisserial infection").
+- **Contrastive Evidence:** The True Positive SpecificDisease mentions are individuated by eponyms, acronyms, or gene-enzyme names ("Coats disease," "SLS," "G6PD deficiency"). The True Positive DiseaseClass mention ("mental retardation") is a generic phenotype category listed as a syndrome feature, not a diagnosis the document is about. Category nouns used as a patient's diagnosis or as the focal condition are therefore SpecificDisease, while category nouns used generically are DiseaseClass.
+- **Linguistic Rule (Proposed):** Classify by referential individuation in context, not by the lexical category of the head noun.
+  1. If a disorder-category noun (with or without light modifiers) refers to a single condition the document is about (the patient's diagnosis, the infection or deficiency under study, a gene-defined condition), label it **SpecificDisease**, even when unmodified or plural.
+  2. Plural number signals a class only when it enumerates distinct disorders or describes generic kind-level features. Plurals that count instances of one named condition ("PAH deficiencies") remain SpecificDisease.
+  3. Reserve **DiseaseClass** for umbrella or kind-level usage, such as families of distinct disorders or generic phenotype terms that characterise a syndrome class (e.g., "mental retardation").
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 1671881.json):
+Snippet: "...or by the large variety of mutant genotypes associated with PAH deficiencies . . ..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "PAH deficiencies"
+
+Example 2 (Doc: 6859721.json):
+Snippet: "...ent in a patient with chronic meningococcemia presenting as vasculitis.
+A previously healthy 40-year-old man presenting with fever..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "vasculitis"
+
+Example 3 (Doc: 6859721.json):
+Snippet: "... previously healthy 40-year-old man presenting with fever , arthritis , and cutaneous vasculitis was found to have chronic mening..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "arthritis"
+
+Example 4 (Doc: 6859721.json):
+Snippet: "...thy 40-year-old man presenting with fever , arthritis , and cutaneous vasculitis was found to have chronic meningococcemia . Evaluation of h..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "cutaneous vasculitis"
+
+Example 5 (Doc: 6859721.json):
+Snippet: "...ions showed heterozygous deficiency of C7 in five members . Chronic neisserial infection can be associated with C7 deficiency and must be distinguis..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "Chronic neisserial infection"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

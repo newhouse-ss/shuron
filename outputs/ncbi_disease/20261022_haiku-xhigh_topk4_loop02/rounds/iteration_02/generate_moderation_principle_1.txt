@@ -1,0 +1,71 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** The discrepancies and the true positives differ in whether the disease span contains a *nomenclature anchor*: an eponym (Coats, Norrie, Sjogren-Larsson), a disease-class head (disease, syndrome), or an established acronym (SLS). Every discrepancy span lacks one. Their disease-denoting head is a generic pathology or biochemical-state noun (telangiectasis, deficiency, deficient activity), and the modifier is an anatomical site or a gene/enzyme name.
+- **Isolate Trigger:** The model appears to read the head noun as a finding or measured state, and the embedded anatomical or gene/enzyme token as the entity. Neither reading maps to SpecificDisease, so the whole span falls to O. The text supports this: "so-called retinal telangiectasis" is a metalinguistic gloss that introduces a disease term, and "deficiency in G6PD" uses a gene symbol as the complement of a heritable-disorder head.
+- **Hypothesis Check:**
+  - Ex 1 and 2: "telangiectasis" with an anatomical modifier, introduced by a parenthetical or "so-called" gloss. Nomenclature anchor absent.
+  - Ex 3: "deficient activity of [enzyme]" with no anchor. The phrase defines SLS, so it is treated as the disease name even though it resembles a symptom list.
+  - Ex 4 and 5: "deficiency" with an enzyme/gene complement. Ex 4 also has a nested parenthetical acronym that may break span handling.
+  - The trigger covers all five. The "finding vs. disease" ambiguity in Ex 3 is secondary.
+  - "Coats telangiectasis" (TP) shares the head noun "telangiectasis" but is correctly tagged because the eponym "Coats" supplies the anchor. This confirms the anchor, not the head noun, is the discriminating feature.
+
+**Step 2: Pattern Formulation**
+
+- **Pattern Insight**
+  - **Pattern Name:** Descriptive or enzymatic disease names lacking a nomenclature anchor
+  - **Confusion Trigger:** A disease denoted by a compositional phrase whose head is a generic pathology or defect noun ("telangiectasis," "deficiency," "deficient activity of"), combined with an anatomical or gene/enzyme modifier ("retinal," "G6PD," "in G6PD"). The model treats the modifier as a non-disease entity (Anatomy/Gene) or the head as a clinical finding, so the span is labeled O. Parenthetical acronyms and "so-called" glosses further obscure the span.
+  - **Contrastive Evidence:** True positives such as "Coats telangiectasis," "Coats disease," "Norrie disease," and "SLS" carry an eponym, a "disease" or "syndrome" head, or an acronym, which anchors the span as a named disorder. The same head noun ("telangiectasis") is correctly labeled when the eponym is present, which isolates the anchor as the discriminating feature.
+  - **Linguistic Rule (Proposed):** Label a span SpecificDisease when a noun phrase names a heritable or pathological condition through a functional or defect head ("deficiency," "telangiectasis," "deficient activity of X"), and either:
+    1. the phrase is introduced or restated as a term by a metalinguistic marker ("so-called," parentheses, or apposition to an already-named disease), or
+    2. the construction is "deficiency (in/of) ⟨gene or enzyme⟩," where the gene or enzyme is a constituent of the disease name.
+
+    Gene, enzyme, and anatomical tokens inside such a span must not force an O label or be split off as separate entities. Include any internal parenthetical acronym (e.g., "G6PD") in the span.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10484772.json):
+Snippet: "...Coats' disease of the retina (unilateral retinal telangiectasis) caused by somatic mutation in the NDP gene: a role for nor..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "unilateral retinal telangiectasis"
+
+Example 2 (Doc: 10484772.json):
+Snippet: "...erized by abnormal retinal vascular development ( so-called retinal telangiectasis ) which results in massive intraretinal and subretinal lipi..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "retinal telangiectasis"
+
+Example 3 (Doc: 10577908.json):
+Snippet: "...rized by ichthyosis , mental retardation , spasticity , and deficient activity of fatty aldehyde dehydrogenase ( FALDH ) . To define the molecular defects causing SLS , w..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficient activity of fatty aldehyde dehydrogenase"
+
+Example 4 (Doc: 1303173.json):
+Snippet: "...roduce the G6PD deficient phenotype.
+The high prevalence of glucose 6-phosphate dehydrogenase ( G6PD ) deficiency in African populations is due almost entirely to the enzyme..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "glucose 6-phosphate dehydrogenase ( G6PD ) deficiency"
+
+Example 5 (Doc: 1303173.json):
+Snippet: "... coexistence of the two mutations is responsible for enzyme deficiency in G6PD A- because they act synergistically in causing instability ..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficiency in G6PD"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

@@ -1,0 +1,63 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: DiseaseClass vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** The three discrepancies share a structure that the True Positives lack. Each span is an ad hoc, compositional description of a pathological state: a qualifier (*abnormal*, *exudative*, *deficiency of*) attached to a generic noun (*development*, *detachment*, *deficiency*). None has a lexicalized disorder marker such as an eponym, *-osis*, *syndrome*, *disease*, or *disorder*. The True Positive DiseaseClass, "mental retardation," is a fixed, dictionary-level condition term.
+- **Isolate Trigger:** The model appears to rely on lexical disease-name cues. Spans without them, and whose head nouns are generic process or state nouns rather than disease nouns, are tagged O. The syntactic frame is not the cause: "ichthyosis, mental retardation, spasticity" uses the same "characterized by" frame and was correctly labeled. The discriminating feature is whether the span is a fixed condition name or a compositionally built description of a pathological state.
+- **Hypothesis Check:** The hypothesis explains all three cases:
+  - "abnormal retinal vascular development": a pathology qualifier ("abnormal") on a normal process noun.
+  - "exudative retinal detachment": a pathology qualifier ("exudative") on a condition noun. "Detachment" is a disease-denoting head, but the phrase is not recognized as a fixed term in context.
+  - "deficiency of norrin": a state noun with a PP complement. The state is pathological, while "norrin" is a gene product and should not be included in the span.
+
+  A purely syntactic explanation ("characterized by" or "results in" frames) is rejected because the True Positive uses the same frame.
+
+**Step 2: Pattern Insight**
+
+- **Pattern Name:** Compositional Pathological-State Descriptions Lacking Disease Lexicon Markers
+
+- **Confusion Trigger:** Descriptive noun phrases built from a pathology-qualifying adjective or "deficiency of X" structure plus a generic process or state head (e.g., *abnormal ... development*, *exudative ... detachment*, *deficiency of [molecule]*). These phrases occur in mechanistic or pathological description sentences after a named disease, and they contain no eponym, acronym, or disease suffix. The model treats them as ordinary descriptive language and outputs O.
+
+- **Contrastive Evidence:** The True Positive DiseaseClass "mental retardation" is a fixed, lexicalized disorder term with no qualifier-plus-process composition, so the model recognizes it. Other True Positives ("ovarian cancer," "fragile X syndrome," "Wiskott-Aldrich syndrome," "SLS") carry strong disease-lexicon cues, and the model captures them.
+
+- **Linguistic Rule (Proposed):** Tag a span as DiseaseClass when both conditions hold:
+  1. **Semantic test:** The span denotes a pathological condition, finding, or state of a patient or tissue, not a normal biological process, anatomical structure, or molecule. A pathology qualifier (*abnormal*, *exudative*, *deficient*) or a condition-denoting head (*detachment*, *deficiency*, *disorder*) licenses the tag even without a disease suffix.
+  2. **Span-boundary test:** Annotate only the pathological state, excluding gene or protein names (e.g., "norrin," "NDP") and unqualified process nouns (e.g., "vascular development" alone remains O).
+
+  Apply this rule only when the phrase is a manifestation or outcome of an already-identified disease, which prevents over-generation on generic phrases such as "lipid accumulation."
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10484772.json):
+Snippet: "... in retinal angiogenesis.
+Coats disease is characterized by abnormal retinal vascular development ( so-called retinal telangiectasis ) which results in massi..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "abnormal retinal vascular development"
+
+Example 2 (Doc: 10484772.json):
+Snippet: "...in massive intraretinal and subretinal lipid accumulation ( exudative retinal detachment ) . The classical form of Coats disease is almost invariabl..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "exudative retinal detachment"
+
+Example 3 (Doc: 10484772.json):
+Snippet: "...dary to somatic mutation in the NDP gene which results in a deficiency of norrin ( the protein product of the NDP gene ) within the developi..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "deficiency of norrin"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

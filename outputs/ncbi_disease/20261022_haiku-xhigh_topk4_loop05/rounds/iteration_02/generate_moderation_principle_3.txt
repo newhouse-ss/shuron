@@ -1,0 +1,68 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** The True Positives label disease *nomenclature*: eponyms ("Coats disease," "Norrie disease"), acronyms ("SLS," "DTD"), and conventional disorder names ("G6PD deficiency," "diastrophic dysplasia"). The discrepancies label *descriptive phenotype phrases* (a sign, a lesion, or an enzyme-activity defect). The one TP that looks like a phenotype phrase, "Coats telangiectasis," is anchored by the eponym "Coats," which makes it a disease name. The bare discrepancy "retinal telangiectasis" has no such anchor.
+- **Isolate Trigger:** The model keys on the head noun. "Telangiectasis" (a vascular lesion), "activity" (a biochemical measurement), and "fever" (a symptom) are sign/finding nouns, not disease-nomenclature heads, so the model assigns O. Example 3 is especially telling: "deficient activity of fatty aldehyde dehydrogenase" is semantically the same as "FALDH deficiency," but the surface form uses "activity" as the head rather than "deficiency."
+- **Hypothesis Check:**
+  - Examples 1 and 2 are explicit synonyms of Coats disease, marked by parentheses and "so-called." The model did not resolve this coreference.
+  - Example 3 is the defining biochemical lesion of SLS, which is arguably its etiological name. It fits the trigger but is borderline.
+  - Example 4 does not fit. "Fever" is a presenting symptom in a list, and the gold label looks like an annotation error or a truncated disease context. The model's O is linguistically defensible. Note also that the gold labels "mental retardation" in a similar feature list as DiseaseClass, so feature-list annotation is inconsistent in this dataset.
+
+**Step 2: Pattern Formulation**
+
+A finding-type noun phrase is labeled SpecificDisease when it functions as a name or synonym for a disorder (via coreference markers, an eponym, or a deficiency-as-disease construction). The model fails when it reads the same surface form as a sign or lesion description.
+
+**Pattern Insight**
+
+- **Pattern Name:** Phenotype-Head Phrases Used as Disease Synonyms or Defining Lesions
+- **Confusion Trigger:** Sign/finding/process head nouns (*telangiectasis*, *activity*, *fever*) with descriptive modifiers (*unilateral retinal*, *deficient activity of [enzyme]*). These read as clinical descriptors, so the model defaults to O. The model also misses discourse signals of synonymy ("so-called," parenthetical restatement).
+- **Contrastive Evidence:** True Positives use disease-nomenclature heads ("disease," "syndrome," "deficiency," "dysplasia") or eponyms/acronyms ("Coats telangiectasis," "G6PD deficiency"). The "Coats" eponym anchors the phenotype term to a named disorder. The discrepancies have no such anchor, and their head is a generic finding noun.
+- **Linguistic Rule (Proposed):** Label a noun phrase SpecificDisease if at least one of the following holds:
+  1. It carries a disease-nomenclature head (*disease, syndrome, deficiency, dysplasia*) or an eponym/acronym.
+  2. It is coreferential with a disease name in the same document, signaled by parentheses, "so-called," "also known as," or apposition (e.g., "Coats' disease of the retina (unilateral retinal telangiectasis)").
+  3. It is a semantic equivalent of a canonical enzyme-deficiency disease name (e.g., "deficient activity of X" when the document's disease is "X deficiency").
+
+  Otherwise, a bare sign or symptom in a presenting-feature list ("fever") stays O, and a standalone anatomical or pathological description without coreference stays O. Example 4 should be treated as a probable gold-annotation error unless the truncated context shows "fever" is part of a named condition.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10484772.json):
+Snippet: "...Coats' disease of the retina (unilateral retinal telangiectasis) caused by somatic mutation in the NDP gene: a role for nor..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "unilateral retinal telangiectasis"
+
+Example 2 (Doc: 10484772.json):
+Snippet: "...erized by abnormal retinal vascular development ( so-called retinal telangiectasis ) which results in massive intraretinal and subretinal lipi..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "retinal telangiectasis"
+
+Example 3 (Doc: 10577908.json):
+Snippet: "...rized by ichthyosis , mental retardation , spasticity , and deficient activity of fatty aldehyde dehydrogenase ( FALDH ) . To define the molecular defects causing SLS , w..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficient activity of fatty aldehyde dehydrogenase"
+
+Example 4 (Doc: 6859721.json):
+Snippet: "...litis.
+A previously healthy 40-year-old man presenting with fever , arthritis , and cutaneous vasculitis was found to have ch..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "fever"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

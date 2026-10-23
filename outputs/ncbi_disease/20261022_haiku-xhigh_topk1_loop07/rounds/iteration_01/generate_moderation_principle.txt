@@ -1,0 +1,77 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: DiseaseClass (Label Mismatch)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** The True Positive `SpecificDisease` labels are eponyms or acronyms that name one disorder (*Coats disease*, *Norrie disease*, *SLS*). The True Positive `DiseaseClass` label (*mental retardation*) is a generic phenotype term in a general description of the syndrome. The discrepancies share a different feature: a generic, category-type head noun (*vasculitis*, *arthritis*, *infection*, *deficiencies*) with no proper name, used to refer to a concrete condition in a specific case. The single boolean feature that separates the groups is **instance-anchored reference** (does the mention pick out one identifiable disorder, via a gene, pathogen, or the patient's diagnosed presentation?) versus **generic category or feature reference**.
+
+- **Isolate Trigger:** The model appears to treat category-type lexical heads as `DiseaseClass` cues. Its trigger is the head noun's lexical genericness (*-itis*, *infection*, plural *deficiencies*), with the qualifier or context ignored.
+
+- **Hypothesis Check:**
+  - *PAH deficiencies*: The gene symbol "PAH" anchors the mention to one gene-defined disorder, despite the plural head.
+  - *vasculitis*: "presenting as vasculitis" names the patient's diagnosed condition.
+  - *cutaneous vasculitis*: The anatomical qualifier plus the patient's presentation anchors it.
+  - *arthritis*: The patient's observed symptom, which is weaker (see caveat below).
+  - *Chronic neisserial infection*: The organism "neisserial" anchors it to a specific pathogen and disease course.
+
+  The simple "generic head noun → DiseaseClass" rule over-fires on all five. Refining it to "generic head noun *without* an instance anchor" resolves four cleanly. Mental-retardation-as-DiseaseClass remains consistent because it is a population-level feature label, not a patient's diagnosed condition.
+
+**Step 2: Formulated Pattern**
+
+- **Pattern Insight: Generic disease-category nouns used as instance-level diagnoses**
+  - **Confusion Trigger:** A category-type head noun (*vasculitis*, *arthritis*, *infection*, plural *deficiencies*) with no proper name. The model reads its lexical genericness as `DiseaseClass` and ignores whether the mention refers to one specific disorder in the case.
+  - **Contrastive Evidence:** The `SpecificDisease` True Positives (*Coats disease*, *Norrie disease*, *SLS*) are named entities that single out one disorder. The `DiseaseClass` True Positive (*mental retardation*) is a generic phenotype label in a population-level syndrome description, with no patient-level or gene/pathogen anchor.
+  - **Linguistic Rule (Proposed):** Label a disease mention `SpecificDisease` if it is anchored to a single instance, even when its head noun is generic. Anchors include:
+    1. a gene, pathogen, or organism qualifier (e.g., *PAH deficiencies*, *neisserial infection*);
+    2. an anatomical or etiologic qualifier tied to a case (e.g., *cutaneous vasculitis*);
+    3. a diagnosis or presentation of a named patient in a case report (e.g., "presenting as/with X," "found to have X").
+
+    Reserve `DiseaseClass` for generic, population-level, or feature-list labels with no instance anchor.
+
+  - **Caveat:** *arthritis* (Example 3) sits in the same feature-list syntax as *mental retardation* (labeled `DiseaseClass` in the SLS document). The gold labels for these two are inconsistent, so this example may reflect annotation noise rather than a clean linguistic pattern.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 1671881.json):
+Snippet: "...or by the large variety of mutant genotypes associated with PAH deficiencies . . ..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "PAH deficiencies"
+
+Example 2 (Doc: 6859721.json):
+Snippet: "...ent in a patient with chronic meningococcemia presenting as vasculitis.
+A previously healthy 40-year-old man presenting with fever..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "vasculitis"
+
+Example 3 (Doc: 6859721.json):
+Snippet: "... previously healthy 40-year-old man presenting with fever , arthritis , and cutaneous vasculitis was found to have chronic mening..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "arthritis"
+
+Example 4 (Doc: 6859721.json):
+Snippet: "...thy 40-year-old man presenting with fever , arthritis , and cutaneous vasculitis was found to have chronic meningococcemia . Evaluation of h..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "cutaneous vasculitis"
+
+Example 5 (Doc: 6859721.json):
+Snippet: "...ions showed heterozygous deficiency of C7 in five members . Chronic neisserial infection can be associated with C7 deficiency and must be distinguis..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "Chronic neisserial infection"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

@@ -1,0 +1,50 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: DiseaseClass (Label Mismatch)
+
+**INFERRED PATTERNS:**
+## Deep Dive Analysis
+
+**Contrast:** Both discrepancies are generic head nouns ("infection," "vasculitis") with a productive premodifier. The gold label is SpecificDisease, but the model read the head noun as a class marker and chose DiseaseClass. The control cases differ on one feature: whether the category head is narrowed by a specifier that fixes a single disease. The DiseaseClass control ("mental retardation") is an unspecified phenotype category. The SpecificDisease controls ("Coats disease," "Norrie disease," "Sjogren-Larsson syndrome," "G6PD deficiency") are named entities whose identity comes from the name itself.
+
+**Isolate Trigger:** The model appears to have keyed on the superordinate head noun, which signals a broad category, and ignored the premodifier:
+- "neisserial" names the causative genus, which narrows "infection" to one etiological disease.
+- "cutaneous" names the anatomical/clinical site, which narrows "vasculitis" to one clinical form.
+- The differential frame ("must be distinguished from other causes of…") reinforces a class reading, since "causes of X" suggests X is a category.
+
+**Hypothesis Check:** The trigger explains both discrepancies: each has a generic head plus a restricting premodifier, and each is labeled SpecificDisease in gold. It also fits the controls. "Mental retardation" has no subtype-restricting specifier, so DiseaseClass is correct. The eponyms and named entities need no specifier. Ambiguity remains: "cutaneous vasculitis" arguably covers several conditions, so the gold convention seems to count subtype-restricted noun phrases as specific when they pick out one clinical entity in context.
+
+## Pattern Insight
+
+- **Pattern Name:** Subtype-Restricted Generic Head (Premodified Category Noun Labeled SpecificDisease)
+- **Confusion Trigger:** A superordinate category head noun ("infection," "vasculitis") carrying a productive etiological or anatomical premodifier ("neisserial," "cutaneous"). The model treats the generic head as a class marker and assigns DiseaseClass, without weighing that the premodifier restricts the referent to one disease in context. A differential-diagnosis frame ("other causes of X") pushes it further toward a class reading.
+- **Contrastive Evidence:** The DiseaseClass control, "mental retardation," is an unspecified, lexicalized phenotype category with no referent-narrowing specifier. The SpecificDisease controls are eponyms or fixed disease names ("Coats disease," "G6PD deficiency"), so their identity is fixed by the name and not by a generic head plus a specifier.
+- **Linguistic Rule (Proposed):** If the head noun of a disease mention is a generic category term (infection, vasculitis, deficiency, and similar) and it is restricted by a productive organism-, site-, or subtype-specifying premodifier, such that the noun phrase picks out one identifiable disease in context, label it **SpecificDisease**. Reserve **DiseaseClass** for unrestricted superordinate terms or lexicalized phenotype categories (such as "mental retardation") where no specifier narrows the referent. As a test, ask whether the phrase names one clinical entity (e.g., "neisserial infection," "cutaneous vasculitis") or a whole family of entities with no further restriction.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 6859721.json):
+Snippet: "...ions showed heterozygous deficiency of C7 in five members . Chronic neisserial infection can be associated with C7 deficiency and must be distinguis..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "Chronic neisserial infection"
+
+Example 2 (Doc: 6859721.json):
+Snippet: "...7 deficiency and must be distinguished from other causes of cutaneous vasculitis . . ..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "cutaneous vasculitis"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

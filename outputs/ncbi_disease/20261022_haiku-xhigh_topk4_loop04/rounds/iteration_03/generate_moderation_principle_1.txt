@@ -1,0 +1,65 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** All five discrepancies are open-class compositional noun phrases built from a privative head ("deficiency / absence / deficient activity of ...") and a molecular complement (an enzyme, a complement component, or a gene symbol). The True Positives are either conventional nosological labels with a disease-category head ("Coats disease", "Norrie disease", "Wiskott-Aldrich syndrome", "fragile X syndrome", "ovarian cancer", "mental retardation") or fixed clinical terms. The separating feature is the presence of a disease-category head or eponym, which the discrepancy spans lack.
+- **Isolate Trigger:** The model appears to parse "deficiency/absence of [protein or gene]" as a biochemical description of a molecule's state. It treats "deficiency" as a generic quality word and the enzyme or gene name as a molecular entity, not a disease, so it outputs O.
+- **Hypothesis Check:** The trigger covers all five cases. Each has a privative head and a gene product or complement component as its complement (G6PD, phenylalanine hydroxylase, C7, fatty aldehyde dehydrogenase). The refinement needed is contextual. The gold standard labels these phrases when they name a patient-level condition, such as "caused by a deficiency of" or "patient with absence of". The phrase "a deficiency of norrin" in the Coats paper, a mechanistic statement, is unannotated in gold, so the boundary is not purely lexical.
+
+**Step 2: Pattern Insight**
+
+- **Pattern Name:** Privative "deficiency/absence of [molecule]" nominals used as disease names
+- **Confusion Trigger:** The head is a privative or functional-state noun (deficiency, absence, lack, deficient activity) and the complement is a gene product (enzyme, complement component, or gene symbol). The phrase has no disease-category head ("disease", "syndrome") and no eponym, so the model treats it as a compositional biochemical description and tags it O.
+- **Contrastive Evidence:** The True Positives are detected because their spans end in a nosological head ("...disease", "...syndrome", "...cancer", "...retardation") or are eponymous. These are conventional disease labels, not open-class descriptions of a molecule's state.
+- **Linguistic Rule (Proposed):** Label the full noun phrase as SpecificDisease when all three conditions hold:
+  1. The head is a privative state noun or adjective: deficiency, absence, lack, or deficient activity.
+  2. The complement is a named enzyme, protein, complement component, or gene symbol.
+  3. The context frames the phrase as an organism-level pathological condition, such as "caused by a deficiency of", "patient with absence of", or "responsible for enzyme deficiency".
+
+  The span should include the privative head and its function words ("deficiency of", "absence of"), not only the molecule name. The molecule alone is not the disease. Do not tag the phrase when it describes a molecular mechanism, such as "a deficiency of norrin" in 10484772, and flag that case as an annotation inconsistency to resolve.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10577908.json):
+Snippet: "...rized by ichthyosis , mental retardation , spasticity , and deficient activity of fatty aldehyde dehydrogenase ( FALDH ) . To define the molecular defects causing SLS , w..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficient activity of fatty aldehyde dehydrogenase"
+
+Example 2 (Doc: 1303173.json):
+Snippet: "... coexistence of the two mutations is responsible for enzyme deficiency in G6PD A- because they act synergistically in causing instability ..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficiency in G6PD"
+
+Example 3 (Doc: 1671881.json):
+Snippet: "...enylketonuria is an autosomal recessive disease caused by a deficiency of hepatic phenylalanine hydroxylase ( PAH ) . The abolition of an invariant BamHI site located ..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficiency of hepatic phenylalanine hydroxylase"
+
+Example 4 (Doc: 6859721.json):
+Snippet: "...Absence of the seventh component of complement in a patient with chronic meningococcemia presenting as vas..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "Absence of the seventh component of complement"
+
+Example 5 (Doc: 6859721.json):
+Snippet: "...of functional and antigenic C7 , compatible with a complete deficiency of the seventh component of complement . Study of the patients family spanning four generations sh..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficiency of the seventh component of complement"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

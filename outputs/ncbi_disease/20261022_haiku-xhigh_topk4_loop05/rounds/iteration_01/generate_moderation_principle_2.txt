@@ -1,0 +1,65 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+- **Pattern Name:** Gene-Product Deficit NP Misread as Non-Disease (Deficiency/Absence + "of/in" + Enzyme/Protein)
+
+- **Confusion Trigger:** The disease meaning sits in a deficit noun phrase, [deficiency | absence | deficient activity] + *of/in* + [enzyme, gene, or protein name]. The model's attention goes to the biomolecule complement, which is outside the schema, so it labels the span O. The deficit head ("deficiency," "absence," "activity") is not recognized as disease-denoting when it is followed by a PP. Examples:
+  - "deficient activity **of** fatty aldehyde dehydrogenase"
+  - "deficiency **in** G6PD"
+  - "deficiency **of** hepatic phenylalanine hydroxylase"
+  - "Absence **of** the seventh component **of** complement"
+
+- **Contrastive Evidence:** The True Positives name diseases directly with disease-type heads ("Coats disease," "Norrie disease," "diastrophic dysplasia," "SLS") or with the deficiency noun as the compound-final head after the enzyme premodifier ("glucose 6-phosphate dehydrogenase (G6PD) deficiency"). None has a biomolecule as the complement of a deficit head. Within the same document (1303173), the gold standard also marks the adjectival form "G6PD deficient" as Modifier, not SpecificDisease. So the scheme distinguishes a nominal, disease-denoting deficit (SpecificDisease) from an adjectival state (Modifier), and the model collapses both into O.
+
+- **Linguistic Rule (Proposed):** Label the full NP, including the PP, as SpecificDisease when all of the following hold:
+  1. The head is a nominal deficit or loss-of-function term ("deficiency," "absence," or "deficient activity"), not a measurement or assay term.
+  2. A PP ("of"/"in") names a specific gene, enzyme, or protein that is the defective entity.
+  3. The construction denotes a congenital or inherited deficiency state, not a generic biochemical description.
+
+  Do not extend the label to the adjectival form ("G6PD deficient" → Modifier). Exception: "fever" (Example 5) is a symptom in a coordinated presentation list and does not follow this pattern. Its gold label looks like annotation noise, comparable to the unannotated "ichthyosis" in the same schema, so it should not drive the rule.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10577908.json):
+Snippet: "...rized by ichthyosis , mental retardation , spasticity , and deficient activity of fatty aldehyde dehydrogenase ( FALDH ) . To define the molecular defects causing SLS , w..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficient activity of fatty aldehyde dehydrogenase"
+
+Example 2 (Doc: 1303173.json):
+Snippet: "... coexistence of the two mutations is responsible for enzyme deficiency in G6PD A- because they act synergistically in causing instability ..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficiency in G6PD"
+
+Example 3 (Doc: 1671881.json):
+Snippet: "...enylketonuria is an autosomal recessive disease caused by a deficiency of hepatic phenylalanine hydroxylase ( PAH ) . The abolition of an invariant BamHI site located ..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficiency of hepatic phenylalanine hydroxylase"
+
+Example 4 (Doc: 6859721.json):
+Snippet: "...Absence of the seventh component of complement in a patient with chronic meningococcemia presenting as vas..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "Absence of the seventh component of complement"
+
+Example 5 (Doc: 6859721.json):
+Snippet: "...litis.
+A previously healthy 40-year-old man presenting with fever , arthritis , and cutaneous vasculitis was found to have ch..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "fever"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

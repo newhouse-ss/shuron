@@ -1,0 +1,55 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: DiseaseClass (Label Mismatch)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** Both discrepancies are generic disease-category head nouns ("infection," "vasculitis") with a descriptive premodifier ("Chronic neisserial," "cutaneous"). The gold label is SpecificDisease, but the model chose DiseaseClass. The true positives split three ways. SpecificDisease cases use names, eponyms, acronyms, or gene/enzyme names (*Coats disease*, *SLS*, *G6PD deficiency*). DiseaseClass has one case, *mental retardation*, which is a generic phenotype term in a symptom list. Modifier cases are noun-adjuncts before a non-disease head (*ovarian cancer population*).
+- **Isolate Trigger:** The model appears to read the generic hypernym head ("infection," "vasculitis") as a class marker and does not credit the premodifier as individuating a single disease. The *G6PD deficiency* true positive has the same structure (generic head "deficiency" plus a specifier) and is correctly SpecificDisease, so the head noun alone does not decide the label. The specifier's strength matters.
+- **Hypothesis Check:** The "generic head + modifier" trigger explains both discrepancies but is too broad. *Mental retardation* has the same adjective + head structure and is correctly DiseaseClass. The distinguishing factor is referential role: the discrepancy NPs are arguments of disease-level predicates ("can be associated with C7 deficiency," "distinguished from other causes of…"), while *mental retardation* is one item in a list of clinical features. The rule needs a referential check and not only a syntactic one.
+
+**Step 2: Formulate Pattern**
+
+Generic disease-category head nouns (*infection*, *vasculitis*, *deficiency*) that are individuated by a premodifier naming an etiologic agent or anatomical site refer to one specific disease. Gold labels them SpecificDisease when they serve as referential disease arguments. The model over-applies DiseaseClass based on the head noun.
+
+---
+
+**Markdown Output**
+
+- **Pattern Name:** Individuated Generic-Head Disease Mentions (Category Head Overridden by Etiologic/Site Specifier)
+- **Confusion Trigger:** A generic disease-category head noun ("infection," "vasculitis") with a non-eponymous, non-acronym descriptive premodifier ("neisserial," "cutaneous"). The model treats the category head as a DiseaseClass signal and does not credit the premodifier as individuating a single nosological entity.
+- **Contrastive Evidence:** The true positive *G6PD deficiency* (within "glucose 6-phosphate dehydrogenase (G6PD) deficiency") shares the generic-head-plus-specifier structure and is correctly SpecificDisease, because the specifier names a specific gene/enzyme etiology. True DiseaseClass *mental retardation* is a bare phenotype term in a symptom list with no individuating specifier and no disease-level predicate. True Modifier *ovarian cancer* is a pre-nominal adjunct to a non-disease head.
+- **Linguistic Rule (Proposed):** For a disease-denoting NP of the form [premodifier] + [generic category head]:
+  1. Assign **SpecificDisease** if the premodifier names an etiologic agent (organism, gene, enzyme) or a single anatomical site that individuates one nosological entity, *and* the NP is a referential argument of a disease-level predicate (e.g., "associated with," "distinguished from," "caused by").
+  2. Assign **DiseaseClass** only when the head is a bare, unindividuated category or phenotype term (e.g., "vasculitis" alone, "mental retardation" in a feature list).
+  3. Assign **Modifier** when the disease term is a pre-nominal adjunct modifying a non-disease head (e.g., "ovarian cancer population").
+  4. Do not assign DiseaseClass solely because the head noun is a generic hypernym.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 6859721.json):
+Snippet: "...ions showed heterozygous deficiency of C7 in five members . Chronic neisserial infection can be associated with C7 deficiency and must be distinguis..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "Chronic neisserial infection"
+
+Example 2 (Doc: 6859721.json):
+Snippet: "...7 deficiency and must be distinguished from other causes of cutaneous vasculitis . . ..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "cutaneous vasculitis"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

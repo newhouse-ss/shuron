@@ -1,0 +1,394 @@
+# Biomedical Annotation Guidelines
+
+## What to Annotate
+
+### 1. Annotate all **Specific Disease** mentions
+A textual string referring to a disease name may refer to a **Specific Disease** or a **Disease Class**.  
+- **Disease Class**: Mentions that could be described as a family of multiple specific diseases.  
+- **Specific Disease**: Mentions that can be linked to one specific definition that does not include further categorization.
+
+**Example**  
+> Diastrophic dysplasia is an autosomal recessive disease characterized by short stature, very short limbs and joint problems that restrict mobility.
+
+- **Annotate**:  
+  - "Diastrophic dysplasia" as **Specific Disease**  
+  - "autosomal recessive disease" as **Disease Class**  
+  - "short stature" and "very short limbs" as **Disease Class**, because they are clinical signs that characterize a Specific Disease (see rule 1c)  
+- **Do not annotate**:  
+  - "joint problems" (bare general term; see "What NOT to Annotate," item 4)
+
+**1a. Named deficiency conditions (narrowest; applied first).**  
+A noun phrase headed by a deficiency-type noun (e.g., "deficiency," "deficient activity") is a **Specific Disease** only when it is a fixed, lexicalized name for a pathological condition. Both of the following must hold:
+- The deficiency term is premodified by the name of an enzyme, protein, complement component, or gene (e.g., "C7 deficiency," "glucose 6-phosphate dehydrogenase (G6PD) deficiency"), or the phrase is a short-form re-mention of such a named condition (e.g., "G6PD deficiency").
+- The phrase names a pathological condition that defines or causes a disease, and the document uses it as the name of that condition rather than as a paraphrase of a molecular defect.
+
+Annotate the full name, including any parenthetical enzyme abbreviation. Later coreferent short-form mentions of the same condition are also **Specific Disease**, not O.
+
+A postnominal "of" or "in" complement form (e.g., "deficiency of X," "enzyme deficiency in X") is treated as a paraphrase by default and is handled by rule 1a(i). It becomes a named label only when the document itself uses that exact form as the defined name of the condition. Otherwise, it may be re-admitted as a disease mention only under rule 1a(ii) or rule 1a(iii).
+
+**1a(i). Molecular-defect paraphrases (not a disease mention by default).**  
+A defect-denoting nominal ("deficiency of X," "deficiency in X," "deficient activity of X," "deficit of X") whose prepositional or genitive complement names a molecular entity (an enzyme, protein, complement component, gene product, or gene symbol) is a descriptive paraphrase of a molecular defect. It is **not a disease mention under any label**, unless rule 1a(ii) or rule 1a(iii) admits it. Instead, label the conventional disease name elsewhere in the passage, using only its canonical span, or leave the phrase O if no such name exists.
+- **Carrier or genotype descriptors.** If the span contains a genotype or carrier-state modifier (e.g., "heterozygous," "carrier," or a count of affected relatives), exclude the span entirely, regardless of its complement.
+- **Does not apply** when:
+  - the defect term is part of a fixed, premodifier-form label (e.g., "C7 deficiency," "G6PD deficiency") used as a name; rule 1a governs these;
+  - the complement is not a molecular entity, such as a nutrient, vitamin, tissue, or organism (e.g., "vitamin D deficiency," "iron deficiency anemia"); the standard Specific Disease rules apply.
+- The rule applies even when the disease name also appears elsewhere in the same sentence, provided the defect phrase is a free-standing paraphrase of the same content.
+
+- **Negative constraints (rules 1a and 1a(i))**
+  - *Attributive use.* When the deficiency-type word modifies a different noun, it is attributive and is annotated as **Modifier** (rule 3), not as a Specific Disease. For example, in "G6PD-deficient phenotype," "G6PD deficient" is **Modifier**. The same holds for "deficient patients." A "deficient activity of X" or "deficiency of X" phrase is not attributive, because the deficiency word heads its own phrase; it is governed by rules 1a(i)–(iii).
+  - *Negated or normal-state adjectives* ("non-deficient," "normal") do not name a disease and remain O.
+  - *Single symptom words* (e.g., "fever") are outside this rule and follow the Disease Class convention in rule 1c.
+  - *Measured quantities.* Deficiencies or reductions that describe a measured value in a sample, assay, or expression experiment are not named conditions and remain O. This exclusion applies to rules 1a(ii) and 1a(iii) as well.
+  - A bare "deficiency" with no enzyme, protein, or gene complement remains a general term (see "What NOT to Annotate," item 4).
+
+**1a(ii). Tissue-level deficits in a causal-consequence frame (Disease Class; narrowest exception to rule 1a(i)).**  
+A deficit nominal (deficiency, loss, absence, lack) that governs a complement naming a gene product or protein is a **Disease Class** span, running from the head through the complement, when all of the following hold:
+- It is the object of a causal or consequence predicate (e.g., "results in," "leads to," "causes") whose subject is a mutation, variant, or other disease-inducing event.
+- It denotes an organ- or tissue-level pathological state, such as a protein being lacking in a named organ or tissue of the affected individual.
+- It is not a measured or assayed quantity.
+
+A locative that attaches to the surrounding clause (e.g., "within the developing retina" after "results in a deficiency of norrin") is outside the span. A locative that is the complement of the deficit noun is inside the span.
+
+- **Does not apply when:**
+  - the complement is a gene product mentioned alone (remains O);
+  - the frame is a neutral biochemical or mechanistic description with no tissue or organ state;
+  - the state is a molecular or cellular state with no tissue or organ reference (e.g., "resulting in absence of the FMR1 protein" in a description of promoter methylation; rule 1a(i) applies, and the phrase remains O);
+  - the head is a lexical clinical-condition noun (standard rules 1b and 1c apply);
+  - the head denotes a measured quantity (activity, level, expression, concentration, mRNA stability).
+- **Example.** In "...somatic mutation in the NDP gene which results in a deficiency of norrin within the developing retina," "deficiency of norrin" is **Disease Class** (see example 27).
+
+**1a(iii). Privative-complement nominals in organism-linked frames (Specific Disease; applies where rule 1a(ii) does not).**  
+A privative or functional-deficit nominal (e.g., "deficiency of X," "deficit of X," "deficiency in X") whose complement names a biomolecule (enzyme, protein, complement component, or gene or locus symbol) is a **Specific Disease** span when the clause presents the state as a cause, presenting feature, or defining feature of a condition in an affected individual or organism (e.g., "characterized by," "presenting with," "found to have," "patients with," "causes"). The span runs from the head through its function words to the end of the complement, including any organ, tissue, or ordinal/numeric qualifier that belongs to the complement. Label the whole phrase. Do not label the head noun or the molecule name alone.
+- **Does not apply when:**
+  - the state is a molecular or mechanistic property not linked to an affected individual or organism, such as a mechanistic description of gene silencing with no individual-level clinical frame (remains O under rule 1a(i));
+  - the head is already a disease-category noun or eponym (standard rule 1b governs);
+  - the head denotes a quantity, level, count, or measured abundance (e.g., "deficient activity of FALDH"; remains O);
+  - the privative modifies a non-molecular complement (a symptom, response, or sign);
+  - the defect is attributed to a molecular variant without a patient, organ, or clinical-presentation frame (remains O; see example 26);
+  - the phrase is attributive (**Modifier**; see the negative constraints above), or rule 1a(ii) governs it, because rule 1a(ii) is narrower and takes precedence.
+
+---
+
+**1b. Specific vs. Disease Class test (Individuated-Referent Test).** Apply this test to each disease mention used as a stand-alone reference to a condition. Attributive uses are Modifiers (rule 3) and are not tested here. Deficiency nominals decided under rule 1a, 1a(i), 1a(ii), or 1a(iii) are not re-tested here.
+- **(a) Anchored → Specific Disease.** If the mention contains a proper-name, eponym, acronym, gene-symbol, or enzyme-defined anchor in its head or immediate modifier, it is a **Specific Disease**, regardless of grammatical number. Examples of anchors include "Coats disease," "Norrie disease," "Sjogren-Larsson syndrome," "SLS" (when the document defines it as a disease), and "FALDH deficiency." An anchor inside a multi-word name fixes the referent even when the common-noun tail is generic. Organism names (e.g., "Neisseria") are not anchors (see "What NOT to Annotate," item 1). A gene symbol or enzyme name that is not part of a disease mention (e.g., "BRCA1 alterations") does not create a disease mention.
+
+- **Nosological Singularity Test (applied after (a), before (b)–(e)).** For an unanchored mention, the head term decides its type:
+  - *Disease Class branch.* If the head is a common noun or hypernym that denotes a broad category of conditions, a sign or symptom, or a generic class, the mention is **Disease Class**, with or without body-site, laterality, or genus-level qualifiers (e.g., "autosomal recessive disorder," "X-linked mental retardation syndrome," "retinal dystrophies," "mental retardation," "ichthyosis"). This holds whether the mention appears in a presentation sentence, a coordinated list, or a generic statement, subject to the exceptions below.
+  - *Specific Disease branch.* Otherwise, if the mention denotes a single nosological entity, it is **Specific Disease**. Single entities include proper-name eponyms, acronyms, and named conditions whose identity is fixed by a species-level or unique etiologic qualifier (e.g., "acute meningococcal pericarditis," "fragile X syndrome"). A species-level qualifier counts only when the whole phrase names a recognized disease entity. A bare organism name is not an anchor (item 1).
+  - *Exceptions (narrower; they override the Disease Class branch).* (i) A generic-head span that co-refers with a named disease through an alias gloss, appositive, "so-called" construction, or demonstrative anaphor (rule 1b(b)(i)). (ii) A generic pathology head that is the complement of a diagnostic or etiologic predicate about one disease referent (rule 1b(b)(ii)), unless it heads an enumerated list. (iii) Site-specified cancer and tumor names (see below).
+  - *Site-specified cancers and tumors.* Names such as "ovarian cancer," "colorectal cancer," and "breast cancer" denote organ-defined neoplastic entities. A body-site adjective does not make "cancer" or "tumor" a generic class head. Such names are **Specific Disease** (or **Modifier** when attributive; rule 3). This follows item 4 (cancer and tumor are retained) and examples 7, 19, and 23.
+  - *Qualifiers.* Adjectival, temporal, severity, and form qualifiers (e.g., "acute," "classical," "inherited," "unilateral") do not change the label. Anatomical or laterality qualifiers that belong to the disease name are part of its span.
+  - *Scope.* This test decides stand-alone mentions only. Coordination by itself does not trigger Disease Class; coordinated spans are governed by rule 2.
+
+- **(b) Referential role of generic pathology heads → Specific Disease.** An unanchored span whose head noun is a generic pathology, lesion, or symptom noun (e.g., "telangiectasis," "detachment," "hyperplasia," "lesion") is a **Specific Disease**, regardless of any anatomical, laterality, quantitative, or descriptive premodifiers, when it names a disease through either:
+  - (i) co-reference with a named, eponymous, or acronym disease through a parenthetical gloss of that disease, an appositive, a "so-called" construction, or a demonstrative anaphor; or
+  - (ii) the complement or argument of a diagnostic or etiologic predicate (e.g., "associated with," "distinguished from," "causes of," "presenting with") within a clause about one disease referent.
+  - *Finding-head guard.* A span whose head is a descriptive term for a lesion, abnormality, sign, or mechanism (e.g., a vessel-dilation, detachment, or deficit noun with an anatomical or qualifying modifier), rather than a proper name, eponym, or acronym designating the disorder as a whole, is not a Specific Disease. This holds even inside a parenthetical gloss, an alias marker ("so-called," "also known as," "i.e."), or a repeated mention. Such a span is **Disease Class** when it denotes a manifestation or finding of a disease (rules 1b(b) and 1c) or a generic condition category; otherwise it is left untagged. The guard does not apply when:
+    - the head is itself a nosological term (a disease, syndrome, or condition name, or an acronym resolving to one), even when preceded by an eponym or descriptive modifier (e.g., "[Eponym] disease," "[Eponym] syndrome");
+    - the gloss is an alias that renames the named disease, meaning it could stand for the whole named disease in the same clause and keep the same referent (e.g., "unilateral retinal telangiectasis" for "Coats' disease of the retina"). Such aliases are **Specific Disease** under (b)(i);
+    - the span is a privative-complement nominal decided by rule 1a(ii) or 1a(iii).
+  - *Negative constraints for (b):*
+    - If the span is one item in an enumerated list of findings, symptoms, or sequelae with no individual disease referent, it remains **Disease Class**, including bare symptom nouns in presentation lists.
+    - A parenthetical gloss of a finding, rather than of the named disease, does not trigger (i). In "massive intraretinal and subretinal lipid accumulation (exudative retinal detachment)," the gloss describes a manifestation, so the span remains **Disease Class**.
+    - "Characterized by" feature lists are not diagnostic predicates under (ii); they are governed by (d) and rule 1c.
+    - An attributive premodifier role is a **Modifier** (rule 3), not a Specific Disease.
+    - Eponyms and acronyms that stand alone as disease names remain **Specific Disease** under (a).
+    - Bare general nouns from "What NOT to Annotate," item 4 (e.g., "condition," "disease," "disorder," "syndrome") are not pathology, lesion, or symptom heads. They remain excluded even when anaphoric (e.g., "this condition"). With a qualifier, they form a Disease Class span (e.g., "autosomal recessive disorder").
+    - *Generalization note.* Premodifier shape and the lexical class of the head noun are candidate triggers for review only. They are never sufficient on their own to assign Specific Disease or Disease Class. The referential and predicate context decides.
+
+- **(c) Unanchored, individual's condition → Specific Disease.** An unanchored head noun, with or without adjectival modifiers, that names the diagnosed or presenting condition of a specific individual is a **Specific Disease**. Typical frames include a participial "presenting with" phrase, a "found to have" construction, or a clausal subject or predicate describing one patient. This frame does not override the Nosological Singularity Test: a sign, symptom, or generic class head in such a frame remains **Disease Class**. A disease-name head remains **Specific Disease**. Generic pathology heads follow (b).
+
+- **(d) Unanchored, generic frame → Disease Class.** An unanchored head noun in a generic frame is a **Disease Class**. Typical frames include a syndrome-level list of characteristic features ("characterized by") or an enumerated differential introduced by a comparative construction ("other causes of").
+
+- **(e) Default.** If none of (a)–(d) applies, decide using the Specific Disease and Disease Class definitions above.
+
+- **Negative constraints**
+  - Do not promote an unanchored term to **Specific Disease** solely because a patient appears elsewhere in the document. The clause frame containing the term governs.
+  - Do not treat plural number or added modifiers as evidence of a Disease Class label when an anchor is present.
+  - Adjectival modifiers (e.g., "acute," "classical," "inherited") do not by themselves change the label. The head noun and the tests above decide it.
+  - Anchored terms that name a broad grouping of distinct disorders rather than one disease entity remain **Disease Class**.
+
+---
+
+**1c. Disease-manifestation nominals (broadest; applied last).** Annotate as one **Disease Class** span a noun phrase that denotes an abnormal pathological state, developmental abnormality, clinical sign, or deficiency of a disease-relevant molecule (the last only when it is governed by rule 1a(ii)), when it is either:
+- the argument of a characterization, causation, or etiology predicate (e.g., "characterized by," "results in," "secondary to") within a clause that describes a Specific Disease, directly or through a chain of causal predicates; or
+- a coordinated member of such an argument list.
+
+The span includes the head, internal modifiers, and any prepositional complement, even when the phrase has no explicit disease head word. Label each coordinated member as its own span. Single-word symptoms in such a list (e.g., "spasticity") follow this rule.
+
+- **Example.** In "Coats disease is characterized by abnormal retinal vascular development," "Coats disease" is a **Specific Disease** (rule 1b(a)), and "abnormal retinal vascular development" is a **Disease Class**.
+- **Does not apply when:**
+  - (a) The phrase is itself a named disease, syndrome, or nosological label. Those follow rule 1b; for example, a disease noun such as "ichthyosis" in a "characterized by" list is handled there. The rule also does not apply to a named deficiency condition covered by rule 1a or rule 1a(iii), which are narrower and take precedence.
+  - (b) The causal chain concerns a gene, mutation, variant, polymorphism, drug, exposure, or population rather than the disease's own abnormal state. Gene-level abnormal states (e.g., "WT1 dysfunction") and gene-level alterations (e.g., "somatic mutation") are never manifestations under this rule. A tissue- or organ-level state that a mutation causes is not excluded by this item; it is governed by rule 1a(ii).
+  - (c) The phrase is a study variable, outcome measure, assay, method, or procedure.
+  - (d) It describes neutral physiological or molecular background outside any disease-characterizing clause, including neutral processes such as "normal retinal vasculogenesis" (see "What NOT to Annotate," item 5).
+  - (e) It is a standalone severity, onset, or temporal qualifier (e.g., "early onset"). Such a qualifier remains a **Modifier** and is not part of a Disease Class span.
+  - (f) It is a bare general term (e.g., "abnormalities," "complications," "problems"), which remains excluded under "What NOT to Annotate," item 4.
+  - (g) The phrase is a molecular-defect paraphrase under rule 1a(i) that rule 1a(ii) does not admit (e.g., "deficient activity of fatty aldehyde dehydrogenase (FALDH)," "enzyme deficiency in G6PD A-," or "resulting in absence of the FMR1 protein" in a mechanistic description). Such phrases are not disease mentions under any label.
+  - (h) The phrase is a generic pathology span that names a disease under rule 1b(b). That rule takes precedence, and the span is a **Specific Disease**.
+  - (i) The phrase is a coordinated set of premodifiers over one shared pathological head, which is a **Composite Mention** under rule 2.
+
+---
+
+### 2. Annotate **contiguous text strings**
+A textual string may refer to two or more separate disease mentions. Such mentions are annotated with the **Composite Mention** category.
+
+**Example**  
+> The text phrase "Duchenne and Becker muscular dystrophy" refers to two separate diseases. If this phrase is separated into two strings: "Duchenne" and "Becker muscular dystrophy," it results in information loss, because the word "Duchenne" on its own is not a disease mention.
+
+**Coordinated premodifiers over a non-disease head.** If a span contains a coordinating conjunction ("and," "or") that joins two or more premodifiers which together modify one shared head noun, and that head denotes a pathological process, finding, or change rather than a disease name or disease category, the full coordinated span is one **Composite Mention**, not Disease Class. An adjacent Disease Class mention or a parenthetical does not change this label.
+
+- **Example.** "Fibroepithelial or epithelial hyperplasias" (example 18).
+- **Does not apply when:**
+  - (a) The coordinator joins disease-name or disease-category heads (e.g., organ-site modifiers sharing a disease-name head such as "cancer"). This coordinated-cancer case is not reclassified by this principle. Annotate the disease mention per rules 1b and 3, and keep multi-disease coordinations such as example 7 as Composite Mentions under the first paragraph of this rule.
+  - (b) The coordinator joins separately headed noun phrases or whole disease mentions rather than premodifiers of a single shared head.
+  - (c) The span contains no coordinator. Single-headed nominals keep their ordinary label (Disease Class or Specific Disease).
+
+---
+
+### 3. Annotate disease mentions that are used as **Modifiers** for other concepts
+A textual string may refer to a disease name, but it may modify a noun phrase (or may not be a noun phrase itself). In such cases, annotate using the **Modifier** category. An attributive disease mention is a **Modifier** even if it is anchored in the sense of rule 1b. The Specific Disease / Disease Class test does not override this role, including the Nosological Singularity Test, which is applied only to stand-alone mentions. An attributive span is a Modifier even when its head is a generic class noun (e.g., "fragile X syndrome" in "fragile X syndrome patients").
+
+**Example**  
+> Although this mutation was initially detected in four of 33 colorectal cancer families analysed from eastern England, more extensive analysis has reduced the frequency to four of 52 English HNPCC kindreds analysed.
+
+- **Annotate**:  
+  - "colorectal cancer" as **Modifier**  
+  - "HNPCC" as **Modifier**
+
+**Adjacency-based attributive test (applies to disease-name spans, full names and short-form aliases).**
+- **IF** a disease-name span (a full name or its short-form alias) is **immediately** followed by a common-noun head that it attributively premodifies, with no intervening punctuation, bracket, participle, finite verb, or preposition, **THEN** label the span **Modifier**.
+- **OTHERWISE**, label the span **Specific Disease**. This covers spans followed by punctuation, a bracket, a participle, a verb, a preposition, or nothing, and spans that head their own noun phrase, complement a preposition, or serve as a subject or verb argument. A parenthetical acronym or alias takes the class of its expanded antecedent, judged by the antecedent's syntactic position, not by the alias's own local context.
+- **Negative constraints (the test does NOT apply when):**
+  - The decision rests on the semantic content of the following noun (e.g., "risk," "mutation," "patients," "genes") or on other occurrences of the same string in the document. The following word may confirm that the next token is a noun head, but it cannot by itself change the label.
+  - The span is a Disease Class mention or a Composite Mention. Those are resolved by their own definitions before this test is applied.
+- **Example.** In "a family history of ovarian cancer," "ovarian cancer" is **Specific Disease** (complement of "of," followed by punctuation). In "ovarian cancer risk," "ovarian cancer" is **Modifier** (immediately followed by a head noun).
+
+**Locus-designator heads.** A disease-denoting premodifier (a spelled-out disease name, or an acronym that the document has already defined as a disease) in attributive position within a noun phrase whose head denotes a gene or locus is a **Modifier**. A locus head is "gene," "genes," or "gene" followed by a numeral or symbol. This rule extends the adjacency test above; it does not restrict it to gene heads. The locus head does not turn the disease span into O. The locus designator and any bare gene symbol remain O. Gene symbols stay outside the schema, and the Specific Disease / Disease Class boundaries are unchanged for non-attributive uses.
+
+- **Example.** In "breast cancer susceptibility gene 1 (BRCA1)," "breast cancer" is **Modifier**, and "BRCA1" is O. In "SLS genes," "SLS" is **Modifier**.
+- **Does not apply when:**
+  - (a) The disease term is the head of the phrase, or it sits in a postmodifying prepositional phrase and is not immediately followed by a noun it premodifies (e.g., "gene for ___"). The disease is then not attributive, and the adjacency test gives **Specific Disease**.
+  - (b) The acronym has no disease definition or established disease referent in the document, so it remains O.
+  - (c) The span is a gene symbol or locus name containing no disease term.
+  - (d) The premodifier is a non-disease attributive noun (e.g., anatomical, drug, or procedure terms).
+
+---
+
+### 4. Annotate **duplicate mentions**
+For each sentence in the PubMed abstract and title, the locations of all disease mentions are marked, including duplicates within the same sentence.
+
+---
+
+### 5. Annotate **minimum necessary span of text**
+Use the smallest span necessary to include all tokens expressing the most specific form of the disease. For named deficiency conditions with a premodifier enzyme, protein, or gene name (rule 1a), that name is part of this minimum span. Molecular-defect paraphrases (rule 1a(i)) are not disease mentions and are not annotated, unless rule 1a(ii) or rule 1a(iii) admits them, in which case the span runs as those rules specify.
+
+**Example**  
+> In the case of "insulin-dependent diabetes mellitus," the disease mention including the whole phrase was preferred over its substrings such as "diabetes mellitus" or "diabetes."
+
+---
+
+### 6. Annotate all **synonymous mentions**
+Abbreviation definitions such as "Huntington disease" ("HD") are separated into two annotated mentions (one for the long form, one for the abbreviation). The short form takes the class of its expanded antecedent (rule 3).
+
+---
+
+## What NOT to Annotate
+
+1. **Do not annotate organism names**  
+   - Organism names such as "human" were excluded from the preferred mention.  
+   - Viruses, bacteria, and other organism names were not annotated **unless** it was clear that the disease caused by these organisms is being discussed.  
+   - Organism names are also not anchors for the Specific Disease / Disease Class test (rule 1b). A species-level qualifier counts only when the full phrase names a recognized disease entity (e.g., "meningococcal pericarditis").  
+   - **Example**  
+     > Studies of biopsied tissue for the presence of Epstein-Barr virus and cytomegalovirus were negative.  
+     
+     In this case: "Epstein-Barr virus" and "cytomegalovirus" are annotated as **Specific Disease** category **only** if the context clearly indicates the diseases they cause, otherwise not.
+
+2. **Do not annotate gender**  
+   - Tokens such as "male" and "female" were only included if they specifically identified a new form of the disease.  
+   - **Example**  
+     > "male breast cancer"
+
+3. **Do not annotate overlapping mentions**  
+   - **Example**: The phrase "von Hippel-Lindau (VHL) disease" is annotated as **one single disease mention** (Specific Disease category).
+
+4. **Do not annotate general terms**  
+   - Very general terms such as "disease," "syndrome," "deficiency," "condition," "complications," "abnormalities," "problems," etc. were excluded.  
+   - However, the terms "cancer" and "tumor" were retained.  
+   - A bare general term stays excluded even inside a characterizing clause or as an anaphor (e.g., "this condition"). "Deficiency" and "abnormalities" qualify only as part of a specific nominal under rule 1a, rule 1a(ii), rule 1a(iii), or rule 1c (e.g., "C7 deficiency," "deficiency of norrin" in a causal-consequence frame, or "abnormal retinal vascular development"), never on their own.
+
+5. **Do not annotate references to biological processes**  
+   - e.g. Terms corresponding to biological processes such as "tumorigenesis" or "cancerogenesis."  
+   - Neutral developmental or physiological processes (e.g., "normal retinal vasculogenesis") are excluded likewise.  
+   - An abnormal pathological state that characterizes a Specific Disease (e.g., "abnormal retinal vascular development") is not a neutral process and is handled by rule 1c.
+
+6. **Do not annotate disease mentions interrupted by nested mentions**  
+   - Essentially, do not break the contiguous text rule.  
+   - A parenthetical gene or enzyme abbreviation inside a single name (e.g., "glucose 6-phosphate dehydrogenase (G6PD) deficiency") is not an interruption.  
+   - The contiguity constraint also applies to manifestation and deficiency spans.  
+   - **Example**  
+     > WT1 dysfunction is implicated in both neoplastic (Wilms tumor, mesothelioma, leukemia, and breast cancer) and nonneoplastic (glomerulosclerosis) disease.  
+     
+     Here, the mentions "neoplastic disease" and "nonneoplastic disease" are not annotated because other tokens break up these phrases.
+
+7. **Do not annotate negated or normal-state deficiency adjectives**  
+   - e.g., "non-deficient polymorphic variant G6PD A." The word "non-deficient" names no disease, so it remains O.
+
+8. **Do not annotate gene-level alterations as disease mentions**  
+   - Mutations, polymorphisms, variants, alterations, gene-level dysfunction, and gene symbols remain O. Examples include "BRCA1 alterations," "truncating mutations," "FALDH gene," and "WT1 dysfunction."  
+   - The exception is a disease term attributive to them, which is a **Modifier** under rule 3 (locus-designator heads).
+
+9. **Do not annotate molecular-defect paraphrases as disease mentions**  
+   - Phrases that describe a molecular defect by naming the molecule it affects, such as "deficiency of norrin" outside a causal-consequence frame, "enzyme deficiency in G6PD A-," and "deficient activity of fatty aldehyde dehydrogenase (FALDH)," are O under rule 1a(i), unless rule 1a(ii) or rule 1a(iii) admits them. The disease mention is carried by the canonical disease name elsewhere in the passage, if one exists.
+
+---
+
+## Precedence Between Overlapping Rules
+
+Where two rules would label the same span differently, apply the narrower rule first and treat the broader rule as excluding that span.
+
+1. **Attributive role before label.** A disease mention used attributively is a **Modifier** (rule 3, including locus-designator heads and generic class heads inside a Modifier span). The Specific Disease / Disease Class test (rule 1b), including the Nosological Singularity Test, does not apply to it. For other disease-name spans, the adjacency test in rule 3 is applied first. Rule 1b then decides between Specific Disease and Disease Class for non-attributive mentions not already decided by rule 1a, 1a(i), 1a(ii), or 1a(iii).
+
+2. **Named deficiency and molecular-defect rules before general terms and manifestations.** The order of narrowness is: rule 1a (lexicalized named deficiency; **Specific Disease**), then rule 1a(ii) (tissue-level causal deficit; **Disease Class**), then rule 1a(iii) (organism-linked privative nominal; **Specific Disease**), then rule 1a(i) (remaining molecular-defect paraphrases; no disease mention). Each broader rule excludes spans decided by a narrower one. When rules 1a(ii) and 1a(iii) could both apply to the same span, rule 1a(ii) governs. Rule 1a(iii) takes precedence over rule 1a(i). Item 4 and rule 1c are broader than all of these and exclude their spans (rule 1c, exclusions (a) and (g)). The individual-condition frames of rule 1b(c) do not by themselves convert a rule 1a(i) paraphrase. Only rule 1a(iii) does, under its own conditions. Where a rule 1a(i) paraphrase is not admitted, the canonical disease name elsewhere in the passage carries the mention.
+
+3. **Referential names and named disease labels before manifestations.** Named diseases, syndromes, and nosological labels are decided by rule 1b. Within rule 1b, the Nosological Singularity Test (sign, symptom, and generic class heads → Disease Class) is applied after the anchored rule (a). Its exceptions (alias co-reference under 1b(b)(i), referential diagnostic predicates under 1b(b)(ii), and site-specified cancer names) are narrower and override its Disease Class branch. A generic pathology span that names a disease under rule 1b(b) is a **Specific Disease**, and rule 1c never applies to it (rule 1c, exclusion (h)). A span that merely glosses a finding of a disease is not a referential name. It remains governed by rule 1c and the finding-head guard.
+
+4. **Abnormal states before neutral processes.** An abnormal pathological state within a disease-characterizing clause is a Disease Class span (rule 1c). Neutral processes remain O (item 5).
+
+5. **Gene-level before disease.** Gene symbols, mutations, polymorphisms, variants, and gene-level dysfunction are O (item 8) unless a disease term is attributive to them (rule 3). A molecule-level deficit that follows from a gene mutation is governed by rule 1a, 1a(ii), 1a(iii), or 1a(i). A tissue-level deficit in a causal-consequence frame is a **Disease Class** span (rule 1a(ii)) even though its cause is a mutation, and the mutation and gene symbol remain O. A molecule-level deficit that is not a lexicalized named condition and is not admitted by rule 1a(ii) or 1a(iii) is a molecular-defect paraphrase and is not a disease mention. It is also not a rule 1c span (rule 1c, exclusion (g)), and it remains O.
+
+6. **Contiguity is never overridden.** Item 6 applies to every span type, including manifestation and deficiency spans.
+
+7. **Coordinated shared-head premodifiers before manifestations.** A coordinated set of premodifiers over one shared pathological head is a **Composite Mention** under rule 2 and is excluded from rule 1c (exclusion (i)). A coordinated set joining disease-name heads is not reclassified by this item (rule 2, exclusion (a)).
+
+8. **Alias glosses and finding-head descriptors.** Within parentheticals, alias markers, and repeated mentions, a gloss that renames the named disease is a **Specific Disease** (rule 1b(b)(i)). This alias exception is narrower than the finding-head guard. A descriptor whose head denotes a finding or lesion, and that does not rename the disease, is not a Specific Disease (finding-head guard, rule 1b(b)). It is a **Disease Class** when it denotes a manifestation (rule 1c), and otherwise untagged.
+
+9. **Between the new principles.** Where the Nosological Singularity Test's Disease Class branch conflicts with rule 1b(c) for a sign, symptom, or generic class head in a patient frame, the Disease Class branch governs, because rule 1b(c) applies to disease-name heads. Where a generic pathology head is the complement of a diagnostic predicate about one disease referent (rule 1b(b)(ii)), that narrower rule governs over the general Disease Class branch, unless the head heads an enumerated list. Where the finding-head guard and rule 1a(iii) both apply, rule 1a(iii) governs, because the guard excludes privative nominals decided there.
+
+---
+
+## Examples
+
+1. **"Insulin-dependent diabetes mellitus"**  
+   - **Specific Disease**  
+   - Prefer the whole string.
+
+2. **CDH1 mutations predispose to early onset "colorectal cancer."**  
+   - "early onset" may or may not be part of the disease mention, depending on:  
+     1. If there is a UMLS concept specifying this as a separate form of disease  
+     2. If the annotator believes it should be included
+
+3. **Human "X-linked recessive disorder"**
+
+4. **Her fresh serum lacked complement-mediated bactericidal activity against Neisseria gonorrhoeae.**  
+   - Remains O: there is no deficiency-type head naming a condition and no disease-characterizing clause.
+
+5. **"Huntington disease" ("HD")**  
+   - The long form and the short form constitute two separate mentions.
+
+6. **C7 deficiency**  
+   - "This report represents the first cases of C7 deficiency associated with infectious complications."  
+   - "infectious complications" is too general a term. "C7 deficiency" is a **Specific Disease**: it is a premodifier-form named deficiency used as a name (rule 1a), not a paraphrase of a molecular defect.
+
+7. **"colorectal, endometrial, and ovarian cancers"**  
+   - Considered one **Composite Mention** of several Specific Diseases.
+
+8. **WT1 dysfunction is implicated in both neoplastic ("Wilms tumor," "mesothelioma," "leukemias," and "breast cancer") and nonneoplastic ("glomerulosclerosis") disease.**  
+   - Potential disease mentions include: "neoplastic disease," "nonneoplastic disease," "Wilms tumor," "mesothelioma," "leukemias," "breast cancer," and "glomerulosclerosis."  
+   - "neoplastic disease" and "nonneoplastic disease" are **not** annotated because these phrases are interrupted by nested mentions.
+
+9. **Tumorigenesis and cancerogenesis**  
+   - These refer to processes, not diseases.
+
+10. **"autosomal recessive disease"**  
+    - Refers to a family of diseases that can be passed down genetically → **Disease Class** category.
+
+11. **Large phenotypic variability with "convulsive disorders," "motor retardation," and "mental retardation."**  
+    - These are "grey area" terms: they may not correspond to a single **Specific Disease**, so they are annotated as **Disease Class** category if appropriate.
+
+12. **Borjeson-Forssman-Lehmann syndrome (BFLS) is a syndromal X-linked mental retardation.**  
+    - "Borjeson-Forssman-Lehmann syndrome" = **Specific Disease**  
+    - "X-linked mental retardation syndrome" = a family of diseases (i.e., **Disease Class**)
+
+13. **Acute meningococcal pericarditis**  
+    - Exists as a separate concept in UMLS. The species-level qualifier counts because the full phrase names a recognized disease entity.
+
+14. **Acute Neisseria infection**  
+    - May or may not include "acute" depending on context.
+
+15. **Classical galactosemia**  
+    - Includes "classical" because it corresponds to a particular form of the disease.
+
+16. **Inherited spinocerebellar ataxia**  
+    - May or may not include "inherited," depending on the annotator.
+
+17. **"Adenomatous polyps of the colon and rectum"**  
+    - **Composite Mention**
+
+18. **Fibroepithelial or epithelial hyperplasias**  
+    - **Composite Mention** (coordinated premodifiers over a shared pathological head; rule 2).
+
+19. **Stage II or stage III colorectal cancer**  
+    - **Composite Mention**
+
+20. **"Coats disease is characterized by abnormal retinal vascular development."**  
+    - "Coats disease" = **Specific Disease** (eponym anchor, rule 1b(a)).  
+    - "abnormal retinal vascular development" = **Disease Class** (rule 1c).
+
+21. **"Sjogren-Larsson syndrome (SLS) is an autosomal recessive disorder characterized by ichthyosis, mental retardation, spasticity, and deficient activity of fatty aldehyde dehydrogenase (FALDH)."**  
+    - "Sjogren-Larsson syndrome" and "SLS" = **Specific Disease** (eponym and defined acronym; the full name is followed by a bracket, and the alias takes its antecedent's class).  
+    - "autosomal recessive disorder" = **Disease Class** (rule 1b, Nosological Singularity Test, genus-level qualifier).  
+    - "ichthyosis" and "mental retardation" = **Disease Class** (unanchored sign or class heads in a "characterized by" frame, rules 1b and 1b(d)).  
+    - "spasticity" = **Disease Class** (coordinated member of the manifestation list, rule 1c).  
+    - "deficient activity of fatty aldehyde dehydrogenase (FALDH)" = **O** (molecular-defect paraphrase, rule 1a(i). Its head denotes a measured activity, so rules 1a(ii) and 1a(iii) do not admit it. It is not a disease mention under any label). The disease mention is carried by "Sjogren-Larsson syndrome."
+
+22. **"Wiskott-Aldrich syndrome protein (WASP) family members"**  
+    - "Wiskott-Aldrich syndrome" = **Modifier** (immediately followed by "protein," so the adjacency test in rule 3 applies; attributive role takes precedence over the eponym anchor).  
+    - "WASP" = O (names a protein, not a disease).
+
+23. **"a family history of ovarian cancer"; "ovarian cancer cases"; "ovarian cancer risk"**  
+    - "ovarian cancer" in "a family history of ovarian cancer" = **Specific Disease** (complement of the preposition "of," followed by punctuation; rule 3 adjacency test).  
+    - "ovarian cancer" in "ovarian cancer cases" and "ovarian cancer risk" = **Modifier** (immediately followed by a head noun).
+
+24. **"breast cancer susceptibility gene 1 (BRCA1)"**  
+    - "breast cancer" = **Modifier** (locus-designator head; immediately followed by "susceptibility").  
+    - "BRCA1" = O.
+
+25. **"the G6PD deficient phenotype"; "non-deficient polymorphic variant G6PD A"**  
+    - "G6PD deficient" = **Modifier** (attributive deficiency word).  
+    - "non-deficient" = O (negated; no disease named).
+
+26. **"the coexistence of the two mutations is responsible for enzyme deficiency in G6PD A-"**  
+    - "enzyme deficiency in G6PD A-" = **O**. The phrase has a causal frame, but it is a variant-level molecular state with no tissue, organ, or patient frame, so rules 1a(ii) and 1a(iii) do not admit it. Rule 1a(i) applies. No canonical disease name is established in the passage, so the span is left untagged.  
+    - "the two mutations" = O (item 8).
+
+27. **"Coats telangiectasis is secondary to somatic mutation in the NDP gene which results in a deficiency of norrin (the protein product of the NDP gene) within the developing retina."**  
+    - "Coats telangiectasis" = **Specific Disease** (eponym anchor; followed by "is").  
+    - "somatic mutation" and "NDP gene" = O (gene-level; rule 1c, exclusion (b)).  
+    - "deficiency of norrin" = **Disease Class** (rule 1a(ii): object of "results in," whose subject is a somatic mutation, denoting a retinal, i.e., tissue-level, state; the complement is a protein). Rule 1a(iii) would also reach this phrase, but the narrower rule 1a(ii) governs. "within the developing retina" is a clause-level locative and lies outside the span. The parenthetical gloss "(the protein product of the NDP gene)" is not part of any span.
+
+28. **"Germline BRCA1 alterations"; "truncating mutations"**  
+    - All O (gene-level; item 8).
+
+29. **"Coats' disease of the retina (unilateral retinal telangiectasis) caused by somatic mutation in the NDP gene"; "massive intraretinal and subretinal lipid accumulation (exudative retinal detachment)"**  
+    - "Coats' disease" = **Specific Disease** (eponym anchor; followed by "of").  
+    - "unilateral retinal telangiectasis" = **Specific Disease** (rule 1b(b)(i): a generic vascular-pathology head that is an alias co-referent with the named disease through a parenthetical gloss; the finding-head guard does not apply because the alias renames the disease, and the laterality premodifier does not change the label).  
+    - "exudative retinal detachment" = **Disease Class** (rule 1c and the finding-head guard). The parenthetical glosses a finding of the disease ("lipid accumulation"), not the named disease, so rule 1b(b)(i) does not apply.  
+    - "somatic mutation" and "NDP gene" = O (item 8).
+
+30. **"Most fragile X syndrome patients have expansion of a (CGG)(n) sequence … responsible for this condition."**  
+    - "fragile X syndrome" = **Modifier** (immediately followed by "patients").  
+    - "this condition" = O (bare general noun; item 4. It is not a pathology, lesion, or symptom head under rule 1b(b)).
+
+31. **"Patients presenting with deficiency of C1 inhibitor were treated."** (illustrative)  
+    - "deficiency of C1 inhibitor" = **Specific Disease** (rule 1a(iii): the complement is a protein, the clause frame is patient-level ("presenting with"), and the phrase is not a measured quantity).
+
+32. **"Retinal dystrophies are a family of inherited disorders."** (illustrative)  
+    - "Retinal dystrophies" = **Disease Class** (Nosological Singularity Test: a generic class head with a body-site qualifier).  
+    - "inherited disorders" = **Disease Class** (genus-level qualifier on a generic class head).
+
+33. **"Deficient activity of FALDH was measured in cultured fibroblasts."** (illustrative)  
+    - "Deficient activity of FALDH" = **O** (the head is a measured activity, which is excluded from rules 1a(ii) and 1a(iii); it is a molecular-defect paraphrase under rule 1a(i)).
+
+34. **"Hypermethylation of the expanded repeat … apparently suppresses transcription, resulting in absence of the FMR1 protein."**  
+    - "absence of the FMR1 protein" = **O**. It is a molecular or mechanistic property in a description of gene silencing, with no individual-level clinical frame and no tissue or organ state. Rules 1a(ii) and 1a(iii) do not admit it, so rule 1a(i) applies.

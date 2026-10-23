@@ -1,0 +1,45 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: DiseaseClass vs LLM: Modifier (Label Mismatch)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** Every Modifier true positive in this batch is a disease name in **pre-nominal (attributive) position**, immediately preceding the noun it modifies: "ovarian cancer **population**," "ovarian cancer **cases**," "population-based ovarian cancer **study**," "ovarian cancer **risk**," "ancient SLS **genes**," "fragile X syndrome **patients**," "Wiskott-Aldrich syndrome **protein**." The discrepancy token, "cancer" in "a family history of cancer .", is the complement of a prepositional phrase. Nothing modifying follows it. The boolean feature that separates the two groups is **pre-nominal attributive position: yes or no.**
+- **Within-document control:** The same lexeme "SLS" in the TP file 10577908 is Modifier in "ancient SLS genes" but SpecificDisease in "causing SLS," "with SLS," and "basis of SLS." This shows that position, not lexical identity, decides the Modifier label.
+- **Isolate Trigger:** Two things likely misled the model. (a) The "family history of ___" frame makes the disease noun act semantically as a qualifier of "history," which the model reads as a modifying role. (b) "cancer" is Modifier-tagged repeatedly in this same document ("ovarian cancer ..."), so the surface token carries a Modifier prior that ignores its syntactic slot.
+- **Hypothesis Check:** Position explains the discrepancy and matches all listed TP Modifiers. It does not fully explain the unlisted premodifier mentions, such as "Caucasian cancer cases" and "breast cancer susceptibility gene." Those suggest that a pre-nominal position is necessary but not sufficient. A bare, generic "cancer" is typed as a category (DiseaseClass, as "mental retardation" is in the SLS abstract), while Modifier is reserved for specific or named disease names.
+
+**Step 2: Formulate Pattern**
+
+- **Pattern Insight:**
+  - **Pattern Name:** Modifier Requires Pre-Nominal Position (Generic Disease Noun in a "History of X" Complement)
+  - **Confusion Trigger:** A generic disease noun in a post-nominal PP complement ("a family history of **cancer**") is labeled as a Modifier. The model is driven by the semantic qualifier role of the phrase and by the Modifier-tagged surface token "cancer" elsewhere in the document, rather than by the token's syntactic slot.
+  - **Contrastive Evidence:** True-positive Modifiers all sit directly before a head noun they modify ("ovarian cancer cases," "ancient SLS genes"). Disease names in complement positions in the same documents ("with SLS," "of SLS," "causing SLS") are labeled SpecificDisease, not Modifier. The discrepancy case shares that complement slot, so it should not receive the Modifier label.
+  - **Linguistic Rule (Proposed):**
+    1. Label a disease mention **Modifier** only if it is a specific or named disease name that is immediately followed by a noun it modifies (N–N attributive or adjectival premodifier).
+    2. If the disease mention is a PP complement, a clause-final argument, or a standalone head (after "of," "with," "by," "causing," or sentence-final), it is **not** a Modifier. Use **SpecificDisease** for named or subtyped diseases (e.g., "with SLS"). Use **DiseaseClass** for generic category terms (e.g., "of cancer," "mental retardation").
+    3. Do not let a token's Modifier label in one position carry over to other positions of the same lexeme in the same document.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10196379.json):
+Snippet: "...ed , some of which were associated with a family history of cancer . The frequency distribution of common polymorphisms was de..."
+Gold: DiseaseClass, LLM: Modifier
+Entity Text: "cancer"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

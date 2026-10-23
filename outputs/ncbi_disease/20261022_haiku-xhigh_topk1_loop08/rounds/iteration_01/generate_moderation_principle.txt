@@ -1,0 +1,65 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** The True Positives name a disease with a disease-nomenclature head: *Coats disease*, *Norrie disease*, *fragile X syndrome*, *Wiskott-Aldrich syndrome*, *ovarian cancer*, and the acronym *SLS*. Gene and protein tokens in the same texts (*BRCA1 alterations*, *the NDP gene*, *Cdc42*, *WASP*) stay outside the disease spans. The discrepancies instead use a **deficit-state head** (*deficiency*, *deficient activity*, *absence*) whose complement is a **gene product** (an enzyme, protein, or complement component). The disease is encoded in the deficit-of-a-molecule relation, not in a disease noun.
+- **Isolate Trigger:** The model reads the enzyme or protein name as a molecular entity outside the schema and the deficit term as a generic biochemical or clinical state. Both get labeled O, so the disease reading is lost.
+- **Hypothesis Check:** The trigger holds across all five examples, though it appears in three syntactic forms:
+  - Prenominal: *G6PD deficiency*
+  - Post-nominal: *deficiency of hepatic phenylalanine hydroxylase*, *deficiency in G6PD*
+  - Verbal/adjectival: *deficient activity of fatty aldehyde dehydrogenase*, *Absence of the seventh component of complement*
+
+  Example 1 also sits in a symptom list (*ichthyosis, mental retardation, spasticity, and deficient activity…*), which may have pushed the model toward reading the item as a phenotype rather than a disease.
+
+**Step 2: Pattern Formulation**
+
+- **Pattern Name:** Molecular-Deficit Nominals as Disease Spans
+- **Confusion Trigger:** Deficit or absence markers (*deficiency*, *deficient activity*, *absence*) governing a gene-product, enzyme, or complement-component name. The model treats the protein name as an out-of-schema molecular entity and the deficit marker as a non-disease descriptor, so it outputs O.
+- **Contrastive Evidence:** True Positives anchor disease spans on disease-nomenclature heads (*disease*, *syndrome*, *cancer*, or a disease acronym) and exclude gene or protein tokens. The discrepancies lack a disease-nomenclature head. Their disease identity lies in the deficit-of-a-named-molecule construction, which the model does not recognize as a disease head.
+- **Linguistic Rule (Proposed):** Label the full nominal [deficit marker (*deficiency* / *deficient activity* / *absence*) + optional linker (*of* / *in*) + gene-product, enzyme, or complement-component name] as **SpecificDisease** when it denotes a named, inborn or heritable deficit. Context cues include "caused by," "autosomal recessive," "patient with," or "disease." The span must cover the whole nominal, not just the deficit word. Do not tag the gene-product name alone, and do not demote the deficit noun to O when it is the causal lesion of a named condition.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10577908.json):
+Snippet: "...rized by ichthyosis , mental retardation , spasticity , and deficient activity of fatty aldehyde dehydrogenase ( FALDH ) . To define the molecular defects causing SLS , w..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficient activity of fatty aldehyde dehydrogenase"
+
+Example 2 (Doc: 1303173.json):
+Snippet: "...he 68 Val-- > Met mutation alone is not sufficient to cause G6PD deficiency . We have approached this question by producing G6PD B , A ..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "G6PD deficiency"
+
+Example 3 (Doc: 1303173.json):
+Snippet: "... coexistence of the two mutations is responsible for enzyme deficiency in G6PD A- because they act synergistically in causing instability ..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficiency in G6PD"
+
+Example 4 (Doc: 1671881.json):
+Snippet: "...enylketonuria is an autosomal recessive disease caused by a deficiency of hepatic phenylalanine hydroxylase ( PAH ) . The abolition of an invariant BamHI site located ..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficiency of hepatic phenylalanine hydroxylase"
+
+Example 5 (Doc: 6859721.json):
+Snippet: "...Absence of the seventh component of complement in a patient with chronic meningococcemia presenting as vas..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "Absence of the seventh component of complement"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

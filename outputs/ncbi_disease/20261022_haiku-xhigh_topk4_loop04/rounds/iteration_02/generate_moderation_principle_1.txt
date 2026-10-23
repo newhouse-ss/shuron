@@ -1,0 +1,67 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: DiseaseClass (Label Mismatch)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** The gold SpecificDisease TP mentions (*Coats disease*, *Norrie disease*, *SLS*) are proper-named or acronym nosological entities that stand alone as disease names. The TP DiseaseClass mentions (*mental retardation*, *exudative retinal detachment*) are findings listed as features or consequences. The discrepancy spans are generic pathology or symptom nouns (*telangiectasis*, *vasculitis*, *infection*, *fever*) that the model reads as findings or categories.
+
+- **Isolate Trigger:** The model appears to classify by surface shape. A generic pathology or symptom head noun, often with an anatomical or descriptive premodifier (*retinal*, *cutaneous*, *unilateral*, *chronic neisserial*), looks like a finding or category label, so it defaults to DiseaseClass.
+
+- **Hypothesis Check:**
+  - **Ex 1 and 2:** *unilateral retinal telangiectasis* sits in parentheses restating "Coats' disease," and *retinal telangiectasis* is introduced as "so-called." These are alias signals, so the descriptive label names the disease. Gold is correct.
+  - **Ex 4 and 5:** *Chronic neisserial infection* and *cutaneous vasculitis* are the diagnoses under discussion ("can be associated with," "must be distinguished from other causes of"). They function as nosological entities in a differential.
+  - **Ex 3:** *fever* has no premodifier, so the trigger here is the bare symptom noun alone. Its gold label is questionable, since a presenting symptom is more consistent with the *mental retardation* DiseaseClass pattern. I treat it as possible annotation noise rather than the core pattern.
+  - **Refinement:** Lexical class is necessary but not sufficient. *Ovarian cancer* has a generic head but is labeled Modifier in the TPs because it is used attributively. The real discriminator is referential: does the span name a disease that is aliased, diagnosed, or discussed as a condition, or does it name a finding or category?
+
+**Step 2: Pattern Formulation**
+
+- **Pattern Name:** Generic Pathology Noun Used as a Disease Alias or Diagnostic Label
+- **Confusion Trigger:** Generic pathology or symptom head nouns (*telangiectasis*, *vasculitis*, *infection*, *fever*), often with anatomical or descriptive premodifiers (*retinal*, *cutaneous*, *unilateral*, *chronic neisserial*). The model maps this surface form to DiseaseClass, its default label for findings.
+- **Contrastive Evidence:** SpecificDisease TPs are named nosological units (eponyms and acronyms) that work as disease names on their own. DiseaseClass TPs are findings embedded in feature lists or consequences. The TP descriptive phrase *ovarian cancer* is attributive and labeled Modifier, which shows that a descriptive form alone should not determine the class.
+- **Linguistic Rule (Proposed):** Label a pathology or symptom-noun span as **SpecificDisease** when it refers to a nosological entity that is named, aliased, or diagnosed in context. This applies when (a) it is co-referent with a named disease through parentheses, an appositive, "so-called," or "this condition," or (b) it is the subject or object of a diagnostic or etiologic predicate ("presents with," "associated with," "distinguished from," "causes of"). Keep **DiseaseClass** when the span denotes an enumerated feature or finding with no individual disease referent. Treat descriptor-plus-pathology-noun shape only as a candidate trigger for review, never as the decision criterion.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10484772.json):
+Snippet: "...Coats' disease of the retina (unilateral retinal telangiectasis) caused by somatic mutation in the NDP gene: a role for nor..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "unilateral retinal telangiectasis"
+
+Example 2 (Doc: 10484772.json):
+Snippet: "...erized by abnormal retinal vascular development ( so-called retinal telangiectasis ) which results in massive intraretinal and subretinal lipi..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "retinal telangiectasis"
+
+Example 3 (Doc: 6859721.json):
+Snippet: "...litis.
+A previously healthy 40-year-old man presenting with fever , arthritis , and cutaneous vasculitis was found to have ch..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "fever"
+
+Example 4 (Doc: 6859721.json):
+Snippet: "...ions showed heterozygous deficiency of C7 in five members . Chronic neisserial infection can be associated with C7 deficiency and must be distinguis..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "Chronic neisserial infection"
+
+Example 5 (Doc: 6859721.json):
+Snippet: "...7 deficiency and must be distinguished from other causes of cutaneous vasculitis . . ..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "cutaneous vasculitis"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

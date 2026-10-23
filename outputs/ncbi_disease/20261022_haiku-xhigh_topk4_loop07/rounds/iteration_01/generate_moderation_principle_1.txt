@@ -1,0 +1,75 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: DiseaseClass (Label Mismatch)
+
+**INFERRED PATTERNS:**
+## Step 1: Deep Dive Analysis
+
+**Contrast.** The discrepancies are gold *SpecificDisease* but predicted *DiseaseClass*. The true-positive DiseaseClass case, "mental retardation" (SLS), is a phenotypic trait label. The true-positive SpecificDisease cases are named conditions such as "Coats disease," "Norrie disease," "diastrophic dysplasia," and "SLS." The discrepancy mentions are *pathology-process nouns* (*vasculitis*, *arthritis*, *infection*) that the case report uses as the patient's actual condition.
+
+**Isolate the trigger.** The model appears to be keying on the **superordinate, umbrella-type head noun**. *Vasculitis*, *arthritis*, and *infection* each subsume many named diseases, so they read as category labels. The syntactic position does not explain the error: "mental retardation" sits in a symptom list ("ichthyosis, mental retardation, spasticity"), and the discrepancy mentions sit in a similar list ("fever, arthritis, and cutaneous vasculitis"). The difference lies in the lexical class of the head noun.
+
+**Hypothesis check.**
+- Ex 1–3 ("vasculitis," "arthritis," "cutaneous vasculitis"): the bare or site-qualified pathology noun names the condition this patient has. Explained.
+- Ex 4 ("Chronic neisserial infection"): the head *infection* is umbrella-like, but the etiology modifier "neisserial" narrows it to one disease (meningococcal). Explained.
+- Ex 5 ("other causes of cutaneous vasculitis"): this is generic in use, which would predict DiseaseClass. Gold still says SpecificDisease, so this is a residual inconsistency. It is most likely annotator treatment of "cutaneous vasculitis" as a recognized clinical entity.
+
+The boolean feature that best separates the cases is therefore whether the mention is a **nosological disease-process name** (a named condition) versus a **phenotypic trait or umbrella category label**. Four of five cases are explained; the fifth is noted above.
+
+## Step 2: Pattern Insight
+
+- **Pattern Name:** Umbrella pathology head nouns used as a named clinical condition (*-itis* / *infection* heads) labeled SpecificDisease
+
+- **Confusion Trigger:** Superordinate, hypernymic disease-process head nouns (*vasculitis*, *arthritis*, *infection*) that name a broad class of diseases. The model maps any category-sounding disease noun to DiseaseClass, ignoring that the case report is using the noun to name the one condition the patient has. Site or etiology qualifiers ("cutaneous," "neisserial") are not weighed as narrowing the referent.
+
+- **Contrastive Evidence:** The DiseaseClass true positive ("mental retardation") is a phenotypic trait label, not a nosological process name, so the umbrella reading is correct there. The SpecificDisease true positives are named entities ("Coats disease," "diastrophic dysplasia," "SLS," "Norrie disease") that the model handles without confusion. The discrepancy cases differ because the head noun is a process name that is individuated by context or qualifier.
+
+- **Linguistic Rule (Proposed):**
+  1. If the head noun is a disease-process name (*-itis*, *infection*, *dysplasia*, etc.) and the case report uses it as the patient's diagnosis or presenting condition, label **SpecificDisease**, even when the mention is bare, lowercase, or sounds like a category.
+  2. If a site or etiology qualifier narrows the mention to one entity ("cutaneous vasculitis," "Chronic neisserial infection"), label **SpecificDisease**.
+  3. Reserve **DiseaseClass** for phenotypic or cognitive trait labels ("mental retardation") and for explicit aggregate references to many diseases.
+  4. Flag generic-usage cases such as "other causes of cutaneous vasculitis" for review, since gold may be inconsistent there.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 6859721.json):
+Snippet: "...ent in a patient with chronic meningococcemia presenting as vasculitis.
+A previously healthy 40-year-old man presenting with fever..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "vasculitis"
+
+Example 2 (Doc: 6859721.json):
+Snippet: "... previously healthy 40-year-old man presenting with fever , arthritis , and cutaneous vasculitis was found to have chronic mening..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "arthritis"
+
+Example 3 (Doc: 6859721.json):
+Snippet: "...thy 40-year-old man presenting with fever , arthritis , and cutaneous vasculitis was found to have chronic meningococcemia . Evaluation of h..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "cutaneous vasculitis"
+
+Example 4 (Doc: 6859721.json):
+Snippet: "...ions showed heterozygous deficiency of C7 in five members . Chronic neisserial infection can be associated with C7 deficiency and must be distinguis..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "Chronic neisserial infection"
+
+Example 5 (Doc: 6859721.json):
+Snippet: "...7 deficiency and must be distinguished from other causes of cutaneous vasculitis . . ..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "cutaneous vasculitis"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

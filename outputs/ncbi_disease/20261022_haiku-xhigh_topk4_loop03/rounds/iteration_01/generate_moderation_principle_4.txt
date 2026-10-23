@@ -1,0 +1,45 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: SpecificDisease (Span Boundary Error)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** The discrepancy cases and the true positives both use the nominal "deficiency," and both are labeled SpecificDisease. The difference is the syntactic frame. The true positives have the deficiency term as a compound head with a name prefix ("glucose 6-phosphate dehydrogenase (G6PD) deficiency," "G6PD deficiency"), or they use the adjectival form as a Modifier ("G6PD deficient phenotype"). The discrepancy cases use a prepositional frame, "deficiency **of** [molecular component]" ("deficiency of the seventh component of complement," "deficiency of C7"). The argument of "of" is a gene or protein component, not a disease name.
+- **Isolate Trigger:** The head noun "deficiency" acts as a strong disease cue. Because the argument is a molecular referent with no disease name, the model has to decide where the disease span ends. The nominal NP is long and includes descriptive material ("the seventh component of complement"), and the qualifiers ("complete," "heterozygous") sit next to it.
+- **Hypothesis Check:** The trigger explains both examples. Both are "deficiency of" + complement component, and both are nominal rather than adjectival. However, the type labels already agree (Gold = LLM = SpecificDisease). That points to a span or boundary mismatch, not a type confusion. The model is probably matching the right type over a slightly different extent, or the "of"-PP is being split between a disease span and a separate molecular span. The schema has no gene or protein category, so the molecular argument has no clear label to fall back on.
+
+**Step 2: Pattern Insight**
+
+- **Pattern Name:** Prepositional "deficiency of [molecular component]" as a SpecificDisease span
+- **Confusion Trigger:** The nominal head "deficiency" followed by an "of"-PP whose argument is a gene or protein component (C7, "the seventh component of complement"). The model must decide whether the disease span covers the head only, the head plus the molecular argument, or the head plus its descriptive modifiers. Qualifiers such as "complete" and "heterozygous" add to the ambiguity.
+- **Contrastive Evidence:** In the true positives, the disease span is the compound "[enzyme name] deficiency," so the enzyme name is part of the span and the nominal form is typed SpecificDisease. The adjectival form "G6PD deficient" is typed Modifier, which shows that the nominal form carries the disease reading. The discrepancy cases use the same nominal form, so the type is correct, but the prepositional frame leaves the extent unclear.
+- **Linguistic Rule (Proposed):** When "deficiency" is a nominal head followed by "of" + a molecular component, tag the full nominal phrase from "deficiency" through the end of the component name as one SpecificDisease span, matching the compound pattern ("[component] deficiency"). Exclude zygosity and severity qualifiers ("complete," "heterozygous," "familial") and any patient or family references that follow. Do not type the molecular argument as a separate entity. Use Modifier only for the adjectival form ("deficient"), or when the deficiency is a qualifier on another entity.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 6859721.json):
+Snippet: "...of functional and antigenic C7 , compatible with a complete deficiency of the seventh component of complement . Study of the patients family spanning four generations sh..."
+Gold: SpecificDisease, LLM: SpecificDisease
+Entity Text: "deficiency of the seventh component of complement"
+
+Example 2 (Doc: 6859721.json):
+Snippet: "...tients family spanning four generations showed heterozygous deficiency of C7 in five members . Chronic neisserial infection can be assoc..."
+Gold: SpecificDisease, LLM: SpecificDisease
+Entity Text: "deficiency of C7"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

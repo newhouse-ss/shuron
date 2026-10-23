@@ -1,0 +1,51 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: DiseaseClass vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** All three discrepancies are *disease-manifestation nominals*: "abnormal retinal vascular development," "deficiency of norrin," and "spasticity." Each is the complement of a disease-defining predicate ("is characterized by," "results in," "secondary to" a named disease subject). The true-positive DiseaseClass span "mental retardation" sits in the same list, in the same sentence, under the same predicate, and the model got it right.
+- **Isolate trigger:** Syntax does not separate the cases, since "spasticity" and "mental retardation" share a frame. The difference is lexical-semantic. "Mental retardation" is a recognized nosological disorder name, while "spasticity" is a clinical sign and "deficiency of norrin" is a molecular-state description. The model appears to tag only spans that match a disorder-name pattern or carry an explicit disease head (disease, syndrome, disorder, deficiency of a disease-associated factor). The failed spans are bare symptom nouns or multi-word descriptive phrases (ADJ + N + PP), which the model reads as neutral clinical description or mechanism background.
+- **Hypothesis check:** The trigger explains all three discrepancies. Refinement: the separating feature is *nosological label vs. pathophysiological/clinical-sign nominal*, not the surrounding syntax.
+
+**Step 2: Pattern Insight**
+
+- **Pattern Name:** Disease-Manifestation Nominals in Characterization/Causal Clauses
+- **Confusion Trigger:** Bare sign, developmental-abnormality, or molecular-deficiency nominals (e.g., "spasticity," "abnormal retinal vascular development," "deficiency of norrin") that complement a disease-defining predicate ("characterized by," "results in," "secondary to"). They lack a disease head noun and are not lexicalized disorder names, so the model treats them as descriptive findings or mechanism background and outputs O.
+- **Contrastive Evidence:** The true positives are either lexicalized disorder names ("mental retardation," in the same SLS sentence), named entities with explicit disease identity ("Coats disease," "SLS," "Norrie disease"), or disease heads ("G6PD deficiency"). The false negatives describe the disease's pathological state using descriptive, multi-word, or symptom-level phrasing without a nosological head.
+- **Linguistic Rule (Proposed):** Label a noun phrase as DiseaseClass when it denotes an abnormal pathological state or clinical sign of the patient (abnormal/deficient/impaired development or function, a deficiency of a disease-relevant molecule, or a sign such as spasticity) **and** it is the argument of a predicate whose subject is a SpecificDisease ("is characterized by," "results in," "secondary to," "due to"), or a coordinated item in such a list. Extend the span to include its modifiers and prepositional complement (e.g., "deficiency of norrin," not "deficiency"). Do not apply this to study variables, methods, or neutral biological processes outside a disease-characterizing clause.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10484772.json):
+Snippet: "... in retinal angiogenesis.
+Coats disease is characterized by abnormal retinal vascular development ( so-called retinal telangiectasis ) which results in massi..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "abnormal retinal vascular development"
+
+Example 2 (Doc: 10484772.json):
+Snippet: "...dary to somatic mutation in the NDP gene which results in a deficiency of norrin ( the protein product of the NDP gene ) within the developi..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "deficiency of norrin"
+
+Example 3 (Doc: 10577908.json):
+Snippet: "...disorder characterized by ichthyosis , mental retardation , spasticity , and deficient activity of fatty aldehyde dehydrogenase ( ..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "spasticity"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

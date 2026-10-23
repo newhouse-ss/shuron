@@ -1,0 +1,210 @@
+# Biomedical Annotation Guidelines
+
+## What to Annotate
+
+### 1. Annotate all **Specific Disease** mentions
+A textual string referring to a disease name may refer to a **Specific Disease** or a **Disease Class**.  
+- **Disease Class**: Mentions that could be described as a family of multiple specific diseases.  
+- **Specific Disease**: Mentions that can be linked to one specific definition that does not include further categorization.
+
+**Example**  
+> Diastrophic dysplasia is an autosomal recessive disease characterized by short stature, very short limbs and joint problems that restrict mobility.
+
+- **Annotate**:  
+  - “Diastrophic dysplasia” as **Specific Disease**  
+  - “autosomal recessive disease” as **Disease Class**
+
+**Umbrella head nouns**  
+A mention whose head is a broad disease-family noun (a bare or plural generic term for a class of conditions, such as “cancer,” “tumor,” or “dystrophy,” optionally narrowed by anatomical, causative-agent, gene, or number modifiers) is annotated as **Specific Disease** when the clause frames it as a particular condition: one that an individual has, is diagnosed or found to have, presents with, or is being compared against or investigated as the target condition. Narrowing modifiers specify the referent; they are not evidence that the mention is a class. The rule applies to the discourse role of the mention, not to the lexical item itself.
+
+- **Annotate as Specific Disease**:  
+  - “cancer” in “She was diagnosed with cancer at 42.”  
+  - “ovarian cancer” in “Women who had ovarian cancer were compared with unaffected controls.”  
+  - “colorectal cancer” in “CDH1 mutations predispose to colorectal cancer.”
+
+**Keep Disease Class** (do not apply the umbrella rule) when:  
+- the head names a generic grouping or taxonomy, such as a classificatory predicate (“is an autosomal recessive disease”) or a statement about a family of conditions (“Retinal dystrophies form a heterogeneous group…”).  
+- it appears as a generic trait or feature within a syndrome’s characterization (“characterized by … mental retardation”).
+
+Coordinated enumerations of specific diseases under one umbrella head are not Disease Classes. They are Composite Mentions (Guideline 2).
+
+For symptom-like terms, decide by the clause’s framing: a diagnosis or object of study is **Specific Disease**, and a defining trait of a syndrome is **Disease Class**. For example, “affected children were diagnosed with mental retardation” is **Specific Disease**, whereas “characterized by … mental retardation” is **Disease Class**.
+
+This principle only chooses between the two labels for mentions that already qualify under these guidelines. It does not bring findings into scope. Terms such as “retinal telangiectasis” or “spasticity” are not annotated merely because they appear in a syndrome’s description.
+
+**Lexicalized names are not affected.** Eponyms (e.g., “Coats disease”), acronyms (e.g., “SLS”), and singular gene- or pathogen-anchored nosologies (e.g., “G6PD deficiency”) remain **Specific Disease** regardless of discourse role. The umbrella rule never reclassifies them as Disease Class. Their Specific-versus-Class label is fixed, but when one of them functions as a noun modifier, Guideline 3 still determines whether it is annotated as **Modifier**. Bare organism names are not nosologies, so the organism rule under “What NOT to Annotate” still applies.
+
+---
+
+### 2. Annotate **contiguous text strings**
+A textual string may refer to two or more separate disease mentions. Such mentions are annotated with the **Composite Mention** category.
+
+**Example**  
+> The text phrase “Duchenne and Becker muscular dystrophy” refers to two separate diseases. If this phrase is separated into two strings: “Duchenne” and “Becker muscular dystrophy,” it results in information loss, because the word “Duchenne” on its own is not a disease mention.
+
+Enumerations of specific diseases under a shared umbrella head (e.g., “colorectal, endometrial, and ovarian cancers”) are also Composite Mentions. An umbrella term that names a grouping rather than enumerating specific diseases remains a **Disease Class** (Guideline 1).
+
+---
+
+### 3. Annotate disease mentions that are used as **Modifiers** for other concepts
+A textual string may refer to a disease name, but it may modify a noun phrase (or may not be a noun phrase itself). In such cases, annotate using the **Modifier** category.
+
+**Example**  
+> Although this mutation was initially detected in four of 33 colorectal cancer families analysed from eastern England, more extensive analysis has reduced the frequency to four of 52 English HNPCC kindreds analysed.
+
+- **Annotate**:  
+  - “colorectal cancer” as **Modifier**  
+  - “HNPCC” as **Modifier**
+
+**Precedence for umbrella-headed mentions.** For umbrella-headed mentions (Guideline 1), the **Modifier** category takes precedence when the disease term is premodifying (“ovarian cancer cases,” “ovarian cancer population”) or is a complement of a non-person noun (“family history of ovarian cancer”). Such mentions remain **Modifier** even when the clause describes the referent as a condition someone has. Where the head is a person and the disease names that person’s condition (“patients with …,” “women who had …”), the mention is a **Specific Disease** argument, not a Modifier.
+
+---
+
+### 4. Annotate **duplicate mentions**
+For each sentence in the PubMed abstract and title, the locations of all disease mentions are marked, including duplicates within the same sentence.
+
+---
+
+### 5. Annotate **minimum necessary span of text**
+Use the smallest span necessary to include all tokens expressing the most specific form of the disease.
+
+**Example**  
+> In the case of “insulin-dependent diabetes mellitus,” the disease mention including the whole phrase was preferred over its substrings such as “diabetes mellitus” or “diabetes.”
+
+---
+
+### 6. Annotate all **synonymous mentions**
+Abbreviation definitions such as “Huntington disease” (“HD”) are separated into two annotated mentions (one for the long form, one for the abbreviation).
+
+---
+
+## What NOT to Annotate
+
+1. **Do not annotate organism names**  
+   - Organism names such as “human” were excluded from the preferred mention.  
+   - Viruses, bacteria, and other organism names were not annotated **unless** it was clear that the disease caused by these organisms is being discussed.  
+   - The umbrella rule and the lexicalized-name rule do not turn a bare organism name into a disease mention.  
+   - **Example**  
+     > Studies of biopsied tissue for the presence of Epstein-Barr virus and cytomegalovirus were negative.  
+     
+     In this case: “Epstein-Barr virus” and “cytomegalovirus” are annotated as **Specific Disease** category **only** if the context clearly indicates the diseases they cause, otherwise not.
+
+2. **Do not annotate gender**  
+   - Tokens such as “male” and “female” were only included if they specifically identified a new form of the disease.  
+   - **Example**  
+     > “male breast cancer”
+
+3. **Do not annotate overlapping mentions**  
+   - **Example**: The phrase “von Hippel-Lindau (VHL) disease” is annotated as **one single disease mention** (Specific Disease category).
+
+4. **Do not annotate general terms**  
+   - Very general terms such as “disease,” “syndrome,” “deficiency,” “complications,” “abnormalities,” etc. were excluded when used bare or without a narrowing specifier.  
+   - The umbrella rule (Guideline 1) does not rescue these bare terms.  
+   - Narrowed, named conditions such as “G6PD deficiency” or “C7 deficiency” are not general terms.  
+   - The terms “cancer” and “tumor” were retained and may be **Specific Disease** under Guideline 1.
+
+5. **Do not annotate references to **biological processes**  
+   - e.g. Terms corresponding to biological processes such as “tumorigenesis” or “cancerogenesis.”
+
+6. **Do not annotate disease mentions interrupted by nested mentions**  
+   - Essentially, do not break the contiguous text rule. This takes precedence over the umbrella rule: a broken phrase is not annotated as one mention, even if its head is an umbrella term.  
+   - **Example**  
+     > WT1 dysfunction is implicated in both neoplastic (Wilms tumor, mesothelioma, leukemia, and breast cancer) and nonneoplastic (glomerulosclerosis) disease.  
+     
+     Here, the mentions “neoplastic disease” and “nonneoplastic disease” are not annotated because other tokens break up these phrases.
+
+---
+
+## Examples
+
+1. **“Insulin-dependent diabetes mellitus”**  
+   - **Specific Disease**  
+   - Prefer the whole string.
+
+2. **CDH1 mutations predispose to early onset “colorectal cancer.”**  
+   - “colorectal cancer” is **Specific Disease**: it names the condition that individuals develop (Guideline 1, umbrella rule).  
+   - “early onset” may or may not be part of the disease mention, depending on:  
+     1. If there is a UMLS concept specifying this as a separate form of disease  
+     2. If the annotator believes it should be included
+
+3. **Human “X-linked recessive disorder”**  
+   - The label depends on framing. A sentence describing an individual who has the disorder is **Specific Disease**. A classificatory use (e.g., “X-linked recessive disorders are…”) is **Disease Class**.
+
+4. **Her fresh serum lacked complement-mediated bactericidal activity against Neisseria gonorrhoeae.**  
+   - Bare pathogen name, not a nosology. Not annotated.
+
+5. **“Huntington disease” (“HD”)**  
+   - The long form and the short form constitute two separate mentions.
+
+6. **C7 deficiency**  
+   - “This report represents the first cases of C7 deficiency associated with infectious complications.”  
+   - “infectious complications” is too general a term; C7 deficiency is a **Specific Disease**.
+
+7. **“colorectal, endometrial, and ovarian cancers”**  
+   - Considered one **Composite Mention** of several Specific Diseases.
+
+8. **WT1 dysfunction is implicated in both neoplastic (“Wilms tumor,” “mesothelioma,” “leukemias,” and “breast cancer”) and nonneoplastic (“glomerulosclerosis”) disease.**  
+   - Potential disease mentions include: “neoplastic disease,” “nonneoplastic disease,” “Wilms tumor,” “mesothelioma,” “leukemias,” “breast cancer,” and “glomerulosclerosis.”  
+   - “neoplastic disease” and “nonneoplastic disease” are **not** annotated because these phrases are interrupted by nested mentions. They also name groupings, so they would not be **Specific Disease** under the umbrella rule in any case.
+
+9. **Tumorigenesis and cancerogenesis**  
+   - These refer to processes, not diseases.
+
+10. **“autosomal recessive disease”**  
+    - Used as a classificatory predicate, it refers to a family of diseases that can be passed down genetically → **Disease Class** category.  
+    - If the same phrase described a condition an individual has or is diagnosed with, the umbrella rule would apply.
+
+11. **Large phenotypic variability with “convulsive disorders,” “motor retardation,” and “mental retardation.”**  
+    - These are “grey area” terms: they may not correspond to a single **Specific Disease**, so they are annotated as **Disease Class** category if appropriate.  
+    - They are phenotypic features listed together, not an enumeration of specific diseases, so they are not a Composite Mention.  
+    - If one of them is used as a diagnosis (e.g., “patients were diagnosed with mental retardation”), it is a **Specific Disease** (Guideline 1).
+
+12. **Borjeson-Forssman-Lehmann syndrome (BFLS) is a syndromal X-linked mental retardation.**  
+    - “Borjeson-Forssman-Lehmann syndrome” = **Specific Disease**  
+    - “X-linked mental retardation syndrome” = a family of diseases (i.e., **Disease Class**)
+
+13. **Acute meningococcal pericarditis**  
+    - Exists as a separate concept in UMLS.
+
+14. **Acute Neisseria infection**  
+    - May or may not include “acute” depending on context.
+
+15. **Classical galactosemia**  
+    - Includes “classical” because it corresponds to a particular form of the disease.
+
+16. **Inherited spinocerebellar ataxia**  
+    - May or may not include “inherited,” depending on the annotator.
+
+17. **“Adenomatous polyps of the colon and rectum”**  
+    - **Composite Mention**
+
+18. **Fibroepithelial or epithelial hyperplasias**  
+    - **Composite Mention**
+
+19. **Stage II or stage III colorectal cancer**  
+    - **Composite Mention**
+
+20. **“She was diagnosed with cancer”; “women who had ovarian cancer”**  
+    - “cancer” and “ovarian cancer” are **Specific Disease**: each is framed as a condition an individual has (Guideline 1, umbrella rule).
+
+21. **“Ovarian cancer cases”; “family history of ovarian cancer”**  
+    - “ovarian cancer” is **Modifier**: it premodifies “cases” or is a complement of the non-person noun “history” (Guideline 3).  
+    - The umbrella rule does not override the Modifier category here, even though the cases have the condition.
+
+22. **“affected children were diagnosed with mental retardation”** versus **“characterized by … mental retardation”**  
+    - The first is **Specific Disease** (diagnosis). The second is **Disease Class** (generic trait of a syndrome).
+
+23. **“Retinal dystrophies form a heterogeneous group of …”**  
+    - **Disease Class**: the head names a grouping, not a particular condition.
+
+24. **“glucose 6-phosphate dehydrogenase (G6PD) deficiency”**  
+    - **Specific Disease**: a gene-anchored nosology, not a general term.  
+    - “enzyme deficiency” (general) is not annotated.  
+    - “G6PD deficient phenotype” is **Modifier** (Guideline 3).
+
+25. **“Wiskott-Aldrich syndrome protein”; “classical form of Coats disease”**  
+    - “Wiskott-Aldrich syndrome” is **Modifier** when it functions as a noun modifier of “protein” (Guideline 3).  
+    - “Coats disease” is **Specific Disease**: eponyms are never reclassified as Disease Class, regardless of discourse role.
+
+26. **“retinal telangiectasis” within a syndrome description**  
+    - Not annotated. It is a finding rather than a disease-family term. The umbrella rule only chooses between labels for mentions already in scope.

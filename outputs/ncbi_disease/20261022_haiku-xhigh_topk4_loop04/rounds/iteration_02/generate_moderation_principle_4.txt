@@ -1,0 +1,47 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: CompositeMention vs LLM: DiseaseClass (Label Mismatch)
+
+**INFERRED PATTERNS:**
+## Step 1: Deep Dive Analysis
+
+**Contrast:** The discrepancy span, "intraretinal and subretinal lipid accumulation," is a coordinated noun phrase: two premodifiers ("intraretinal," "subretinal") joined by "and" share one head ("lipid accumulation"). None of the True Positive spans contain a coordinator. They are single contiguous noun phrases: "ovarian cancer," "fragile X syndrome," "mental retardation," "exudative retinal detachment," and "Coats disease." The boolean feature that separates the discrepancy from the controls is **syntactic: the mention span contains a coordinator joining premodifiers under a shared head.**
+
+**Isolate Trigger:** The model appears to have used head-noun semantics. "Lipid accumulation" is a pathological process nominal, and it sits directly before a parenthetical that names a DiseaseClass ("exudative retinal detachment"). The model likely treated the whole phrase as a single generic condition label and ignored the "and" that signals a composite structure.
+
+**Hypothesis Check:** The trigger explains the single discrepancy, but the cluster is n=1, so this is a provisional hypothesis. A coordinator alone is not sufficient. In TP 10196379, "breast or ovarian cancer" is coordinated, but the gold annotates only "ovarian cancer" as a Modifier and does not create a composite. The distinguishing condition therefore appears to be the coordinator combined with a non-disease-name head.
+
+## Step 2: Pattern Formulation
+
+- **Pattern Insight: Shared-Head Coordination on a Non-Disease Pathological Head**
+  - **Confusion Trigger:** A coordinated premodifier pair ("intraretinal and subretinal") attached to a pathological process noun that is not a disease name ("lipid accumulation"). The model collapses the whole span into one generic-condition label (DiseaseClass) and is primed by the adjacent DiseaseClass "exudative retinal detachment," so it ignores the conjunction that marks a composite.
+  - **Contrastive Evidence:** Every True Positive is a single-headed, coordinator-free noun phrase, so the model does not face the composite decision. The one coordinated TP, "breast or ovarian cancer," is annotated only on the disease head, which shows that coordination over a disease-name head is not extended into a composite span.
+  - **Linguistic Rule (Proposed):**
+    1. If a span contains a coordinator ("and"/"or") joining two premodifiers that share a non-disease head (finding or process nouns such as *accumulation, lesion, edema, thickening*), label the full coordinated span as **CompositeMention**. Each conjunct yields its own location-qualified finding.
+    2. Reserve **DiseaseClass** for single-headed generic disease-category nominals with no coordinator (e.g., "exudative retinal detachment," "mental retardation").
+    3. When the head is a disease name (e.g., "cancer," "syndrome"), annotate the head span as Modifier or SpecificDisease, consistent with the "breast or ovarian cancer" control.
+    4. Do not use proximity to a neighboring DiseaseClass or parenthetical placement as evidence of class membership.
+    5. Before adopting this rule, check the corpus for other "X and Y [finding noun]" spans to confirm it generalizes beyond this single case.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10484772.json):
+Snippet: "...so-called retinal telangiectasis ) which results in massive intraretinal and subretinal lipid accumulation ( exudative retinal detachment ) . The classical form of Co..."
+Gold: CompositeMention, LLM: DiseaseClass
+Entity Text: "intraretinal and subretinal lipid accumulation"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

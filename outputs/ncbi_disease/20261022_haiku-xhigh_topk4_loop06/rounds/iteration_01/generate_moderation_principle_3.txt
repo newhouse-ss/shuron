@@ -1,0 +1,51 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: Modifier vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** In the discrepancies, the disease string is a non-head component of an official gene or protein name: "breast cancer susceptibility gene 1 (BRCA1)" and "Wiskott-Aldrich syndrome protein (WASP)". In the True Positives, the disease string premodifies a person, case, condition, or phenotype: "ovarian cancer cases," "ovarian cancer risk," "fragile X syndrome patients," "G6PD deficient phenotype." The one TP that involves a gene head, "ancient SLS genes," uses a bare abbreviation before a generic noun, not a fixed name.
+- **Isolate Trigger:** The model appears to treat the whole multi-word string as a single gene/protein proper name and assigns O to the entire span. It suppresses the disease reading because the outer nominal is a molecule, not a disease. Each discrepancy has the same structure: a complete nomenclature string (eponymous or descriptor-based, with a trailing "gene 1" or "protein" head and often a parenthetical symbol).
+- **Hypothesis Check:** "Gene/protein head noun" alone does not explain the cluster. "SLS genes" has a gene head and was correctly tagged Modifier. The trigger is therefore the lexicalized full-name form, not the head noun. Within that form, the gold standard still annotates the disease substring as Modifier, so the model is conflating the class of the outer name with the class of the embedded disease token.
+
+**Step 2: Formulate Pattern**
+
+- **Pattern Insight: Disease Term Embedded in a Gene/Protein Proper Name**
+  - **Confusion Trigger:** A disease name appearing as a non-final constituent of an official gene or protein designation (e.g., "[DISEASE] susceptibility gene 1," "[EPONYM] syndrome protein"). The model reads the full designation as one non-disease entity and labels it O.
+  - **Contrastive Evidence:** True Positives keep the disease token as a Modifier because it modifies a clinical or human noun (cases, patients, risk, phenotype) or appears as a bare abbreviation before a generic noun ("SLS genes"). Neither case requires the model to resolve the name as a molecule, so the disease reading stays available.
+  - **Linguistic Rule (Proposed):** When a disease name (full or abbreviated) is embedded in a gene/protein designation, annotate the disease substring as Modifier, not O. The gene/protein head and any index or symbol ("gene 1," "protein," "(BRCA1)") remain O. Decide the label at the span level, using the disease token's own function, rather than inheriting O from the enclosing molecular name.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10196379.json):
+Snippet: "...s study was to provide more accurate frequency estimates of breast cancer susceptibility gene 1 ( BRCA1 ) germline alterations in the..."
+Gold: Modifier, LLM: O
+Entity Text: "breast cancer"
+
+Example 2 (Doc: 10724160.json):
+Snippet: "...Autoinhibition and activation mechanisms of the Wiskott-Aldrich syndrome protein.
+The Rho-family GTPase , Cdc42 , can regulate the a..."
+Gold: Modifier, LLM: O
+Entity Text: "Wiskott-Aldrich syndrome"
+
+Example 3 (Doc: 10724160.json):
+Snippet: "..., can regulate the actin cytoskeleton through activation of Wiskott-Aldrich syndrome protein ( WASP ) family members . Activation relieves an au..."
+Gold: Modifier, LLM: O
+Entity Text: "Wiskott-Aldrich syndrome"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

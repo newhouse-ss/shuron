@@ -1,0 +1,61 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: Modifier vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+## Step 1: Deep Dive Analysis
+
+**Contrast:** All four discrepancies are a disease string used as a noun-premodifier (noun-adjunct) of a non-disease head: *gene*, *protein*, or *cases*. The True Positives use the same construction. For example, "ovarian cancer population," "ovarian cancer cases," "ovarian cancer study," and "ovarian cancer risk" are all labeled Modifier, and "G6PD deficient phenotype," "SLS genes," and "DTD gene" are also labeled correctly. So premodifier position alone does not separate the cases.
+
+**Isolate the trigger:** The discrepancies differ from the controls in two ways:
+
+1. **Nomenclature absorption (Ex 1, 3, 4):** The disease string is the leading element of a gene or protein name, such as *breast cancer susceptibility gene 1 (BRCA1)* and *Wiskott-Aldrich syndrome protein (WASP)*. The model appears to treat the whole multi-token name as one non-disease entity and emits O for the embedded disease span. The gold standard instead keeps the disease string as a separate Modifier span nested inside the protein or gene name.
+2. **Bare generic "cancer" (Ex 2):** "Caucasian cancer cases" uses the unspecified term *cancer*, with no organ or site qualifier. The model seems to treat it as a generic class term rather than a disease mention. Every True Positive uses a site-specified phrase ("ovarian cancer").
+
+**Hypothesis check:** The nomenclature-absorption trigger explains Examples 1, 3, and 4. It does not explain Example 2, whose head noun is *cases*, not a gene or protein. The bare-generic-term trigger explains Example 2 but not the others. The two triggers share a common mechanism: the disease surface string is embedded inside a larger compound, and the model fails to project a separate disease span for it. The gold standard treats the disease string as a Modifier that characterizes the head entity, not as a disease being studied.
+
+## Step 2: Pattern Formulation
+
+- **Pattern Insight: Disease Names Embedded as Premodifiers Inside Gene/Protein Nomenclature or Generic Case-Group Compounds**
+  - **Confusion Trigger:** A disease string functioning as a non-final noun-adjunct inside a larger multi-token compound. The compound is either a gene or protein name (e.g., "breast cancer susceptibility gene 1," "Wiskott-Aldrich syndrome protein") or a generic case-group label with a bare, unqualified disease noun ("Caucasian cancer cases"). The model absorbs the disease token into the outer non-disease entity and outputs O.
+  - **Contrastive Evidence:** The True Positives use compact, site-specified phrases ("ovarian cancer," "G6PD deficient," "SLS genes," "DTD gene") and are not embedded in an official gene or protein name. The model therefore keeps the disease span separate and labels it Modifier. Their heads are epidemiological or biological nouns (population, study, risk, phenotype) with no nomenclature wrapper.
+  - **Linguistic Rule (Proposed):** If a token span matches a disease name or disease-class term and is immediately followed by a head noun that denotes a gene, protein, phenotype, or case group, then the span is a non-head noun-adjunct and should be labeled **Modifier**, even when it sits inside a larger gene or protein name whose outer span is out of schema. Do not label it O. Do not label it SpecificDisease, because it is not the disease under study. Bare generic disease terms ("cancer") used as premodifiers also receive Modifier when they precede a case-group head.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10196379.json):
+Snippet: "...s study was to provide more accurate frequency estimates of breast cancer susceptibility gene 1 ( BRCA1 ) germline alterations in the..."
+Gold: Modifier, LLM: O
+Entity Text: "breast cancer"
+
+Example 2 (Doc: 10196379.json):
+Snippet: "... of common polymorphisms was determined in the 91 Caucasian cancer cases in this series and 24 sister controls using allele-sp..."
+Gold: Modifier, LLM: O
+Entity Text: "cancer"
+
+Example 3 (Doc: 10724160.json):
+Snippet: "...Autoinhibition and activation mechanisms of the Wiskott-Aldrich syndrome protein.
+The Rho-family GTPase , Cdc42 , can regulate the a..."
+Gold: Modifier, LLM: O
+Entity Text: "Wiskott-Aldrich syndrome"
+
+Example 4 (Doc: 10724160.json):
+Snippet: "..., can regulate the actin cytoskeleton through activation of Wiskott-Aldrich syndrome protein ( WASP ) family members . Activation relieves an au..."
+Gold: Modifier, LLM: O
+Entity Text: "Wiskott-Aldrich syndrome"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

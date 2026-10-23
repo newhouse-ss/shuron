@@ -1,6 +1,8 @@
 # Design: top-1 against top-4 on Haiku (the reproduction)
 
-Draft, 2026-10-23. Nothing in it has run. Paid runs start only after the user approves this design, its budget and the decisions in §8, and after the steps in §7.
+Run on 2026-10-23 as designed below; results in `reproduction_analysis_output.txt` (script `reproduction_analysis.py`). The text below is the design as fixed before the run.
+
+Draft, 2026-10-23. Paid runs start only after the user approves this design, its budget and the decisions in §8, and after the steps in §7.
 
 ## Conclusion
 

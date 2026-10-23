@@ -116,8 +116,8 @@ Done when: confirmation and permission for the pilot and phase 1.
 ## ⑤ End-to-end pilot, then phase 1 (after ④ is approved)
 
 - [x] 1 top-1 loop and 1 top-4 loop on Haiku xhigh (10/22); cost and batch time measured; each counts as loop 1 of 10 for its method (user, 10/22).
-- [ ] Top up the API balance (about $0.35 left after the pilot).
-- [ ] Run E1, E2 and E3 at the approved scale; every run needs approval.
+- [x] Top up the API balance (user, 10/23: USD 20.35 before the run).
+- [x] Run E1, E2 and E3 at the approved scale (10/23, user's go): 10 E1 runs, top-1 and top-4 loops 02 to 10; JPY 2,517. No test significant; see `reproduction_analysis_output.txt` and PROGRESS.md (10/23).
 
 Done when: complete reproduction results usable for the taxonomy and method choice.
 

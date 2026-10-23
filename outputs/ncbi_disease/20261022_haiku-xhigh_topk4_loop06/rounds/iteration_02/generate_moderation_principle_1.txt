@@ -1,0 +1,80 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+## Step 1: Deep-Dive Analysis
+
+**Contrast.** The discrepancies and the true positives share the same head nouns. Two discrepancies use *telangiectasis* and one uses *deficiency*, and true positives also contain *telangiectasis* and *deficiency*. The separating feature is **how the disease head is modified**:
+
+- **True positives** use a lexicalized name: a proper-name or gene/enzyme identifier as premodifier, plus a disease-class head. Examples: "Coats telangiectasis," "G6PD deficiency," "Coats disease," "Norrie disease."
+- **Discrepancies** use a compositional description: a generic anatomical or quantity adjective, a prepositional complement, or a bare sign noun. Examples: "retinal telangiectasis," "deficiency in G6PD," "Absence of the seventh component of complement," "fever."
+
+**Isolate the trigger.** The model sees a generic finding or state noun with no disease-nomenclature anchor and reads it as clinical description, so it assigns O.
+
+**Minimal pairs from the same documents:**
+- *10484772:* "Coats telangiectasis" is SpecificDisease, but "retinal telangiectasis" in the same abstract is missed.
+- *1303173:* "G6PD deficiency" is SpecificDisease, but "deficiency in G6PD" in the same abstract is missed.
+
+**Hypothesis check.**
+- Examples 1 and 2 are parenthetical or "so-called" alternate names for Coats disease, which is already labeled. This is a naming frame, so the phrase is a synonym of an established disease.
+- Example 3 is the same G6PD deficiency referent expressed with a postmodifier.
+- Example 4 is a periphrastic description of C7 deficiency, a named disease.
+- Example 5 ("fever") is a sign-level noun. In this schema, the true positives label symptoms such as "mental retardation" as DiseaseClass, so this gold label looks inconsistent. I treat it as likely annotation noise rather than part of the pattern.
+- **Counterexample:** "a deficiency of norrin" in 10484772 is O in gold. The syntax matches example 3, so syntax alone cannot decide. What separates them is whether the phrase names an established disease (G6PD deficiency) or describes a molecular state (norrin deficiency). The disambiguation therefore depends on coreference with a disease name already present in the document.
+
+## Step 2: Pattern Insight
+
+- **Pattern Name:** Compositional or Periphrastic Disease Mentions Missed as Generic Findings
+- **Confusion Trigger:** A generic finding or state head noun (*telangiectasis*, *deficiency*, *absence*, *fever*) without a disease-nomenclature anchor. It is modified by an anatomical or generic adjective ("retinal"), a prepositional complement ("in G6PD," "of the seventh component of complement"), or stands alone as a sign. The model reads it as clinical description rather than a disease name.
+- **Contrastive Evidence:** The true positives are lexicalized compounds whose premodifier is a proper name or gene/enzyme identifier ("Coats telangiectasis," "G6PD deficiency"). Within the same documents, the identical head noun is labeled SpecificDisease when premodified this way and missed when it is modified by a generic adjective or a PP.
+- **Linguistic Rule (Proposed):** Label a finding or state noun phrase as SpecificDisease when it functions as a *name* for a disease:
+  1. **Lexicalized compound:** [eponym or gene/enzyme identifier] + [finding or state head] (e.g., "Coats telangiectasis," "G6PD deficiency").
+  2. **Coreferential alternate name:** the phrase re-labels a disease already named in the document, signaled by parentheses, appositive glosses, or "so-called" (e.g., "Coats' disease of the retina (unilateral retinal telangiectasis)," "so-called retinal telangiectasis").
+  3. **Periphrastic deficiency disorder:** "deficiency/absence in/of [gene, enzyme, or component]" whose referent is an established deficiency disorder (e.g., "deficiency in G6PD" = G6PD deficiency).
+
+  Keep O for generic anatomical or quantity modifiers that lack name function, for molecular state descriptions such as "deficiency of norrin," and for bare sign nouns such as "fever," which should be flagged for annotation review rather than forced into this rule.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10484772.json):
+Snippet: "...Coats' disease of the retina (unilateral retinal telangiectasis) caused by somatic mutation in the NDP gene: a role for nor..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "unilateral retinal telangiectasis"
+
+Example 2 (Doc: 10484772.json):
+Snippet: "...erized by abnormal retinal vascular development ( so-called retinal telangiectasis ) which results in massive intraretinal and subretinal lipi..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "retinal telangiectasis"
+
+Example 3 (Doc: 1303173.json):
+Snippet: "... coexistence of the two mutations is responsible for enzyme deficiency in G6PD A- because they act synergistically in causing instability ..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficiency in G6PD"
+
+Example 4 (Doc: 6859721.json):
+Snippet: "...Absence of the seventh component of complement in a patient with chronic meningococcemia presenting as vas..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "Absence of the seventh component of complement"
+
+Example 5 (Doc: 6859721.json):
+Snippet: "...litis.
+A previously healthy 40-year-old man presenting with fever , arthritis , and cutaneous vasculitis was found to have ch..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "fever"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

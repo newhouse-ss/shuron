@@ -1,0 +1,62 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: DiseaseClass vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** All four discrepancy spans are disease *manifestations*: a sign (*spasticity*), a pathological state (*exudative retinal detachment*, *deficiency of norrin*), or an abnormality (*abnormal retinal vascular development*). None is a proper disease name, and none has a nosological head noun such as *disease*, *syndrome*, or *disorder*. Each sits in a disease-defining or consequence frame: "is characterized by ___" (Ex 1, Ex 4), "results in ___" (Ex 3), or a parenthetical gloss of a disease effect (Ex 2). The True Positives are either proper disease names (*Coats disease*, *Norrie disease*, *fragile X syndrome*) or attributive disease-type nouns (*ovarian cancer*), and the model handled them correctly.
+- **Isolate Trigger:** The model appears to reserve DiseaseClass for nosological names and treats descriptive phenotype phrases in the disease's defining clause as background narrative (O). The "characterized by" list and "results in" clause read as description of the disease rather than as entity mentions.
+- **Hypothesis Check:** The "manifestation in a disease-defining or consequence clause" hypothesis explains all four examples. One counterexample needs handling: *mental retardation* sits in the same "characterized by" list as *spasticity* and is correctly labeled DiseaseClass. This suggests the model recognizes phenotype terms that are established condition names, but misses signs and pathological states that lack a lexical nosological entry. The pattern therefore needs both a syntactic and a lexical-class condition. Also note that the gold standard labels *effects* of the disease (consequences, manifestations) and not *causes* (*somatic mutation in the NDP gene* is correctly O), so the boundary is causal versus consequential placement.
+
+**Step 2: Pattern Insight**
+
+- **Pattern Name:** Disease manifestations (signs, symptoms, pathological states) in disease-defining or consequence clauses
+- **Confusion Trigger:** Phenotypic or pathophysiological descriptors (e.g., *spasticity*, *deficiency of norrin*, *exudative retinal detachment*, *abnormal ... development*) that lack a disease head noun and appear as the complement of "characterized by," "results in," or a parenthetical gloss of a disease effect. The model reads these as descriptive narrative rather than disease-class mentions and defaults to O.
+- **Contrastive Evidence:** True Positives are labeled correctly because their spans are either proper disease names (SpecificDisease: *Coats disease*, *Norrie disease*) or recognized condition terms (DiseaseClass: *mental retardation*). The model succeeds on nosological names and fails on manifestation-type descriptors in the same syntactic slot. Causal agents such as *somatic mutation in the NDP gene* are correctly O, so the failure is specific to effects rather than all non-disease-name content.
+- **Linguistic Rule (Proposed):** Tag a span as DiseaseClass when both conditions hold:
+  1. **Lexical/semantic:** the head noun denotes a disease manifestation (sign, symptom, abnormality, deficiency, detachment, or other pathological state), even without a disease head noun such as *disease*, *syndrome*, or *disorder*.
+  2. **Syntactic/positional:** the span is the complement of a disease-defining predicate ("is characterized by," "is manifested as"), the object of a consequence predicate ("results in"), or a parenthetical gloss of a disease effect within a sentence that mentions the disease.
+
+  Exclude spans that denote causes or molecular agents (genes, mutations, proteins acting as causes) and spans in diagnostic or methodological contexts. For multi-word spans, the head noun determines the class, so *deficiency of norrin* is labeled as a whole because *deficiency* is the pathological state.
+
+  *Note:* The same "characterized by" list includes *ichthyosis*, which is not among the listed discrepancies. Its gold label should be verified before this rule is generalized to all list items.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10484772.json):
+Snippet: "... in retinal angiogenesis.
+Coats disease is characterized by abnormal retinal vascular development ( so-called retinal telangiectasis ) which results in massi..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "abnormal retinal vascular development"
+
+Example 2 (Doc: 10484772.json):
+Snippet: "...in massive intraretinal and subretinal lipid accumulation ( exudative retinal detachment ) . The classical form of Coats disease is almost invariabl..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "exudative retinal detachment"
+
+Example 3 (Doc: 10484772.json):
+Snippet: "...dary to somatic mutation in the NDP gene which results in a deficiency of norrin ( the protein product of the NDP gene ) within the developi..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "deficiency of norrin"
+
+Example 4 (Doc: 10577908.json):
+Snippet: "...disorder characterized by ichthyosis , mental retardation , spasticity , and deficient activity of fatty aldehyde dehydrogenase ( ..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "spasticity"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

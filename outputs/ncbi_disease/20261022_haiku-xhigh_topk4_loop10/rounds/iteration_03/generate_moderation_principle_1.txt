@@ -1,0 +1,64 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: DiseaseClass vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** Every discrepancy is a generic or descriptive condition term with no named-disease anchor: no eponym, no organ-specific disease name, and no disease headword such as "disease," "syndrome," or "disorder." The SpecificDisease true positives all carry one of these anchors ("Coats disease," "Norrie disease," "Sjogren-Larsson syndrome," "glucose 6-phosphate dehydrogenase deficiency"). The DiseaseClass true positive "mental retardation" is a stable nosological term.
+- **Isolate the trigger:** The discrepancy spans are pathological states named as *findings, consequences, or characteristics* of a disease ("characterized by abnormal retinal vascular development," "results in a deficiency of norrin," "results in … (exudative retinal detachment)," "characterized by ichthyosis"). The model reads them as clinical phenotype description rather than as disease mentions.
+- **Hypothesis check:**
+  - The "characterized by / results in" frame explains Examples 2–5 but not Example 1. "family history of cancer" is a prepositional complement with no causal frame, so the frame is not the root cause.
+  - Examples 1 and 5 are bare, unanchored head nouns ("cancer," "ichthyosis"). In the same Sjogren-Larsson list, the model tagged "mental retardation" but missed "ichthyosis," so the model is inconsistent on bare disease-class nouns.
+  - Refinement: the root cause is the lack of a named-disease anchor. The syntactic frame makes the model more likely to treat the span as a finding rather than a disease.
+
+**Step 2: Formulate Pattern**
+
+- **Pattern Insight: Generic Pathological State Nouns Treated as Clinical Findings**
+  - **Confusion Trigger:** Unanchored, generic condition descriptors (bare nouns such as "cancer" and "ichthyosis," or descriptive pathological states such as "exudative retinal detachment," "deficiency of norrin," "abnormal retinal vascular development") that name a disease class or pathological state. They lack an eponym, organ-specific disease name, or disease headword, and they often sit in consequence or characterization slots ("characterized by," "results in," "associated with … of"). The model treats them as phenotype or symptom descriptions and tags them O.
+  - **Contrastive Evidence:** The true positives are anchored. SpecificDisease mentions carry eponyms or headwords ("Coats disease," "Sjogren-Larsson syndrome"). Modifier mentions such as "ovarian cancer" are organ-qualified and used attributively ("ovarian cancer cases," "ovarian cancer population"). The DiseaseClass true positive "mental retardation" is a canonical disorder term. The discrepancies have none of these anchors, so the model does not recognize them as disease entities.
+  - **Linguistic Rule (Proposed):** Tag a span as DiseaseClass when its head noun denotes a recognized pathological state or disorder category (cancer, ichthyosis, retinal detachment, deficiency of a protein, abnormal developmental process), even without a disease headword, provided it is not a named or eponymous disease (→ SpecificDisease) and not a disease name used attributively to modify cases, patients, or populations (→ Modifier). Do not treat a term as O merely because it appears as a symptom, finding, or consequence in a characterization clause.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10196379.json):
+Snippet: "...ed , some of which were associated with a family history of cancer . The frequency distribution of common polymorphisms was de..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "cancer"
+
+Example 2 (Doc: 10484772.json):
+Snippet: "... in retinal angiogenesis.
+Coats disease is characterized by abnormal retinal vascular development ( so-called retinal telangiectasis ) which results in massi..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "abnormal retinal vascular development"
+
+Example 3 (Doc: 10484772.json):
+Snippet: "...in massive intraretinal and subretinal lipid accumulation ( exudative retinal detachment ) . The classical form of Coats disease is almost invariabl..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "exudative retinal detachment"
+
+Example 4 (Doc: 10484772.json):
+Snippet: "...dary to somatic mutation in the NDP gene which results in a deficiency of norrin ( the protein product of the NDP gene ) within the developi..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "deficiency of norrin"
+
+Example 5 (Doc: 10577908.json):
+Snippet: "...( SLS ) is an autosomal recessive disorder characterized by ichthyosis , mental retardation , spasticity , and deficient activity ..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "ichthyosis"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

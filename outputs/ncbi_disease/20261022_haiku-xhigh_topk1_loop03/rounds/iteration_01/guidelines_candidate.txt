@@ -1,0 +1,215 @@
+# Biomedical Annotation Guidelines
+
+## What to Annotate
+
+### 1. Annotate all **Specific Disease** mentions
+A textual string referring to a disease name may refer to a **Specific Disease** or a **Disease Class**.
+- **Disease Class**: Mentions that could be described as a family of multiple specific diseases, when used at the kind or generic level (see the negative constraints below).
+- **Specific Disease**: Mentions that can be linked to one specific definition that does not include further categorization, or that are bound in context to one particular case.
+
+The label follows the mention's referent in context, not the lexical form of its head noun alone. A head noun that denotes a family of conditions does not, by itself, make a mention a **Disease Class**.
+
+**Example**  
+> Diastrophic dysplasia is an autosomal recessive disease characterized by short stature, very short limbs and joint problems that restrict mobility.
+
+- **Annotate**:  
+  - "Diastrophic dysplasia" as **Specific Disease**  
+  - "autosomal recessive disease" as **Disease Class**
+
+#### Referential Individuation Check (label choice)
+Apply this check to any mention whose head noun names a broad family or type of condition. The check decides only between **Specific Disease** and **Disease Class**. It does not change span boundaries or merge mentions into a **Composite Mention**.
+
+**Step 1: Category-type head.** The head noun names a broad family or type of condition. This may be signaled by:
+- category morphology (e.g., "... syndrome," "... disorder," or "... disease" used as a family term);
+- a generic hypernymic lexeme (e.g., "cancer," "tumor," "retardation," "ataxia");
+- a plural form denoting a class of conditions (e.g., "convulsive disorders," "leukemias").
+
+These signals only identify candidates. Morphology or hypernym status alone never determines the label.
+
+**Step 2: Binding to one particular case.** The context binds the mention to one particular case if either of the following holds:
+- **Patient-level predicate frame:** the condition is presented, diagnosed, or attributed to the patient or case under study (e.g., "was diagnosed with X," "presented with X," "X was found in the patient," "a boy with X," "affected by X").
+- **Restrictor modifier:** a modifier names a specific genetic locus (a named gene or chromosome region, e.g., "the NDP gene on Xp11"), a causative agent, or an anatomical site (e.g., "a tumor of the pancreas"). Inheritance-mode qualifiers such as "autosomal recessive," "X-linked," or "inherited" describe the mode of inheritance. They are not locus restrictors and do not bind a mention by themselves.
+
+**Step 3: Label.**
+- If Steps 1 and 2 both hold, label the mention **Specific Disease**.
+- Otherwise, keep the default label: **Disease Class** for a kind-level class term, or **Modifier** where Section 3 applies.
+
+**Negative constraints (Step 2 binding does not apply; Disease Class remains correct):**
+- **Kind or generic level.** This covers a feature inventory shared across a syndrome or population (e.g., "X is characterized by ichthyosis, mental retardation, spasticity"); a taxonomic or definitional statement about a class (e.g., "X is an autosomal recessive disease"); and a trait list not tied to an individual's diagnosis. "With"-constructions that describe variability across a population or family (e.g., "phenotypic variability with convulsive disorders") also belong here, because they do not attribute the condition to a person.
+- **Pre-nominal modifier.** When a category term modifies another noun rather than heading a condition, the Modifier definition (Section 3) governs.
+- **Family-history statements.** In "a family history of ovarian cancer," the disease name specifies the noun "history" and attributes the condition to relatives, not to the patient or case under study. It is annotated as **Modifier** (Section 3), and the Step 2 binding does not apply.
+- **Proper-name anchors.** Eponyms and acronyms (e.g., "Coats disease," "SLS," "Wiskott-Aldrich syndrome") are **Specific Disease** without a category check when they head a disease reference. When used pre-nominally, the Modifier definition governs (Section 3).
+
+**Scope.** The check changes only the label. It does not make an interrupted phrase annotatable (see "What NOT to Annotate," item 6), does not make general terms annotatable (item 4), and does not merge mentions into a **Composite Mention**.
+
+---
+
+### 2. Annotate **contiguous text strings**
+A textual string may refer to two or more separate disease mentions. Such mentions are annotated with the **Composite Mention** category.
+
+**Example**  
+> The text phrase “Duchenne and Becker muscular dystrophy” refers to two separate diseases. If this phrase is separated into two strings: “Duchenne” and “Becker muscular dystrophy,” it results in information loss, because the word “Duchenne” on its own is not a disease mention.
+
+---
+
+### 3. Annotate disease mentions that are used as **Modifiers** for other concepts
+A textual string may refer to a disease name, but it may modify a noun phrase (or may not be a noun phrase itself). In such cases, annotate using the **Modifier** category.
+
+The Modifier category is assigned by syntactic function: a disease mention that attaches to and specifies a following noun is a Modifier. This holds for proper-name anchors and category-type terms alike, and it takes precedence over the Referential Individuation Check in Section 1. The Modifier function also covers family-history constructions, in which the disease name specifies the noun "history."
+
+**Example**  
+> Although this mutation was initially detected in four of 33 colorectal cancer families analysed from eastern England, more extensive analysis has reduced the frequency to four of 52 English HNPCC kindreds analysed.
+
+- **Annotate**:  
+  - “colorectal cancer” as **Modifier**  
+  - “HNPCC” as **Modifier**
+
+Further examples of **Modifier** use:
+- "ovarian cancer cases" and "population-based ovarian cancer study" (pre-nominal category-type term)
+- "Wiskott-Aldrich syndrome protein" and "fragile X syndrome patients" (pre-nominal proper-name anchor)
+- "ancient SLS genes" (pre-nominal acronym)
+- "a family history of ovarian cancer" (family-history construction)
+
+Post-nominal "of"-complements that name a specific disease, such as "the classical form of Coats disease," are not Modifiers. They are **Specific Disease** (Section 1). The family-history construction is the exception.
+
+---
+
+### 4. Annotate **duplicate mentions**
+For each sentence in the PubMed abstract and title, the locations of all disease mentions are marked, including duplicates within the same sentence.
+
+---
+
+### 5. Annotate **minimum necessary span of text**
+Use the smallest span necessary to include all tokens expressing the most specific form of the disease.
+
+**Example**  
+> In the case of “insulin-dependent diabetes mellitus,” the disease mention including the whole phrase was preferred over its substrings such as “diabetes mellitus” or “diabetes.”
+
+---
+
+### 6. Annotate all **synonymous mentions**
+Abbreviation definitions such as “Huntington disease” (“HD”) are separated into two annotated mentions (one for the long form, one for the abbreviation).
+
+---
+
+## What NOT to Annotate
+
+1. **Do not annotate organism names**  
+   - Organism names such as “human” were excluded from the preferred mention.  
+   - Viruses, bacteria, and other organism names were not annotated **unless** it was clear that the disease caused by these organisms is being discussed.  
+   - **Example**  
+     > Studies of biopsied tissue for the presence of Epstein-Barr virus and cytomegalovirus were negative.  
+     
+     In this case: “Epstein-Barr virus” and “cytomegalovirus” are annotated as **Specific Disease** category **only** if the context clearly indicates the diseases they cause, otherwise not.
+
+2. **Do not annotate gender**  
+   - Tokens such as “male” and “female” were only included if they specifically identified a new form of the disease.  
+   - **Example**  
+     > “male breast cancer”
+
+3. **Do not annotate overlapping mentions**  
+   - **Example**: The phrase “von Hippel-Lindau (VHL) disease” is annotated as **one single disease mention** (Specific Disease category).
+
+4. **Do not annotate general terms**  
+   - Very general terms such as “disease,” “syndrome,” “deficiency,” “complications,” “abnormalities,” etc. were excluded.  
+   - However, the terms “cancer” and “tumor” were retained.  
+   - The Referential Individuation Check (Section 1) does not make these general terms annotatable.
+
+5. **Do not annotate references to **biological processes**  
+   - e.g. Terms corresponding to biological processes such as “tumorigenesis” or “cancerogenesis.”
+
+6. **Do not annotate disease mentions interrupted by nested mentions**  
+   - Essentially, do not break the contiguous text rule.  
+   - Relabeling under the Referential Individuation Check does not make an interrupted mention annotatable.  
+   - **Example**  
+     > WT1 dysfunction is implicated in both neoplastic (Wilms tumor, mesothelioma, leukemia, and breast cancer) and nonneoplastic (glomerulosclerosis) disease.  
+     
+     Here, the mentions “neoplastic disease” and “nonneoplastic disease” are not annotated because other tokens break up these phrases.
+
+---
+
+## Examples
+
+1. **“Insulin-dependent diabetes mellitus”**  
+   - **Specific Disease**  
+   - Prefer the whole string.
+
+2. **CDH1 mutations predispose to early onset “colorectal cancer.”**  
+   - “early onset” may or may not be part of the disease mention, depending on:  
+     1. If there is a UMLS concept specifying this as a separate form of disease  
+     2. If the annotator believes it should be included
+
+3. **Human “X-linked recessive disorder”**
+
+4. **Her fresh serum lacked complement-mediated bactericidal activity against Neisseria gonorrhoeae.**
+
+5. **“Huntington disease” (“HD”)**  
+   - The long form and the short form constitute two separate mentions.
+
+6. **C7 deficiency**  
+   - “This report represents the first cases of C7 deficiency associated with infectious complications.”  
+   - “infectious complications” is too general a term; C7 deficiency is a **Specific Disease**.
+
+7. **“colorectal, endometrial, and ovarian cancers”**  
+   - Considered one **Composite Mention** of several Specific Diseases.
+
+8. **WT1 dysfunction is implicated in both neoplastic (“Wilms tumor,” “mesothelioma,” “leukemias,” and “breast cancer”) and nonneoplastic (“glomerulosclerosis”) disease.**  
+   - Potential disease mentions include: “neoplastic disease,” “nonneoplastic disease,” “Wilms tumor,” “mesothelioma,” “leukemias,” “breast cancer,” and “glomerulosclerosis.”  
+   - “neoplastic disease” and “nonneoplastic disease” are **not** annotated because these phrases are interrupted by nested mentions.
+
+9. **Tumorigenesis and cancerogenesis**  
+   - These refer to processes, not diseases.
+
+10. **“autosomal recessive disease”**  
+    - Refers to a family of diseases that can be passed down genetically → **Disease Class** category when used at the kind level.  
+    - “Autosomal recessive” is an inheritance-mode qualifier, not a locus restrictor (Section 1).
+
+11. **Large phenotypic variability with “convulsive disorders,” “motor retardation,” and “mental retardation.”**  
+    - These are “grey area” terms: they may not correspond to a single **Specific Disease**, so they are annotated as **Disease Class** category if appropriate.  
+    - Because they describe variability across a population or family, they remain **Disease Class**. In a patient-level frame (e.g., “the patient was diagnosed with mental retardation”), the Referential Individuation Check makes them **Specific Disease**.
+
+12. **Borjeson-Forssman-Lehmann syndrome (BFLS) is a syndromal X-linked mental retardation.**  
+    - “Borjeson-Forssman-Lehmann syndrome” = **Specific Disease**  
+    - “X-linked mental retardation syndrome” = a family of diseases (i.e., **Disease Class**)  
+    - This is a definitional statement about a class. “X-linked” is an inheritance mode, not a locus restrictor.
+
+13. **Acute meningococcal pericarditis**  
+    - Exists as a separate concept in UMLS.
+
+14. **Acute Neisseria infection**  
+    - May or may not include “acute” depending on context.
+
+15. **Classical galactosemia**  
+    - Includes “classical” because it corresponds to a particular form of the disease.
+
+16. **Inherited spinocerebellar ataxia**  
+    - May or may not include “inherited,” depending on the annotator.
+
+17. **“Adenomatous polyps of the colon and rectum”**  
+    - **Composite Mention**
+
+18. **Fibroepithelial or epithelial hyperplasias**  
+    - **Composite Mention**
+
+19. **Stage II or stage III colorectal cancer**  
+    - **Composite Mention**
+
+20. **“The patient was diagnosed with mental retardation.”**  
+    - “mental retardation” is a category-type term bound to the patient by a diagnostic frame → **Specific Disease** (Referential Individuation Check).
+
+21. **“Sjogren-Larsson syndrome (SLS) is an autosomal recessive disorder characterized by ichthyosis, mental retardation, spasticity, and deficient activity of fatty aldehyde dehydrogenase.”**  
+    - “mental retardation” is a feature inventory at the kind level → **Disease Class** remains.  
+    - Contrast with Example 20: the same term receives a different label, determined by context.
+
+22. **“A tumor of the pancreas was resected from the patient.”**  
+    - Category-type head with an anatomical-site restrictor, bound to the patient → **Specific Disease**.
+
+23. **“She had a family history of ovarian cancer.”**  
+    - Family-history construction: the disease name specifies “history,” and the condition belongs to relatives → **Modifier**, even though “ovarian” names an anatomical site.  
+    - Compare **“She had ovarian cancer.”** → **Specific Disease** (patient-level frame).
+
+24. **“ovarian cancer cases,” “Wiskott-Aldrich syndrome protein,” “fragile X syndrome patients”**  
+    - Pre-nominal use → **Modifier**, whether the anchor is a proper name or a category-type term.
+
+25. **“the classical form of Coats disease”**  
+    - Proper-name anchor in a post-nominal use that names the disease → **Specific Disease**, not Modifier.

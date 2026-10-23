@@ -1,0 +1,65 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: DiseaseClass vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** The three discrepancies share a semantic profile. Each names a pathological state, sign, or deficiency that is a *feature* of a disease, not a disease name: "abnormal retinal vascular development" (Coats disease feature), "deficiency of norrin" (causal state in Coats), and "spasticity" (a clinical sign of SLS). The true positives are conventional disease nomenclature ("Coats disease," "Norrie disease," "Sjogren-Larsson syndrome," "Wiskott-Aldrich syndrome," "ovarian cancer," "G6PD deficiency"). Within the same SLS sentence, "mental retardation" is correctly tagged DiseaseClass, while "spasticity" is missed.
+
+- **Rule out positional/syntactic cues:** The discrepancies sit in characterization frames ("is characterized by," "results in," "secondary to"), but so does the correctly tagged "mental retardation." Position and syntax therefore do not separate the cases. The separating feature is **nomenclatural status**: a fixed, lexicalized disorder term versus a compositional or symptom-level description of a pathological state.
+
+- **Isolate Trigger:** The model appears to require a recognizable disease lexicon item (a "syndrome," "disease," "cancer," or a known disorder term). Compositional phrases make it fall back to general biomedical vocabulary:
+  - "abnormal retinal vascular development" reads as a biological process, and "abnormal" is a pathology qualifier the model does not weight.
+  - "deficiency of norrin" reads as a molecular fact, because the protein "norrin" dominates the span.
+  - "spasticity" is a neuromotor sign, not a disorder name, so it falls outside the disease lexicon.
+
+- **Hypothesis Check:** The "non-nomenclatural pathological state" explanation covers all three cases. The refinement is that the trigger is not a generic "phenotype" concept alone. It is a state or sign expressed without fixed disease nomenclature, where the pathological meaning is carried by a qualifier ("abnormal," "deficiency of") or by a symptom term.
+
+**Step 2: Formulate Pattern**
+
+- **Pattern Name:** Non-nomenclatural pathological state or symptom mistaken for normal biology (DiseaseClass under-recall)
+
+- **Confusion Trigger:** Pathology conveyed through compositional or symptom-level phrasing, such as an "abnormal + process noun" construction ("abnormal retinal vascular development"), a "deficiency of + molecule" construction ("deficiency of norrin"), or a bare sign term ("spasticity"). The surface form resembles normal biology (development, a protein name, motor function), and the span lacks a fixed disease head, so the model assigns O.
+
+- **Contrastive Evidence:** True positives are fixed disorder names ("Coats disease," "SLS," "mental retardation," "G6PD deficiency") or disease names in attributive use ("ovarian cancer" as Modifier). These match a stable disease lexicon, so the model recognizes them even when they sit in the same characterization frames as the misses.
+
+- **Linguistic Rule (Proposed):**
+  1. Tag the span as **DiseaseClass** when it denotes an abnormal or pathological condition, sign, or deficiency state (head is a state, sign, or abnormality noun, or is qualified by "abnormal/deficient/defective"), even without a disease-suffix head.
+  2. Tag the **full span** including the qualifier or state head ("abnormal retinal vascular development," "deficiency of norrin") rather than only the process or molecule. Do not tag the embedded protein or process as a separate entity.
+  3. Do not require a "disease/syndrome" lexical cue. A pathological state predicated of a named disease ("characterized by," "results in," "secondary to") is a DiseaseClass candidate.
+  4. Keep normal biological processes and gene or protein names (e.g., "NDP gene," "norrin" alone) as O unless they are embedded in a pathological state phrase.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10484772.json):
+Snippet: "... in retinal angiogenesis.
+Coats disease is characterized by abnormal retinal vascular development ( so-called retinal telangiectasis ) which results in massi..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "abnormal retinal vascular development"
+
+Example 2 (Doc: 10484772.json):
+Snippet: "...dary to somatic mutation in the NDP gene which results in a deficiency of norrin ( the protein product of the NDP gene ) within the developi..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "deficiency of norrin"
+
+Example 3 (Doc: 10577908.json):
+Snippet: "...disorder characterized by ichthyosis , mental retardation , spasticity , and deficient activity of fatty aldehyde dehydrogenase ( ..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "spasticity"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

@@ -1,0 +1,57 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: SpecificDisease (Span Boundary Error)
+
+**INFERRED PATTERNS:**
+## Step 1: Deep Dive Analysis
+
+- **Error type:** Gold and LLM agree on the label (SpecificDisease) for all four cases, so this is a span-extent mismatch, not a type confusion. The inferred boundary error is that the LLM span includes a trailing "deficiency of/in [molecule]" phrase.
+- **Contrast:** The True Positives keep the disease span to the disease name. In the Coats' disease title, the gold span is "Coats' disease" [0,14], and the postnominal PP "of the retina" is excluded. Molecular or anatomical complements that follow a disease head are not part of the name. Similarly, "G6PD deficient" is tagged as Modifier in the same document, so adjectival and nominal uses are separated.
+- **Single boolean feature:** Is the gene/protein/enzyme entity **postnominal** (inside an "of/in" PP that complements a deficiency head) rather than **prenominal** (a compound-internal part of the name)? All four discrepancies have the postnominal form.
+- **Isolate trigger:** The head "deficiency" followed by "of/in" + a molecular entity (G6PD, PAH, complement component seventh, C7). The model reads the whole "deficiency + PP" frame as one disease mention.
+- **Hypothesis check:** The frame explains all four cases. The same document also shows the gold treating "G6PD deficiency" as a compact name (e.g., "glucose 6-phosphate dehydrogenase (G6PD) deficiency" [104,157]), which supports this boundary convention. The premodifiers "complete" and "heterozygous" in Examples 3–4 are a secondary issue and may or may not be gold-included.
+
+## Step 2: Pattern Insight
+
+- **Pattern Name:** Postnominal "Deficiency of/in [Gene/Protein]" PP Absorbed into Disease Span
+- **Confusion Trigger:** A disease-denoting head noun ("deficiency") governs an "of/in" prepositional phrase whose object is a molecular entity (gene, enzyme, or complement component). The model treats the head plus PP as a single disease phrase, so the span overextends to include the molecular argument. The molecular noun is a reference to the deficient substance, not part of the disease name.
+- **Contrastive Evidence:** In the Coats' disease example, the PP "of the retina" is excluded, so the span stops at the disease name. Compound-internal molecular nouns are included when they form the name, as in the "G6PD deficiency" span. Adjectival forms ("G6PD deficient") are tagged as Modifier, not SpecificDisease. The True Positives therefore separate the disease name from postnominal complements.
+- **Linguistic Rule (Proposed):** For SpecificDisease spans, the molecular entity counts as part of the name only if it is **prenominal** (a compound modifier of "deficiency," as in "G6PD deficiency"). If the molecular entity is the object of a **postnominal** "of/in" PP following "deficiency," exclude the PP from the span, and annotate only the deficiency head and any premodifiers. If the form is adjectival ("X-deficient"), label it Modifier.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 1303173.json):
+Snippet: "... coexistence of the two mutations is responsible for enzyme deficiency in G6PD A- because they act synergistically in causing instability ..."
+Gold: SpecificDisease, LLM: SpecificDisease
+Entity Text: "deficiency in G6PD"
+
+Example 2 (Doc: 1671881.json):
+Snippet: "...enylketonuria is an autosomal recessive disease caused by a deficiency of hepatic phenylalanine hydroxylase ( PAH ) . The abolition of an invariant BamHI site located ..."
+Gold: SpecificDisease, LLM: SpecificDisease
+Entity Text: "deficiency of hepatic phenylalanine hydroxylase"
+
+Example 3 (Doc: 6859721.json):
+Snippet: "...of functional and antigenic C7 , compatible with a complete deficiency of the seventh component of complement . Study of the patients family spanning four generations sh..."
+Gold: SpecificDisease, LLM: SpecificDisease
+Entity Text: "deficiency of the seventh component of complement"
+
+Example 4 (Doc: 6859721.json):
+Snippet: "...tients family spanning four generations showed heterozygous deficiency of C7 in five members . Chronic neisserial infection can be assoc..."
+Gold: SpecificDisease, LLM: SpecificDisease
+Entity Text: "deficiency of C7"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

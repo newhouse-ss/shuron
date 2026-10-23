@@ -1,0 +1,66 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: DiseaseClass vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** All five discrepancies are clinical manifestations or pathological states (symptoms, lesions, deficits) that the gold standard labels `DiseaseClass` but the LLM labels `O`. The true-positive `DiseaseClass` span, "mental retardation" (10577908), sits in the same sentence and the same list frame as the missed "ichthyosis" and "spasticity." So the schema class is not what separates the cases. The model is inconsistent within an identical syntactic frame. The true-positive `SpecificDisease` spans are all named disease nomenclature ("Coats disease," "Norrie disease," "Wiskott-Aldrich syndrome").
+- **Isolate Trigger:** The discrepancy spans are the complement of a disease-characterization or causation predicate ("is characterized by," "results in," "which results in") inside a description of a SpecificDisease. Read as attributes or mechanisms of the disease, they look like descriptive background rather than entities. Most also lack an explicit disease head noun ("disease," "syndrome," "disorder"). Some are bare descriptors ("ichthyosis," "spasticity"), and others are modified descriptive phrases ("abnormal retinal vascular development," "deficiency of norrin").
+- **Hypothesis Check:** The frame explains all five discrepancies. Each is the argument of a characterization or result predicate. It also explains the "mental retardation" true positive: that term is a fixed, conventional disorder name, so the model recognized it lexically. The model therefore applies the disease-manifestation label inconsistently, depending on whether the span looks like a recognized disorder name. The rule must key on the semantic type of the head noun, not on the surface form.
+
+**Step 2: Pattern Insight**
+
+- **Pattern Name:** Symptom and Pathological-State Nouns as Disease Manifestations (Characterization-Frame DiseaseClass)
+- **Confusion Trigger:** Clinical manifestation or deficit nouns ("ichthyosis," "spasticity," "exudative retinal detachment," "abnormal retinal vascular development," "deficiency of norrin") that serve as the complement of a disease-characterizing predicate ("characterized by," "results in") within a SpecificDisease description. They lack disease-nomenclature head nouns and are read as descriptive attributes or mechanisms, so the LLM defaults to `O`.
+- **Contrastive Evidence:** The true-positive `DiseaseClass` case "mental retardation" is captured because it is a fixed disorder term, whereas the missed symptoms in the same list are not. The true-positive `SpecificDisease` spans are identified by eponymic or "X disease/syndrome" name form, not by their syntactic position. Gene and protein mentions ("NDP gene," "the protein product of the NDP gene") appear in the same passages and are not labeled, which shows the label is reserved for pathological-state heads rather than every noun in the characterization frame.
+- **Linguistic Rule (Proposed):** Label a span `DiseaseClass` when all three conditions hold:
+  1. **Head-noun semantics:** The head denotes a pathological condition, symptom, or deficit state (e.g., ichthyosis, spasticity, detachment, deficiency, abnormal development). It does not denote an anatomical structure, a gene or protein, or a procedure.
+  2. **Syntactic frame:** The span is an argument of a disease-characterization or causation predicate ("characterized by," "results in," "secondary to") whose subject is a SpecificDisease mention.
+  3. **Coordination:** Conjuncts in the same list inherit the label, so if one symptom is `DiseaseClass`, its parallel symptoms are too.
+
+  The frame is necessary but not sufficient. The head-noun condition filters out gene products and physical consequences that the gold standard leaves unlabeled.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10484772.json):
+Snippet: "... in retinal angiogenesis.
+Coats disease is characterized by abnormal retinal vascular development ( so-called retinal telangiectasis ) which results in massi..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "abnormal retinal vascular development"
+
+Example 2 (Doc: 10484772.json):
+Snippet: "...in massive intraretinal and subretinal lipid accumulation ( exudative retinal detachment ) . The classical form of Coats disease is almost invariabl..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "exudative retinal detachment"
+
+Example 3 (Doc: 10484772.json):
+Snippet: "...dary to somatic mutation in the NDP gene which results in a deficiency of norrin ( the protein product of the NDP gene ) within the developi..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "deficiency of norrin"
+
+Example 4 (Doc: 10577908.json):
+Snippet: "...( SLS ) is an autosomal recessive disorder characterized by ichthyosis , mental retardation , spasticity , and deficient activity ..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "ichthyosis"
+
+Example 5 (Doc: 10577908.json):
+Snippet: "...disorder characterized by ichthyosis , mental retardation , spasticity , and deficient activity of fatty aldehyde dehydrogenase ( ..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "spasticity"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

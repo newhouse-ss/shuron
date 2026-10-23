@@ -1,0 +1,74 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** All five discrepancies are phrased as a *privative state of a named molecule* (deficiency, deficient activity, absence, or plural deficiencies) with an enzyme, protein, or complement component as the argument: "deficient activity of fatty aldehyde dehydrogenase," "deficiency in G6PD," "deficiency of hepatic phenylalanine hydroxylase," "PAH deficiencies," and "Absence of the seventh component of complement." The True Positives name the disease with a conventional disease-level head or a fixed disease name: "Coats disease," "Norrie disease," "SLS," and "glucose 6-phosphate dehydrogenase (G6PD) deficiency."
+
+- **Isolate Trigger:** The model appears to read "deficiency/deficient/absence + molecule name" as a biochemical finding or measurable property of an enzyme, not as a disease label. The enzyme name is the salient lexical content, so the whole span is dropped to O. The disease-defining force sits in the privative head, which the model does not treat as an entity-bearing head.
+
+- **Hypothesis Check:** The trigger explains all five cases, though "absence" (Example 5) shows the category is privative semantics, not the literal word "deficiency." It does not explain the True Positive in the same document as Example 2. "G6PD deficiency" has the same enzyme and the same privative head, yet it is labeled correctly. The discriminator is therefore not the trigger words alone. It is whether the phrase is a lexicalized disease name, which the model recognizes, or an ad hoc relational description of a molecule's functional state, which it misses. A second control, "results in a deficiency of norrin (the protein product of the NDP gene) within the developing retina" in 10484772, is not annotated as a disease. So the rule must also require that the deficiency be framed as a disorder, not as a transient mechanistic consequence.
+
+**Step 2: Formulate Pattern**
+
+The error cluster comes from gene-product deficiency descriptions: the disorder is encoded as a privative relation between a molecule and its functional loss, not as a disease-name noun. The model defaults to O because it treats these phrases as biochemical properties. The disorder is only recoverable from clinical framing, such as "caused by," "characterized by," "patient with," "presenting as," or "PAH deficiencies" as a class of PKU variants.
+
+---
+
+- **Pattern Name:** Privative Gene-Product Deficiency as Disorder (Compositional, Non-Lexicalized)
+
+- **Confusion Trigger:** A privative head (deficiency, deficient, deficiencies, absence) whose argument is an enzyme, protein, or complement component, especially when the disease name is not a fixed compound ("deficiency in G6PD," "deficient activity of X," "Absence of … component of complement"). The model reads the molecule as the entity and the privative as a measurable biochemical state, so it returns O.
+
+- **Contrastive Evidence:** True Positives are recognized because the disease category is either a lexicalized disease head ("Coats disease," "Norrie disease," "SLS") or a standard fixed compound ("glucose 6-phosphate dehydrogenase (G6PD) deficiency"). In 1303173, the fixed form is tagged correctly while the ad hoc form "deficiency in G6PD" is missed in the same document. The model fails only on compositional, non-lexicalized phrasings. Conversely, "deficiency of norrin" in 10484772 is not annotated, which shows that privative-plus-protein phrasing alone is not sufficient.
+
+- **Linguistic Rule (Proposed):** Tag a span as SpecificDisease when all of the following hold:
+  1. **Head:** The head is a privative state (deficiency, deficient, deficiencies, absence, including plural forms).
+  2. **Argument:** The argument is a specific gene product (full name or abbreviation such as PAH, FALDH, G6PD, or a complement component).
+  3. **Disorder framing:** The phrase names an inherited or clinical condition. Look for cues such as "disease caused by a deficiency of," "characterized by deficient activity of," "patient with … absence of," "presenting as," or a plural "X deficiencies" referring to a class of disorders.
+  4. **Exclusion:** Do not tag a deficiency that is a transient mechanistic consequence within a process (e.g., "results in a deficiency of norrin within the developing retina").
+  5. **Span:** Cover the full privative phrase through the molecule name (e.g., "deficient activity of fatty aldehyde dehydrogenase"), excluding trailing parenthetical abbreviations and clause-level context such as "in a patient with."
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10577908.json):
+Snippet: "...rized by ichthyosis , mental retardation , spasticity , and deficient activity of fatty aldehyde dehydrogenase ( FALDH ) . To define the molecular defects causing SLS , w..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficient activity of fatty aldehyde dehydrogenase"
+
+Example 2 (Doc: 1303173.json):
+Snippet: "... coexistence of the two mutations is responsible for enzyme deficiency in G6PD A- because they act synergistically in causing instability ..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficiency in G6PD"
+
+Example 3 (Doc: 1671881.json):
+Snippet: "...enylketonuria is an autosomal recessive disease caused by a deficiency of hepatic phenylalanine hydroxylase ( PAH ) . The abolition of an invariant BamHI site located ..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficiency of hepatic phenylalanine hydroxylase"
+
+Example 4 (Doc: 1671881.json):
+Snippet: "...or by the large variety of mutant genotypes associated with PAH deficiencies . . ..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "PAH deficiencies"
+
+Example 5 (Doc: 6859721.json):
+Snippet: "...Absence of the seventh component of complement in a patient with chronic meningococcemia presenting as vas..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "Absence of the seventh component of complement"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

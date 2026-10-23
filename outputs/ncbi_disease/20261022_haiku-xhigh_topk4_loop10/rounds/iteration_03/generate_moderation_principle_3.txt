@@ -1,0 +1,53 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: Modifier vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** The matched True Positives (TPs) and the discrepancies share the same syntax. In both sets, a disease term is a premodifier of a non-disease head noun (*population, cases, study, risk*), so syntax alone does not separate them. TP "ovarian cancer cases" (pos. ~433) is a correct Modifier, while the discrepancy "Caucasian cancer cases" in the same document is missed. The difference lies in how the disease span is realized lexically and in what surrounds it.
+- **Isolate Trigger:** The model appears to suppress the disease span when it is embedded in a larger non-disease descriptor:
+  - *Ex. 1:* "breast cancer" sits inside a gene nomenclature ("breast cancer susceptibility gene 1 (BRCA1)"), so the whole string reads as a gene label.
+  - *Ex. 2:* "cancer" is a bare generic noun preceded only by an ethnicity adjective ("91 Caucasian cancer cases"), so it reads as a demographic/cohort descriptor.
+- **Hypothesis Check:** A head-noun explanation fails because "cases" and "population" heads are correctly tagged in the TPs. A "gene-name" explanation fails because "Wiskott-Aldrich syndrome protein" (TP) is tagged correctly. The trigger that explains all the discrepancies is that the disease word is subordinated inside a descriptor (gene symbol or ethnicity-qualified cohort label) and is not the anchor of a self-contained disease name. The TPs keep a clear, site-specified disease name ("ovarian cancer", "Wiskott-Aldrich syndrome") in a clinical context.
+
+**Step 2: Formulate Pattern**
+
+- The Modifier label applies to any disease-denoting span that restricts the reference of a following non-disease noun. The model suppresses this label when that span is nested inside a gene-nomenclature or demographic/cohort descriptor, treating the surrounding compound as non-disease.
+
+**OUTPUT:**
+
+- **Pattern Name:** Disease Span Subordinated in Gene-Nomenclature or Cohort-Descriptor Compounds
+- **Confusion Trigger:** A disease noun used as an attributive premodifier inside a larger non-disease compound, such as a gene name ("breast cancer susceptibility gene 1") or an ethnicity-qualified cohort label ("Caucasian cancer cases"). The compound's non-disease category (gene, cohort) overrides the disease sense of the embedded term, so the model tags O.
+- **Contrastive Evidence:** The TP mentions ("ovarian cancer population," "ovarian cancer cases," "family history of ovarian cancer," "Wiskott-Aldrich syndrome protein") keep the disease as a complete, site-specified name. Their modifiers are not gene symbols or demographic adjectives, so the disease sense stays intact and is tagged Modifier.
+- **Linguistic Rule (Proposed):** Label a disease-denoting span as Modifier when it is a prenominal modifier restricting a non-disease head (gene, protein, cases, population, risk). Do not suppress the label because the enclosing phrase is a gene symbol or demographic descriptor, or because an ethnicity or numeric adjective precedes the disease term. Tag the disease sub-span itself, and check the whole-phrase category only after confirming the sub-span is not the disease head.
+
+*Annotation caveat:* In the same document, "family history of breast or ovarian cancer" appears unannotated, so the gold standard is inconsistent for "X cancer" premodifier strings. Verify this guideline before relying on the rule.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10196379.json):
+Snippet: "...s study was to provide more accurate frequency estimates of breast cancer susceptibility gene 1 ( BRCA1 ) germline alterations in the..."
+Gold: Modifier, LLM: O
+Entity Text: "breast cancer"
+
+Example 2 (Doc: 10196379.json):
+Snippet: "... of common polymorphisms was determined in the 91 Caucasian cancer cases in this series and 24 sister controls using allele-sp..."
+Gold: Modifier, LLM: O
+Entity Text: "cancer"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

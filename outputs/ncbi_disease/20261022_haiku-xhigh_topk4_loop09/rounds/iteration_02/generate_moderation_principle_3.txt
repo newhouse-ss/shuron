@@ -1,0 +1,45 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: DiseaseClass (Label Mismatch)
+
+**INFERRED PATTERNS:**
+### Step 1: Deep Dive Analysis
+
+- **Contrast:** The discrepancy spans are unnamed, descriptive noun phrases with a generic pathology head: "deficient activity of fatty aldehyde dehydrogenase" (head: *activity/deficiency*) and "cutaneous vasculitis" (head: *vasculitis*). Gold labels both SpecificDisease. The True Positive SpecificDisease spans ("Coats disease", "Norrie disease", "SLS") carry an explicit nosological marker: an eponym with the token *disease*, or an acronym. The True Positive DiseaseClass spans ("exudative retinal detachment", "deficiency of norrin", "mental retardation") are also generic-head phrases, but gold labels them as categories or findings.
+- **Isolate Trigger:** The model treats a generic pathology head noun (*vasculitis*, *deficiency*, *activity*) plus a narrowing qualifier ("cutaneous", "of [enzyme]") as a hypernym-style class term. This is the same cue that correctly yields DiseaseClass for the True Positives.
+- **Hypothesis Check:** The trigger explains both discrepancies, since both have generic heads and no nosological marker. It also matches every True Positive DiseaseClass label. The failure is therefore in the exceptions. Gold assigns SpecificDisease when the phrase names the condition that the sentence defines or diagnoses. In Example 1, the enzyme deficiency is the defining biochemical criterion of SLS. In Example 2, "cutaneous vasculitis" is the presentation that must be distinguished diagnostically from other causes, so it functions as a specific diagnostic entity. The norrin True Positive is a boundary case: it is a causal mechanism in a hypothesis, not a diagnostic identity, which supports the same distinction but is inconsistent with the gold labels on the other examples.
+
+### Step 2: Pattern Insight
+
+- **Pattern Name:** Generic-Head Disease Phrases Used as Diagnostic Identity (Head-Noun Class Cue Override)
+- **Confusion Trigger:** A generic pathology/category head noun (*vasculitis*, *deficiency*, *activity*) combined with a narrowing qualifier (an organ adjective such as "cutaneous", or an "of [enzyme/protein]" complement). The model reads this as a subtype or class-level term and assigns DiseaseClass. This cue is absent from SpecificDisease spans, which use eponyms, the token *disease*, or acronyms.
+- **Contrastive Evidence:** True Positive SpecificDisease spans ("Coats disease", "Norrie disease", "SLS") contain an explicit nosological name marker. True Positive DiseaseClass spans ("exudative retinal detachment", "mental retardation", "deficiency of norrin") are generic findings or mechanisms that are not the document's named diagnostic entity. The discrepancies share the generic head but are used as the diagnostic entity itself: a defining criterion of a named syndrome, or the presentation in a differential diagnosis.
+- **Linguistic Rule (Proposed):** Do not assign DiseaseClass from the head noun or from a narrowing qualifier alone. First check whether the span is the sentence's diagnostic or defining entity: (a) it is the object of a differential-diagnosis relation ("must be distinguished from…"), or (b) it is the defining criterion of a named disorder introduced in the same sentence ("X is a disorder characterized by… [span]"). If so, label SpecificDisease. Reserve DiseaseClass for generic findings, symptoms, or causal mechanisms that do not themselves identify the disease under study. Flag the "deficiency of norrin" True Positive for label review, since it conflicts with this rule.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10577908.json):
+Snippet: "...rized by ichthyosis , mental retardation , spasticity , and deficient activity of fatty aldehyde dehydrogenase ( FALDH ) . To define the molecular defects causing SLS , w..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "deficient activity of fatty aldehyde dehydrogenase"
+
+Example 2 (Doc: 6859721.json):
+Snippet: "...7 deficiency and must be distinguished from other causes of cutaneous vasculitis . . ..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "cutaneous vasculitis"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

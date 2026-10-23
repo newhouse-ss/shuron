@@ -1,0 +1,209 @@
+# Biomedical Annotation Guidelines
+
+## What to Annotate
+
+### 1. Annotate all **Specific Disease** mentions
+A textual string referring to a disease name may refer to a **Specific Disease** or a **Disease Class**.  
+- **Disease Class**: Mentions that could be described as a family of multiple specific diseases.  
+- **Specific Disease**: Mentions that can be linked to one specific definition that does not include further categorization.
+
+Molecular-deficit nominals (e.g., “C7 deficiency”) that meet the criteria in Section 7 are also **Specific Disease** mentions.
+
+**Example**  
+> Diastrophic dysplasia is an autosomal recessive disease characterized by short stature, very short limbs and joint problems that restrict mobility.
+
+- **Annotate**:  
+  - “Diastrophic dysplasia” as **Specific Disease**  
+  - “autosomal recessive disease” as **Disease Class**
+
+---
+
+### 2. Annotate **contiguous text strings**
+A textual string may refer to two or more separate disease mentions. Such mentions are annotated with the **Composite Mention** category.
+
+**Example**  
+> The text phrase “Duchenne and Becker muscular dystrophy” refers to two separate diseases. If this phrase is separated into two strings: “Duchenne” and “Becker muscular dystrophy,” it results in information loss, because the word “Duchenne” on its own is not a disease mention.
+
+---
+
+### 3. Annotate disease mentions that are used as **Modifiers** for other concepts
+A textual string may refer to a disease name, but it may modify a noun phrase (or may not be a noun phrase itself). In such cases, annotate using the **Modifier** category.
+
+**Example**  
+> Although this mutation was initially detected in four of 33 colorectal cancer families analysed from eastern England, more extensive analysis has reduced the frequency to four of 52 English HNPCC kindreds analysed.
+
+- **Annotate**:  
+  - “colorectal cancer” as **Modifier**  
+  - “HNPCC” as **Modifier**
+
+---
+
+### 4. Annotate **duplicate mentions**
+For each sentence in the PubMed abstract and title, the locations of all disease mentions are marked, including duplicates within the same sentence.
+
+---
+
+### 5. Annotate **minimum necessary span of text**
+Use the smallest span necessary to include all tokens expressing the most specific form of the disease.
+
+**Example**  
+> In the case of “insulin-dependent diabetes mellitus,” the disease mention including the whole phrase was preferred over its substrings such as “diabetes mellitus” or “diabetes.”
+
+---
+
+### 6. Annotate all **synonymous mentions**
+Abbreviation definitions such as “Huntington disease” (“HD”) are separated into two annotated mentions (one for the long form, one for the abbreviation).
+
+---
+
+### 7. Annotate **molecular-deficit nominals** as Specific Disease spans
+A deficit or absence head (e.g., “deficiency,” “deficient activity,” “absence”) that takes a complement naming a gene product, enzyme, protein, or complement component, either directly or through a linking preposition, is annotated as one **Specific Disease** span when the construction is presented as the causal lesion of a named inborn or heritable condition. Cues for this include “caused by,” “due to,” “autosomal recessive,” “patient(s) with,” or a disease-level context in which the deficit is the condition being described.
+
+- **Span**: Label the entire nominal, from the deficit head through the full complement (e.g., “deficiency of norrin,” not “norrin”).  
+- **Boundaries**: Do not label the gene-product name alone, and do not reduce the deficit head to O. Do not extend the span to unrelated items in a list (e.g., “ichthyosis” or “mental retardation” in the same sentence). Parenthetical abbreviations are not part of the span: a disease abbreviation is a separate mention under Section 6, and a gene-product or enzyme abbreviation is not annotated.  
+- **Inheritance cues are not sufficient on their own**: A deficit listed as one of several clinical features (e.g., after “characterized by”) describes a manifestation, not the causal lesion. It remains O even when an inheritance cue appears in the same sentence, unless the text explicitly identifies it as the cause.
+
+**Do not apply this rule (the deficit remains O)** when:
+- **The deficit is downstream of a different causal lesion** named in the text, such as a mutation, repeat expansion, or epigenetic silencing. The causal lesion is then the upstream event, which is not a deficit head.
+- **The deficit describes a measured, assay-level, transient, somatic (non-heritable), or environmentally or therapeutically induced state** with no inborn or heritable condition named. This includes reductions of enzyme activity measured in expression assays and drug-induced deficiencies in cultured cells.
+- **A gene-product name appears without a deficit head**, such as “Germline BRCA1 alterations” or “mutation of the NDP gene.”
+
+**Example (annotate)**  
+> Patients with ornithine transcarbamylase deficiency were enrolled in the study.
+
+- **Annotate**:  
+  - “ornithine transcarbamylase deficiency” as **Specific Disease** (the whole nominal, including the deficit head)
+
+**Example (do not annotate)**  
+> Coats telangiectasis is secondary to somatic mutation in the NDP gene which results in a deficiency of norrin (the protein product of the NDP gene) within the developing retina.
+
+- **Annotate**: “Coats telangiectasis” as **Specific Disease**  
+- **Do not annotate** “deficiency of norrin”: the causal lesion named in the text is a somatic mutation, the deficit is a downstream tissue-level consequence, and the lesion is not inherited.
+
+**Example (do not annotate)**  
+> Sjogren-Larsson syndrome (SLS) is an autosomal recessive disorder characterized by ichthyosis, mental retardation, spasticity, and deficient activity of fatty aldehyde dehydrogenase (FALDH).
+
+- **Do not annotate** “deficient activity of fatty aldehyde dehydrogenase”: it is a clinical feature listed after “characterized by,” and the same article identifies mutations in the FALDH gene as the cause.  
+- The span is not extended to the parenthetical “FALDH” or to unrelated list items such as “mental retardation.”
+
+**Example (do not annotate)**  
+> Hypermethylation of the expanded repeat and of the FMR1 promoter is almost always present and apparently suppresses transcription, resulting in absence of the FMR1 protein.
+
+- **Do not annotate** “absence of the FMR1 protein”: the text names the (CGG)n expansion in the FMR1 gene as the lesion “responsible for this condition,” and the absence is a downstream, epigenetically induced molecular state.  
+- “fragile X syndrome” remains a **Modifier** as in Section 3.
+
+---
+
+## What NOT to Annotate
+
+1. **Do not annotate organism names**  
+   - Organism names such as “human” were excluded from the preferred mention.  
+   - Viruses, bacteria, and other organism names were not annotated **unless** it was clear that the disease caused by these organisms is being discussed.  
+   - **Example**  
+     > Studies of biopsied tissue for the presence of Epstein-Barr virus and cytomegalovirus were negative.  
+     
+     In this case: “Epstein-Barr virus” and “cytomegalovirus” are annotated as **Specific Disease** category **only** if the context clearly indicates the diseases they cause, otherwise not.
+
+2. **Do not annotate gender**  
+   - Tokens such as “male” and “female” were only included if they specifically identified a new form of the disease.  
+   - **Example**  
+     > “male breast cancer”
+
+3. **Do not annotate overlapping mentions**  
+   - **Example**: The phrase “von Hippel-Lindau (VHL) disease” is annotated as **one single disease mention** (Specific Disease category).
+
+4. **Do not annotate general terms**  
+   - Very general terms such as “disease,” “syndrome,” “deficiency,” “complications,” “abnormalities,” etc. were excluded when used alone.  
+   - A deficit head is annotated only as part of a molecular-deficit nominal under Section 7 (e.g., “C7 deficiency”).  
+   - However, the terms “cancer” and “tumor” were retained.
+
+5. **Do not annotate references to **biological processes**  
+   - e.g. Terms corresponding to biological processes such as “tumorigenesis” or “cancerogenesis.”
+
+6. **Do not annotate disease mentions interrupted by nested mentions**  
+   - Essentially, do not break the contiguous text rule.  
+   - **Example**  
+     > WT1 dysfunction is implicated in both neoplastic (Wilms tumor, mesothelioma, leukemia, and breast cancer) and nonneoplastic (glomerulosclerosis) disease.  
+     
+     Here, the mentions “neoplastic disease” and “nonneoplastic disease” are not annotated because other tokens break up these phrases.
+
+7. **Do not annotate gene, gene-product, or protein names on their own**  
+   - Names such as “FMR1 protein,” “norrin,” “FALDH,” or “BRCA1” are not annotated unless they fall within a molecular-deficit nominal under Section 7.  
+   - Gene-alteration constructions (e.g., “Germline BRCA1 alterations,” “somatic mutation in the NDP gene”) are not annotated.
+
+---
+
+## Examples
+
+1. **“Insulin-dependent diabetes mellitus”**  
+   - **Specific Disease**  
+   - Prefer the whole string.
+
+2. **CDH1 mutations predispose to early onset “colorectal cancer.”**  
+   - “early onset” may or may not be part of the disease mention, depending on:  
+     1. If there is a UMLS concept specifying this as a separate form of disease  
+     2. If the annotator believes it should be included
+
+3. **Human “X-linked recessive disorder”**
+
+4. **Her fresh serum lacked complement-mediated bactericidal activity against Neisseria gonorrhoeae.**
+
+5. **“Huntington disease” (“HD”)**  
+   - The long form and the short form constitute two separate mentions.
+
+6. **C7 deficiency**  
+   - “This report represents the first cases of C7 deficiency associated with infectious complications.”  
+   - “infectious complications” is too general a term; C7 deficiency is a **Specific Disease**.
+
+7. **“colorectal, endometrial, and ovarian cancers”**  
+   - Considered one **Composite Mention** of several Specific Diseases.
+
+8. **WT1 dysfunction is implicated in both neoplastic (“Wilms tumor,” “mesothelioma,” “leukemias,” and “breast cancer”) and nonneoplastic (“glomerulosclerosis”) disease.**  
+   - Potential disease mentions include: “neoplastic disease,” “nonneoplastic disease,” “Wilms tumor,” “mesothelioma,” “leukemias,” “breast cancer,” and “glomerulosclerosis.”  
+   - “neoplastic disease” and “nonneoplastic disease” are **not** annotated because these phrases are interrupted by nested mentions.
+
+9. **Tumorigenesis and cancerogenesis**  
+   - These refer to processes, not diseases.
+
+10. **“autosomal recessive disease”**  
+    - Refers to a family of diseases that can be passed down genetically → **Disease Class** category.
+
+11. **Large phenotypic variability with “convulsive disorders,” “motor retardation,” and “mental retardation.”**  
+    - These are “grey area” terms: they may not correspond to a single **Specific Disease**, so they are annotated as **Disease Class** category if appropriate.
+
+12. **Borjeson-Forssman-Lehmann syndrome (BFLS) is a syndromal X-linked mental retardation.**  
+    - “Borjeson-Forssman-Lehmann syndrome” = **Specific Disease**  
+    - “X-linked mental retardation syndrome” = a family of diseases (i.e., **Disease Class**)
+
+13. **Acute meningococcal pericarditis**  
+    - Exists as a separate concept in UMLS.
+
+14. **Acute Neisseria infection**  
+    - May or may not include “acute” depending on context.
+
+15. **Classical galactosemia**  
+    - Includes “classical” because it corresponds to a particular form of the disease.
+
+16. **Inherited spinocerebellar ataxia**  
+    - May or may not include “inherited,” depending on the annotator.
+
+17. **“Adenomatous polyps of the colon and rectum”**  
+    - **Composite Mention**
+
+18. **Fibroepithelial or epithelial hyperplasias**  
+    - **Composite Mention**
+
+19. **Stage II or stage III colorectal cancer**  
+    - **Composite Mention**
+
+20. **“Patients with ornithine transcarbamylase deficiency”**  
+    - **Specific Disease** (molecular-deficit nominal; the whole nominal is annotated).
+
+21. **“deficiency of norrin” (Coats telangiectasis sentence)**  
+    - Not annotated: the named causal lesion is a somatic NDP mutation, and the deficit is downstream of it.
+
+22. **“deficient activity of fatty aldehyde dehydrogenase” (SLS clinical feature list)**  
+    - Not annotated: it is a clinical feature, not the stated causal lesion.
+
+23. **“absence of the FMR1 protein” (fragile X sentence)**  
+    - Not annotated: it is downstream of hypermethylation and transcriptional silencing, and the (CGG)n expansion is the lesion the text names as responsible.
