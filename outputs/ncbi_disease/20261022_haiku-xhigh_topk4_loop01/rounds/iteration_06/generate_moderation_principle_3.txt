@@ -1,0 +1,44 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: CompositeMention vs LLM: DiseaseClass (Label Mismatch)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** The True Positives use single, non-coordinated noun phrases. "Exudative retinal detachment" and "mental retardation" are DiseaseClass because each is one condition name headed by a disease-category noun (*detachment*, *retardation*). The Modifier cases ("ovarian cancer" in "ovarian cancer cases/population") are attributive uses inside larger phrases. None of the controls has a coordinator linking two modifiers over one shared head.
+- **Isolate Trigger:** The span "intraretinal and subretinal lipid accumulation" is a coordinated structure. Two location modifiers, *intraretinal* and *subretinal*, share the head *lipid accumulation*, which the sentence presents as the elliptical form "intraretinal lipid accumulation and subretinal lipid accumulation." The span therefore denotes two distinct located findings. The model likely keyed on the pathological semantics of the context ("massive... exudative retinal detachment") and of *accumulation*, and mapped the whole phrase onto the DiseaseClass category.
+- **Hypothesis Check:** Coordination alone does not explain the error. In the control "breast or ovarian cancer," the coordinated disease names are not annotated as CompositeMention. The head type matters too. *Cancer* is a disease-category head, while *lipid accumulation* is a process/finding head with no disease-name status. The combined trigger is a coordinated modifier structure over a non-disease, finding-type head. With only one discrepancy in this cluster, this rule is a hypothesis to validate against more examples.
+
+**Step 2: Formulate Pattern**
+
+The error arises when a coordinated noun phrase is built from anatomical modifiers over a shared finding/process head, and the model assigns DiseaseClass because the phrase sounds pathological. The gold standard treats this as a composite of two referents rather than a single disease class.
+
+**Output:**
+
+- **Pattern Name:** Coordinated Location Modifiers over a Shared Finding Head (Pathology-Semantic Misfire)
+- **Confusion Trigger:** A coordinator ("and") links two anatomical modifiers ("intraretinal", "subretinal") that share an elided finding/process head ("lipid accumulation"). The head is not a disease-category noun, but the surrounding clinical context makes the whole phrase sound like a disease, which pulls the model toward DiseaseClass.
+- **Contrastive Evidence:** The True Positive DiseaseClass cases ("exudative retinal detachment," "mental retardation") are single-conjunct phrases whose heads are disease-category nouns naming one condition. The Modifier cases are attributive, non-coordinated uses. None of them spans two referents through a shared head, so the model correctly avoided the composite reading.
+- **Linguistic Rule (Proposed):** Before assigning DiseaseClass to a noun phrase, check two conditions. (1) Does a coordinator link two modifiers that distribute over a single shared head? (2) Is that head a non-disease finding or process noun (e.g., *accumulation, lesion, change, deposit*) rather than a disease-category noun (e.g., *detachment, retardation, cancer, syndrome*)? If both hold, label the span **CompositeMention**. Reserve DiseaseClass for single-conjunct phrases headed by a disease-category noun. Coordinations of full disease names (e.g., "breast or ovarian cancer") fall under the Modifier/SpecificDisease rules, not this one.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10484772.json):
+Snippet: "...so-called retinal telangiectasis ) which results in massive intraretinal and subretinal lipid accumulation ( exudative retinal detachment ) . The classical form of Co..."
+Gold: CompositeMention, LLM: DiseaseClass
+Entity Text: "intraretinal and subretinal lipid accumulation"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

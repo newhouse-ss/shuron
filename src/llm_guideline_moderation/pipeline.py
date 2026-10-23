@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from dataclasses import asdict
+from dataclasses import asdict, replace
 
 from .prompt_utils import format_sample_sections_for_prompt, generate_schema_parts
 from .prompts import render_prompt
@@ -32,6 +32,24 @@ def _entity_schema_text(entities) -> str:
         else:
             lines.append(f"- {entity.name}")
     return "\n".join(lines)
+
+
+def normalize_entity_labels(annotations: list[Annotation], entities) -> list[Annotation]:
+    """Map a label written with spaces ("Specific Disease") to the schema name ("SpecificDisease").
+
+    DeepSeek sometimes copies the guideline's prose spelling instead of the schema name, and exact-match
+    scoring then counts the span as a wrong type (2026-10-21 stability run: 95 of about 1,460 labels with
+    thinking off, 6 of about 340 with it on). Only a label that equals a schema name once spaces are removed
+    is changed; anything else is left for scoring to count as wrong.
+    """
+    names = {entity.name for entity in entities}
+    by_key = {name.replace(" ", ""): name for name in names}
+    return [
+        replace(annotation, entity=by_key[annotation.entity.replace(" ", "")])
+        if annotation.entity not in names and annotation.entity.replace(" ", "") in by_key
+        else annotation
+        for annotation in annotations
+    ]
 
 
 def _annotation_json(annotations: list[Annotation]) -> str:
@@ -97,7 +115,7 @@ def annotate_with_guidelines(
         provider.complete("annotate_with_guidelines", prompt)
     )
     return InitialAnnotationResult(
-        annotations=align_annotations(text, result.annotations),
+        annotations=normalize_entity_labels(align_annotations(text, result.annotations), entities),
         raw_response=result.raw_response,
     )
 
@@ -166,7 +184,9 @@ def simulate_moderation_round(
         provider.complete("moderate_annotations", moderate_prompt)
     )
     moderated = ModeratedAnnotationResult(
-        annotations=align_annotations(round_input.text, moderated.annotations),
+        annotations=normalize_entity_labels(
+            align_annotations(round_input.text, moderated.annotations), round_input.entities
+        ),
         changes=moderated.changes,
         raw_response=moderated.raw_response,
     )

@@ -1,0 +1,92 @@
+{
+ "unit": "H_high__1671881__r12",
+ "arm": "H_high",
+ "doc": "1671881.json",
+ "rep": 12,
+ "prompt_chars": 9039,
+ "prompt_sha256": "3e85ca9d17cf21f81412a34bc4be6a2ba96daafc00c99e3abba01f786891751d",
+ "mode": "batch",
+ "batch_id": "msgbatch_01KWrs3vcgxH15Hcw7UoFGff",
+ "batch_created_utc": "2026-10-22T04:45:45+00:00",
+ "batch_ended_utc": "2026-10-22T04:52:53.499997+00:00",
+ "settings": {
+  "model": "claude-haiku-5-5",
+  "effort": "high",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive",
+   "display": "summarized"
+  },
+  "output_format": "json_schema",
+  "schema_sha256": "d5140dd40e6b938f6e93e9ea0cad9f0d3f275a2d9722d1a47ba06603cc4b70d2"
+ },
+ "result_type": "succeeded",
+ "response": {
+  "id": "msg_011CgGfjTrH3K5VczCoi1fkg",
+  "model": "claude-haiku-5-5",
+  "stop_reason": "end_turn",
+  "stop_details": null
+ },
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "inference_geo": "global",
+  "input_tokens": 3824,
+  "output_tokens": 3688,
+  "output_tokens_details": {
+   "thinking_tokens": 3241
+  },
+  "service_tier": "batch",
+  "speed": "standard"
+ },
+ "content": "{\"annotations\":[{\"start\":49,\"end\":64,\"text\":\"phenylketonuria\",\"entity\":\"SpecificDisease\",\"rationale\":\"Phenylketonuria is a single, well-defined specific disease named in the title.\",\"guideline_section\":\"What to Annotate 1: Specific Disease mentions\"},{\"start\":66,\"end\":91,\"text\":\"Classical phenylketonuria\",\"entity\":\"SpecificDisease\",\"rationale\":\"The whole phrase, including 'Classical', refers to a particular form of phenylketonuria, so the full string is the preferred minimal span.\",\"guideline_section\":\"What to Annotate 5 and Examples 15: minimum necessary span, classical form included\"},{\"start\":98,\"end\":125,\"text\":\"autosomal recessive disease\",\"entity\":\"DiseaseClass\",\"rationale\":\"This refers to a family of diseases passed down genetically, which is a Disease Class rather than one specific disease.\",\"guideline_section\":\"What to Annotate 1: Disease Class; Examples 10\"},{\"start\":619,\"end\":622,\"text\":\"PKU\",\"entity\":\"SpecificDisease\",\"rationale\":\"PKU is the abbreviation of phenylketonuria and is annotated as a separate synonymous mention from the long form.\",\"guideline_section\":\"What to Annotate 6: synonymous mentions (abbreviations annotated separately)\"}]}",
+ "thinking_summary": "I need to figure out character offsets for the entities relative to the given text, and I'm uncertain whether the leading \"---\" marker should count toward the offset count or whether counting should start right at \"Two distinct mutations...\"\n\nGoing through the candidates: \"phenylketonuria\" and \"Classical phenylketonuria\" in the title/opening as SpecificDisease mentions, \"autosomal recessive disease\" as DiseaseClass, and \"PKU\" later in the text as another SpecificDisease mention tied to clinical heterogeneity. I'm deciding to skip \"PAH deficiencies\" since general deficiency terms are excluded per the annotation guidelines, and \"BamHI site\" isn't disease-related at all. Now I need to actually calculate the character positions for each of these spans.\n\nCounting through the text carefully, \"phenylketonuria\" in the title lands at characters 49-64, right after \"Two distinct mutations at a single BamHI site in \". Then moving into the next line, \"Classical phenylketonuria\" spans positions 66-91, and I'm continuing to tally up the characters for \"autosomal recessive disease\" that follows.\n\nI'm now working through the remaining passage about PAH gene mutations and RFLP haplotypes, tracking character positions for \"caused\", \"by\", \"a\", and \"deficiency\" as I build out the full offset count.\n\nI'm continuing to map out character positions, noting two new point mutations at codons 272 and 273 (272gly→stop and 273ser→phe) and the mention that both were detected in northeastern France.\n\nFinishing the offset tracking, I settle on four disease annotations: phenylketonuria, classical phenylketonuria, autosomal recessive disease, and PKU as a separate abbreviation mention later in the abstract. I'm ready to format these into the final JSON output with the appropriate guideline labels.\n\n",
+ "status": "ok",
+ "annotations": [
+  {
+   "start": 49,
+   "end": 64,
+   "text": "phenylketonuria",
+   "entity": "SpecificDisease",
+   "rationale": "Phenylketonuria is a single, well-defined specific disease named in the title.",
+   "guideline_section": "What to Annotate 1: Specific Disease mentions",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 66,
+   "end": 91,
+   "text": "Classical phenylketonuria",
+   "entity": "SpecificDisease",
+   "rationale": "The whole phrase, including 'Classical', refers to a particular form of phenylketonuria, so the full string is the preferred minimal span.",
+   "guideline_section": "What to Annotate 5 and Examples 15: minimum necessary span, classical form included",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 98,
+   "end": 125,
+   "text": "autosomal recessive disease",
+   "entity": "DiseaseClass",
+   "rationale": "This refers to a family of diseases passed down genetically, which is a Disease Class rather than one specific disease.",
+   "guideline_section": "What to Annotate 1: Disease Class; Examples 10",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 616,
+   "end": 619,
+   "text": "PKU",
+   "entity": "SpecificDisease",
+   "rationale": "PKU is the abbreviation of phenylketonuria and is annotated as a separate synonymous mention from the long form.",
+   "guideline_section": "What to Annotate 6: synonymous mentions (abbreviations annotated separately)",
+   "uncertain": false,
+   "raw_entity": null
+  }
+ ],
+ "json_extraction": "plain"
+}

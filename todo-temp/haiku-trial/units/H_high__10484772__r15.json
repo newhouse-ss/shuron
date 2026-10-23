@@ -1,0 +1,152 @@
+{
+ "unit": "H_high__10484772__r15",
+ "arm": "H_high",
+ "doc": "10484772.json",
+ "rep": 15,
+ "prompt_chars": 9464,
+ "prompt_sha256": "8919b3dc4f277f1be40cf94989df8bd65a0f1382e5aca0645e02623136345747",
+ "mode": "batch",
+ "batch_id": "msgbatch_01KWrs3vcgxH15Hcw7UoFGff",
+ "batch_created_utc": "2026-10-22T04:45:45+00:00",
+ "batch_ended_utc": "2026-10-22T04:52:53.499997+00:00",
+ "settings": {
+  "model": "claude-haiku-5-5",
+  "effort": "high",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive",
+   "display": "summarized"
+  },
+  "output_format": "json_schema",
+  "schema_sha256": "d5140dd40e6b938f6e93e9ea0cad9f0d3f275a2d9722d1a47ba06603cc4b70d2"
+ },
+ "result_type": "succeeded",
+ "response": {
+  "id": "msg_011CgGfjR7pRp178VQ7LamQt",
+  "model": "claude-haiku-5-5",
+  "stop_reason": "end_turn",
+  "stop_details": null
+ },
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "inference_geo": "global",
+  "input_tokens": 3954,
+  "output_tokens": 9520,
+  "output_tokens_details": {
+   "thinking_tokens": 8489
+  },
+  "service_tier": "batch",
+  "speed": "standard"
+ },
+ "content": "{\"annotations\":[{\"start\":0,\"end\":14,\"text\":\"Coats' disease\",\"entity\":\"SpecificDisease\",\"rationale\":\"Names one specific disease (Coats disease) with no further categorization, so it is a Specific Disease mention.\",\"guideline_section\":\"What to Annotate 1 - Specific Disease\"},{\"start\":41,\"end\":63,\"text\":\"retinal telangiectasis\",\"entity\":\"SpecificDisease\",\"rationale\":\"Synonymous descriptive name for Coats disease that refers to one specific condition; annotated as a separate synonymous mention.\",\"guideline_section\":\"What to Annotate 6 - Synonymous mentions\"},{\"start\":152,\"end\":165,\"text\":\"Coats disease\",\"entity\":\"SpecificDisease\",\"rationale\":\"Specific disease name for Coats disease in the abstract, linked to one definition without further categorization.\",\"guideline_section\":\"What to Annotate 1 - Specific Disease\"},{\"start\":236,\"end\":258,\"text\":\"retinal telangiectasis\",\"entity\":\"SpecificDisease\",\"rationale\":\"Duplicate mention of the synonymous name for Coats disease within the same sentence; all duplicate mentions are annotated.\",\"guideline_section\":\"What to Annotate 4 - Duplicate mentions\"},{\"start\":334,\"end\":362,\"text\":\"exudative retinal detachment\",\"entity\":\"SpecificDisease\",\"rationale\":\"Names a specific retinal disease entity (exudative retinal detachment) with a single definition.\",\"guideline_section\":\"What to Annotate 1 - Specific Disease\"},{\"start\":389,\"end\":402,\"text\":\"Coats disease\",\"entity\":\"SpecificDisease\",\"rationale\":\"Mention of Coats disease in the sentence about its classical form; the 'classical form of' phrase is not part of the minimal disease span.\",\"guideline_section\":\"What to Annotate 5 - Minimum necessary span of text\"},{\"start\":504,\"end\":517,\"text\":\"Coats disease\",\"entity\":\"SpecificDisease\",\"rationale\":\"Repeated mention of Coats disease in the abstract, annotated as a duplicate mention.\",\"guideline_section\":\"What to Annotate 4 - Duplicate mentions\"},{\"start\":550,\"end\":564,\"text\":\"Norrie disease\",\"entity\":\"SpecificDisease\",\"rationale\":\"Names a specific disease (Norrie disease) with one definition and no further categorization.\",\"guideline_section\":\"What to Annotate 1 - Specific Disease\"},{\"start\":724,\"end\":737,\"text\":\"Coats disease\",\"entity\":\"SpecificDisease\",\"rationale\":\"Repeated mention of Coats disease in the abstract, annotated as a duplicate mention.\",\"guideline_section\":\"What to Annotate 4 - Duplicate mentions\"},{\"start\":860,\"end\":880,\"text\":\"Coats telangiectasis\",\"entity\":\"SpecificDisease\",\"rationale\":\"Refers to the same specific condition as Coats disease (synonymous telangiectasis name), so it is annotated as a Specific Disease mention.\",\"guideline_section\":\"What to Annotate 6 - Synonymous mentions\"}]}",
+ "thinking_summary": "I need to find the character offsets for each span by carefully counting through the text starting from the title, treating \"Coats'\" as position zero.\n\nI'm carefully recounting the character positions letter by letter to verify the exact index of each word boundary in the title, double-checking the length of \"telangiectasis\" and adjusting my running count accordingly.\n\nBased on this I'm identifying \"Coats' disease\" as a specific disease entity spanning the start of the sentence, and \"retinal telangiectasis\" as another disease mention later in the title, confirming their exact start and end offsets for annotation.\n\nNow I'm reading into the next line, which describes Coats disease as characterized by abnormal retinal vascular development causing intraretinal and subretinal lipid accumulation and exudative retinal detachment, noting it's classically isolated, unilateral, and seen in males, with the text transitioning to mention a female case.\n\nI need to find the exact character offsets for entities in this second line, since it starts right after the first line's newline character — I'm calculating the cumulative position to pinpoint where terms like \"Coats disease,\" \"retinal telangiectasis,\" and \"exudative retinal detachment\" fall within the full text.\n\nI'm finishing the character offset calculations for line 2 and flagging the disease mentions to annotate: \"Coats disease,\" \"retinal telangiectasis,\" and \"exudative retinal detachment,\" noting the last one needs a judgment call on whether it qualifies as a specific disease entity.\n\nMoving into the next sentence, I'm mapping out the offsets for the text describing the classical isolated unilateral form of Coats disease in males, then continuing into the sentence about a female carrier whose son developed Norrie disease, tracking each word's position carefully so the \"Coats disease\" and \"Norrie disease\" mentions get correctly indexed.\n\nI'm converting all these relative offsets to absolute positions by adding 152, then compiling the final annotation list for Coats disease and retinal telangiectasis spans.\n\nNow I'm continuing through the next sentence about the NDP gene mutation on chromosome Xp11.2, noting another Coats disease mention and marking \"somatic mutation\" and \"norrin\" as potentially annotatable entities.\n\nContinuing to map out character positions, I'm tracking that subsequent analysis of nine enucleated eyes from males with Coats disease demonstrated a somatic mutation in one case.\n\nI'm now locating the \"H. Coats disease\" annotation span and continuing to trace through the passage about Coats telangiectasis being secondary to a somatic mutation in the NDP gene, which results in a deficiency.\n\nContinuing to mark character offsets, I identify \"Coats telangiectasis\" (708-728) as another SpecificDisease mention, noting that \"deficiency\" alone is too generic to annotate. I keep tracking offsets through the description of norrin protein deficiency affecting the developing retina, and move into the next sentence about this supporting recent observations regarding the protein.\n\nI'm now reviewing the title line \"Coats' disease of the retina (unilateral retinal telangiectasis)\" and confirming its character spans: Coats' disease spans 0-14 and retinal telangiectasis spans 41-63. I note that biological processes like \"retinal vasculogenesis\" don't need annotation since they aren't diseases, while \"Norrie disease\" does get tagged, and I'm working out the absolute offsets for line two by adding the 152-character offset from line one.\n\nI'm calculating the absolute positions for each disease mention across the abstract: Coats disease at 152-165, retinal telangiectasis at 236-258, exudative retinal detachment at 334-362, and several more Coats disease and Norrie disease mentions later in the text, each verified by adding 152 to their relative positions within line two.\n\nI'm now recounting the cumulative word lengths character by character through the sentence to pin down exactly where \"exudative\" begins, since my earlier estimate gave 180 but a careful word-by-word tally suggests it might actually start at 181.\n\nDouble-checking the remaining word-start indices confirms the offsets are consistent throughout both lines. I'm also weighing whether \"exudative retinal detachment\" counts as a specific disease entity versus just a descriptive finding—I'll lean toward including it with a rationale since retinal detachment is a recognized condition, and I'll treat \"Coats' disease\" and \"Coats disease\" as the same annotated entity. Now I'm finalizing the JSON output as a single line, making sure text fields match the source exactly.\n\n",
+ "status": "ok",
+ "annotations": [
+  {
+   "start": 0,
+   "end": 14,
+   "text": "Coats' disease",
+   "entity": "SpecificDisease",
+   "rationale": "Names one specific disease (Coats disease) with no further categorization, so it is a Specific Disease mention.",
+   "guideline_section": "What to Annotate 1 - Specific Disease",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 41,
+   "end": 63,
+   "text": "retinal telangiectasis",
+   "entity": "SpecificDisease",
+   "rationale": "Synonymous descriptive name for Coats disease that refers to one specific condition; annotated as a separate synonymous mention.",
+   "guideline_section": "What to Annotate 6 - Synonymous mentions",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 152,
+   "end": 165,
+   "text": "Coats disease",
+   "entity": "SpecificDisease",
+   "rationale": "Specific disease name for Coats disease in the abstract, linked to one definition without further categorization.",
+   "guideline_section": "What to Annotate 1 - Specific Disease",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 236,
+   "end": 258,
+   "text": "retinal telangiectasis",
+   "entity": "SpecificDisease",
+   "rationale": "Duplicate mention of the synonymous name for Coats disease within the same sentence; all duplicate mentions are annotated.",
+   "guideline_section": "What to Annotate 4 - Duplicate mentions",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 335,
+   "end": 363,
+   "text": "exudative retinal detachment",
+   "entity": "SpecificDisease",
+   "rationale": "Names a specific retinal disease entity (exudative retinal detachment) with a single definition.",
+   "guideline_section": "What to Annotate 1 - Specific Disease",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 390,
+   "end": 403,
+   "text": "Coats disease",
+   "entity": "SpecificDisease",
+   "rationale": "Mention of Coats disease in the sentence about its classical form; the 'classical form of' phrase is not part of the minimal disease span.",
+   "guideline_section": "What to Annotate 5 - Minimum necessary span of text",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 505,
+   "end": 518,
+   "text": "Coats disease",
+   "entity": "SpecificDisease",
+   "rationale": "Repeated mention of Coats disease in the abstract, annotated as a duplicate mention.",
+   "guideline_section": "What to Annotate 4 - Duplicate mentions",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 551,
+   "end": 565,
+   "text": "Norrie disease",
+   "entity": "SpecificDisease",
+   "rationale": "Names a specific disease (Norrie disease) with one definition and no further categorization.",
+   "guideline_section": "What to Annotate 1 - Specific Disease",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 725,
+   "end": 738,
+   "text": "Coats disease",
+   "entity": "SpecificDisease",
+   "rationale": "Repeated mention of Coats disease in the abstract, annotated as a duplicate mention.",
+   "guideline_section": "What to Annotate 4 - Duplicate mentions",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 860,
+   "end": 880,
+   "text": "Coats telangiectasis",
+   "entity": "SpecificDisease",
+   "rationale": "Refers to the same specific condition as Coats disease (synonymous telangiectasis name), so it is annotated as a Specific Disease mention.",
+   "guideline_section": "What to Annotate 6 - Synonymous mentions",
+   "uncertain": false,
+   "raw_entity": null
+  }
+ ],
+ "json_extraction": "plain"
+}

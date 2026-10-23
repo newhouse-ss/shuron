@@ -1,0 +1,12 @@
+ok   concurrent top-4 refinement = moderate_topk.topk_refine: 7 prompts, outputs and prompt order identical
+ok   cap 128000: the request hash ignores the cap, three replies cut off at 64000 are skipped without counting as tries, and the next saved reply is used
+ok   rewrite cut off at the cap on every try in round 2: without --stop-at-cap the loop fails; with it the loop ends with the round-1 guideline (stop reason rewrite_exceeded_output_cap) and valid100 is scored
+ok   both loops completed: top-1 no_improvement after 2 rounds, top-4 no_improvement after 2; valid100 annotated and scored for both
+ok   first batch = 20 requests (10 documents x 2 loops); identical prompts got separate replies per loop; batch sizes [20, 5, 4, 2, 11, 13, 4, 2, 11, 110, 100]
+ok   a cut-off reply was asked again (attempt 2) and an errored request was resent
+ok   11 batches for at most 10 lockstep steps (+ the two resends)
+ok   top-1 rewrite prompt uses the published template; top-4 adds the conflict instruction
+ok   rerun on the same output: 0 batches sent, same final guidelines and valid100 scores
+ok   a batch sent before a crash is collected on restart and not sent again
+ok   cap 0: nothing sent, both loops stop with 'spending cap reached'
+all offline checks passed

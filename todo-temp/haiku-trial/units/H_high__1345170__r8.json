@@ -1,0 +1,82 @@
+{
+ "unit": "H_high__1345170__r8",
+ "arm": "H_high",
+ "doc": "1345170.json",
+ "rep": 8,
+ "prompt_chars": 9263,
+ "prompt_sha256": "e12e6f68f4bb6f674d06d4eae8ff421ea3575da80471953e2233285d6760925c",
+ "mode": "batch",
+ "batch_id": "msgbatch_01KWrs3vcgxH15Hcw7UoFGff",
+ "batch_created_utc": "2026-10-22T04:45:45+00:00",
+ "batch_ended_utc": "2026-10-22T04:52:53.499997+00:00",
+ "settings": {
+  "model": "claude-haiku-5-5",
+  "effort": "high",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive",
+   "display": "summarized"
+  },
+  "output_format": "json_schema",
+  "schema_sha256": "d5140dd40e6b938f6e93e9ea0cad9f0d3f275a2d9722d1a47ba06603cc4b70d2"
+ },
+ "result_type": "succeeded",
+ "response": {
+  "id": "msg_011CgGfkKHMnm4wu7UgdxNmf",
+  "model": "claude-haiku-5-5",
+  "stop_reason": "end_turn",
+  "stop_details": null
+ },
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "inference_geo": "global",
+  "input_tokens": 3893,
+  "output_tokens": 6428,
+  "output_tokens_details": {
+   "thinking_tokens": 6053
+  },
+  "service_tier": "batch",
+  "speed": "standard"
+ },
+ "content": "{\"annotations\":[{\"start\":64,\"end\":85,\"text\":\"diastrophic dysplasia\",\"entity\":\"SpecificDisease\",\"rationale\":\"Diastrophic dysplasia is a named disease with one specific definition in the title, so it is a Specific Disease mention.\",\"guideline_section\":\"What to Annotate 1: Specific Disease mentions\"},{\"start\":646,\"end\":667,\"text\":\"diastrophic dysplasia\",\"entity\":\"SpecificDisease\",\"rationale\":\"Diastrophic dysplasia is named as the disease studied in the abstract (linkage disequilibrium for diastrophic dysplasia), so it is a Specific Disease mention.\",\"guideline_section\":\"What to Annotate 1: Specific Disease mentions\"},{\"start\":670,\"end\":673,\"text\":\"DTD\",\"entity\":\"SpecificDisease\",\"rationale\":\"DTD is the abbreviation of diastrophic dysplasia given in parentheses. It is a synonymous mention and is annotated separately from the long form.\",\"guideline_section\":\"What to Annotate 6: Synonymous mentions (abbreviation annotated separately)\"}]}",
+ "thinking_summary": "I'm working through the text to locate entity mentions and their character offsets, starting with the title about linkage disequilibrium mapping in Finnish founder populations and the abstract describing the Luria-Delbruck method adapted for estimating recombination fraction, allelic homogeneity, and mutation rate.\n\nI find that \"diastrophic dysplasia\" appears again as \"DTD\" linked to the CSF1R gene, so I'm counting characters step by step through the title to pin down exactly where \"diastrophic\" begins, tallying word lengths and spaces to get precise start and end offsets for the disease mention.\n\nContinuing through the rest of the abstract, I find \"diastrophic dysplasia (DTD)\" and its abbreviation \"DTD\" both qualifying as SpecificDisease mentions, while \"DTD gene\" refers to the gene rather than the disease so it's excluded. Other terms like \"disease locus,\" \"bacterial cultures,\" and \"simple sequence repeats\" remain non-disease mentions, so now I need to work out the precise character offsets for these two disease entity spans within line 2, counting from its start position.\n\nContinuing to track word positions through the sentence, counting characters to pinpoint exactly where \"diastrophic dysplasia\" falls in the text.\n\nI'm continuing through the mutation rate of marker loci portion, then verifying the character offsets for \"diastrophic dysplasia (DTD)\" to make sure each token's start and end indices line up correctly before moving on.\n\nWait, I just caught an error: I miscounted \"homogeneity\" as 12 characters when it's actually 11. That means every offset calculation from that token onward needs to shift back by one, so I need to re-verify the chain of positions leading up to \"diastrophic\" and \"DTD\" to fix this discrepancy.\n\nI'm continuing to track character offsets through the rest of the sentence, confirming \"diastrophic dysplasia\" falls between positions 548 and 569, then checking where the second line's title text begins to verify its length.\n\nWorking out the absolute positions for the abstract text by adding the line-2 start offset (98) to the relative offsets, confirming \"diastrophic dysplasia\" lands at 646-667. Now I'm recalculating the position of the \"(DTD\" abbreviation that follows, since my earlier spacing assumption was off.\n\nFixing the DTD offsets to 572-575 relative (670-673 absolute), and confirming it should be tagged as a SpecificDisease mention since it's a synonymous abbreviation. Checking there are no other disease mentions worth flagging—other instances of \"DTD\" refer to the gene, not the disease, so those get skipped.\n\nI've settled on three annotations total: the title mention of diastrophic dysplasia, the abstract mention, and the DTD abbreviation. Now I'm putting together the final single-line JSON output with exact text matches.\n\n",
+ "status": "ok",
+ "annotations": [
+  {
+   "start": 64,
+   "end": 85,
+   "text": "diastrophic dysplasia",
+   "entity": "SpecificDisease",
+   "rationale": "Diastrophic dysplasia is a named disease with one specific definition in the title, so it is a Specific Disease mention.",
+   "guideline_section": "What to Annotate 1: Specific Disease mentions",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 646,
+   "end": 667,
+   "text": "diastrophic dysplasia",
+   "entity": "SpecificDisease",
+   "rationale": "Diastrophic dysplasia is named as the disease studied in the abstract (linkage disequilibrium for diastrophic dysplasia), so it is a Specific Disease mention.",
+   "guideline_section": "What to Annotate 1: Specific Disease mentions",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 670,
+   "end": 673,
+   "text": "DTD",
+   "entity": "SpecificDisease",
+   "rationale": "DTD is the abbreviation of diastrophic dysplasia given in parentheses. It is a synonymous mention and is annotated separately from the long form.",
+   "guideline_section": "What to Annotate 6: Synonymous mentions (abbreviation annotated separately)",
+   "uncertain": false,
+   "raw_entity": null
+  }
+ ],
+ "json_extraction": "plain"
+}

@@ -1,0 +1,92 @@
+{
+ "unit": "H_high__1671881__r8",
+ "arm": "H_high",
+ "doc": "1671881.json",
+ "rep": 8,
+ "prompt_chars": 9039,
+ "prompt_sha256": "3e85ca9d17cf21f81412a34bc4be6a2ba96daafc00c99e3abba01f786891751d",
+ "mode": "batch",
+ "batch_id": "msgbatch_01KWrs3vcgxH15Hcw7UoFGff",
+ "batch_created_utc": "2026-10-22T04:45:45+00:00",
+ "batch_ended_utc": "2026-10-22T04:52:53.499997+00:00",
+ "settings": {
+  "model": "claude-haiku-5-5",
+  "effort": "high",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive",
+   "display": "summarized"
+  },
+  "output_format": "json_schema",
+  "schema_sha256": "d5140dd40e6b938f6e93e9ea0cad9f0d3f275a2d9722d1a47ba06603cc4b70d2"
+ },
+ "result_type": "succeeded",
+ "response": {
+  "id": "msg_011CgGfjRLxfA85SyHwePzdX",
+  "model": "claude-haiku-5-5",
+  "stop_reason": "end_turn",
+  "stop_details": null
+ },
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "inference_geo": "global",
+  "input_tokens": 3824,
+  "output_tokens": 4802,
+  "output_tokens_details": {
+   "thinking_tokens": 4354
+  },
+  "service_tier": "batch",
+  "speed": "standard"
+ },
+ "content": "{\"annotations\":[{\"start\":49,\"end\":64,\"text\":\"phenylketonuria\",\"entity\":\"SpecificDisease\",\"rationale\":\"Named disease (phenylketonuria) with a single specific definition in the title.\",\"guideline_section\":\"What to Annotate 1: Specific Disease; 4: Duplicate mentions (title sentence)\"},{\"start\":66,\"end\":91,\"text\":\"Classical phenylketonuria\",\"entity\":\"SpecificDisease\",\"rationale\":\"Names one particular form of phenylketonuria, so 'Classical' is included as in the classical galactosemia example.\",\"guideline_section\":\"What to Annotate 1: Specific Disease; Examples 15: Classical galactosemia\"},{\"start\":98,\"end\":125,\"text\":\"autosomal recessive disease\",\"entity\":\"DiseaseClass\",\"rationale\":\"Refers to a family of diseases passed down genetically, not one specific disease.\",\"guideline_section\":\"What to Annotate 1: Disease Class; Examples 10: autosomal recessive disease\"},{\"start\":618,\"end\":621,\"text\":\"PKU\",\"entity\":\"SpecificDisease\",\"rationale\":\"Abbreviation of phenylketonuria, a synonymous mention annotated separately from the long form.\",\"guideline_section\":\"What to Annotate 6: Synonymous mentions; 1: Specific Disease\"}]}",
+ "thinking_summary": "I need to figure out the character offsets for annotating this text, starting the count from \"Two distinct mutations...\" since that's where the actual content begins after the delimiter. I'm manually counting through the first line word by word to establish the correct position for each term.\n\nMoving to the second line, I'm doing the same careful word-by-word character count for \"Classical phenylketonuria is an autosomal recessive disease...\" tracking each token's start and end position so I can later map annotations to the right spots once I add the line 1 offset to get absolute positions.\n\n\"PAH deficiencies\" is tricky since \"deficiency\" is typically a general term, so I'll skip annotating it separately and keep things simple there.\n\nMoving to line 3, I'm calculating offsets and noting mentions like the BamHI site, PAH gene, exon 7, and the point mutations at codon 272 and 273 — none of these seem to be disease mentions requiring annotation, just genetic/methodological details.\n\nContinuing to locate \"PKU\" within line 3 by counting character offsets word by word, tracking cumulative position through the sentence to pinpoint its exact index for annotation.\n\nI'm continuing to track character positions through the rest of the sentence about RFLP haplotype 7 alleles, then moving into the next sentence about PKU's clinical heterogeneity, calculating that \"PKU\" lands at absolute positions 618-620. I'm now double-checking my word-length arithmetic for the earlier sentence about classical phenylketonuria being an autosomal recessive disease to make sure the running totals are accurate.\n\nWith offsets confirmed, I'm identifying the entity spans to annotate: \"Classical phenylketonuria\" as a specific disease mention, \"autosomal recessive disease\" as a disease class mention, \"PKU\" as a duplicate/synonymous mention of phenylketonuria, and the title's \"phenylketonuria\" as a separate specific disease mention since it appears in its own sentence context. I'm preparing to output these as a single-line JSON with rationale and guideline references for each annotated span.\n\n",
+ "status": "ok",
+ "annotations": [
+  {
+   "start": 49,
+   "end": 64,
+   "text": "phenylketonuria",
+   "entity": "SpecificDisease",
+   "rationale": "Named disease (phenylketonuria) with a single specific definition in the title.",
+   "guideline_section": "What to Annotate 1: Specific Disease; 4: Duplicate mentions (title sentence)",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 66,
+   "end": 91,
+   "text": "Classical phenylketonuria",
+   "entity": "SpecificDisease",
+   "rationale": "Names one particular form of phenylketonuria, so 'Classical' is included as in the classical galactosemia example.",
+   "guideline_section": "What to Annotate 1: Specific Disease; Examples 15: Classical galactosemia",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 98,
+   "end": 125,
+   "text": "autosomal recessive disease",
+   "entity": "DiseaseClass",
+   "rationale": "Refers to a family of diseases passed down genetically, not one specific disease.",
+   "guideline_section": "What to Annotate 1: Disease Class; Examples 10: autosomal recessive disease",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 616,
+   "end": 619,
+   "text": "PKU",
+   "entity": "SpecificDisease",
+   "rationale": "Abbreviation of phenylketonuria, a synonymous mention annotated separately from the long form.",
+   "guideline_section": "What to Annotate 6: Synonymous mentions; 1: Specific Disease",
+   "uncertain": false,
+   "raw_entity": null
+  }
+ ],
+ "json_extraction": "plain"
+}

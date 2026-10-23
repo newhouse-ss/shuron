@@ -1,0 +1,112 @@
+{
+ "unit": "H_high__8326491__r19",
+ "arm": "H_high",
+ "doc": "8326491.json",
+ "rep": 19,
+ "prompt_chars": 9419,
+ "prompt_sha256": "c9bd4c62d3c0d2417d72e1fac0066b59773aa688a17b71d494a9318cbcd4ce4d",
+ "mode": "batch",
+ "batch_id": "msgbatch_01KWrs3vcgxH15Hcw7UoFGff",
+ "batch_created_utc": "2026-10-22T04:45:45+00:00",
+ "batch_ended_utc": "2026-10-22T04:52:53.499997+00:00",
+ "settings": {
+  "model": "claude-haiku-5-5",
+  "effort": "high",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive",
+   "display": "summarized"
+  },
+  "output_format": "json_schema",
+  "schema_sha256": "d5140dd40e6b938f6e93e9ea0cad9f0d3f275a2d9722d1a47ba06603cc4b70d2"
+ },
+ "result_type": "succeeded",
+ "response": {
+  "id": "msg_011CgGfjRzuRSfDECemcU8JE",
+  "model": "claude-haiku-5-5",
+  "stop_reason": "end_turn",
+  "stop_details": null
+ },
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "inference_geo": "global",
+  "input_tokens": 3949,
+  "output_tokens": 8170,
+  "output_tokens_details": {
+   "thinking_tokens": 7476
+  },
+  "service_tier": "batch",
+  "speed": "standard"
+ },
+ "content": "{\"annotations\":[{\"start\":106,\"end\":123,\"text\":\"Tay-Sachs disease\",\"entity\":\"SpecificDisease\",\"rationale\":\"Named disease 'Tay-Sachs disease' refers to one specific disease with no further categorization, so it is a Specific Disease.\",\"guideline_section\":\"1. Annotate all Specific Disease mentions\"},{\"start\":193,\"end\":210,\"text\":\"Tay-Sachs disease\",\"entity\":\"SpecificDisease\",\"rationale\":\"Full long-form name of the specific disease TSD in the second sentence; the whole phrase is preferred as the minimum necessary span.\",\"guideline_section\":\"1. Annotate all Specific Disease mentions; 5. Annotate minimum necessary span of text\"},{\"start\":213,\"end\":216,\"text\":\"TSD\",\"entity\":\"SpecificDisease\",\"rationale\":\"Abbreviation for Tay-Sachs disease given in parentheses; the abbreviation is annotated as a separate mention from the long form.\",\"guideline_section\":\"6. Annotate all synonymous mentions\"},{\"start\":567,\"end\":570,\"text\":\"TSD\",\"entity\":\"Modifier\",\"rationale\":\"Abbreviation for Tay-Sachs disease used as a modifier of the noun 'carriers' (TSD carriers).\",\"guideline_section\":\"3. Annotate disease mentions that are used as Modifiers for other concepts\"},{\"start\":840,\"end\":843,\"text\":\"TSD\",\"entity\":\"Modifier\",\"rationale\":\"Abbreviation for Tay-Sachs disease used as a modifier of the noun 'carriers' (TSD carriers) in the fourth sentence.\",\"guideline_section\":\"3. Annotate disease mentions that are used as Modifiers for other concepts\"},{\"start\":967,\"end\":970,\"text\":\"TSD\",\"entity\":\"Modifier\",\"rationale\":\"Abbreviation for Tay-Sachs disease used as a modifier of the noun 'families' (non-Jewish TSD families).\",\"guideline_section\":\"3. Annotate disease mentions that are used as Modifiers for other concepts\"}]}",
+ "thinking_summary": "I need to locate the entities and compute precise character offsets for the text, counting through the sentences carefully to pinpoint where each mention starts and ends.\n\nContinuing the character count to verify the exact position of each word in the sentence about the previous study on the Tay-Sachs intron 9 mutation among British Isles patients and carriers.\n\nI'm also working out how to annotate \"Tay-Sachs disease\" and its abbreviation \"(TSD)\" as two separate mention spans, deciding on exclusive end indices for consistent slicing.\n\nMoving to the next sentences, I note \"TSD carriers\" as a disease modifier mention and continue scanning through the carrier/control comparisons (six carriers positive, Irish ancestry links) to see if any further disease mentions need tagging.\n\nSentence 5 reiterates \"TSD families\" as another modifier instance tied to the British Isles, non-Jewish population description — no new disease entities beyond that.\n\nNow I need to work out exact character offsets for line 2, carefully re-checking where the previous sentence ends and the \"British Isles\" clause sits before recalculating positions for \"It was found more frequently...\" and subsequent text.\n\nContinuing to track character positions through the rest of sentence two and into sentence three, counting out words like \"Scottish,\" \"Welsh,\" \"compared,\" \"English,\" and the percentages, then moving into \"We have now tested... 26 American TSD carriers and 28 non-carriers\" to pinpoint exactly where each token falls.\n\nNow I'm working through sentence four, mapping \"Six of the carriers and none of the controls were positive for the mutation,\" plus the Irish ancestry comparison statistics, into precise character offsets.\n\nContinuing this offset tracking through \"( intron 9 mutation negative ) TSD carriers ( p < 0 . 05 ) .\" I land on TSD starting at 840 and ending at 843, then push through the carriers phrase and the statistical parenthetical up to roughly 869, right before the start of the next sentence beginning \"These res...\"\n\nWorking through \"These results confirm the previously found high frequency of the intron 9 mutation in non-Jewish TSD families,\" I'm placing \"These\" at 870-875, then stepping word by word through results, confirm, the, previously, found, high, frequency, of, the, intron, 9, mutation, in, non-Jewish, landing TSD at 967-970. Now I need to double-check the earlier \"Tay-Sachs disease\" mention in line 1 around position 106-123 to make sure my counts stay consistent.\n\nI'm recomputing character offsets word by word to confirm both \"Tay-Sachs disease\" entity spans in line 1 and line 2 line up correctly, tallying cumulative lengths to pin down exact start positions for each annotation.\n\nContinuing the character count through sentences 3 and 4, I confirm \"We\" lands at 515, tracing through to place TSD at 567 for sentence 3's end. For sentence 4, I recompute from the period at 665 through the carrier/control comparison, confirming TSD falls at 840 as expected.\n\nNow I'm identifying the entity mentions to annotate: \"Tay-Sachs disease\" appears as a Specific Disease mention in two places, \"TSD\" serves as an abbreviation synonym for the same disease, and three additional \"TSD\" occurrences function as Modifiers describing carriers. I'm organizing these under the appropriate guideline categories—Specific Disease, Modifiers, and Synonymous mentions—before writing out the final JSON annotation.\n\n",
+ "status": "ok",
+ "annotations": [
+  {
+   "start": 106,
+   "end": 123,
+   "text": "Tay-Sachs disease",
+   "entity": "SpecificDisease",
+   "rationale": "Named disease 'Tay-Sachs disease' refers to one specific disease with no further categorization, so it is a Specific Disease.",
+   "guideline_section": "1. Annotate all Specific Disease mentions",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 193,
+   "end": 210,
+   "text": "Tay-Sachs disease",
+   "entity": "SpecificDisease",
+   "rationale": "Full long-form name of the specific disease TSD in the second sentence; the whole phrase is preferred as the minimum necessary span.",
+   "guideline_section": "1. Annotate all Specific Disease mentions; 5. Annotate minimum necessary span of text",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 213,
+   "end": 216,
+   "text": "TSD",
+   "entity": "SpecificDisease",
+   "rationale": "Abbreviation for Tay-Sachs disease given in parentheses; the abbreviation is annotated as a separate mention from the long form.",
+   "guideline_section": "6. Annotate all synonymous mentions",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 567,
+   "end": 570,
+   "text": "TSD",
+   "entity": "Modifier",
+   "rationale": "Abbreviation for Tay-Sachs disease used as a modifier of the noun 'carriers' (TSD carriers).",
+   "guideline_section": "3. Annotate disease mentions that are used as Modifiers for other concepts",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 839,
+   "end": 842,
+   "text": "TSD",
+   "entity": "Modifier",
+   "rationale": "Abbreviation for Tay-Sachs disease used as a modifier of the noun 'carriers' (TSD carriers) in the fourth sentence.",
+   "guideline_section": "3. Annotate disease mentions that are used as Modifiers for other concepts",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 966,
+   "end": 969,
+   "text": "TSD",
+   "entity": "Modifier",
+   "rationale": "Abbreviation for Tay-Sachs disease used as a modifier of the noun 'families' (non-Jewish TSD families).",
+   "guideline_section": "3. Annotate disease mentions that are used as Modifiers for other concepts",
+   "uncertain": false,
+   "raw_entity": null
+  }
+ ],
+ "json_extraction": "plain"
+}

@@ -1,0 +1,44 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: DiseaseClass vs LLM: Modifier (Label Mismatch)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** The single feature that separates the control Modifiers from the discrepancy is syntactic slot. Every correct Modifier in the control set is a disease name used as an attributive premodifier directly before a non-disease head noun: "ovarian cancer **population**," "ovarian cancer **cases**," "ovarian cancer **study**," "ovarian cancer **risk**," "fragile X syndrome **patients**," "ancient SLS **genes**," "Wiskott-Aldrich syndrome **protein**." The discrepancy's "cancer" is the head of a prepositional complement ("history **of** cancer") and does not premodify anything.
+- **Isolate Trigger:** "Family history of ___" is a qualifier-like construction that describes relatives or patients, so it resembles the Modifier function semantically. The model appears to have keyed on that qualifier meaning plus the token "cancer," which is inside most Modifier spans in this document, rather than on the syntactic slot. The bare "cancer" is also a generic category term, which points to DiseaseClass.
+- **Hypothesis Check:** The premodifier rule explains the discrepancy, but it is not sufficient alone. Disease heads in complement positions still receive entity types, and those depend on specificity. "Classical form of **Coats disease**" and "affected by **Norrie disease**" are SpecificDisease, while "family history of **cancer**" is DiseaseClass. The pattern therefore needs a two-step refinement. No control-set Modifier matches the "family history of [disease]" construction, which supports treating it as a non-Modifier case.
+
+**Step 2: Formulated Pattern**
+
+- **Pattern Name:** Qualifier-Phrase Disease Noun Mislabeled as Modifier ("family history of [disease]")
+- **Confusion Trigger:** A bare, generic disease noun ("cancer") serves as the complement of a qualifier-like prepositional phrase ("family history of ___"). The model treats the phrase's descriptive, patient/relative-status function as a Modifier and over-generalizes from the lexical co-occurrence of "cancer" with Modifier spans in the same document.
+- **Contrastive Evidence:** Correct Modifier labels occur only when the disease name is an attributive premodifier before a head noun ("ovarian cancer risk," "ovarian cancer cases," "fragile X syndrome patients," "SLS genes"). Disease nouns in complement positions are labeled by specificity instead: "Norrie disease" and "Coats disease" become SpecificDisease, and the generic "mental retardation" in a symptom list becomes DiseaseClass. None of the correct Modifier cases involve a "history of" or "form of" complement.
+- **Linguistic Rule (Proposed):**
+  1. Label a disease term as **Modifier** only if it is an attributive premodifier immediately preceding a non-disease head noun (e.g., population, cases, study, risk, patients, genes, protein). Qualifier semantics ("history of," "risk of," "form of") do not license the Modifier label.
+  2. If the term is not a premodifier, decide by specificity. A named, specific disease (Coats disease, Norrie disease, SLS, Sjogren-Larsson syndrome) is **SpecificDisease**. A generic or unspecified category term with no named type (bare "cancer," "mental retardation") is **DiseaseClass**.
+  3. Applied here: "family history of **cancer**" has "cancer" as a PP complement and no named type, so it is **DiseaseClass**.
+  4. Caveat: this rule is derived from one discrepancy. It should be checked against other "history of [disease]" and bare "cancer" mentions in Modifier-heavy documents before it is adopted.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10196379.json):
+Snippet: "...ed , some of which were associated with a family history of cancer . The frequency distribution of common polymorphisms was de..."
+Gold: DiseaseClass, LLM: Modifier
+Entity Text: "cancer"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

@@ -1,0 +1,78 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+## Step 1: Deep Dive Analysis
+
+**Contrast.** The strongest evidence comes from comparing discrepancies and true positives within the same document:
+
+- **Doc 10484772:** "Coats disease" (TP) is tagged, but "Coats telangiectasis" (FN) is missed. Both use the same eponym, so the difference is the head noun: *disease* versus *telangiectasis*, a sign term.
+- **Doc 10577908:** "SLS" (TP) is tagged because it is anchored by the adjacent expansion "Sjogren-Larsson syndrome ( SLS )". "deficient activity of fatty aldehyde dehydrogenase" (FN) has no nosological head and no anchor.
+
+The boolean feature that separates the cases is whether the disease mention carries a **nosological head** (disease, syndrome, cancer, a suffix like -uria) or is **anchored to one** by an adjacent expansion.
+
+**Isolate Trigger.** The model appears to read these strings as mechanism, finding, or abbreviation text rather than as disease names:
+- *"deficiency of / deficient activity of / deficiency in [enzyme or gene]"* is read as a molecular cause. In Example 4 the phrase is grammatically the object of "caused by," which reinforces the cause reading.
+- *"telangiectasis"* is read as a clinical sign, even though the source text uses "retinal telangiectasis" as an alternate name for the disease.
+- *"PKU"* is a bare acronym. Its expansion (phenylketonuria) appears elsewhere in the document, not in the local window.
+
+**Hypothesis Check.** The single feature explains all five cases:
+- Ex 2, 3, 4: no nosological head. The head is a deficiency or activity noun, and the disorder is named only through its enzyme.
+- Ex 1: the head is a sign noun, not a condition noun.
+- Ex 5: no head and no local expansion.
+
+One caveat: the gold standard labels enzyme-deficiency spans as SpecificDisease, which is only defensible when the deficiency is the disorder's defining feature. That makes the rule conditional, not a blanket rule for all "deficiency of X" phrases.
+
+## Step 2: Formulate Pattern
+
+- **Pattern Insight: Disease Named Without a Nosological Head (Molecular Defect, Sign Term, or Unanchored Acronym)**
+  - **Confusion Trigger:** Disease mentions whose surface head is not a disease-class noun. These include (a) "deficiency/deficient activity of/in [gene or enzyme]" phrases where the enzyme is the grammatical object, (b) a clinical sign noun ("telangiectasis") used in place of "disease," and (c) a bare acronym with no adjacent expansion. The model defaults to O, treating these as mechanism, finding, or abbreviation text.
+  - **Contrastive Evidence:** The true positives carry an explicit nosological head ("Coats disease," "Norrie disease," "Wiskott-Aldrich syndrome," "fragile X syndrome," "ovarian cancer") or an adjacent expansion ("SLS"). Within the same documents, the eponym "Coats" and the acronym "SLS" are tagged when the head or expansion is present and missed when it is not.
+  - **Linguistic Rule (Proposed):** For any candidate disease string, first check for a nosological head (disease, syndrome, disorder, cancer, -uria/-emia) or an adjacent parenthetical expansion. If neither is present, do not default to O:
+    1. If the string is "deficiency/deficient activity of/in [gene or enzyme]" and the sentence presents it as the disorder's defining cause or feature (e.g., "a disease caused by a deficiency of…"), label the full span SpecificDisease.
+    2. If a sign term is used as an alternate name for an eponymous disease already named in the document (e.g., "Coats telangiectasis" alongside "Coats disease"), label it SpecificDisease.
+    3. If a bare acronym's expansion appears anywhere in the document as a disease name, label the acronym SpecificDisease.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10484772.json):
+Snippet: "...was not present within non-retinal tissue . We suggest that Coats telangiectasis is secondary to somatic mutation in the NDP gene which resu..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "Coats telangiectasis"
+
+Example 2 (Doc: 10577908.json):
+Snippet: "...rized by ichthyosis , mental retardation , spasticity , and deficient activity of fatty aldehyde dehydrogenase ( FALDH ) . To define the molecular defects causing SLS , w..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficient activity of fatty aldehyde dehydrogenase"
+
+Example 3 (Doc: 1303173.json):
+Snippet: "... coexistence of the two mutations is responsible for enzyme deficiency in G6PD A- because they act synergistically in causing instability ..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficiency in G6PD"
+
+Example 4 (Doc: 1671881.json):
+Snippet: "...enylketonuria is an autosomal recessive disease caused by a deficiency of hepatic phenylalanine hydroxylase ( PAH ) . The abolition of an invariant BamHI site located ..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficiency of hepatic phenylalanine hydroxylase"
+
+Example 5 (Doc: 1671881.json):
+Snippet: "... study supports the view that the clinical heterogeneity in PKU is accounted for by the large variety of mutant genotypes a..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "PKU"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

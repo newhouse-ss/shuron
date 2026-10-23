@@ -1,0 +1,63 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** The True Positives get their disease label from a disease head noun (*cancer*, *syndrome*, *disease*, *telangiectasis*). Gene and protein names such as *BRCA1*, *NDP*, and *FALDH* sit outside the disease span or are unlabeled. In the discrepancies, the span is headed by a nominal deficiency state (*deficiency*, *deficient activity*) and the enzyme or gene name sits inside the span: "deficiency of hepatic phenylalanine hydroxylase," "deficiency in G6PD," "deficient activity of fatty aldehyde dehydrogenase," "G6PD deficiency."
+- **Isolate Trigger:** The model reads *deficiency* as a biochemical or phenotypic state, not a disease category, and reads the enzyme name as a gene or protein. Neither piece activates SpecificDisease, so both are tagged O.
+- **Hypothesis Check:** This explains Examples 1–4. Example 5 ("fever") has no deficiency construction. It is a symptom, and the gold label is inconsistent with the schema, since "mental retardation" and "spasticity" in the SLS document are unlabeled while "ichthyosis" is DiseaseClass. I treat it as annotation noise outside this cluster.
+- **Boundary Evidence:** Within the same corpus, the gold standard is not uniform. "G6PD deficient phenotype" is labeled Modifier (adjectival use), while the nominal "G6PD deficiency" is SpecificDisease. Also, "results in a deficiency of norrin" in 10484772 is unlabeled. That deficiency is a molecular consequence of a mutation, not a named disorder, so it refines the rule.
+
+**Step 2: Pattern Formulation**
+
+- **Pattern Insight: Nominal "Deficiency" Constructions as Disease Identity**
+  - **Pattern Name:** Enzyme/Gene Deficiency Phrase Read as Biochemical State Rather Than Disease
+  - **Confusion Trigger:** The head noun is a generic state term ("deficiency," "deficient activity"), and the complement is a gene or enzyme name (e.g., *G6PD*, *PAH*, *FALDH*). The model's disease lexicon does not cover this construction, so it parses the phrase as a protein or phenotype description and assigns O.
+  - **Contrastive Evidence:** True Positives are labeled through explicit disease heads (*cancer*, *syndrome*, *disease*, *telangiectasis*) and keep gene names outside the disease span. The adjectival "G6PD deficient" is correctly Modifier, which shows the model handles the adjective form but misses the nominal form that names a disorder.
+  - **Linguistic Rule (Proposed):** Tag the full nominal deficiency phrase, including its enzyme or gene complement, as SpecificDisease when the phrase names the condition itself (e.g., "G6PD deficiency") or states that a patient or syndrome is defined by or caused by the deficiency at the disease level (e.g., "is an autosomal recessive disease caused by a deficiency of X," "characterized by deficient activity of X"). Do not apply the rule when (a) "deficient" is adjectival and modifies a phenotype (→ Modifier), or (b) the deficiency is a molecular or mechanistic consequence of a mutation with no named disorder (e.g., "results in a deficiency of norrin" → O). Symptom-level terms such as "fever" are outside this rule.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10577908.json):
+Snippet: "...rized by ichthyosis , mental retardation , spasticity , and deficient activity of fatty aldehyde dehydrogenase ( FALDH ) . To define the molecular defects causing SLS , w..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficient activity of fatty aldehyde dehydrogenase"
+
+Example 2 (Doc: 1303173.json):
+Snippet: "...he 68 Val-- > Met mutation alone is not sufficient to cause G6PD deficiency . We have approached this question by producing G6PD B , A ..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "G6PD deficiency"
+
+Example 3 (Doc: 1303173.json):
+Snippet: "... coexistence of the two mutations is responsible for enzyme deficiency in G6PD A- because they act synergistically in causing instability ..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficiency in G6PD"
+
+Example 4 (Doc: 1671881.json):
+Snippet: "...enylketonuria is an autosomal recessive disease caused by a deficiency of hepatic phenylalanine hydroxylase ( PAH ) . The abolition of an invariant BamHI site located ..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficiency of hepatic phenylalanine hydroxylase"
+
+Example 5 (Doc: 6859721.json):
+Snippet: "...litis.
+A previously healthy 40-year-old man presenting with fever , arthritis , and cutaneous vasculitis was found to have ch..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "fever"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

@@ -1,0 +1,55 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: DiseaseClass (Label Mismatch)
+
+**INFERRED PATTERNS:**
+## Step 1: Deep Dive Analysis
+
+**Contrast:**
+- **True Positives (SpecificDisease):** The model correctly labels named, nosological entities such as *Coats disease*, *Norrie disease*, and *SLS*. Each is a fixed disease name or acronym.
+- **True Positives (DiseaseClass):** *mental retardation* (in "SLS is characterized by ichthyosis, mental retardation, spasticity") and *exudative retinal detachment* (in "Coats disease... results in exudative retinal detachment") are phenotypic or pathological descriptors. They are not diagnostic disease names.
+- **Discrepancies:** Both mentions are unnamed, common-noun disease or clinical terms. The gold standard treats them as SpecificDisease, but the model defaults to DiseaseClass.
+
+**Isolate Trigger:** In "Chronic neisserial infection," the model appears to read *neisserial* as a taxonomic class marker (a genus-derived adjective) and *infection* as an umbrella category. This produces a class-level reading. The gold annotation instead treats the phrase as one etiologically anchored condition (an infection caused by a single bacterial genus) that is the diagnosed entity ("was found to have," "can be associated with C7 deficiency").
+
+**Hypothesis Check:**
+- *Chronic neisserial infection* fits the trigger well.
+- *fever* does not fit cleanly. It is structurally parallel to the TP DiseaseClass case "characterized by ..., mental retardation," since both are symptom nouns in a manifestation list. The model's DiseaseClass label is consistent with that convention, so the gold label for *fever* may be an annotation inconsistency rather than a linguistic trigger. I flag it as a low-confidence exception.
+- Refinement: a bare common noun alone does not explain the error, because *mental retardation* is also a bare common noun and is correctly labeled DiseaseClass. The distinguishing factor is whether the mention is anchored to a single identifiable disease entity by name or etiology.
+
+## Step 2: Pattern Formulation
+
+- **Pattern Insight: Etiology-anchored "infection" phrases mislabeled as umbrella classes**
+  - **Pattern Name:** Genus-anchored generic infection label read as a category.
+  - **Confusion Trigger:** A taxonomic, genus-derived adjective (*neisserial*) combined with an umbrella head noun (*infection*). The model treats the adjective as a class marker and labels the mention DiseaseClass. The lack of a proper disease name amplifies this reading. The qualifier *Chronic* may reinforce the impression of a general category.
+  - **Contrastive Evidence:** True Positive DiseaseClass cases are phenotypic descriptors (*mental retardation*, *exudative retinal detachment*) that name no causal agent and sit in "characterized by" feature lists. True Positive SpecificDisease cases are fixed names or acronyms (*Coats disease*, *SLS*). The discrepant mention is neither: it names one causal agent and functions as the diagnosed condition.
+  - **Linguistic Rule (Proposed):** If a disease mention contains an organism-genus or etiology-specifying adjective (e.g., *neisserial*, *staphylococcal*) that identifies a single pathogen, and it heads a diagnostic or causal predicate ("found to have X," "X can be associated with Y"), label it SpecificDisease, not DiseaseClass. Reserve DiseaseClass for phenotypic or pathological descriptors and for umbrella categories with no single causal anchor. Treat bare symptom nouns in manifestation lists (e.g., *fever*) as a probable gold-annotation inconsistency and do not force the rule onto them.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 6859721.json):
+Snippet: "...litis.
+A previously healthy 40-year-old man presenting with fever , arthritis , and cutaneous vasculitis was found to have ch..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "fever"
+
+Example 2 (Doc: 6859721.json):
+Snippet: "...ions showed heterozygous deficiency of C7 in five members . Chronic neisserial infection can be associated with C7 deficiency and must be distinguis..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "Chronic neisserial infection"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

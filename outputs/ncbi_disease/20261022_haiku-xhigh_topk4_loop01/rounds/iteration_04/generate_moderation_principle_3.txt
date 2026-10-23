@@ -1,0 +1,49 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: DiseaseClass vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** The two discrepancies are compositional descriptions of a pathological state: a generic deviation noun or qualifier ("abnormal ... development", "deficiency of ...") attached to an anatomical or molecular complement. They have no disease nomenclature. The True Positive DiseaseClass cases, "mental retardation" and "exudative retinal detachment," are conventional clinical condition terms whose heads are themselves recognized disorder names. The Modifier TPs ("ovarian cancer," "fragile X syndrome," "Wiskott-Aldrich syndrome") are also lexicalized disease names. The separating feature is **lexicalized disorder nomenclature (named condition) versus a compositional state description built from a generic deviation head or qualifier.**
+
+- **Isolate Trigger:** The model appears to look for disease-specific lexical cues such as *syndrome*, *disease*, *retardation*, or *detachment*. "Development" and "deficiency" read as ordinary physiological process or molecular-state nouns. "of norrin" points to a protein entity, and "retinal vascular" points to anatomy, so both spans look like normal biology rather than a condition.
+
+- **Hypothesis Check:** A syntactic explanation fails. The "characterized by" frame also governs "mental retardation" in the TP sentence from 10577908, which is correctly labeled. Likewise, "results in" is only a causal frame and does not separate the cases. The shared feature across both discrepancies is a deviation-from-normal marker, "abnormal" or "deficiency," on a non-nosological head. In both, the phrase names a pathological state of the patient, and the qualifier is what makes it pathological. The hypothesis holds for both examples.
+
+**Step 2: Formulate Pattern**
+
+- **Pattern Insight**
+  - **Pattern Name:** Compositional pathological-state phrases (deviation qualifier + generic head) labeled DiseaseClass but missed as O
+  - **Confusion Trigger:** Generic deviation nouns or qualifiers (*abnormal*, *deficiency of*) attached to non-nosological heads such as *development* or a protein complement (*norrin*). These lack disease suffixes, so the model reads them as ordinary biological processes or molecular entities and defaults to O.
+  - **Contrastive Evidence:** The True Positive DiseaseClass spans ("mental retardation," "exudative retinal detachment") have heads that are established disorder terms, so the model recognizes them as conditions. The control cases do not depend on a deviation qualifier to be recognized as disease.
+  - **Linguistic Rule (Proposed):** Label a noun phrase as DiseaseClass when it denotes a deviation from normal physiology, i.e., its head is a deviation noun (*deficiency*, *deficit*, *abnormality*, *loss*) or it is modified by a deviation adjective (*abnormal*, *aberrant*, *defective*), and it is presented as a pathological outcome of a disease or mutation ("results in," "characterized by," "secondary to"). Include the qualifier and its complement in the span (e.g., "abnormal retinal vascular development," "deficiency of norrin"). Do not label the bare anatomical or molecular term ("retinal vascular development," "norrin") or the causal gene or mutation.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10484772.json):
+Snippet: "... in retinal angiogenesis.
+Coats disease is characterized by abnormal retinal vascular development ( so-called retinal telangiectasis ) which results in massi..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "abnormal retinal vascular development"
+
+Example 2 (Doc: 10484772.json):
+Snippet: "...dary to somatic mutation in the NDP gene which results in a deficiency of norrin ( the protein product of the NDP gene ) within the developi..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "deficiency of norrin"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

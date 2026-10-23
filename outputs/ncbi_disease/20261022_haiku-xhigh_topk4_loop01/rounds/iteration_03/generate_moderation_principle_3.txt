@@ -1,0 +1,51 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: Modifier (Label Mismatch)
+
+**INFERRED PATTERNS:**
+## Deep-Dive Analysis
+
+- **Contrast:** The two discrepancies are gold *SpecificDisease*, but the model labeled them *Modifier*. The surface cue is the same one that correctly produces Modifier in the controls: a disease name directly before a following noun ("ovarian cancer **cases**", "Wiskott-Aldrich syndrome **protein**", "SLS **genes**"). The controls that are *SpecificDisease* ("Coats disease is characterized…", "Sjogren-Larsson syndrome ( SLS ) is…", "affected by Norrie disease") differ in that the disease name is the referent of its own noun phrase, appearing as a clause subject or prepositional object, and is introduced as an entity.
+- **Isolate Trigger:** The phrase "a Tay-Sachs disease ( TSD ) causing mutation" creates a "[disease]-causing [noun]" frame. Without a hyphen, "disease" reads as a noun-noun premodifier of "mutation." The model then assigns Modifier to the disease name. For "TSD," the spaced parenthetical sits inside that same chunk, so the model propagated the span's Modifier label to the acronym instead of treating it as a coreferent abbreviation of the full disease mention.
+- **Hypothesis Check:** Premodifier position alone does not explain the error, because the Modifier controls share it. The refinement is that the gold reserves Modifier for a disease string acting as a fixed classifier label of a non-disease entity. In this case, the disease is introduced as a referent with a definitional abbreviation, and "causing" marks it as the causal target, not a qualifier. This explains both examples, including the acronym.
+
+## Pattern Insight
+
+- **Pattern Name:** Disease name misread as a premodifier in a "[Disease]-causing [entity]" frame, with its abbreviation inheriting the error.
+- **Confusion Trigger:** A disease name followed by a participle ("causing") and a head noun ("mutation") is read as a noun-noun premodifier, which resembles the classifier compounds labeled Modifier. A spaced parenthetical abbreviation ("( TSD )") sits inside the same span, so the acronym inherits the Modifier label.
+- **Contrastive Evidence:** The *SpecificDisease* controls ("Sjogren-Larsson syndrome ( SLS ) is…", "Coats disease is characterized…", "by Norrie disease") place the disease name as the head of its own NP or as a clause-level argument, with no fused attributive noun. Their parenthetical acronyms are labeled *SpecificDisease*. The *Modifier* controls ("ovarian cancer cases/population", "Wiskott-Aldrich syndrome protein", "SLS genes") use the disease string as a fixed, non-referential label of a non-disease entity.
+- **Linguistic Rule (Proposed):**
+  1. If a disease string is introduced as a referent ("a/the [X] disease", followed by a definitional parenthetical abbreviation, or appearing as a clause subject, object, or prepositional complement), label it **SpecificDisease**, even when a participial phrase such as "causing mutation" follows.
+  2. Treat "causing" as marking the disease as the *causal target or argument*, not as a qualifier. The compound "disease-causing" reading requires hyphen fusion, which is absent in the spaced text here.
+  3. Assign **Modifier** only when the disease string is a non-referential attributive label fused into a noun phrase naming a non-disease entity (population, cases, gene, protein, phenotype, family history).
+  4. A parenthetical abbreviation attached to a SpecificDisease head inherits SpecificDisease. It must not inherit the label of a modifier span that contains it.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 8326491.json):
+Snippet: "...from the British Isles.
+In a previous study we found that a Tay-Sachs disease ( TSD ) causing mutation in the intron 9 donor splice site ..."
+Gold: SpecificDisease, LLM: Modifier
+Entity Text: "Tay-Sachs disease"
+
+Example 2 (Doc: 8326491.json):
+Snippet: "...es.
+In a previous study we found that a Tay-Sachs disease ( TSD ) causing mutation in the intron 9 donor splice site of the..."
+Gold: SpecificDisease, LLM: Modifier
+Entity Text: "TSD"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

@@ -1,0 +1,46 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: DiseaseClass vs LLM: SpecificDisease (Label Mismatch)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** The two discrepant mentions are "cancer," a bare untyped category noun in "a family history of cancer," and "deficiency of norrin," a descriptive "X of Y" phrase for a molecular/pathophysiological state. Gold labels both DiseaseClass. The True Positives labeled SpecificDisease are all named nosological entities ("Coats disease," "Norrie disease," "SLS," "Wiskott-Aldrich syndrome," "glucose 6-phosphate dehydrogenase (G6PD) deficiency"). The True Positives labeled DiseaseClass are generic clinical or pathological descriptors with no proper name ("mental retardation," "exudative retinal detachment").
+- **Single separating feature:** Does the mention denote one individuated, named disease entity (eponym, acronym, or fixed nomenclature term), or does it denote a generic category, phenotype, or state description? This is a boolean property of reference, not of surface form.
+- **Isolate Trigger:** The model keys on a disease-lexicon head noun ("cancer," "deficiency") and treats it as sufficient for SpecificDisease. The word "deficiency" alone is not the problem, because "G6PD deficiency" is correctly labeled SpecificDisease. What differs is that "deficiency of norrin" has no fixed disease name: its complement is a substance (a protein), so the phrase describes a state rather than naming a disease. "Cancer" in "family history of cancer" is a generic reference to any cancer with no type specified.
+- **Hypothesis Check:** The trigger explains both discrepancies. "Cancer" is an unspecified category, and "deficiency of norrin" is a descriptive state. It also matches the DiseaseClass True Positives ("mental retardation," "exudative retinal detachment"), which lack a proper name. The refined distinction is that a disease head noun followed by a free "of"-complement, or left bare, is descriptive. A compound fixed nomenclature term such as "G6PD deficiency" is a name.
+
+**Step 2: Formulated Pattern**
+
+- **Pattern Name:** Generic disease-category nouns mislabeled as named diseases
+- **Confusion Trigger:** Disease-denoting head nouns ("cancer," "deficiency") appearing bare or in a descriptive "X of Y" frame, such as "deficiency of norrin," which the model reads as a named disease because the lexical head is disease-like.
+- **Contrastive Evidence:** The SpecificDisease True Positives are proper or eponymous names, acronyms for named syndromes, or fixed compounds such as "G6PD deficiency," which name one recognized entity. The DiseaseClass True Positives ("mental retardation," "exudative retinal detachment") are generic descriptors that have no proper name and refer to a category or phenotype. The discrepant cases match the DiseaseClass pattern, not the named-entity pattern.
+- **Linguistic Rule (Proposed):** Assign SpecificDisease only when the mention is a proper or eponymous name, an acronym for a named disease, or a fixed nomenclature compound that identifies one recognized condition (e.g., "[Name] disease," "[Name] syndrome," "[Enzyme/gene] deficiency"). If the mention is an unqualified category head ("cancer," "disease," "syndrome"), a generic reference to a type of disease ("family history of cancer"), or a descriptive "deficiency/defect of [substance/variable]" phrase that describes a pathophysiological state, assign DiseaseClass.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10196379.json):
+Snippet: "...ed , some of which were associated with a family history of cancer . The frequency distribution of common polymorphisms was de..."
+Gold: DiseaseClass, LLM: SpecificDisease
+Entity Text: "cancer"
+
+Example 2 (Doc: 10484772.json):
+Snippet: "...dary to somatic mutation in the NDP gene which results in a deficiency of norrin ( the protein product of the NDP gene ) within the developi..."
+Gold: DiseaseClass, LLM: SpecificDisease
+Entity Text: "deficiency of norrin"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

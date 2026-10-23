@@ -1,0 +1,102 @@
+{
+ "unit": "H_max__1671881__r12",
+ "arm": "H_max",
+ "doc": "1671881.json",
+ "rep": 12,
+ "prompt_chars": 9039,
+ "prompt_sha256": "3e85ca9d17cf21f81412a34bc4be6a2ba96daafc00c99e3abba01f786891751d",
+ "mode": "batch",
+ "batch_id": "msgbatch_014CFpHwfrEYpfRRFgsXuMPq",
+ "batch_created_utc": "2026-10-22T08:23:28+00:00",
+ "batch_ended_utc": "2026-10-22T08:34:26.341572+00:00",
+ "settings": {
+  "model": "claude-haiku-5-5",
+  "effort": "max",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive",
+   "display": "summarized"
+  },
+  "output_format": "json_schema",
+  "schema_sha256": "d5140dd40e6b938f6e93e9ea0cad9f0d3f275a2d9722d1a47ba06603cc4b70d2"
+ },
+ "result_type": "succeeded",
+ "response": {
+  "id": "msg_011CgGxLYCYuyTbLVFq6eReV",
+  "model": "claude-haiku-5-5",
+  "stop_reason": "end_turn",
+  "stop_details": null
+ },
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "inference_geo": "global",
+  "input_tokens": 3824,
+  "output_tokens": 25537,
+  "output_tokens_details": {
+   "thinking_tokens": 24806
+  },
+  "service_tier": "batch",
+  "speed": "standard"
+ },
+ "content": "{\"annotations\":[{\"start\":49,\"end\":64,\"text\":\"phenylketonuria\",\"entity\":\"SpecificDisease\",\"rationale\":\"Names one specific disease (phenylketonuria) with no further categorization. It appears in the title, which is its own sentence, so it is annotated as a separate mention.\",\"guideline_section\":\"What to Annotate 1 (Specific Disease); What to Annotate 4 (Duplicate mentions)\"},{\"start\":66,\"end\":91,\"text\":\"Classical phenylketonuria\",\"entity\":\"SpecificDisease\",\"rationale\":\"Refers to the classical form of phenylketonuria, a particular form of one specific disease. The word Classical is kept as in the classical galactosemia example, and the full minimum span is preferred over the substring phenylketonuria.\",\"guideline_section\":\"What to Annotate 5 (Minimum necessary span); Examples item 15 (Classical galactosemia)\"},{\"start\":98,\"end\":125,\"text\":\"autosomal recessive disease\",\"entity\":\"DiseaseClass\",\"rationale\":\"Describes a family of multiple specific diseases inherited in an autosomal recessive pattern rather than a single disease with a fixed definition.\",\"guideline_section\":\"What to Annotate 1 (Disease Class); Examples item 10 (autosomal recessive disease)\"},{\"start\":616,\"end\":619,\"text\":\"PKU\",\"entity\":\"SpecificDisease\",\"rationale\":\"Abbreviation for phenylketonuria used later in the abstract. Abbreviations are annotated as their own mention, and this refers to one specific disease.\",\"guideline_section\":\"What to Annotate 6 (Synonymous mentions); What to Annotate 1 (Specific Disease)\"},{\"start\":694,\"end\":710,\"text\":\"PAH deficiencies\",\"entity\":\"DiseaseClass\",\"rationale\":\"The plural deficiencies of phenylalanine hydroxylase (PAH) refers to a family of multiple related PAH-deficiency disorders (such as classical PKU and milder forms), so it is a Disease Class rather than one Specific Disease.\",\"guideline_section\":\"What to Annotate 1 (Disease Class); Examples item 11 (family of diseases)\"}]}",
+ "thinking_summary": "I'm looking at this text about phenylketonuria genetics, identifying the disease as an autosomal recessive condition caused by phenylalanine hydroxylase deficiency, and noting the discovery of two point mutations at codon 272 disrupting a BamHI restriction site in the PAH gene's exon 7.\n\n\"Classical phenylketonuria\" seems to be a SpecificDisease mention, \"autosomal recessive disease\" a DiseaseClass term, and \"PKU\" functions as the abbreviation for phenylketonuria elsewhere in the text, also marking it as a SpecificDisease per the abbreviation convention.\n\nNow I'm weighing \"PAH deficiencies\" — since it's plural and refers to the broader family of phenylalanine hydroxylase deficiency forms underlying PKU, it leans toward being a DiseaseClass rather than a single SpecificDisease, though the distinction here is genuinely borderline.\n\n\"PAH deficiencies\" being plural makes me lean toward DiseaseClass, since it suggests a family of related deficiency conditions rather than one single named disease, though I can see an argument for SpecificDisease too. I'm trying to recall whether this specific NCBI corpus abstract—likely about PKU mutations at a BamHI site—actually labels this phrase in its gold annotations.\n\nI'll settle on DiseaseClass for \"PAH deficiencies\" since it's plural and refers to a category of conditions.\n\nLooking at \"a deficiency of hepatic phenylalanine hydroxylase\" from the classical phenylketonuria sentence, this phrase describes the causative mechanism rather than naming a disease itself, so I'm inclined to leave it unannotated.\n\nMoving through the rest of the terms — PAH as gene/enzyme, BamHI site, mutations, RFLP haplotypes — none of these qualify as disease mentions, so I'll skip them all. \"PKU\" and \"phenylketonuria\" both clearly count as SpecificDisease mentions throughout, including in the title, and \"Classical phenylketonuria\" should be tagged as a single mention with \"Classical\" included since it denotes a specific disease subtype per the annotation guidelines.\n\nal heterogeneity\" context — just \"PKU\" as SpecificDisease. Then checking \"PAH deficiencies\" as a possible DiseaseClass mention, and looking for modifier usages — checking if any disease names function as modifiers rather than standalone mentions, like \"autosomal recessive disease\" where \"disease\" is the head noun, but I don't find clear modifier cases in this text.\n\n\"phenylketonuria\" in the title appears as a prepositional object, so that's SpecificDisease too. \"PAH deficiencies\" refers to phenylalanine hydroxylase deficiency as a disease name, which I'd classify as DiseaseClass or SpecificDisease.\n\nI'm not finding any composite mentions here — no contiguous strings referring to multiple diseases. So my annotation list so far includes: \"phenylketonuria\" (title), \"Classical phenylketonuria\", \"autosomal recessive disease\" as DiseaseClass, \"PKU\" as SpecificDisease, and \"PAH deficiencies\" as DiseaseClass.\n\nGiven the plural form, \"PAH deficiencies\" better fits DiseaseClass since it represents a family of related deficiency conditions rather than one specific disease. I'm uncertain whether \"deficiency of hepatic phenylalanine hydroxylase\" should also get tagged, but since it's phrased as a causal description rather than a named disease entity, I'll leave it unannotated.\n\nI'll settle on annotating the clearly defined mentions: phenylketonuria, Classical phenylketonuria, autosomal recessive disease, PKU, and PAH deficiencies, treating the title and abstract instances as separate mentions since they occur in different sentences. Now I need to work out exact character offsets for each mention within the given text, starting from where the abstract content begins.\n\nCalculating position... Counting characters...\n\nContinuing to calculate character offsets for each word through \"Classical phenylketonuria is an autosomal recessive disease caused by a deficiency of...\" tracking indices for the second sentence.\n\nContinuing the character count through exon 7, noting the \"led to the recognition of two new point mutations at codon 272 and 273\" text, then tracking the mutation notation \"272gly----stop\" and \"273ser----phe\" and surrounding punctuation into the \"Both m...\" fragment.\n\nBoth mutations were detected in northeastern France or Belgium, occurring on the background of RFLP haplotype 7 alleles, and the study supports the view that...\n\nContinuing to trace character offsets for \"clinical heterogeneity in PKU is accounted for by the large variety of mutant genotypes associated...\"\n\nI'm cross-checking the offsets against the actual text I need to index, specifically the phenylketonuria abstract describing BamHI site mutations, PAH gene exon 7, and the codon 272/273 point mutations found in France and Belgium.\n\nContinuing to count through the text character by character, I verify \"site\" occupies positions 41-44, then \"in\" at 46-47, and \"phenylketonuria\" spans 49-63 with the title ending at position 64.\n\nMoving to the next line, I calculate \"Classical phenylketonuria\" spans from 66 to 91, then I work through \"is an autosomal recessive disease\" letter by letter, confirming \"autosomal recessive disease\" spans positions 98 to 125, continuing to track the running character count as I move into \"caused\".\n\nI keep tracking positions through \"by a deficiency of hepatic phenylalanine hydroxylase (PAH)\", confirming each word's letter count and running offset, then continue into \"The abolition of an invariant BamHI site located in the coding\" sequence, verifying each word's character span as I go.\n\nContinuing position-counting through \"sequence of the PAH gene (exon 7) led to the recognition of two new point mutations at codon 272 and 273 (272gly----stop and 273ser----phe)\", carefully tallying each word and symbol's character length against the running offset.\n\nContinuing the character count through \"background of RFLP haplotype 7 alleles,\" then into the sentence about the present study supporting the view that clinical heterogeneity in PKU is accounted for by this genetic background.\n\nNow I'm finalizing the disease mention list: phenylketonuria, classical phenylketonuria, autosomal recessive disease, PKU, and PAH deficiencies, with their respective character spans and disease type classifications.\n\nI'm also cross-checking my span calculations by recounting word and space lengths through the second sentence of the passage as a sanity check against my earlier sequential count.\n\nContinuing to track cumulative character positions through the rest of the sentence, verifying each word's start index against the next word boundary as I work through \"is an autosomal recessive disease caused by a deficiency of hepatic phenylalanine hydroxylase (PAH). The abolition of an invariant...\"\n\nTracing further through \"...BamHI site located in the coding sequence of the PAH gene (exon 7) led to the recognition of two new point mutations at codon...\" and confirming each word's offset lines up correctly.\n\nContinuing the offset tracking, I confirm the mutations are at codons 272 and 273 (272gly→stop and 273ser→phe), both detected in northeastern France or Belgium on RFLP haplotype 7 background, and verify that \"PKU\" and \"PAH deficiencies\" offsets check out against the surrounding sentence about clinical heterogeneity.\n\nNow I'm working through which spans deserve disease annotations: \"phenylketonuria\" in the title as a SpecificDisease, \"Classical phenylketonuria\" as SpecificDisease (including \"Classical\" per the galactosemia precedent), \"autosomal recessive disease\" as a DiseaseClass, \"PKU\" as a SpecificDisease abbreviation, and \"PAH deficiencies\" as a DiseaseClass since the plural implies multiple related disorders rather than one specific disease. I've decided not to annotate things like \"BamHI,\" \"PAH gene,\" \"RFLP haplotype,\" or \"clinical heterogeneity\" since none name a specific disease or disease class.\n\nI'm now assembling the final five annotations with their start/end offsets, exact text, entity type, rationale, and guideline citation, making sure to format everything as a single-line valid JSON object with no line breaks, no markdown fencing, and no unescaped quotes inside the rationale strings.\n\n",
+ "status": "ok",
+ "annotations": [
+  {
+   "start": 49,
+   "end": 64,
+   "text": "phenylketonuria",
+   "entity": "SpecificDisease",
+   "rationale": "Names one specific disease (phenylketonuria) with no further categorization. It appears in the title, which is its own sentence, so it is annotated as a separate mention.",
+   "guideline_section": "What to Annotate 1 (Specific Disease); What to Annotate 4 (Duplicate mentions)",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 66,
+   "end": 91,
+   "text": "Classical phenylketonuria",
+   "entity": "SpecificDisease",
+   "rationale": "Refers to the classical form of phenylketonuria, a particular form of one specific disease. The word Classical is kept as in the classical galactosemia example, and the full minimum span is preferred over the substring phenylketonuria.",
+   "guideline_section": "What to Annotate 5 (Minimum necessary span); Examples item 15 (Classical galactosemia)",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 98,
+   "end": 125,
+   "text": "autosomal recessive disease",
+   "entity": "DiseaseClass",
+   "rationale": "Describes a family of multiple specific diseases inherited in an autosomal recessive pattern rather than a single disease with a fixed definition.",
+   "guideline_section": "What to Annotate 1 (Disease Class); Examples item 10 (autosomal recessive disease)",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 616,
+   "end": 619,
+   "text": "PKU",
+   "entity": "SpecificDisease",
+   "rationale": "Abbreviation for phenylketonuria used later in the abstract. Abbreviations are annotated as their own mention, and this refers to one specific disease.",
+   "guideline_section": "What to Annotate 6 (Synonymous mentions); What to Annotate 1 (Specific Disease)",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 694,
+   "end": 710,
+   "text": "PAH deficiencies",
+   "entity": "DiseaseClass",
+   "rationale": "The plural deficiencies of phenylalanine hydroxylase (PAH) refers to a family of multiple related PAH-deficiency disorders (such as classical PKU and milder forms), so it is a Disease Class rather than one Specific Disease.",
+   "guideline_section": "What to Annotate 1 (Disease Class); Examples item 11 (family of diseases)",
+   "uncertain": false,
+   "raw_entity": null
+  }
+ ],
+ "json_extraction": "plain"
+}

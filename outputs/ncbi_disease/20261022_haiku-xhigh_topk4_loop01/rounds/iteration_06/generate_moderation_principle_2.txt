@@ -1,0 +1,69 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: DiseaseClass (Label Mismatch)
+
+**INFERRED PATTERNS:**
+## Step 1: Deep Dive Analysis
+
+**Contrast**
+
+- **Discrepancies (gold = SpecificDisease, LLM = DiseaseClass):** "fever", "arthritis", and "cutaneous vasculitis" all come from one sentence: *"A previously healthy 40-year-old man **presenting with** fever, arthritis, and cutaneous vasculitis was found to have chronic meningococcemia."*
+- **True Positives (gold = DiseaseClass):** "mental retardation" appears in *"Sjogren-Larsson syndrome ... is an autosomal recessive disorder **characterized by** ichthyosis, mental retardation, spasticity..."*, and "exudative retinal detachment" appears in *"Coats disease is characterized by ... which **results in** ... (exudative retinal detachment)."*
+
+**Lexical genericness does not separate the groups.** Fever, arthritis, mental retardation, and exudative retinal detachment are all generic clinical nouns rather than eponyms or acronyms. The separating feature is the **reference frame**: whether the mention is an individual patient's active condition (instance-level) or a defining or descriptive feature of a disease type (type-level).
+
+**Isolate Trigger**
+
+The model appears to read the head nouns by their category sense. Fever is a symptom, and arthritis and vasculitis are broad disease families. "Cutaneous" makes "cutaneous vasculitis" look like a subtype class. These readings push the label toward DiseaseClass. The model does not weigh the "presenting with" frame, in which the subject is a patient and the terms name conditions that patient actually has.
+
+**Hypothesis Check**
+
+- *Coordinated list alone:* Explains all three discrepancies, but fails for the TP "mental retardation," which is also in a list. Rejected as the sole trigger.
+- *Generic/hypernym noun alone:* Fails, because the TP DiseaseClass terms are equally generic. Rejected.
+- *Patient-instance vs. disease-type frame:* Explains all three discrepancies (same sentence, patient subject, "presenting with") and both TP DiseaseClass cases (type-level "characterized by" / "results in"). Named diseases in the TPs (Coats disease, Norrie disease, SLS) are labeled SpecificDisease regardless of frame, so the frame rule should apply only to generic-noun conditions.
+
+**Caveats:** Labeling "fever" as SpecificDisease is clinically debatable, so the gold appears to follow a convention that treats any condition a patient has as a disease instance. The SLS list is also inconsistently annotated (only "mental retardation" is tagged; "ichthyosis" and "spasticity" are not). These are guideline issues, not model failures, but they should be checked.
+
+## Step 2: Pattern Insight
+
+- **Pattern Name:** Patient-Instance Presenting Manifestations Mislabeled as DiseaseClass
+- **Confusion Trigger:** Generic clinical sign or category nouns (fever, arthritis, cutaneous vasculitis) listed after the patient-presentation predicate "presenting with." The model applies a category reading (symptom or disease-family head noun → DiseaseClass) and ignores that the subject is an individual patient and the terms name conditions the patient actually has.
+- **Contrastive Evidence:** The TP DiseaseClass cases ("mental retardation," "exudative retinal detachment") occur under type-level predicates ("is characterized by," "results in") and describe features of a disease category, not a patient's active condition. Named diseases (Coats disease, Norrie disease, SLS) are SpecificDisease in every frame, so the trigger affects only generic-noun conditions.
+- **Linguistic Rule (Proposed):** For a generic clinical-condition noun (sign, symptom, or broad disease category, not an eponym or acronym):
+  1. If its governing predicate is a patient-presentation predicate ("presenting with," "diagnosed with," "affected by," "had") and the subject is an individual patient, label it **SpecificDisease** (instance-level).
+  2. If it appears under a type-level predicate ("is characterized by," "is a disorder of," "results in") or as a descriptive attribute of a named disease entity, label it **DiseaseClass**.
+  3. Do not decide the label from the conjunction list or from the modifier ("cutaneous") alone. Check the governing predicate and the subject first.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 6859721.json):
+Snippet: "...litis.
+A previously healthy 40-year-old man presenting with fever , arthritis , and cutaneous vasculitis was found to have ch..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "fever"
+
+Example 2 (Doc: 6859721.json):
+Snippet: "... previously healthy 40-year-old man presenting with fever , arthritis , and cutaneous vasculitis was found to have chronic mening..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "arthritis"
+
+Example 3 (Doc: 6859721.json):
+Snippet: "...thy 40-year-old man presenting with fever , arthritis , and cutaneous vasculitis was found to have chronic meningococcemia . Evaluation of h..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "cutaneous vasculitis"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

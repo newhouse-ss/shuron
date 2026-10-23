@@ -1,0 +1,152 @@
+{
+ "unit": "H_xhigh__6859721__r20",
+ "arm": "H_xhigh",
+ "doc": "6859721.json",
+ "rep": 20,
+ "prompt_chars": 8995,
+ "prompt_sha256": "e7c0ede40326a3c989464676b218bde5a8af7c3d830dc4b74ecd5d83eab4f1ec",
+ "mode": "batch",
+ "batch_id": "msgbatch_01KWrs3vcgxH15Hcw7UoFGff",
+ "batch_created_utc": "2026-10-22T04:45:45+00:00",
+ "batch_ended_utc": "2026-10-22T04:52:53.499997+00:00",
+ "settings": {
+  "model": "claude-haiku-5-5",
+  "effort": "xhigh",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive",
+   "display": "summarized"
+  },
+  "output_format": "json_schema",
+  "schema_sha256": "d5140dd40e6b938f6e93e9ea0cad9f0d3f275a2d9722d1a47ba06603cc4b70d2"
+ },
+ "result_type": "succeeded",
+ "response": {
+  "id": "msg_011CgGfjQfXpMDAHdPMLURcQ",
+  "model": "claude-haiku-5-5",
+  "stop_reason": "end_turn",
+  "stop_details": null
+ },
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "inference_geo": "global",
+  "input_tokens": 3777,
+  "output_tokens": 16764,
+  "output_tokens_details": {
+   "thinking_tokens": 15504
+  },
+  "service_tier": "batch",
+  "speed": "standard"
+ },
+ "content": "{\"annotations\":[{\"start\":65,\"end\":88,\"text\":\"chronic meningococcemia\",\"entity\":\"SpecificDisease\",\"rationale\":\"Names one specific disease (meningococcemia) in a defined chronic form; the qualifier is kept because it defines the specific form.\",\"guideline_section\":\"1. Annotate all Specific Disease mentions; 5. Annotate minimum necessary span of text\"},{\"start\":103,\"end\":113,\"text\":\"vasculitis\",\"entity\":\"DiseaseClass\",\"rationale\":\"Vasculitis is a family of multiple distinct inflammatory blood vessel diseases, so it is a Disease Class rather than one specific disease.\",\"guideline_section\":\"1. Annotate all Specific Disease mentions (Disease Class definition)\"},{\"start\":176,\"end\":185,\"text\":\"arthritis\",\"entity\":\"DiseaseClass\",\"rationale\":\"Arthritis is a broad term covering a family of joint diseases rather than one specific disease, so it is a Disease Class.\",\"guideline_section\":\"1. Annotate all Specific Disease mentions (Disease Class definition)\"},{\"start\":192,\"end\":212,\"text\":\"cutaneous vasculitis\",\"entity\":\"DiseaseClass\",\"rationale\":\"Cutaneous vasculitis denotes a group of multiple skin-limited vasculitides, a family of diseases rather than one specific disease.\",\"guideline_section\":\"1. Annotate all Specific Disease mentions (Disease Class definition)\"},{\"start\":231,\"end\":254,\"text\":\"chronic meningococcemia\",\"entity\":\"SpecificDisease\",\"rationale\":\"Duplicate mention of the same specific disease in the abstract; all disease mentions including repeats are annotated.\",\"guideline_section\":\"4. Annotate duplicate mentions\"},{\"start\":362,\"end\":420,\"text\":\"complete deficiency of the seventh component of complement\",\"entity\":\"SpecificDisease\",\"rationale\":\"Describes the complete form of C7 deficiency, a single specific disease; the full descriptive phrase is the most specific form of the mention.\",\"guideline_section\":\"1. Annotate all Specific Disease mentions; 5. Annotate minimum necessary span of text\"},{\"start\":485,\"end\":514,\"text\":\"heterozygous deficiency of C7\",\"entity\":\"SpecificDisease\",\"rationale\":\"Refers to the heterozygous form of the specific disease C7 deficiency, so it is a Specific Disease including the form qualifier.\",\"guideline_section\":\"1. Annotate all Specific Disease mentions; 5. Annotate minimum necessary span of text\"},{\"start\":533,\"end\":561,\"text\":\"Chronic neisserial infection\",\"entity\":\"DiseaseClass\",\"rationale\":\"Neisserial infection covers a family of diseases caused by Neisseria species (e.g., meningococcal and gonococcal infections), so it is a Disease Class; the organism name is annotated because it is used with infection to denote disease.\",\"guideline_section\":\"1. Annotate all Specific Disease mentions (Disease Class definition); Examples 14 (Acute Neisseria infection)\"},{\"start\":585,\"end\":598,\"text\":\"C7 deficiency\",\"entity\":\"SpecificDisease\",\"rationale\":\"C7 deficiency is a single specific genetic disease, explicitly listed as a Specific Disease example.\",\"guideline_section\":\"Examples 6 (C7 deficiency)\"},{\"start\":646,\"end\":666,\"text\":\"cutaneous vasculitis\",\"entity\":\"DiseaseClass\",\"rationale\":\"Second mention of cutaneous vasculitis, a family of multiple specific vasculitides, annotated as a Disease Class.\",\"guideline_section\":\"1. Annotate all Specific Disease mentions (Disease Class definition); 4. Annotate duplicate mentions\"}]}",
+ "thinking_summary": "I need to produce single-line JSON annotations for this text, so I'm working out the exact character offsets by counting through the passage line by line, starting with that first sentence about complement deficiency and meningococcemia.\n\nI'm working through the precise character indexing of this abstract text, tracking offsets for the description of a family study showing heterozygous C7 deficiency across four generations, and noting that chronic neisserial infection linked to C7 deficiency needs to be distinguished from other causes of cutaneous vasculitis.\n\nStill counting character positions...\n\nNow I'm moving to the annotation phase, checking each candidate phrase against disease criteria. \"Seventh component of complement\" is a complement deficiency, not a disease, so I'm skipping it, while \"chronic meningococcemia\" at position 65-88 looks like a genuine Specific Disease mention worth annotating, since meningococcemia itself is a recognized disease entity.\n\nI'm also checking \"vasculitis\" at position 103-113, which I'm treating as a Disease Class since it describes a family of blood vessel inflammation conditions rather than one specific disease. Then on line 2, I'm flagging \"meningococcemia\" again at position 124-139 as another Specific Disease mention tied to the same chronic form referenced earlier.\n\nNow I'm working through \"chronic meningococcemia\" spanning 116-139, confirming the character positions for \"chronic\" and \"meningococcemia\" with the space between them, and annotating the full span as Specific Disease. I'm also examining \"cutaneous vasculitis\" at both its first occurrence (77-97) and second occurrence (533-553), leaning toward Disease Class since it represents a subtype of a broader vasculitis family rather than one discrete disease. I'm weighing whether \"arthritis\" should also count as a Disease Class, consistent with how these corpora typically treat joint inflammation as a family term rather than a single symptom like \"fever.\"\n\nI'm working through span boundaries for \"C7 deficiency\" and \"heterozygous deficiency of C7,\" trying to decide whether the heterozygous carrier state counts as a specific disease mention or should be trimmed to the minimal span covering the most specific disease form.\n\nI'm also weighing whether \"complete deficiency of the seventh component of complement\" should be annotated as a Specific Disease since it's essentially a descriptive name for C7 deficiency, though I'm cautious about over-annotating beyond the minimal-span guideline. I'm leaning toward including it given it clearly names the disease.\n\nI'm now scanning for other disease mentions to annotate consistently: \"chronic meningococcemia\" in the title and body, \"vasculitis,\" \"cutaneous vasculitis,\" \"arthritis,\" \"heterozygous deficiency of C7,\" \"C7 deficiency,\" and \"Chronic neisserial infection,\" making sure each gets the same treatment as the other named disease spans.\n\nAlso \"C7 deficiency\" is a SpecificDisease mention. I'm checking for modifiers like \"chronic\" or composite phrases but finding none beyond what's already noted for meningococcemia and neisserial infection.\n\nNow I'm compiling the final sorted list of disease mentions by their starting position: \"chronic meningococcemia\" first, then \"vasculitis\" mentions, working through each entry systematically.\n\nI'm recalculating the absolute character offsets for line 2 by adding the base offset to each relative position — covering \"arthritis,\" \"cutaneous vasculitis,\" \"chronic meningococcemia,\" \"complete deficiency of the seventh component of complement,\" \"heterozygous deficiency of C7,\" \"Chronic neisserial infection,\" \"C7 deficiency,\" and a second \"cutaneous vasculitis\" mention, verifying each start and end boundary against the surrounding text.\n\nContinuing the index verification, I confirm \"40-year-old\" spans 11 characters correctly, and I'm cross-checking line 1's total length by summing word lengths plus spaces: 99 characters of words plus 15 spaces gives 114 characters, placing the period at index 113 and the newline at 114, which matches where line 2 begins. I'm now tracing word-by-word offsets within line 1 to pin down exactly where \"chronic meningococcemia\" starts.\n\nI need to recompute the character offsets carefully, since I made an off-by-one error counting the length of \"absence\" — it's 7 letters, so it spans positions 188-194, not 188-195 as I had before. I'm redoing the running total word by word to catch where the arithmetic drifted.\n\nI'm continuing the character-position tally through the phrase about functional and antigenic C7 deficiency, catching a couple of counting slips (like \"seventh\" being 7 letters, not 8) and correcting the running offsets as I work toward \"Study of the patients\" and on to the family spanning four generations showing heterozygous deficiency.\n\nI'm now tracking offsets through \"chronic neisserial infection\" and its association with C7 deficiency needing to be distinguished from other causes of cutaneous vasculitis, while also going back to reconcile a discrepancy I spotted between my earlier and current counts for where \"Study\" starts.\n\nI'm verifying this by spelling out each word letter by letter and counting its length—checking words like \"complement,\" \"functional,\" \"heterozygous,\" \"distinguished,\" and others to confirm the running offsets are accurate.\n\nNow I'm restarting the calculation from scratch for line 2, tracking cumulative character positions word by word starting from position 115, verifying each step as I add word lengths and spacing to confirm the offsets for \"previously,\" \"healthy,\" \"presenting,\" \"cutaneous vasculitis,\" and \"chronic meningococcemia\" all land correctly.\n\nChronic neisserial infection can be associated with C7 deficiency, requiring differentiation from other causes of cutaneous vasculitis. Now I'm computing absolute start/end positions for annotations like \"chronic meningococcemia\" and \"vasculitis\" by summing word lengths across the lines.\n\nContinuing through the remaining spans, I verify \"cutaneous vasculitis\", \"complete deficiency of the seventh component of complement\", \"heterozygous deficiency of C7\", \"Chronic neisserial infection\", \"C7 deficiency\", and the second \"cutaneous vasculitis\" all line up correctly with their calculated start and end positions. Now I'm checking the position for \"arthritis\".\n\nI'm now moving on to cataloging the disease entities and matching each to its relevant annotation guideline section, starting with \"chronic meningococcemia\" which falls under the rules for specific disease mentions and minimum necessary span.\n\nWorking through the rest: \"vasculitis\" and \"arthritis\" as disease class mentions referring to broad disease families, \"cutaneous vasculitis\" similarly, and a duplicate mention of \"chronic meningococcemia\" falling under the duplicate-mention guideline. I'm also working through \"complete deficiency of the seventh component of complement\" as a specific disease mention denoting C7 deficiency.\n\nThen I flag \"heterozygous deficiency of C7\" as another specific disease form, \"Chronic neisserial infection\" as a disease class since it covers both meningococcal and gonococcal infections (similar to the \"Acute Neisseria infection\" guideline example), and \"C7 deficiency\" at position 585 as another specific disease mention matching guideline example 6.\n\nI also classify \"cutaneous vasculitis\" as a disease class, and verify the exact text spans for each candidate phrase against the original passage to make sure offsets line up correctly before assembling the final single-line JSON output with escaped quotes.\n\nWriting JSON annotations...\n\n",
+ "status": "ok",
+ "annotations": [
+  {
+   "start": 65,
+   "end": 88,
+   "text": "chronic meningococcemia",
+   "entity": "SpecificDisease",
+   "rationale": "Names one specific disease (meningococcemia) in a defined chronic form; the qualifier is kept because it defines the specific form.",
+   "guideline_section": "1. Annotate all Specific Disease mentions; 5. Annotate minimum necessary span of text",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 103,
+   "end": 113,
+   "text": "vasculitis",
+   "entity": "DiseaseClass",
+   "rationale": "Vasculitis is a family of multiple distinct inflammatory blood vessel diseases, so it is a Disease Class rather than one specific disease.",
+   "guideline_section": "1. Annotate all Specific Disease mentions (Disease Class definition)",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 176,
+   "end": 185,
+   "text": "arthritis",
+   "entity": "DiseaseClass",
+   "rationale": "Arthritis is a broad term covering a family of joint diseases rather than one specific disease, so it is a Disease Class.",
+   "guideline_section": "1. Annotate all Specific Disease mentions (Disease Class definition)",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 192,
+   "end": 212,
+   "text": "cutaneous vasculitis",
+   "entity": "DiseaseClass",
+   "rationale": "Cutaneous vasculitis denotes a group of multiple skin-limited vasculitides, a family of diseases rather than one specific disease.",
+   "guideline_section": "1. Annotate all Specific Disease mentions (Disease Class definition)",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 231,
+   "end": 254,
+   "text": "chronic meningococcemia",
+   "entity": "SpecificDisease",
+   "rationale": "Duplicate mention of the same specific disease in the abstract; all disease mentions including repeats are annotated.",
+   "guideline_section": "4. Annotate duplicate mentions",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 362,
+   "end": 420,
+   "text": "complete deficiency of the seventh component of complement",
+   "entity": "SpecificDisease",
+   "rationale": "Describes the complete form of C7 deficiency, a single specific disease; the full descriptive phrase is the most specific form of the mention.",
+   "guideline_section": "1. Annotate all Specific Disease mentions; 5. Annotate minimum necessary span of text",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 485,
+   "end": 514,
+   "text": "heterozygous deficiency of C7",
+   "entity": "SpecificDisease",
+   "rationale": "Refers to the heterozygous form of the specific disease C7 deficiency, so it is a Specific Disease including the form qualifier.",
+   "guideline_section": "1. Annotate all Specific Disease mentions; 5. Annotate minimum necessary span of text",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 533,
+   "end": 561,
+   "text": "Chronic neisserial infection",
+   "entity": "DiseaseClass",
+   "rationale": "Neisserial infection covers a family of diseases caused by Neisseria species (e.g., meningococcal and gonococcal infections), so it is a Disease Class; the organism name is annotated because it is used with infection to denote disease.",
+   "guideline_section": "1. Annotate all Specific Disease mentions (Disease Class definition); Examples 14 (Acute Neisseria infection)",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 585,
+   "end": 598,
+   "text": "C7 deficiency",
+   "entity": "SpecificDisease",
+   "rationale": "C7 deficiency is a single specific genetic disease, explicitly listed as a Specific Disease example.",
+   "guideline_section": "Examples 6 (C7 deficiency)",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 646,
+   "end": 666,
+   "text": "cutaneous vasculitis",
+   "entity": "DiseaseClass",
+   "rationale": "Second mention of cutaneous vasculitis, a family of multiple specific vasculitides, annotated as a Disease Class.",
+   "guideline_section": "1. Annotate all Specific Disease mentions (Disease Class definition); 4. Annotate duplicate mentions",
+   "uncertain": false,
+   "raw_entity": null
+  }
+ ],
+ "json_extraction": "plain"
+}

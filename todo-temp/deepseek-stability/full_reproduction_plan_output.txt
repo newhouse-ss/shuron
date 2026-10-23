@@ -1,0 +1,47 @@
+annotation call: JPY 1.270 off-peak, 47 s (mean of 200 thinking-on calls)
+
+== GPT-5.4 loops: rounds used, largest analysis prompt
+  20260802_gpt54-high_moderation: 4 rounds, stop threshold_reached, largest analysis prompt 27,326 chars
+  20260902_gpt54-high_topk1_run1: 1 rounds, stop no_improvement, largest analysis prompt 17,990 chars
+  20260902_gpt54-high_topk1_run2: 1 rounds, stop no_improvement, largest analysis prompt 17,486 chars
+  20260902_gpt54-high_topk1_run3: 2 rounds, stop no_improvement, largest analysis prompt 20,847 chars
+  20260901_gpt54-high_topk4_dev10: 2 rounds, stop threshold_reached, largest analysis prompt 27,936 chars
+  20260902_gpt54-high_topk4_run1: 3 rounds, stop no_improvement, largest analysis prompt 31,455 chars
+  20260902_gpt54-high_topk4_run2: 2 rounds, stop no_improvement, largest analysis prompt 26,034 chars
+  20260902_gpt54-high_topk4_run3: 4 rounds, stop no_improvement, largest analysis prompt 35,889 chars
+analysis call upper bound: 35,889 prompt tokens as cache miss + 64,000 output = JPY 6.92 off-peak
+
+== design with 15 loops per method
+  E1 valid100, original x10: 1,000 calls, estimate JPY 1,270, upper JPY 1,270
+  E2 top-1 loops x15 (162 calls per loop at 4 rounds): 2,430 calls, estimate JPY 3,087, upper JPY 4,104
+  E3 top-4 loops x15 (186 calls per loop at 4 rounds): 2,790 calls, estimate JPY 3,544, upper JPY 6,596
+  total 6,220 calls (720 analysis); estimate JPY 7,902; upper JPY 11,970; peak hours double any call made in them
+  82 call-hours; wall time with 15 calls in flight about 5.5 h
+
+== design with 10 loops per method
+  E1 valid100, original x10: 1,000 calls, estimate JPY 1,270, upper JPY 1,270
+  E2 top-1 loops x10 (162 calls per loop at 4 rounds): 1,620 calls, estimate JPY 2,058, upper JPY 2,736
+  E3 top-4 loops x10 (186 calls per loop at 4 rounds): 1,860 calls, estimate JPY 2,363, upper JPY 4,397
+  total 4,480 calls (480 analysis); estimate JPY 5,691; upper JPY 8,404; peak hours double any call made in them
+  59 call-hours; wall time with 15 calls in flight about 3.9 h
+
+== break-even: second annotation of every final against more loops for the same calls
+  top-1 (162 calls per loop): doubling wins only if annotation noise is more than 76% of the loop-score variance
+  top-4 (186 calls per loop): doubling wins only if annotation noise is more than 70% of the loop-score variance
+  planning values: annotation share 26% (0.0063 against 0.0123)
+
+== detection, GPT-5.4 stand-in SDs: loop SD 0.0123, one-guideline SD 0.0063
+  alpha 0.05, 10 loops: P2 top-4 vs top-1 bar 0.0116, detects +0.015 0.72, +0.02 0.93
+  alpha 0.05, 15 loops: P2 top-4 vs top-1 bar 0.0092, detects +0.015 0.90, +0.02 0.99
+  alpha 0.025, 10 loops: P2 top-4 vs top-1 bar 0.0134, detects +0.015 0.60, +0.02 0.87
+  alpha 0.025, 15 loops: P2 top-4 vs top-1 bar 0.0106, detects +0.015 0.82, +0.02 0.98
+  alpha 0.025, P1 15 top-1 loops vs original x5: bar 0.0106, detects +0.01 0.46, +0.015 0.82, +0.02 0.97
+  alpha 0.025, P1 15 top-1 loops vs original x10: bar 0.0090, detects +0.01 0.60, +0.015 0.94, +0.02 1.00
+
+== detection, pessimistic, SDs x1.29: loop SD 0.0159, one-guideline SD 0.0081
+  alpha 0.05, 10 loops: P2 top-4 vs top-1 bar 0.0149, detects +0.015 0.51, +0.02 0.75
+  alpha 0.05, 15 loops: P2 top-4 vs top-1 bar 0.0119, detects +0.015 0.69, +0.02 0.91
+  alpha 0.025, 10 loops: P2 top-4 vs top-1 bar 0.0174, detects +0.015 0.39, +0.02 0.64
+  alpha 0.025, 15 loops: P2 top-4 vs top-1 bar 0.0138, detects +0.015 0.59, +0.02 0.85
+  alpha 0.025, P1 15 top-1 loops vs original x5: bar 0.0138, detects +0.01 0.27, +0.015 0.58, +0.02 0.85
+  alpha 0.025, P1 15 top-1 loops vs original x10: bar 0.0117, detects +0.01 0.37, +0.015 0.74, +0.02 0.94

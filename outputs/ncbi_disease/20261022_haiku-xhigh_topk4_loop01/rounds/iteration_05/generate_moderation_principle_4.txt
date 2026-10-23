@@ -1,0 +1,43 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: Modifier (Label Mismatch)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** In the True Positives, the Modifier spans ("ovarian cancer population," "ovarian cancer cases," "ovarian cancer study," "fragile X syndrome patients," "ancient SLS genes," "Wiskott-Aldrich syndrome protein") are all **prenominal**. The disease string sits directly before a head noun and attributes a property to it. The SpecificDisease spans ("Coats disease is characterized," "affected by Norrie disease," "patients with SLS") are **heads of their own NP or complements of a preposition or verb**, where they name the condition itself.
+- **Isolate Trigger:** In Example 1, "ovarian cancer" is the object of "of" in "a family history of ovarian cancer." It is a complete disease noun phrase in argument position, not an attributive noun. The surrounding risk-association frame ("associated with," "influence... risk") is semantically similar to the Modifier contexts ("ovarian cancer risk," "ovarian cancer population"). The model appears to have matched that epidemiological context and the repeated surface string instead of checking the syntactic role.
+- **Hypothesis Check:** The single feature "prenominal attributive position vs. post-head/prepositional argument position" explains all cases. Example 1 is the reverse of the Modifier rule: it is a post-head PP complement, and the gold label is SpecificDisease. Its context does not change that, since the family-history and risk wording are not what determines the role.
+
+**Step 2: Pattern Insight**
+
+- **Pattern Name:** Disease Name as Prepositional Complement vs. Prenominal Attributive (Family-History Context Misfire)
+- **Confusion Trigger:** A disease string inside a risk or family-history frame ("family history of ovarian cancer") is labelled Modifier because the model keys on the epidemiological context and the string's frequent prenominal use in the same document ("ovarian cancer cases/population/risk"), not on its syntactic role. "History of [disease]" looks like a qualifying descriptor, but the disease is the object of "of" and names the condition.
+- **Contrastive Evidence:** The True Positive Modifiers occur before a head noun ("ovarian cancer population," "fragile X syndrome patients," "SLS genes"). The True Positive SpecificDiseases occur as subjects or after prepositions ("patients with SLS," "affected by Norrie disease," "Coats disease is characterized"). Example 1 matches the SpecificDisease pattern syntactically, which the model overlooked.
+- **Linguistic Rule (Proposed):**
+  1. Label a disease mention **Modifier** only when it is a prenominal attributive (noun-adjunct) that directly precedes and modifies a head noun, such as population, cases, study, patients, genes, protein, or risk, and is not itself governed by a preposition.
+  2. Label a disease mention **SpecificDisease** when it is the head of an NP or the complement of a preposition or verb (e.g., "of X," "with X," "by X," or as a clause subject), even when the surrounding context is about family history, risk, or association.
+  3. Apply the syntactic test first. Do not let the presence of risk or family-history vocabulary, or the same string appearing as a Modifier elsewhere in the document, override it.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10196379.json):
+Snippet: "...ficantly ( P = 0 . 03 ) associated with a family history of ovarian cancer , suggesting that this polymorphism may influence ovarian c..."
+Gold: SpecificDisease, LLM: Modifier
+Entity Text: "ovarian cancer"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

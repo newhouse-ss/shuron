@@ -1,0 +1,82 @@
+{
+ "unit": "H_high__1345170__r13",
+ "arm": "H_high",
+ "doc": "1345170.json",
+ "rep": 13,
+ "prompt_chars": 9263,
+ "prompt_sha256": "e12e6f68f4bb6f674d06d4eae8ff421ea3575da80471953e2233285d6760925c",
+ "mode": "batch",
+ "batch_id": "msgbatch_01KWrs3vcgxH15Hcw7UoFGff",
+ "batch_created_utc": "2026-10-22T04:45:45+00:00",
+ "batch_ended_utc": "2026-10-22T04:52:53.499997+00:00",
+ "settings": {
+  "model": "claude-haiku-5-5",
+  "effort": "high",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive",
+   "display": "summarized"
+  },
+  "output_format": "json_schema",
+  "schema_sha256": "d5140dd40e6b938f6e93e9ea0cad9f0d3f275a2d9722d1a47ba06603cc4b70d2"
+ },
+ "result_type": "succeeded",
+ "response": {
+  "id": "msg_011CgGfjRGkFcEsVGU1nHDFT",
+  "model": "claude-haiku-5-5",
+  "stop_reason": "end_turn",
+  "stop_details": null
+ },
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "inference_geo": "global",
+  "input_tokens": 3893,
+  "output_tokens": 3853,
+  "output_tokens_details": {
+   "thinking_tokens": 3479
+  },
+  "service_tier": "batch",
+  "speed": "standard"
+ },
+ "content": "{\"annotations\":[{\"start\":64,\"end\":85,\"text\":\"diastrophic dysplasia\",\"entity\":\"SpecificDisease\",\"rationale\":\"Title names a specific, single-definition disease (diastrophic dysplasia), so it is annotated as a Specific Disease.\",\"guideline_section\":\"What to Annotate 1: Specific Disease mentions\"},{\"start\":649,\"end\":670,\"text\":\"diastrophic dysplasia\",\"entity\":\"SpecificDisease\",\"rationale\":\"The abstract mentions diastrophic dysplasia again as a specific disease. Duplicate mentions are annotated in every sentence where they occur.\",\"guideline_section\":\"What to Annotate 4: Annotate duplicate mentions\"},{\"start\":673,\"end\":676,\"text\":\"DTD\",\"entity\":\"SpecificDisease\",\"rationale\":\"DTD is the abbreviation for diastrophic dysplasia and is annotated as its own separate mention, the same as the long form. It refers to the disease here, not the gene.\",\"guideline_section\":\"What to Annotate 6: Annotate all synonymous mentions (abbreviation definitions)\"}]}",
+ "thinking_summary": "I'm working through the text to identify entities and pin down their exact character offsets, carefully tracking the passage about linkage disequilibrium mapping and founder populations in Finland.\n\nChecking the abstract, I spot \"diastrophic dysplasia\" (and its abbreviation DTD) as a disease mention linked to the CSF1R gene, and I'm computing the precise start and end indices for this phrase within the title.\n\nI'm now trying to carefully count character offsets through the title and abstract text to pinpoint exactly where \"diastrophic dysplasia ( DTD )\" appears in the body, tracking line lengths segment by segment.\n\nI'm continuing the character-by-character count, now tracking the span covering \"study of human isolated founder populations in order to estimate (i) the recombination fraction...\" to pin down exact offsets for this part of the text.\n\nContinuing to track character offsets, I find the phrase \"diastrophic dysplasia (DTD)\" and work out its absolute position by adding the line-two starting offset of 98 to the local position 551.\n\nDouble-checking the title line length confirms \"diastrophic dysplasia\" sits at absolute 64-85, and scanning the rest of line two I don't spot any other disease mentions worth flagging. I'm building my annotation list: the title mention of DTD, the abstract mention at 649-670, and now the \"DTD\" abbreviation itself as a third entry.\n\nThe abbreviation \"DTD\" at 673-676 should be tagged as its own SpecificDisease mention per the synonym/abbreviation rule, separate from the spelled-out form. Now I just need to assemble everything into a single-line JSON output with rationale and guideline section fields, keeping it compact with no stray newlines.\n\n",
+ "status": "ok",
+ "annotations": [
+  {
+   "start": 64,
+   "end": 85,
+   "text": "diastrophic dysplasia",
+   "entity": "SpecificDisease",
+   "rationale": "Title names a specific, single-definition disease (diastrophic dysplasia), so it is annotated as a Specific Disease.",
+   "guideline_section": "What to Annotate 1: Specific Disease mentions",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 646,
+   "end": 667,
+   "text": "diastrophic dysplasia",
+   "entity": "SpecificDisease",
+   "rationale": "The abstract mentions diastrophic dysplasia again as a specific disease. Duplicate mentions are annotated in every sentence where they occur.",
+   "guideline_section": "What to Annotate 4: Annotate duplicate mentions",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 670,
+   "end": 673,
+   "text": "DTD",
+   "entity": "SpecificDisease",
+   "rationale": "DTD is the abbreviation for diastrophic dysplasia and is annotated as its own separate mention, the same as the long form. It refers to the disease here, not the gene.",
+   "guideline_section": "What to Annotate 6: Annotate all synonymous mentions (abbreviation definitions)",
+   "uncertain": false,
+   "raw_entity": null
+  }
+ ],
+ "json_extraction": "plain"
+}

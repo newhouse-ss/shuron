@@ -1,0 +1,41 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: CompositeMention vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** Every True Positive span is a contiguous noun phrase with no internal coordinator. Examples include "ovarian cancer," "Wiskott-Aldrich syndrome," and "exudative retinal detachment." The discrepancy span, "intraretinal and subretinal lipid accumulation," contains the conjunction "and" joining two modifiers ("intraretinal," "subretinal") that share one final head noun ("lipid accumulation"). That coordination inside the span is the single boolean feature separating it from the controls.
+- **Isolate Trigger:** The conjunction "and" reads as a span boundary. The model likely segments the text into "intraretinal" (an anatomical adjective, so O) and "subretinal lipid accumulation" (a fragment with no disease-lexicon head). The gold standard instead treats the whole coordinated phrase as one mention with two sub-readings sharing a head. A secondary factor is that the head "accumulation" is a process/finding noun outside the disease vocabulary, so the model has no anchor to start a span.
+- **Hypothesis Check:** The coordination hypothesis explains the discrepancy and also separates it from the controls, since none of the TP spans contain an internal "and" or "or." The semantic factor is weaker: the TP "exudative retinal detachment" is a pathology/finding phrase the model already tags as DiseaseClass, so non-disease heads are not the main problem. Only one discrepancy is supplied, so this pattern is provisional.
+
+**Step 2: Formulate Pattern**
+
+- **Pattern Insight: Shared-Head Coordination Inside a Modifier Chain (Composite Span Missed)**
+  - **Pattern Name:** Coordinated pre-head modifiers with an elided shared head.
+  - **Confusion Trigger:** A coordinator ("and"/"or") joins two modifiers that precede a single head noun, as in "[Mod₁] and [Mod₂] [Head]." The conjunction causes the model to break the span at "and," so neither sub-part is tagged. The generic head ("accumulation") adds to the failure because it is not a recognized disease or class term.
+  - **Contrastive Evidence:** True Positives are unbroken modifier-head chains ("exudative retinal detachment," "ovarian cancer," "mental retardation") with no internal coordination. The model handles these because the span is continuous and anchored by a recognizable head.
+  - **Linguistic Rule (Proposed):** When a coordinator joins two or more modifiers that together precede one shared head noun, treat the entire string from the first modifier through the shared head as a single CompositeMention. Do not split at the conjunction or tag the leading modifier as O. This applies even when the head is a generic pathological or process noun (e.g., accumulation, deficiency) that is not in the disease lexicon, provided the coordinated modifiers specify disease-relevant anatomy or type.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10484772.json):
+Snippet: "...so-called retinal telangiectasis ) which results in massive intraretinal and subretinal lipid accumulation ( exudative retinal detachment ) . The classical form of Co..."
+Gold: CompositeMention, LLM: O
+Entity Text: "intraretinal and subretinal lipid accumulation"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

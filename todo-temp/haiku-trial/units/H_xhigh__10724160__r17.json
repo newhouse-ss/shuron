@@ -1,0 +1,72 @@
+{
+ "unit": "H_xhigh__10724160__r17",
+ "arm": "H_xhigh",
+ "doc": "10724160.json",
+ "rep": 17,
+ "prompt_chars": 9438,
+ "prompt_sha256": "cccbebba64a0621c77e3ae4b38b7b6312249396a1b61dcd31abd30f859a7cf67",
+ "mode": "batch",
+ "batch_id": "msgbatch_01KWrs3vcgxH15Hcw7UoFGff",
+ "batch_created_utc": "2026-10-22T04:45:45+00:00",
+ "batch_ended_utc": "2026-10-22T04:52:53.499997+00:00",
+ "settings": {
+  "model": "claude-haiku-5-5",
+  "effort": "xhigh",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive",
+   "display": "summarized"
+  },
+  "output_format": "json_schema",
+  "schema_sha256": "d5140dd40e6b938f6e93e9ea0cad9f0d3f275a2d9722d1a47ba06603cc4b70d2"
+ },
+ "result_type": "succeeded",
+ "response": {
+  "id": "msg_011CgGfjR5b6TqLv9q2J4NvJ",
+  "model": "claude-haiku-5-5",
+  "stop_reason": "end_turn",
+  "stop_details": null
+ },
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "inference_geo": "global",
+  "input_tokens": 3955,
+  "output_tokens": 3350,
+  "output_tokens_details": {
+   "thinking_tokens": 3002
+  },
+  "service_tier": "batch",
+  "speed": "standard"
+ },
+ "content": "{\"annotations\":[{\"start\":48,\"end\":72,\"text\":\"Wiskott-Aldrich syndrome\",\"entity\":\"Modifier\",\"rationale\":\"The disease name 'Wiskott-Aldrich syndrome' is used as a modifier of the noun 'protein' (a gene product name), so it is annotated as a Modifier rather than a standalone disease mention.\",\"guideline_section\":\"3. Annotate disease mentions that are used as Modifiers for other concepts\"},{\"start\":172,\"end\":196,\"text\":\"Wiskott-Aldrich syndrome\",\"entity\":\"Modifier\",\"rationale\":\"The disease name 'Wiskott-Aldrich syndrome' in 'Wiskott-Aldrich syndrome protein ( WASP )' modifies the noun 'protein', so it is annotated as a Modifier. This is a separate duplicate mention in a different sentence-position.\",\"guideline_section\":\"3. Annotate disease mentions that are used as Modifiers for other concepts; 4. Annotate duplicate mentions\"}]}",
+ "thinking_summary": "I'm scanning the text for disease mentions, noting that \"Wiskott-Aldrich syndrome\" is a specific disease entity worth tagging.\n\n\"Wiskott-Aldrich syndrome protein\" is trickier since here the disease name is modifying \"protein\" to name a gene product rather than referring to the disease itself—per the guidelines, disease names used as modifiers for other concepts should still be annotated, so I'll tag it as a Modifier. WASP, the abbreviation for this protein, refers to the protein itself and isn't a disease mention, so I'll skip annotating that.\n\nI'm finding two instances of \"Wiskott-Aldrich syndrome\" acting as a modifier—one in the title and one in the sentence about WASP family members—and scanning the rest of the text (GTPase-binding domain, autoinhibited structure, etc.) confirms there are no additional disease mentions beyond these two. Now I need to work out the exact character offsets for these spans within the text.\n\nSo the title ends with \"protein.\" at index 80, then the body text begins at index 82 with \"The Rho-family GTPase, Cdc42...\" I'm now counting through each word of this second sentence to pin down the exact character offset where \"Wiskott-Aldrich syndrome protein\" reappears later in that line.\n\nTracking the running count through \"through activation of\" brings me to \"Wiskott-Aldrich syndrome\" starting at index 172 and ending at index 196, which I verify matches the 24-character length of that phrase. I double-check a few word lengths like \"Rho-family\" (10), \"cytoskeleton\" (12), and \"regulate\" (8) to confirm the count is accurate, then also recheck \"Autoinhibition\" (14 characters) from the title to make sure the earlier math was right.\n\nNow I'm settling on the classification for this second mention of \"Wiskott-Aldrich syndrome\" — since it's modifying \"protein\" as part of a gene product name, I'll annotate it as a Modifier per the guideline on disease mentions used as modifiers for other concepts, rather than as a Specific Disease. I finalize the exact span and prepare to output a single-line JSON entry with the precise text \"Wiskott-Aldrich syndrome\" and no extraneous newlines.\n\n",
+ "status": "ok",
+ "annotations": [
+  {
+   "start": 48,
+   "end": 72,
+   "text": "Wiskott-Aldrich syndrome",
+   "entity": "Modifier",
+   "rationale": "The disease name 'Wiskott-Aldrich syndrome' is used as a modifier of the noun 'protein' (a gene product name), so it is annotated as a Modifier rather than a standalone disease mention.",
+   "guideline_section": "3. Annotate disease mentions that are used as Modifiers for other concepts",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 172,
+   "end": 196,
+   "text": "Wiskott-Aldrich syndrome",
+   "entity": "Modifier",
+   "rationale": "The disease name 'Wiskott-Aldrich syndrome' in 'Wiskott-Aldrich syndrome protein ( WASP )' modifies the noun 'protein', so it is annotated as a Modifier. This is a separate duplicate mention in a different sentence-position.",
+   "guideline_section": "3. Annotate disease mentions that are used as Modifiers for other concepts; 4. Annotate duplicate mentions",
+   "uncertain": false,
+   "raw_entity": null
+  }
+ ],
+ "json_extraction": "plain"
+}

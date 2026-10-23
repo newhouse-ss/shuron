@@ -1,0 +1,152 @@
+{
+ "unit": "H_max__10484772__r18",
+ "arm": "H_max",
+ "doc": "10484772.json",
+ "rep": 18,
+ "prompt_chars": 9464,
+ "prompt_sha256": "8919b3dc4f277f1be40cf94989df8bd65a0f1382e5aca0645e02623136345747",
+ "mode": "batch",
+ "batch_id": "msgbatch_014CFpHwfrEYpfRRFgsXuMPq",
+ "batch_created_utc": "2026-10-22T08:23:28+00:00",
+ "batch_ended_utc": "2026-10-22T08:34:26.341572+00:00",
+ "settings": {
+  "model": "claude-haiku-5-5",
+  "effort": "max",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive",
+   "display": "summarized"
+  },
+  "output_format": "json_schema",
+  "schema_sha256": "d5140dd40e6b938f6e93e9ea0cad9f0d3f275a2d9722d1a47ba06603cc4b70d2"
+ },
+ "result_type": "succeeded",
+ "response": {
+  "id": "msg_011CgGxLYomQx6wiih9pwH1E",
+  "model": "claude-haiku-5-5",
+  "stop_reason": "end_turn",
+  "stop_details": null
+ },
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "inference_geo": "global",
+  "input_tokens": 3954,
+  "output_tokens": 50471,
+  "output_tokens_details": {
+   "thinking_tokens": 49247
+  },
+  "service_tier": "batch",
+  "speed": "standard"
+ },
+ "content": "{\"annotations\":[{\"start\":0,\"end\":14,\"text\":\"Coats' disease\",\"entity\":\"SpecificDisease\",\"rationale\":\"Named specific retinal disease in the title (Coats disease); it is a single defined condition with no further categorization, so it is a Specific Disease mention.\",\"guideline_section\":\"1. Annotate all Specific Disease mentions\"},{\"start\":30,\"end\":63,\"text\":\"unilateral retinal telangiectasis\",\"entity\":\"SpecificDisease\",\"rationale\":\"Parenthetical alternative name for Coats disease in the title; it is a synonymous mention of the same specific disease and is annotated as its own mention.\",\"guideline_section\":\"6. Annotate all synonymous mentions\"},{\"start\":152,\"end\":165,\"text\":\"Coats disease\",\"entity\":\"SpecificDisease\",\"rationale\":\"Specific named disease at the start of the abstract; the same disease is also named in the title, and duplicate mentions are annotated.\",\"guideline_section\":\"1. Annotate all Specific Disease mentions; 4. Annotate duplicate mentions\"},{\"start\":236,\"end\":258,\"text\":\"retinal telangiectasis\",\"entity\":\"SpecificDisease\",\"rationale\":\"The so-called retinal telangiectasis is a synonym for Coats disease; the hedge 'so-called' is excluded and the disease name span is kept minimal.\",\"guideline_section\":\"6. Annotate all synonymous mentions; 5. Annotate minimum necessary span of text\"},{\"start\":335,\"end\":363,\"text\":\"exudative retinal detachment\",\"entity\":\"SpecificDisease\",\"rationale\":\"Named ocular disease (exudative retinal detachment) that is a specific condition; it is not a general term such as complications or a biological process.\",\"guideline_section\":\"1. Annotate all Specific Disease mentions\"},{\"start\":372,\"end\":403,\"text\":\"classical form of Coats disease\",\"entity\":\"SpecificDisease\",\"rationale\":\"Refers to one particular form of Coats disease; the form-identifying qualifier 'classical' is kept with the disease name, as in the Classical galactosemia example, while the article 'The' is excluded.\",\"guideline_section\":\"5. Annotate minimum necessary span of text; Examples item 15\"},{\"start\":483,\"end\":518,\"text\":\"unilateral variant of Coats disease\",\"entity\":\"SpecificDisease\",\"rationale\":\"Describes a specific variant (unilateral form) of Coats disease; the qualifier that identifies the new form is kept in the span, analogous to the male/female rule, and the article 'a' is excluded.\",\"guideline_section\":\"5. Annotate minimum necessary span of text; What NOT to Annotate 2 (gender qualifiers kept only when they identify a new form)\"},{\"start\":551,\"end\":565,\"text\":\"Norrie disease\",\"entity\":\"SpecificDisease\",\"rationale\":\"Named specific genetic disease (Norrie disease) affecting the son; it is a single defined condition without further categorization.\",\"guideline_section\":\"1. Annotate all Specific Disease mentions\"},{\"start\":725,\"end\":738,\"text\":\"Coats disease\",\"entity\":\"SpecificDisease\",\"rationale\":\"Another occurrence of the specific disease Coats disease in the abstract (males with Coats disease); duplicate mentions are annotated.\",\"guideline_section\":\"4. Annotate duplicate mentions\"},{\"start\":860,\"end\":880,\"text\":\"Coats telangiectasis\",\"entity\":\"SpecificDisease\",\"rationale\":\"Alternative name for Coats disease (Coats telangiectasis) in the abstract; it is a synonymous mention of the same specific disease.\",\"guideline_section\":\"6. Annotate all synonymous mentions\"}]}",
+ "thinking_summary": "I need to work out precise character offsets for each entity in the text before building the JSON output, starting with identifying terms like \"Coats' disease,\" \"retinal telangiectasis,\" and \"NDP gene\" in the title and opening sentence.\n\nNow I'm working through character offsets for the title, counting from \"Coats' disease...\" and figuring out where the newline falls between title and abstract. I'm identifying entities starting with \"Coats' disease\" as a SpecificDisease mention, and noting \"unilateral retinal telangiectasis\" in the parenthetical as another disease mention to annotate.\n\nSince this is a synonym of Coats disease per the guideline on annotating synonymous mentions, I'll tag \"unilateral retinal telangiectasis\" as SpecificDisease too, treating \"unilateral\" as part of the disease name rather than a separable modifier.\n\nMoving to the abstract, \"Coats disease\" gets SpecificDisease again, and \"retinal telangiectasis\" appearing as the \"so-called\" synonym should also be annotated as SpecificDisease, excluding the \"so-called\" qualifier from the span since it's not part of the disease name itself.\n\nI'm recognizing these category labels—SpecificDisease, DiseaseClass, CompositeMention, Modifier—as matching the NCBI Disease Corpus by Doğan, Leaman, and Lu (2014), which confirms the annotation scheme I should be following for this document.\n\nWorking through the abstract, I'm tagging \"Coats' disease,\" \"retinal telangiectasis,\" \"exudative retinal detachment,\" and \"Norrie disease\" as SpecificDisease mentions. I'm also weighing how to handle \"classical form of Coats disease\"—following the guideline that qualifiers like \"classical\" should be included when they denote a specific subtype of the disease, similar to how \"Classical galactosemia\" is treated as a single span in the examples.\n\nWeighing this against the Specific Disease definition—one that resolves to a single definition without further categorization—I lean toward treating \"classical form of Coats disease\" as the most defensible span, excluding the leading \"The\" since articles aren't part of the disease mention itself.\n\nGiven the uncertainty, I'll go through the text methodically and tag each candidate mention. The title gives \"Coats' disease\" and its parenthetical synonym \"unilateral retinal telangiectasis\" as SpecificDisease mentions, and I need to continue through the abstract sentences identifying \"Coats disease\" and related phrases like \"retinal telangiectasis\" and \"exudative retinal detachment\" as they appear.\n\nI'm reasoning through whether \"exudative retinal detachment\" counts as its own SpecificDisease mention since retinal detachment is a recognized disease category, so I'll annotate it that way, while excluding generic descriptive phrases like \"abnormal retinal vascular development\" and \"lipid accumulation\" since those describe processes rather than named diseases.\n\nMoving to the second and third abstract sentences, I'm weighing whether \"classical form of Coats disease\" and \"unilateral variant of Coats disease\" should be tagged as whole phrases or just \"Coats disease\" alone, trying to keep my treatment consistent between the two similar constructions. I'm also noting that \"unilateral,\" \"isolated,\" and gender terms like \"males\" and \"son\" shouldn't be annotated as disease mentions.\n\nI land on treating \"Coats disease\" as the SpecificDisease head noun rather than including \"variant of\" as part of the mention, since the Modifier category is reserved for cases where a disease name modifies another noun phrase (like \"colorectal cancer families\"), not for cases like this where it's the object of a prepositional phrase. \"Norrie disease\" in the phrase about the affected son is also a clear SpecificDisease mention. I then check the next sentence about the NDP gene mutation on chromosome Xp11.22 and don't find any disease mentions there.\n\nMoving through the remaining sentences, I tag \"Coats disease\" in the retinal analysis sentence, and \"Coats telangiectasis\" as another SpecificDisease mention since it's a synonym for Coats disease. \"Deficiency of norrin\" doesn't count since deficiency is too general and norrin isn't itself a disease. The vasculogenesis sentence doesn't introduce any new disease terms either, so I'm now comparing how \"Coats' disease\" in the title lines up with \"Coats disease\" in the abstract body.\n\nFor \"so-called retinal telangiectasis,\" I'm treating \"so-called\" as filler and keeping just \"retinal telangiectasis\" as the minimal span. I'm also checking whether any disease mentions function as modifiers rather than standalone entities, and so far none of them do—they all appear as heads of phrases rather than descriptors of something else.\n\nI'm confirming that \"Coats' disease\" and \"unilateral retinal telangiectasis\" in the parenthetical are separate, non-contiguous mentions of the same condition rather than a single composite span, and I'm moving on to reconsider the minimum-span rule for \"classical form of Coats disease.\"\n\nLooking at the example \"classical galactosemia,\" I see that \"classical\" is kept when it marks a specific disease form, so by that logic \"classical form of Coats disease\" could be read as naming the most specific form — though it's unclear whether \"form\" itself counts as part of the disease name, so I'm weighing whether to annotate the whole phrase as SpecificDisease or just \"Coats disease\" with \"classical form\" treated as a qualifier.\n\nA more conservative approach might annotate only \"Coats disease\" itself, treating \"classical form of\" as a separable qualifier rather than part of the core span. But the guideline's emphasis on capturing \"the most specific form of the disease\" suggests the minimal span should still include modifiers that narrow down which form is being referenced, which leans toward keeping \"classical form of\" in the annotation.\n\nI'm now considering whether \"classical form of Coats disease\" counts as a \"Specific Disease\" rather than a \"Disease Class\" — since it points to one particular form, specific disease seems right. I also want to check whether having \"Coats disease\" nested inside the larger phrase creates a conflict with the rule against overlapping mentions, since that rule seems aimed at non-contiguous interruptions rather than true nesting.\n\nGiven the \"von Hippel-Lindau (VHL) disease\" example treats the whole phrase as one mention rather than separate overlapping annotations, I think I should pick one span — either the full \"classical form of Coats disease\" or just \"Coats disease\" — rather than annotate both. This same question applies to phrases like \"unilateral variant of Coats disease.\"\n\nI'm recalling the gender-qualifier guideline, where words like \"male\" or \"female\" are only included when they mark a genuinely distinct disease form, as in \"male breast cancer.\" By that logic, qualifiers like \"variant\" or \"unilateral\" might similarly belong in the mention span if they signal a specific subtype, though I'm not fully convinced this reasoning transfers cleanly to \"unilateral variant of Coats disease.\"\n\nI'm weighing whether to treat \"classical form of Coats disease\" and \"unilateral variant of Coats disease\" consistently, since both describe specific subtypes rather than just the general disease, even though one reads more like a sentence topic and the other like a case description.\n\nI'm leaning toward annotating just \"Coats disease\" as the SpecificDisease span in both phrases, since \"variant of\" and \"form of\" seem like relational descriptors rather than part of the disease name itself, unlike cases like \"classical galactosemia\" where the modifier is fused into the name.\n\nBut reconsidering guideline 5's intent—capturing the most specific form—the span should probably extend to include \"classical form of Coats disease\" as the minimal contiguous unit, since \"classical\" is a genuine specifier separated structurally by \"form of\" rather than a true connector to exclude.\n\nBy the same logic, for \"a unilateral variant of Coats disease\", \"unilateral\" also specifies a distinct form, so I'd lean toward annotating \"unilateral variant of Coats disease\" as the span, excluding only the article. This parallels how \"unilateral retinal telangiectasis\" would be treated as a synonym needing consistent handling.\n\nI'm weighing whether NCBI annotators would actually mark just \"Coats disease\" instead, treating \"classical form\" and \"unilateral variant\" as mere modifiers rather than part of the disease name itself, similar to how they handle other named disease variants like Duchenne muscular dystrophy.\n\nI keep going back and forth between three tagging options—annotating just \"Coats disease\" in both phrases for consistency, including the modifier phrases fully, or treating them inconsistently based on whether the modifier signals a genuinely distinct disease subtype versus a generic qualifier like \"classical\" in \"insulin-dependent diabetes.\"\n\nLooking at the classical galactosemia precedent, if a qualifier marks a true clinical subtype it should be included in the span, which would argue for keeping \"classical form of Coats disease\" intact. But by that same logic \"unilateral variant of Coats disease\" might also need the modifier included, since unilateral Coats could likewise be considered a distinct clinical form rather than just incidental description.\n\nI'm weighing whether \"classical form of Coats disease\" or just \"Coats disease\" is the correct gold annotation, since consistency with a script-based exact match versus an LLM judge's reasoning could change my approach. I keep going back and forth on whether \"unilateral variant of Coats disease\" counts as its own specific disease entity or just reduces to \"Coats disease.\"\n\nI'm trying to recall relevant corpus examples like \"classic form of Ehlers-Danlos syndrome\" and the minimal-span principle, comparing it to cases like \"Classical galactosemia\" where the modifier denotes a specific form and tends to get included. That makes me lean toward annotators including \"classical form of Coats disease\" as the full span, since it mirrors that pattern, and I'm weighing whether the same logic applies to \"unilateral variant of Coats disease.\"\n\nFollowing the same reasoning, I think \"unilateral\" functions like \"male\" or \"female\" in the guidelines — it's only included when it marks a genuinely distinct form of the disease, similar to how gender qualifiers are treated. So both \"classical form of\" and \"unilateral variant of\" should be kept as part of the disease span since they identify specific subtypes, though I'm still weighing whether \"unilateral\" truly creates a new disease form or is just descriptive.\n\nSo \"unilateral variant of Coats disease\" would span the whole phrase, consistent with capturing the most specific disease form. Similarly \"Coats' disease of the retina\" just needs \"Coats' disease\" since the \"of the retina\" part is location, not form.\n\nFor \"exudative retinal detachment,\" I'm treating it as a specific disease type worth tagging, and \"retinal telangiectasis\" as another synonym for Coats disease that also counts as its own disease entity.\n\n\"Abnormal retinal vascular development\" and \"massive intraretinal and subretinal lipid accumulation\" are phenomena/abnormalities rather than disease names, so I'm leaving those unannotated. \"Coats telangiectasis\" is clearly a synonym for the disease and gets tagged, along with \"Norrie disease.\" I'm confirming \"retinal telangiectasis\" in the title and \"Coats disease\" throughout get the SpecificDisease label, while biological processes like \"retinal vasculogenesis,\" \"retinal angiogenesis,\" and the protein \"norrin\" stay unannotated since they're not disease names. Now I'm moving on to think through what falls under the Modifier category.\n\nChecking whether any disease mentions act as modifiers for other noun phrases — \"Coats disease\" in the context of enucleated eyes doesn't modify anything directly, but \"classical form of Coats disease\" catches my attention since \"Coats disease\" sits in a prepositional phrase modifying \"form,\" which might qualify under the Modifier annotation guideline similar to examples like \"colorectal cancer families.\"\n\nI'm distinguishing true compound-noun modifiers (like \"breast cancer families\") from prepositional constructions like \"form of Coats disease,\" where the disease name likely still functions as a SpecificDisease entity rather than a Modifier, since it's the referenced entity itself rather than an adjectival qualifier.\n\nI'm also verifying that \"unilateral variant of Coats disease,\" \"exudative retinal detachment,\" and \"Norrie disease\" are each standalone disease mentions with no composite spans, confirming the parenthetical \"unilateral retinal telangiectasis\" is separate from \"Coats' disease of the retina\" rather than forming one combined mention. I'm also noting that the apostrophe in \"Coats'\" should be included as part of the entity span when it appears that way in the title.\n\nNow I'm carefully counting character offsets through the text to pin down exact start/end positions for each annotation, tracking through both the title line and the abstract line sentence by sentence to make sure every disease mention is mapped precisely.\n\nI'm carefully indexing each word's character position in the title string to compute exact start/end offsets for span annotations, tracking letters one by one through \"Coats' disease of the retina (unilateral...\" to keep the counts precise.\n\nI'm carefully recomputing the character positions for each word in the title, tracking letter counts and space offsets to make sure the indexing lines up correctly through \"mutation in the NDP gene\" and beyond.\n\nThe title's full span runs 0-151, with \"Coats' disease\" marked 0-14 and \"unilateral retinal telangiectasis\" marked 30-63. Now I'm moving into the second line of text, beginning at index 152, which describes Coats disease as characterized by abnormal retinal vascular development, also known as retinal telangiectasis.\n\nContinuing through this line, it covers the lipid accumulation leading to exudative retinal detachment, the typical unilateral/male presentation, and the case linking a female carrier's NDP gene mutation to her son's Norrie disease. I need to carefully track character offsets for each phrase relative to the line's start at 152 to annotate them correctly.\n\nContinuing to tally character offsets through \"lipid accumulation (exudative retinal detachment)\" and into the next sentence describing the classical form of Coats disease as isolated, unilateral, and occurring in males, now starting to index \"A female...\"\n\nContinuing the count through the case of a female with a unilateral variant of Coats disease whose son had Norrie disease, both carrying a missense mutation within the NDP gene—tracking letter and space offsets across each word and punctuation mark in this passage.\n\nContinuing to count characters, I find the mutation was identified in the NDP gene and was absent from non-retinal tissue, supporting that Coats telangiectasis arises secondary to somatic mutation in the NDP gene.\n\nI'm now tracking that this mutation causes a deficiency of norrin, the NDP gene's protein product, within the developing retina—supporting recent observations about this protein's role.\n\n\"critical\" r943-950, \"for\" r952-954, \"normal\" r956-961, \"retinal\" r963-969, \"vasculogenesis\" r971-984, ending with a period at r986—so the abstract's second line ends here.\n\nNow I need to go back and carefully re-verify my word-length counts for line 2, since off-by-one errors compound quickly across a long sequence. I'm cross-checking each word against the original source text to make sure the character positions line up correctly.\n\nThe passage describes Coats disease linked to NDP gene mutations: a son with Norrie disease shared a missense NDP mutation with his mother who had unilateral Coats disease, and separately, one of nine enucleated eyes from Coats patients showed a somatic NDP mutation absent in other tissue—suggesting Coats telangiectasis arises from somatic NDP mutation causing norrin deficiency during retinal development, consistent with norrin's role in normal retinal vasculogenesis. I'm numbering through the word sequence again to confirm positions, tracking each token from \"Coats\" through \"The\" to catch any miscounts before continuing.\n\nThis results in a deficiency of norrin, the protein product of the NDP gene, within the developing retina, supporting recent observations that this protein is critical for normal retinal vasculogenesis. Now I'm working through the exact character positions of each token in the original text, accounting for the single-space separation between words and punctuation marks.\n\nContinuing to track character offsets, I'm noting the case of a female carrier whose unilateral Coats disease variant and whose son's Norrie disease were both linked to the same missense mutation in the NDP gene on chromosome Xp11.2.\n\nThen I'm moving into the subsequent analysis, which examined retinas from nine enucleated eyes of males with Coats disease and found that one case involved a somatic mutation in the NDP gene absent from non-retinal tissue, supporting the idea that Coats telangiectasis arises from a similar mechanism.\n\nI'm now working through the conclusion that this condition is secondary to a somatic NDP gene mutation, which causes a deficiency of norrin—the protein product of NDP—within the developing retina, consistent with recent findings that this protein is critical for retinal vascular development.\n\nI'm cross-checking each word's character position against the original text to confirm the index calculations align correctly, verifying token by token that the start of each word follows two positions after the previous word's end.\n\nI continue verifying the remaining word letter-counts and confirm line 1 spans 151 characters with the newline falling at index 151, so line 2 begins at absolute offset 152. I then compute all the disease-mention spans in line 2 by adding 152 to each relative offset, cross-checking lengths like \"Coats disease,\" \"retinal telangiectasis,\" \"exudative retinal detachment,\" \"classical form of Coats disease,\" \"unilateral variant of Coats disease,\" \"Norrie disease,\" and \"Coats telangiectasis,\" while also confirming the two line-1 annotations for \"Coats' disease\" and \"unilateral retinal telangiectasis.\" I note which phrases to skip, such as mutation and tissue descriptions that aren't disease names.\n\n",
+ "status": "ok",
+ "annotations": [
+  {
+   "start": 0,
+   "end": 14,
+   "text": "Coats' disease",
+   "entity": "SpecificDisease",
+   "rationale": "Named specific retinal disease in the title (Coats disease); it is a single defined condition with no further categorization, so it is a Specific Disease mention.",
+   "guideline_section": "1. Annotate all Specific Disease mentions",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 30,
+   "end": 63,
+   "text": "unilateral retinal telangiectasis",
+   "entity": "SpecificDisease",
+   "rationale": "Parenthetical alternative name for Coats disease in the title; it is a synonymous mention of the same specific disease and is annotated as its own mention.",
+   "guideline_section": "6. Annotate all synonymous mentions",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 152,
+   "end": 165,
+   "text": "Coats disease",
+   "entity": "SpecificDisease",
+   "rationale": "Specific named disease at the start of the abstract; the same disease is also named in the title, and duplicate mentions are annotated.",
+   "guideline_section": "1. Annotate all Specific Disease mentions; 4. Annotate duplicate mentions",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 236,
+   "end": 258,
+   "text": "retinal telangiectasis",
+   "entity": "SpecificDisease",
+   "rationale": "The so-called retinal telangiectasis is a synonym for Coats disease; the hedge 'so-called' is excluded and the disease name span is kept minimal.",
+   "guideline_section": "6. Annotate all synonymous mentions; 5. Annotate minimum necessary span of text",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 335,
+   "end": 363,
+   "text": "exudative retinal detachment",
+   "entity": "SpecificDisease",
+   "rationale": "Named ocular disease (exudative retinal detachment) that is a specific condition; it is not a general term such as complications or a biological process.",
+   "guideline_section": "1. Annotate all Specific Disease mentions",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 372,
+   "end": 403,
+   "text": "classical form of Coats disease",
+   "entity": "SpecificDisease",
+   "rationale": "Refers to one particular form of Coats disease; the form-identifying qualifier 'classical' is kept with the disease name, as in the Classical galactosemia example, while the article 'The' is excluded.",
+   "guideline_section": "5. Annotate minimum necessary span of text; Examples item 15",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 483,
+   "end": 518,
+   "text": "unilateral variant of Coats disease",
+   "entity": "SpecificDisease",
+   "rationale": "Describes a specific variant (unilateral form) of Coats disease; the qualifier that identifies the new form is kept in the span, analogous to the male/female rule, and the article 'a' is excluded.",
+   "guideline_section": "5. Annotate minimum necessary span of text; What NOT to Annotate 2 (gender qualifiers kept only when they identify a new form)",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 551,
+   "end": 565,
+   "text": "Norrie disease",
+   "entity": "SpecificDisease",
+   "rationale": "Named specific genetic disease (Norrie disease) affecting the son; it is a single defined condition without further categorization.",
+   "guideline_section": "1. Annotate all Specific Disease mentions",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 725,
+   "end": 738,
+   "text": "Coats disease",
+   "entity": "SpecificDisease",
+   "rationale": "Another occurrence of the specific disease Coats disease in the abstract (males with Coats disease); duplicate mentions are annotated.",
+   "guideline_section": "4. Annotate duplicate mentions",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 860,
+   "end": 880,
+   "text": "Coats telangiectasis",
+   "entity": "SpecificDisease",
+   "rationale": "Alternative name for Coats disease (Coats telangiectasis) in the abstract; it is a synonymous mention of the same specific disease.",
+   "guideline_section": "6. Annotate all synonymous mentions",
+   "uncertain": false,
+   "raw_entity": null
+  }
+ ],
+ "json_extraction": "plain"
+}

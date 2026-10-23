@@ -1,0 +1,39 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: DiseaseClass vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+- **Pattern Name:** Generic "deficiency of [gene product]" pathogenic-state phrases labeled as DiseaseClass
+
+- **Confusion Trigger:** The head noun "deficiency" is a generic state or quantity noun, not a disease name, and it takes an "of"-complement that names a protein ("norrin"). The appositive "(the protein product of the NDP gene)" reinforces a molecular reading. The model sees a protein-level loss with no disease-lexicon cue (e.g., "syndrome," "disease," "-itis," "carcinoma") and defaults to O.
+
+- **Contrastive Evidence:** The True Positive DiseaseClass spans ("mental retardation," "exudative retinal detachment") are clinical phenotype or pathology nouns that stand alone as condition names. They do not contain a molecular-complement "X of [protein]" construction, so the model can match them to the condition lexicon. The control document 10577908 also contains a near-identical construction, "deficient activity of fatty aldehyde dehydrogenase (FALDH)," which gold leaves as O. This suggests the gold label may be inconsistent across documents, and the model's O agrees with that precedent. Only one discrepancy example was supplied, so this pattern is provisional and cannot be validated as a cluster.
+
+- **Linguistic Rule (Proposed):**
+  1. If the head is a generic condition noun (deficiency, deficit, insufficiency, absence/loss of) and the complement is a gene or protein name, and the clause presents the phrase as the causal disease outcome of a mutation or pathogenic process (e.g., "results in a deficiency of X within the developing retina"), tag the full noun phrase, "deficiency of norrin," as DiseaseClass.
+  2. If the same construction denotes a measured quantity or enzymatic activity (e.g., "deficient activity of FALDH," "reduced levels of X"), keep it as O.
+  3. Tag the full noun phrase (head plus complement), not the protein name alone.
+  4. Audit all "deficiency/deficient of [protein]" instances in the corpus to resolve the 10484772 vs. 10577908 inconsistency before finalizing the rule.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10484772.json):
+Snippet: "...dary to somatic mutation in the NDP gene which results in a deficiency of norrin ( the protein product of the NDP gene ) within the developi..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "deficiency of norrin"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

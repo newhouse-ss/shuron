@@ -1,0 +1,55 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: SpecificDisease (Span Boundary Error)
+
+**INFERRED PATTERNS:**
+## Step 1: Deep Dive Analysis
+
+- **Contrast:** Every True Positive has a disorder-naming head: *disease* (Coats disease, Norrie disease), *syndrome* (Wiskott-Aldrich syndrome, fragile X syndrome), *cancer* (ovarian cancer), *retardation*, *detachment*, or a disease abbreviation (SLS). Every discrepancy has the head *deficiency*, followed by an "of"-phrase whose object is a gene product, enzyme, or complement component (*hepatic phenylalanine hydroxylase*, *the seventh component of complement*, *C7*). The boolean feature is: **Does the mention's head noun name a disorder, or is it a deficit-state noun whose complement is a molecule?** The True Positives answer "disorder." The discrepancies answer "molecule."
+- **Isolate Trigger:** The gold and LLM labels agree on type (SpecificDisease), so the error is in span identity: the model tagged the causal or genotype description of the defect rather than the named disease. The trigger is the construction "deficiency of [molecular entity]." Example 3 ("deficiency of C7") is the clearest case. It contains no disease-naming word, so the model is responding to the construction itself. "Deficiency" is also disease-adjacent in medical text (it appears in deficiency diseases), which reinforces the false positive.
+- **Context check:** All three spans sit in causal or genotype clauses: "caused by a deficiency of…", "compatible with a complete deficiency of…", "heterozygous deficiency of C7 in five members." Heterozygous carriers are a genotype description, not a disease referent, which further suggests the model is tagging mechanism rather than condition.
+- **Hypothesis Check:** The "deficiency of X" trigger explains all three discrepancies. The refinement needed is that some "X deficiency" strings are genuine lexicalized disease names (e.g., *alpha-1 antitrypsin deficiency*), so the rule cannot ban the word "deficiency" outright. It has to distinguish a named condition from a mechanistic description.
+
+## Step 2: Pattern Formulation
+
+- **Pattern Insight: "Deficiency-of-X" Biochemical State Mislabeled as Disease Name**
+  - **Confusion Trigger:** The nominal head "deficiency" (a disease-adjacent deficit noun) followed by an "of"-PP naming a gene product, enzyme, or complement component (including bare symbols like C7 or PAH). The model keys on the construction and its medical register rather than on a disease-naming head, and the spans often sit in causal or genotype clauses.
+  - **Contrastive Evidence:** True Positive spans are compact names headed by disorder terms (disease, syndrome, cancer, retardation). Their "of"-complements, when present, denote locations or anatomy (e.g., "of the retina"), not molecules, and the head still carries the disease identity.
+  - **Linguistic Rule (Proposed):**
+    1. Tag a mention as SpecificDisease only if its head noun is disorder-naming (disease, syndrome, disorder, cancer, eponym, or the abbreviation of one), or if the full string is a conventional named condition (e.g., *alpha-1 antitrypsin deficiency*).
+    2. If the head is *deficiency*, *defect*, or *loss* and the "of"-complement is a gene product, enzyme, protein, or complement component (including bare symbols such as C7 or PAH), do not tag the phrase, even when the medical context is strong.
+    3. Causal or genotype cues ("caused by," "heterozygous," "carriers," "in members") are a negative signal for tagging the "deficiency of X" phrase.
+    4. When the defect describes a patient with a named disease, tag the disease-naming head (e.g., *phenylketonuria*) and stop the span there, excluding the "deficiency of…" tail.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 1671881.json):
+Snippet: "...enylketonuria is an autosomal recessive disease caused by a deficiency of hepatic phenylalanine hydroxylase ( PAH ) . The abolition of an invariant BamHI site located ..."
+Gold: SpecificDisease, LLM: SpecificDisease
+Entity Text: "deficiency of hepatic phenylalanine hydroxylase"
+
+Example 2 (Doc: 6859721.json):
+Snippet: "...of functional and antigenic C7 , compatible with a complete deficiency of the seventh component of complement . Study of the patients family spanning four generations sh..."
+Gold: SpecificDisease, LLM: SpecificDisease
+Entity Text: "deficiency of the seventh component of complement"
+
+Example 3 (Doc: 6859721.json):
+Snippet: "...tients family spanning four generations showed heterozygous deficiency of C7 in five members . Chronic neisserial infection can be assoc..."
+Gold: SpecificDisease, LLM: SpecificDisease
+Entity Text: "deficiency of C7"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

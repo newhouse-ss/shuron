@@ -1,0 +1,60 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep-Dive Analysis**
+
+- **Contrast:** Every True Positive SpecificDisease mention is a *nominal label* for the disorder. It is either an eponym or acronym (Coats disease, Norrie disease, SLS) or a premodifier-plus-nosological-head compound (G6PD **deficiency**, where the enzyme is a premodifier). The Discrepancies instead name the disorder through a *descriptive defect or lesion state*, either as a prepositional complement ("deficiency **of/in** X", "deficient activity **of** X") or as a parenthetical gloss ("**so-called** retinal telangiectasis", "(unilateral retinal telangiectasis)").
+- **Isolate the trigger:** The model appears to have learned "X deficiency" as a disease name, which explains why "G6PD deficiency" (TP) is correct. It does not generalize to the inverted "deficiency **of/in** [enzyme]" form. For the telangiectasis cases, the term reads as a morphological sign, and the "so-called" or parenthetical alias marker is not treated as signaling a second name for the disease.
+- **Hypothesis check:** A "PP complement" rule explains Examples 3, 4, and 5, but not Examples 1 and 2, which have no complement. A "gloss/alias" rule explains 1 and 2, but not 3–5. The shared factor is that the span describes a pathological state instead of naming the disorder, and that state is what the disease is defined by or known as. Example 3 also contrasts with the TP "G6PD **deficient** phenotype", which is labeled Modifier. The adjectival "deficient" is a Modifier, while the nominal "deficiency" heads a disease.
+
+**Step 2: Pattern Insight**
+
+- **Pattern Name:** Disease Named by Its Defect or Lesion State (Descriptive Alias vs. Nominal Label)
+- **Confusion Trigger:** Nosological-state nouns used descriptively ("deficiency/deficient activity **of/in** [enzyme]", "telangiectasis" as a gloss). The model treats these as biochemical mechanisms or morphological signs and tags them O. This is reinforced when the head is not "disease/syndrome" and the defect is introduced by a preposition, a parenthetical, or "so-called."
+- **Contrastive Evidence:** True Positives use a nominal disease label. The enzyme or gene appears as a premodifier ("G6PD deficiency") or the disorder is named by an eponym or acronym ("Coats disease", "SLS"). They do not rely on an "of/in" complement or a gloss to name the disorder.
+- **Linguistic Rule (Proposed):** Tag a deficiency or lesion phrase as SpecificDisease, with the full span including its complement, when it is the *name or definition of the disorder itself*. This applies when (a) it is an alias or appositive co-referring with a disease name in the same sentence or passage ("so-called X", "(X)"), or (b) it is the defining phenotype of a named disease in a "disease is caused by / characterized by" frame ("PKU caused by a deficiency of PAH"). Do not tag it when the state is a downstream molecular mechanism of a disease, such as "results in a deficiency of norrin," or when the adjectival "deficient" modifies a non-disease head, which is a Modifier.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10484772.json):
+Snippet: "...Coats' disease of the retina (unilateral retinal telangiectasis) caused by somatic mutation in the NDP gene: a role for nor..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "unilateral retinal telangiectasis"
+
+Example 2 (Doc: 10484772.json):
+Snippet: "...erized by abnormal retinal vascular development ( so-called retinal telangiectasis ) which results in massive intraretinal and subretinal lipi..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "retinal telangiectasis"
+
+Example 3 (Doc: 10577908.json):
+Snippet: "...rized by ichthyosis , mental retardation , spasticity , and deficient activity of fatty aldehyde dehydrogenase ( FALDH ) . To define the molecular defects causing SLS , w..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficient activity of fatty aldehyde dehydrogenase"
+
+Example 4 (Doc: 1303173.json):
+Snippet: "... coexistence of the two mutations is responsible for enzyme deficiency in G6PD A- because they act synergistically in causing instability ..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficiency in G6PD"
+
+Example 5 (Doc: 1671881.json):
+Snippet: "...enylketonuria is an autosomal recessive disease caused by a deficiency of hepatic phenylalanine hydroxylase ( PAH ) . The abolition of an invariant BamHI site located ..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficiency of hepatic phenylalanine hydroxylase"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

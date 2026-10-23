@@ -1,0 +1,47 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: DiseaseClass vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** The true-positive DiseaseClass example, "mental retardation," is a self-contained, lexicalized clinical condition label. The discrepant spans are compositional descriptions. Each is a qualifier applied to a normal biological substrate: "abnormal" + "retinal vascular development," and "deficiency of" + "norrin." The single boolean feature that separates them is whether the span **names a condition as a unit** or **describes a deviation from a normal biological entity or process**.
+- **Isolate Trigger:** The model appears to read the head nouns literally. "Development" is a physiological process noun, and "norrin" is a protein (outside the schema). Both spans look like ordinary developmental biology or molecular biochemistry, so the model tags them O. The deviation qualifiers ("abnormal," "deficiency of") are the cues that make them pathological, and the model does not weigh them enough. "Deficiency of X" is especially ambiguous, since it is common biochemical phrasing for molecular states that are not diseases.
+- **Hypothesis Check:** Both discrepancies sit in causal or characterizing predicates. The first follows "Coats disease is characterized by…" and the second follows "results in a…" in a pathogenesis explanation. Both are phenotypic or pathogenic states expressed compositionally, with no disease-name head. This explains both examples. The true positive, "mental retardation," has no qualifier-plus-substrate structure, which is consistent with the hypothesis.
+
+**Step 2: Formulate Pattern**
+
+- **Pattern Insight:**
+  - **Pattern Name:** Compositional Pathological-State Descriptions (Deviation-from-Normal Noun Phrases)
+  - **Confusion Trigger:** A deviation qualifier ("abnormal," "deficiency of") modifies a generic biological substrate (a process or gene product such as "vascular development" or "norrin"). The head noun is physiological or molecular, not a disease name, so the model treats the span as normal biology rather than a DiseaseClass mention.
+  - **Contrastive Evidence:** The true-positive DiseaseClass, "mental retardation," is a lexicalized condition label with no qualifier-plus-substrate construction, so the model recognizes it as a unit. The Modifier true positives ("ovarian cancer," "Wiskott-Aldrich syndrome") are also named disease entities rather than compositional descriptions.
+  - **Linguistic Rule (Proposed):** Tag the full noun phrase as DiseaseClass when a deviation-from-normal qualifier (abnormal, deficiency of, absence of, excess of) applied to a biological substrate denotes a pathological condition or state, and the phrase is the object of a disease-characterization or pathogenesis predicate (characterized by, results in, secondary to, caused by). Include the qualifier in the span. Do not tag the bare substrate (e.g., "norrin," "NDP gene") or a normal physiological process described without a deviation qualifier.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10484772.json):
+Snippet: "... in retinal angiogenesis.
+Coats disease is characterized by abnormal retinal vascular development ( so-called retinal telangiectasis ) which results in massi..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "abnormal retinal vascular development"
+
+Example 2 (Doc: 10484772.json):
+Snippet: "...dary to somatic mutation in the NDP gene which results in a deficiency of norrin ( the protein product of the NDP gene ) within the developi..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "deficiency of norrin"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

@@ -1,0 +1,21 @@
+annotation call, H_xhigh: JPY 0.511 at Batch price (mean of 200 dev10 calls)
+analysis call upper bound: 35,889 prompt tokens + 64,000 output = JPY 2.81 at Batch price
+
+== design with 15 loops per method
+  E1 valid100, original x10: 1,000 calls, estimate JPY 511, upper JPY 511
+  E2 top-1 loops x15 (162 calls per loop at 4 rounds): 2,430 calls, estimate JPY 1,242, upper JPY 1,656
+  E3 top-4 loops x15 (186 calls per loop at 4 rounds): 2,790 calls, estimate JPY 1,426, upper JPY 2,669
+  total 6,220 calls (720 analysis); estimate JPY 3,178; upper JPY 4,836; standard API doubles both
+
+== design with 10 loops per method
+  E1 valid100, original x10: 1,000 calls, estimate JPY 511, upper JPY 511
+  E2 top-1 loops x10 (162 calls per loop at 4 rounds): 1,620 calls, estimate JPY 828, upper JPY 1,104
+  E3 top-4 loops x10 (186 calls per loop at 4 rounds): 1,860 calls, estimate JPY 950, upper JPY 1,779
+  total 4,480 calls (480 analysis); estimate JPY 2,289; upper JPY 3,394; standard API doubles both
+
+== other plan items
+  one top-1 loop incl. valid100 annotation of its final (162 calls): estimate JPY 83, upper JPY 110
+  one top-4 loop incl. valid100 annotation of its final (186 calls): estimate JPY 95, upper JPY 178
+  test set evaluation (300 calls, as in RP v4): estimate JPY 153
+
+sequential batch steps per method if the loops run in lockstep: 18 (initial annotation; per round 3 analysis steps and 1 re-annotation; valid100 annotation of the finals). Observed batch durations so far: 7 and 11 min (batch_state_*.json), not a guarantee.

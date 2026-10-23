@@ -1,0 +1,74 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** The discrepancies share one construction. Each span pairs a privative state noun (*deficiency*, *deficient activity*, *absence*) with the name of a specific enzyme or protein (*fatty aldehyde dehydrogenase*, *G6PD*, *phenylalanine hydroxylase*, *the seventh component of complement*). The true positives use disease-nominal heads (*disease*, *cancer*, *dysplasia*, *syndrome*) or eponyms, and none contains a privative noun paired with a gene product.
+- **Isolate the trigger:** The model appears to read *deficiency of [enzyme]* as a biochemical state or measurement of a molecule, not as the name of a condition. The gold standard treats the whole noun phrase as a genetic disorder.
+- **Hypothesis check:**
+  - Ex 1 ("deficient activity of…") and Ex 4 ("deficiency of…") fit the pattern directly.
+  - Ex 2 ("G6PD deficiency") is a bare gene symbol plus *deficiency*. Ex 3 ("deficiency in G6PD") is the same construction with *in*. Ex 2 and Ex 3 are not explained by all-caps symbols alone, since the spelled-out enzyme name in Ex 1 and Ex 4 fails in the same way.
+  - Ex 5 ("Absence of the seventh component of complement") fits with *absence* as the privative head.
+  - The same document (1303173) annotates the expanded form "glucose 6-phosphate dehydrogenase (G6PD) deficiency" as SpecificDisease, which supports the view that the disease reading is licensed by the construction, not the symbol.
+  - **Boundary note:** Doc 1303173 also labels the adjectival "G6PD deficient" as Modifier. Doc 10484772 contains "a deficiency of norrin" without any annotation. Gold is therefore inconsistent at this boundary, and the rule below has to be stated in terms of the discourse function of the phrase.
+
+**Step 2: Pattern Formulation**
+
+- **Pattern Name:** Privative Deficiency Nominals Naming Gene-Product Disorders
+
+- **Confusion Trigger:** A privative or state head noun (*deficiency*, *deficient activity*, *absence*) governing or modifying a specific enzyme or protein name, with no disease-class head noun. The model interprets it as a description of molecular function or activity rather than the name of a condition.
+
+- **Contrastive Evidence:** The true positives name conditions with explicit disease-class heads or eponyms ("Coats disease", "ovarian cancer", "diastrophic dysplasia", "Norrie disease"). None relies on a privative noun to name the condition, so the model's disease-head heuristic works for them.
+
+- **Linguistic Rule (Proposed):**
+  1. When a privative noun phrase [*deficiency / deficient activity / absence*] (*of* | *in*) [*gene product, enzyme, or protein name or symbol*] functions as a named condition, label the full noun phrase, including the gene product, as **SpecificDisease**. Use this when the phrase:
+     - is the object of a causal or characterizing predicate ("caused by", "characterized by", "cause ... deficiency"), or
+     - describes a patient's or population's genotype-level condition ("in a patient with", "enzyme deficiency in G6PD A-").
+  2. Do not split the noun phrase. Do not tag only "deficiency" or only the enzyme name.
+  3. A purely adjectival *deficient* that modifies a phenotype or a patient ("G6PD deficient phenotype") is **Modifier**, not SpecificDisease.
+  4. Leave the phrase **O** when the privative noun describes a mechanistic or experimental quantity with no disorder framing (for example, a mechanistic "a deficiency of norrin" with no disease reference, as in doc 10484772).
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10577908.json):
+Snippet: "...rized by ichthyosis , mental retardation , spasticity , and deficient activity of fatty aldehyde dehydrogenase ( FALDH ) . To define the molecular defects causing SLS , w..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficient activity of fatty aldehyde dehydrogenase"
+
+Example 2 (Doc: 1303173.json):
+Snippet: "...he 68 Val-- > Met mutation alone is not sufficient to cause G6PD deficiency . We have approached this question by producing G6PD B , A ..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "G6PD deficiency"
+
+Example 3 (Doc: 1303173.json):
+Snippet: "... coexistence of the two mutations is responsible for enzyme deficiency in G6PD A- because they act synergistically in causing instability ..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficiency in G6PD"
+
+Example 4 (Doc: 1671881.json):
+Snippet: "...enylketonuria is an autosomal recessive disease caused by a deficiency of hepatic phenylalanine hydroxylase ( PAH ) . The abolition of an invariant BamHI site located ..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficiency of hepatic phenylalanine hydroxylase"
+
+Example 5 (Doc: 6859721.json):
+Snippet: "...Absence of the seventh component of complement in a patient with chronic meningococcemia presenting as vas..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "Absence of the seventh component of complement"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

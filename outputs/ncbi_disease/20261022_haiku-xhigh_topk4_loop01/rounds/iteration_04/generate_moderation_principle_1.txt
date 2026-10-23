@@ -1,0 +1,59 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+## Step 1: Deep-Dive Analysis
+
+- **Contrast:** The True Positives name the disease with a lexicalized nosological head: "Coats disease," "Norrie disease," "Wiskott-Aldrich syndrome," "fragile X syndrome," or the acronym "SLS." The discrepancy spans have no such head. Their disease identity sits in a sign noun ("telangiectasis") or in a description of a molecular state ("deficient activity of…", "deficiency in…", "absence of… component of complement").
+- **Single separating feature:** Whether the head noun names a disease (a disease/syndrome noun, a named acronym, or a fixed "X deficiency" compound) or is a finding/functional-state noun whose disease reading depends on its complement (the gene, enzyme, or eponym).
+- **Isolate trigger:** The words "deficiency," "deficient," and "absence," and the noun "telangiectasis," are finding or state nouns that the model reads as generic phenotype or biochemical description. The enzyme or gene name also appears as an "of"/"in" complement rather than a premodifier, so the disease never surfaces as a familiar unit like "G6PD deficiency." In Example 1, the eponym "Coats" has no "disease" head.
+- **Hypothesis check:** The deficiency construction explains Examples 2–4. Example 1 fits the same root cause: a disease named without a nosological head. Example 2 also sits in a symptom list, but the True Positive "mental retardation" in the same kind of list was labeled correctly, so list position is not the trigger. The construction is.
+
+## Step 2: Pattern Insight
+
+- **Pattern Name:** Disease Named by a Molecular-Deficiency or Sign-Noun Construction (No Nosological Head)
+- **Confusion Trigger:** The disease head is a finding or functional-state noun ("telangiectasis," "deficient activity of," "deficiency in," "absence of… component of"), and the gene, enzyme, protein, or eponym sits in an "of"/"in" phrase or stands alone as an eponym. The model parses the span as a generic clinical or biochemical description and tags it O.
+- **Contrastive Evidence:** The True Positives use lexicalized disease heads ("Coats disease," "Norrie disease," "Wiskott-Aldrich syndrome," "fragile X syndrome") or the acronym "SLS." The disease status is recoverable from the head noun alone, with no inference about the complement.
+- **Linguistic Rule (Proposed):** Tag the mention as SpecificDisease when a finding or state head combines with a specific gene, enzyme, protein, or eponym, and the context describes an inherited or clinical condition:
+  1. **Molecular deficiency in any word order** ("deficiency in G6PD," "deficient activity of fatty aldehyde dehydrogenase," "absence of the seventh component of complement"): label the whole noun phrase as SpecificDisease, since it denotes a named deficiency disorder.
+  2. **Eponym plus sign noun** ("Coats telangiectasis"): the eponym anchors the disease even without "disease" or "syndrome."
+  3. **Boundary:** A generic phrase with no specific named target, such as "enzyme deficiency" alone, stays O. The named gene, enzyme, or eponym is what converts the finding into a disease mention.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10484772.json):
+Snippet: "...was not present within non-retinal tissue . We suggest that Coats telangiectasis is secondary to somatic mutation in the NDP gene which resu..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "Coats telangiectasis"
+
+Example 2 (Doc: 10577908.json):
+Snippet: "...rized by ichthyosis , mental retardation , spasticity , and deficient activity of fatty aldehyde dehydrogenase ( FALDH ) . To define the molecular defects causing SLS , w..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficient activity of fatty aldehyde dehydrogenase"
+
+Example 3 (Doc: 1303173.json):
+Snippet: "... coexistence of the two mutations is responsible for enzyme deficiency in G6PD A- because they act synergistically in causing instability ..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficiency in G6PD"
+
+Example 4 (Doc: 6859721.json):
+Snippet: "...Absence of the seventh component of complement in a patient with chronic meningococcemia presenting as vas..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "Absence of the seventh component of complement"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

@@ -1,0 +1,162 @@
+{
+ "unit": "H_max__10196379__r13",
+ "arm": "H_max",
+ "doc": "10196379.json",
+ "rep": 13,
+ "prompt_chars": 9941,
+ "prompt_sha256": "c9e79426d8475a31b508d10fde812df3f70184fb3156a29499ae865bd9ca31ce",
+ "mode": "batch",
+ "batch_id": "msgbatch_014CFpHwfrEYpfRRFgsXuMPq",
+ "batch_created_utc": "2026-10-22T08:23:28+00:00",
+ "batch_ended_utc": "2026-10-22T08:34:26.341572+00:00",
+ "settings": {
+  "model": "claude-haiku-5-5",
+  "effort": "max",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive",
+   "display": "summarized"
+  },
+  "output_format": "json_schema",
+  "schema_sha256": "d5140dd40e6b938f6e93e9ea0cad9f0d3f275a2d9722d1a47ba06603cc4b70d2"
+ },
+ "result_type": "succeeded",
+ "response": {
+  "id": "msg_011CgGxLY2tDD398TBvwEqg6",
+  "model": "claude-haiku-5-5",
+  "stop_reason": "end_turn",
+  "stop_details": null
+ },
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "inference_geo": "global",
+  "input_tokens": 4089,
+  "output_tokens": 50047,
+  "output_tokens_details": {
+   "thinking_tokens": 48702
+  },
+  "service_tier": "batch",
+  "speed": "standard"
+ },
+ "content": "{\"annotations\":[{\"start\":59,\"end\":73,\"text\":\"ovarian cancer\",\"entity\":\"Modifier\",\"rationale\":\"Disease name 'ovarian cancer' modifies the noun 'cases' in the title (ovarian cancer cases), so it is annotated as a Modifier.\",\"guideline_section\":\"What to Annotate 3 - Modifiers\"},{\"start\":235,\"end\":249,\"text\":\"ovarian cancer\",\"entity\":\"Modifier\",\"rationale\":\"Disease name 'ovarian cancer' modifies the noun 'population' (ovarian cancer population), so it is annotated as a Modifier.\",\"guideline_section\":\"What to Annotate 3 - Modifiers\"},{\"start\":375,\"end\":389,\"text\":\"ovarian cancer\",\"entity\":\"Modifier\",\"rationale\":\"Disease name 'ovarian cancer' modifies the noun 'cases' (ovarian cancer cases), so it is annotated as a Modifier.\",\"guideline_section\":\"What to Annotate 3 - Modifiers\"},{\"start\":433,\"end\":447,\"text\":\"ovarian cancer\",\"entity\":\"Modifier\",\"rationale\":\"Disease name 'ovarian cancer' modifies the noun 'study' (ovarian cancer study), so it is annotated as a Modifier.\",\"guideline_section\":\"What to Annotate 3 - Modifiers\"},{\"start\":570,\"end\":584,\"text\":\"ovarian cancer\",\"entity\":\"Modifier\",\"rationale\":\"Disease name 'ovarian cancer' modifies the noun 'cases' (ovarian cancer cases), so it is annotated as a Modifier.\",\"guideline_section\":\"What to Annotate 3 - Modifiers\"},{\"start\":806,\"end\":830,\"text\":\"breast or ovarian cancer\",\"entity\":\"CompositeMention\",\"rationale\":\"The contiguous string 'breast or ovarian cancer' refers to two separate diseases (breast cancer and ovarian cancer), so it is annotated as one Composite Mention rather than split.\",\"guideline_section\":\"What to Annotate 2 - Contiguous text strings (Composite Mention); Examples 7\"},{\"start\":981,\"end\":987,\"text\":\"cancer\",\"entity\":\"DiseaseClass\",\"rationale\":\"The generic term 'cancer' is retained by guideline and refers to a family of many specific cancers (family history of cancer), so it is a Disease Class.\",\"guideline_section\":\"What to Annotate 1 - Disease Class; What NOT to Annotate 4 (cancer retained)\"},{\"start\":1076,\"end\":1082,\"text\":\"cancer\",\"entity\":\"Modifier\",\"rationale\":\"The retained term 'cancer' is used attributively to modify the noun 'cases' (Caucasian cancer cases), so it is annotated as a Modifier.\",\"guideline_section\":\"What to Annotate 3 - Modifiers; What NOT to Annotate 4 (cancer retained)\"},{\"start\":1274,\"end\":1288,\"text\":\"ovarian cancer\",\"entity\":\"SpecificDisease\",\"rationale\":\"'ovarian cancer' is the complement of 'history of' rather than a noun modifier and names one specific disease, so it is a Specific Disease.\",\"guideline_section\":\"What to Annotate 1 - Specific Disease\"},{\"start\":1339,\"end\":1353,\"text\":\"ovarian cancer\",\"entity\":\"Modifier\",\"rationale\":\"Disease name 'ovarian cancer' modifies the noun 'risk' (ovarian cancer risk), so it is annotated as a Modifier.\",\"guideline_section\":\"What to Annotate 3 - Modifiers\"},{\"start\":1479,\"end\":1493,\"text\":\"ovarian cancer\",\"entity\":\"Modifier\",\"rationale\":\"Disease name 'ovarian cancer' modifies the noun 'risk' (ovarian cancer risk), so it is annotated as a Modifier; this duplicate occurrence is marked separately.\",\"guideline_section\":\"What to Annotate 3 - Modifiers; What to Annotate 4 - Duplicate mentions\"}]}",
+ "thinking_summary": "I need to produce a single JSON object with an \"annotations\" key, formatted on one line with no markdown. I'm reading through the ovarian cancer BRCA1 study text to identify the entities that need to be tagged according to the guidelines.\n\nThis appears to describe 107 ovarian cancer cases screened for BRCA1 alterations via RNase mismatch cleavage and sequencing, finding two truncating mutations (962del4 and 3600del11) linked to family cancer history, along with novel variants and a Q356R polymorphism association with family history of ovarian cancer. I need to identify entity mentions like gene names, mutation identifiers, and disease terms from this passage for the annotation output.\n\nNow I'm working through the disease mentions in the title and abstract, following NCBI disease corpus conventions. I'm reasoning through whether \"ovarian cancer\" counts as a SpecificDisease annotation and how it should be tagged when it modifies \"cases\" in the noun phrase.\n\nThough \"family history of ovarian cancer\" isn't itself a modifier construction since \"ovarian cancer\" is a complement rather than modifying a noun, \"breast or ovarian cancer\" is different—it refers to two distinct diseases joined together, which fits the CompositeMention category, similar to \"stage II or stage III colorectal cancer.\" So I'd tag that as a composite mention while treating standalone \"ovarian cancer\" as a SpecificDisease when it's a complement rather than a modifier.\n\nThe Modifier category covers cases like \"HNPCC kindreds,\" so I'm working through how the various \"ovarian cancer\" and \"cancer\" mentions in this abstract would be tagged — as Modifier when describing cases/populations, CompositeMention for \"breast or ovarian cancer,\" and SpecificDisease for standalone uses like \"family history of cancer,\" keeping in mind that \"cancer\" and \"tumor\" are retained as valid disease terms even in generic contexts.\n\nI'll settle on DiseaseClass for \"cancer\" in that generic context, since it represents a family of diseases rather than one specific definition. Though \"ovarian cancer\" could also arguably be a broader category, it's more often treated as a specific disease since it maps to one clear concept without further subtyping needed for annotation purposes.\n\nNow I'm working through the exact character offsets for each mention, deciding to treat end positions as exclusive like Python slicing, and starting to map out the text structure including the title and abstract separation.\n\nContinuing to count through \"population-based series of ovarian...\" to pin down exact character offsets for the annotation spans.\n\nI'll tag \"ovarian cancer\" as the Modifier since it modifies \"cases\" in that phrase. Now moving to line 2, which starts right after the newline at offset 80, so \"The\" begins at index 81 — this line discusses providing accurate frequency estimates for breast cancer susceptibility gene 1 (BRCA1).\n\nThe rare Q356R polymorphism was significantly associated with family history of ovarian cancer, suggesting it could influence risk. Overall, the data point to a role for uncharacterized variants and rare polymorphisms in ovarian cancer risk, underscoring the need to screen for missense changes as well as truncating mutations in this population.\n\nNow I need to carefully verify character offsets for this text, tracking position word by word to confirm everything lines up correctly.\n\nI'm marking out the character spans for \"ovarian cancer\" and \"population\" in this sentence, then considering whether \"breast cancer susceptibility gene 1\" should count as a disease mention or just part of a gene name like BRCA1 — leaning toward treating it as a gene reference rather than a disease annotation.\n\nApplying that rule literally, \"breast cancer\" would qualify as a Modifier since it's a disease name modifying \"susceptibility gene\"—but this is literally the gene's name, so marking it risks a false positive. I'm trying to recall whether the NCBI disease corpus actually annotated such gene-name occurrences like \"breast cancer susceptibility gene,\" thinking back to specific PMID examples to settle this.\n\nI'm weighing whether \"breast cancer\" within \"breast cancer susceptibility gene\" should count as a disease mention — it does literally name the disease even though it's embedded in a gene name, and I'm unsure how the corpus annotators handled such cases. Given the tension between precision and recall, I need to settle on a principled call rather than guessing at corpus conventions I don't actually remember.\n\nI'm trying to recall whether the actual NCBI Disease corpus guidelines explicitly address gene names containing disease substrings like \"breast cancer susceptibility gene,\" but the guideline text provided doesn't mention this case directly—only rules about organisms, gender, overlaps, and nested mentions. Without explicit guidance on genes, I'm inclined to think the corpus might still treat \"breast cancer\" as a disease mention even when embedded in a gene name, though I'm not fully certain.\n\nThinking about PubTator-style tagging, gene names like \"breast cancer susceptibility gene 1\" would typically be tagged as Gene without nesting a separate Disease mention inside. Since the NCBI corpus annotation guidelines focus on disease mentions but don't support nested spans within gene names, a careful annotator likely treats the whole string as a gene name and skips separately tagging \"breast cancer\" as a disease.\n\nI'll skip annotating it since there's no room for rationale in the output schema anyway. Then I note that \"breast or ovarian cancer\" later in the sentence should be a Composite Mention, and I need to find its character offset.\n\nNow I'm carefully tracking character positions through the next sentence, counting out each word and space to pin down exact offsets for \"determined the prevalence of BRCA1 alterations in a population-based series of consecutive ovarian cancer cases.\"\n\nFrom this I find \"ovarian cancer\" spans positions 375-389 as a Modifier mention within \"ovarian cancer cases.\"\n\nContinuing through the next sentence, I'm counting characters for \"This is the first population-based ovarian cancer study reporting BRCA1 alterations derived from a comprehensive screen of the entire coding...\" tracking each word's position for the entity mentions.\n\nI'm tagging \"ovarian cancer\" here as a Modifier since it describes \"study\" rather than standing alone as a disease entity, then moving into the next sentence about 107 ovarian cancer cases analyzed for BRCA1 alterations via RNase mismatch cleavage assay and sequencing, continuing to track exact character offsets for each token.\n\nContinuing the character count through \"followed by direct sequencing.\" Then I move to the next sentence about two truncating mutations, 962del4 and 3600del11, which were identified—these are mutation names rather than disease mentions, so no annotation needed there. Now I'm moving on to the sentence about both patients having a family history of breast or ovarian cancer.\n\nI calculate the character span for \"breast or ovarian cancer\" spanning positions 806-830, and this looks like a composite mention referring to two diseases, breast cancer and ovarian cancer, combined into one contiguous phrase.\n\nContinuing to track character offsets through the next sentence, which discusses several novel and previously reported uncharacterized variants that were identified, some associated with a family history of cancer, mapping each word to its exact position for annotation purposes.\n\nI'm now deciding how to classify \"cancer\" within \"family history of cancer\" — since it's used generically to refer to a family of diseases rather than a specific one, I'll tag it as DiseaseClass, consistent with the guideline to retain \"cancer\" and \"tumor\" as annotated terms.\n\nContinuing through the tokenization, I'm now stepping through the next sentence about the frequency distribution of common polymorphisms, assigning character positions as I go through phrases like \"determined in the 91 Caucasian cancer cases in this series and 24 sister controls using allele-specific amplification,\" noting \"cancer\" again as another instance to annotate.\n\nI'll go with annotating \"cancer\" as a Modifier in \"cancer cases\", consistent with how \"ovarian cancer cases\" was treated earlier, and confirm \"sister controls\" and \"allele-specific amplification\" don't involve disease mentions.\n\nMoving to the next sentence about the Q356R polymorphism's association with family history of ovarian cancer and its potential influence on ovarian cancer risk, I'm continuing the character-by-character indexing through \"The rare...\" to track positions for each token.\n\nI'm tagging \"ovarian cancer\" as SpecificDisease within the family history phrase, and \"ovarian cancer risk\" with \"ovarian cancer\" as a Modifier of \"risk.\" Moving to the next sentence about data suggesting a role for uncharacterized variants and rare polymorphisms in determining ovarian cancer risk, and the need to screen for missense alterations.\n\nStill counting characters...\n\nNow I'm cross-checking my index calculations against the actual sentence text to make sure the offsets line up correctly, verifying word lengths one by one from the start of the sentence.\n\nContinuing to track character offsets through the rest of the sentence, confirming \"BRCA1\", \"germline alterations\", and \"the ovarian cancer population\" each land at the right positions. I'm now considering whether \"ovarian cancer\" within \"the ovarian cancer population\" should be tagged as a Modifier, since it describes what kind of population is being referenced rather than naming a disease outright.\n\nThen I shift to verifying the title's offsets the same way, confirming \"ovarian cancer\" sits correctly within \"a population-based series of consecutive ovarian cancer cases\" before moving on to check the next sentence's spacing.\n\nContinuing to track the character positions through the next sentence about this being the first population-based ovarian cancer study reporting BRCA1 alterations from a comprehensive screen of the entire coding region, verifying each word and space aligns correctly.\n\nNow I'm mapping out the following sentence describing how 107 ovarian cancer cases were analyzed for BRCA1 alterations using the RNase mismatch cleavage assay with direct sequencing, continuing to confirm the character offsets word by word.\n\nI'm tracking \"ovarian cancer\" as another disease span (570-584), then moving to the next sentence about two truncating mutations, which contains no disease mentions, and starting to verify offsets for the sentence noting both patients' family history of breast or ovarian cancer.\n\nContinuing to verify character offsets for the sentence about both patients having a family history of breast or ovarian cancer, then moving into tracking the positions for the next sentence about novel uncharacterized variants also being identified.\n\nContinuing the character count, I track through \"The frequency distribution of common polymorphisms was determined in the 91 Caucasian cancer cases...\" verifying each word's position, then pause at \"cancer cases\" to consider whether \"cancer\" here needs special annotation as a modifier term.\n\nThinking about the category assignment, I reason that even though \"cancer\" is generically used in \"Caucasian cancer cases,\" since it's functioning as an attributive modifier before \"cases,\" it should be tagged as Modifier rather than left unannotated, consistent with how \"colorectal cancer\" was treated earlier. Moving past \"in this series and 24 sister controls using allele-specific amplification\" since no disease mentions appear there, I begin tracking the next sentence about the Q356R polymorphism's association with family history of ovarian cancer and its potential influence on ovarian cancer risk.\n\nI'm now carefully working through the character offsets for this sentence word by word, verifying each token's start and end position to ensure the span indices for \"ovarian cancer\" mentions will be accurate.\n\nFor the phrase \"family history of ovarian cancer,\" I'm weighing whether \"ovarian cancer\" should be tagged as SpecificDisease, since it functions as the object of the prepositional phrase describing the type of history rather than directly modifying a noun—I'll classify it as SpecificDisease.\n\nI'm continuing to verify character offsets for the second mention of \"ovarian cancer\" in the phrase about the polymorphism influencing cancer risk, confirming positions through \"risk .\" before locating the next occurrence.\n\nI mark \"ovarian cancer risk\" as Modifier here too, then move into checking offsets for the following sentence about uncharacterized variants and rare polymorphisms determining ovarian cancer risk, tracking character positions word by word through \"forms of\" so far.\n\nContinuing to verify offsets through \"polymorphisms,\" \"determining,\" \"ovarian cancer risk,\" and on through the remainder about highlighting the necessity to screen for missense and truncating mutations in this population, confirming each word's start and space position lines up correctly.\n\nNow I'm reconsidering some classification decisions: the title's \"ovarian cancer\" as a Modifier mention, \"cancer\" in \"family history of cancer\" as a DiseaseClass since it refers generically to a family of cancers, and \"breast or ovarian cancer\" as a CompositeMention. I'm also revisiting whether \"breast cancer susceptibility gene 1\" warrants annotation.\n\nSince \"breast or ovarian cancer\" is a contiguous string referring to two separate disease mentions, it gets one Composite Mention annotation per the guidelines. I'm still working through the gene name issue — \"breast cancer susceptibility gene 1 (BRCA1)\" contains the disease term \"breast cancer\" embedded within a gene name, and I'm trying to recall how the NCBI Disease corpus guidelines handle this specific case.\n\nThinking about MeSH-based disease normalization, \"breast cancer susceptibility gene\" itself isn't a disease concept, so annotators likely treated it more as a gene name than a disease mention, similar to how \"colorectal cancer families\" uses the disease term as a modifier rather than a standalone mention. Weighing the uncertainty, I estimate maybe 35-45% odds the gold annotation includes it, so I'll lean toward not annotating it.\n\nI recall similar corpora don't tag disease names embedded within gene nomenclature, so I'll skip annotating that phrase. Moving through the rest of the text, most terms like the polymorphism, mutations, and assay names aren't disease mentions, but \"cancer\" in phrases like \"Caucasian cancer cases\" and \"ovarian cancer cases\" should be retained and tagged as Modifier per the guideline that keeps general cancer/tumor terms, making sure the span matches the original text exactly.\n\nSince duplicates must all be annotated per the rule marking every mention location even within the same sentence, I'm going through the full text systematically, cataloging each occurrence of \"ovarian cancer,\" \"breast cancer,\" and \"cancer\" with their character offsets and appropriate category (Modifier, DiseaseClass, CompositeMention, or SpecificDisease) depending on context.\n\nI confirm the count reaches 12 \"cancer\" mentions total, verifying each one against the list. I check that other terms like mutations, alterations, variants, and family history don't count as separate disease mentions, and confirm \"breast or ovarian cancer\" counts as a single composite mention rather than being split.\n\nNow I'm classifying \"family history of ovarian cancer\" as a SpecificDisease mention since ovarian cancer maps to a single concept, while \"cancer\" in \"family history of cancer\" I'll treat as DiseaseClass since it spans multiple cancer types. I also note \"cancer\" appearing as a modifier in \"Caucasian cancer cases\" rather than a standalone disease mention, and I'm double-checking that \"cases\" isn't mistakenly included in any disease span before moving to verify exact character offsets for each annotation.\n\nI'm carefully recomputing character offsets for each mention by counting through the surrounding text word by word, verifying positions like \"cancer\" in \"Caucasian cancer cases\" and \"family history of cancer\" against the exact letter indices.\n\nContinuing to verify \"family history of breast or ovarian cancer\" lands at positions 806-830, then rechecking offsets for the \"One hundred and seven\" and \"first population-based ovarian cancer study\" sentences to make sure each word's character position lines up correctly.\n\nI'm also confirming assumptions about the text's formatting—whether a newline follows the title before \"The objective\" begins, and whether the document starts at offset 0 with \"Germline\"—since these affect every subsequent offset calculation.\n\nNow I'm mapping out which guideline sections to cite for each annotation type: Specific Disease mentions, Disease Class, Modifiers, and Composite Mentions each need their own guideline reference, plus I need to note that \"cancer\" and \"tumor\" are retained as exceptions under the \"What NOT to Annotate\" rules.\n\nI'm working through tricky cases like \"ovarian cancer\" appearing as a Specific Disease versus a Modifier depending on context, settling on treating title phrases like \"ovarian cancer cases\" as Modifier instances. I also need to make sure each annotation includes a concise but meaningful rationale, and that the final JSON output stays on a single line without newlines.\n\nI'm double-checking that the \"text\" field matches the original phrasing exactly, like \"breast or ovarian cancer,\" and confirming that non-disease terms like \"BRCA1,\" \"family history,\" and \"germline\" are excluded, while weighing whether generic terms like \"cancer\" in phrases such as \"family history of cancer\" fall under the excluded general-term category.\n\nSince the guidelines explicitly retain \"cancer\" and \"tumor\" despite the general-term exclusion, I'm confirming that mention gets annotated, and that \"cancer\" within \"Caucasian cancer cases\" counts as a Modifier rather than DiseaseClass since it modifies a noun phrase. I'm also confirming \"ovarian cancer\" is the correct minimal span, settling on ordering annotations by start offset, and making sure duplicate mentions within the same sentence are all captured—including reconsidering whether \"breast cancer\" nested inside \"breast cancer susceptibility gene 1\" should also be marked separately.\n\nI'm trying to recall whether PubTator-style pre-annotation would have influenced the NCBI corpus annotators on gene-disease overlaps like BRCA1, but I can't pin down a clear precedent. Given the genuine ambiguity here, I'm leaning toward following the explicit guideline language about annotating disease mentions wherever they appear, even embedded in gene names.\n\nThe \"breast cancer\" string functions similarly to the \"colorectal cancer families\" example in the guidelines—a disease name modifying a non-disease noun phrase (\"susceptibility gene 1\")—which by the stated Modifier rule suggests it shouldn't be tagged as a standalone disease mention in this context.\n\nI can't recall a decisive precedent for this exact case, so I'll lean toward not annotating the gene nomenclature portion since it's functioning as a proper name rather than a disease mention. Moving on, I'm checking other phrases like \"cancer cases\" for Modifier tagging consistency.\n\nNow I'm working through the full annotation list, verifying each disease mention's classification as SpecificDisease, DiseaseClass, Modifier, or CompositeMention based on how it's used grammatically in context — whether it stands alone, modifies another noun, refers to a family of diseases, or combines two distinct disease mentions like \"breast or ovarian cancer.\"\n\nI'm also carefully cross-checking character offsets for each annotation against the original text by counting out words and spaces letter-by-letter to confirm the start and end positions are accurate, since precise indexing matters for the final structured output. Once I've validated all eleven annotations and their guideline justifications, I'll assemble everything into the final single-line JSON response.\n\n",
+ "status": "ok",
+ "annotations": [
+  {
+   "start": 59,
+   "end": 73,
+   "text": "ovarian cancer",
+   "entity": "Modifier",
+   "rationale": "Disease name 'ovarian cancer' modifies the noun 'cases' in the title (ovarian cancer cases), so it is annotated as a Modifier.",
+   "guideline_section": "What to Annotate 3 - Modifiers",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 235,
+   "end": 249,
+   "text": "ovarian cancer",
+   "entity": "Modifier",
+   "rationale": "Disease name 'ovarian cancer' modifies the noun 'population' (ovarian cancer population), so it is annotated as a Modifier.",
+   "guideline_section": "What to Annotate 3 - Modifiers",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 375,
+   "end": 389,
+   "text": "ovarian cancer",
+   "entity": "Modifier",
+   "rationale": "Disease name 'ovarian cancer' modifies the noun 'cases' (ovarian cancer cases), so it is annotated as a Modifier.",
+   "guideline_section": "What to Annotate 3 - Modifiers",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 433,
+   "end": 447,
+   "text": "ovarian cancer",
+   "entity": "Modifier",
+   "rationale": "Disease name 'ovarian cancer' modifies the noun 'study' (ovarian cancer study), so it is annotated as a Modifier.",
+   "guideline_section": "What to Annotate 3 - Modifiers",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 570,
+   "end": 584,
+   "text": "ovarian cancer",
+   "entity": "Modifier",
+   "rationale": "Disease name 'ovarian cancer' modifies the noun 'cases' (ovarian cancer cases), so it is annotated as a Modifier.",
+   "guideline_section": "What to Annotate 3 - Modifiers",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 806,
+   "end": 830,
+   "text": "breast or ovarian cancer",
+   "entity": "CompositeMention",
+   "rationale": "The contiguous string 'breast or ovarian cancer' refers to two separate diseases (breast cancer and ovarian cancer), so it is annotated as one Composite Mention rather than split.",
+   "guideline_section": "What to Annotate 2 - Contiguous text strings (Composite Mention); Examples 7",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 981,
+   "end": 987,
+   "text": "cancer",
+   "entity": "DiseaseClass",
+   "rationale": "The generic term 'cancer' is retained by guideline and refers to a family of many specific cancers (family history of cancer), so it is a Disease Class.",
+   "guideline_section": "What to Annotate 1 - Disease Class; What NOT to Annotate 4 (cancer retained)",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 1076,
+   "end": 1082,
+   "text": "cancer",
+   "entity": "Modifier",
+   "rationale": "The retained term 'cancer' is used attributively to modify the noun 'cases' (Caucasian cancer cases), so it is annotated as a Modifier.",
+   "guideline_section": "What to Annotate 3 - Modifiers; What NOT to Annotate 4 (cancer retained)",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 1274,
+   "end": 1288,
+   "text": "ovarian cancer",
+   "entity": "SpecificDisease",
+   "rationale": "'ovarian cancer' is the complement of 'history of' rather than a noun modifier and names one specific disease, so it is a Specific Disease.",
+   "guideline_section": "What to Annotate 1 - Specific Disease",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 1339,
+   "end": 1353,
+   "text": "ovarian cancer",
+   "entity": "Modifier",
+   "rationale": "Disease name 'ovarian cancer' modifies the noun 'risk' (ovarian cancer risk), so it is annotated as a Modifier.",
+   "guideline_section": "What to Annotate 3 - Modifiers",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 1479,
+   "end": 1493,
+   "text": "ovarian cancer",
+   "entity": "Modifier",
+   "rationale": "Disease name 'ovarian cancer' modifies the noun 'risk' (ovarian cancer risk), so it is annotated as a Modifier; this duplicate occurrence is marked separately.",
+   "guideline_section": "What to Annotate 3 - Modifiers; What to Annotate 4 - Duplicate mentions",
+   "uncertain": false,
+   "raw_entity": null
+  }
+ ],
+ "json_extraction": "plain"
+}

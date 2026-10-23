@@ -1,0 +1,152 @@
+{
+ "unit": "H_xhigh__6859721__r13",
+ "arm": "H_xhigh",
+ "doc": "6859721.json",
+ "rep": 13,
+ "prompt_chars": 8995,
+ "prompt_sha256": "e7c0ede40326a3c989464676b218bde5a8af7c3d830dc4b74ecd5d83eab4f1ec",
+ "mode": "batch",
+ "batch_id": "msgbatch_01KWrs3vcgxH15Hcw7UoFGff",
+ "batch_created_utc": "2026-10-22T04:45:45+00:00",
+ "batch_ended_utc": "2026-10-22T04:52:53.499997+00:00",
+ "settings": {
+  "model": "claude-haiku-5-5",
+  "effort": "xhigh",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive",
+   "display": "summarized"
+  },
+  "output_format": "json_schema",
+  "schema_sha256": "d5140dd40e6b938f6e93e9ea0cad9f0d3f275a2d9722d1a47ba06603cc4b70d2"
+ },
+ "result_type": "succeeded",
+ "response": {
+  "id": "msg_011CgGfjRGzdEf3jofxEnkH2",
+  "model": "claude-haiku-5-5",
+  "stop_reason": "end_turn",
+  "stop_details": null
+ },
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "inference_geo": "global",
+  "input_tokens": 3777,
+  "output_tokens": 12737,
+  "output_tokens_details": {
+   "thinking_tokens": 11452
+  },
+  "service_tier": "batch",
+  "speed": "standard"
+ },
+ "content": "{\"annotations\":[{\"start\":65,\"end\":88,\"text\":\"chronic meningococcemia\",\"entity\":\"SpecificDisease\",\"rationale\":\"Chronic meningococcemia is one specific disease (meningococcal bloodstream infection) with no further categorization, so the whole phrase is annotated as a single Specific Disease mention.\",\"guideline_section\":\"What to Annotate 1 (Specific Disease); Examples 2 and 13\"},{\"start\":103,\"end\":113,\"text\":\"vasculitis\",\"entity\":\"DiseaseClass\",\"rationale\":\"Vasculitis denotes a family of multiple specific inflammatory blood-vessel diseases, so it is a Disease Class mention.\",\"guideline_section\":\"What to Annotate 1 (Disease Class); Example 10\"},{\"start\":176,\"end\":185,\"text\":\"arthritis\",\"entity\":\"DiseaseClass\",\"rationale\":\"Arthritis is a general category covering a family of joint diseases rather than one specific disease, so it is annotated as a Disease Class (grey-area term).\",\"guideline_section\":\"What to Annotate 1 (Disease Class); Example 11\"},{\"start\":192,\"end\":212,\"text\":\"cutaneous vasculitis\",\"entity\":\"DiseaseClass\",\"rationale\":\"Cutaneous vasculitis refers to a family of vasculitides affecting the skin, so it is a Disease Class mention; the full phrase is used as the minimal necessary span.\",\"guideline_section\":\"What to Annotate 1 (Disease Class) and 5 (minimum necessary span)\"},{\"start\":231,\"end\":254,\"text\":\"chronic meningococcemia\",\"entity\":\"SpecificDisease\",\"rationale\":\"Duplicate mention of the same specific disease in the abstract, which must be annotated again within the sentence/abstract.\",\"guideline_section\":\"What to Annotate 4 (Duplicate mentions)\"},{\"start\":364,\"end\":422,\"text\":\"complete deficiency of the seventh component of complement\",\"entity\":\"SpecificDisease\",\"rationale\":\"This phrase describes one specific condition (complete C7 deficiency) and is not a general term, so it is annotated as a single Specific Disease.\",\"guideline_section\":\"What to Annotate 1 (Specific Disease); Example 6\"},{\"start\":488,\"end\":517,\"text\":\"heterozygous deficiency of C7\",\"entity\":\"SpecificDisease\",\"rationale\":\"Heterozygous C7 deficiency is a specific genetic condition; the word deficiency is general on its own but is specified here by C7 and heterozygosity.\",\"guideline_section\":\"What to Annotate 1 (Specific Disease); Example 6\"},{\"start\":536,\"end\":564,\"text\":\"Chronic neisserial infection\",\"entity\":\"DiseaseClass\",\"rationale\":\"Neisserial infection refers to a family of infections caused by Neisseria species (e.g., meningococcal and gonococcal disease), so it is a Disease Class; the qualifier chronic is retained as in the example for acute Neisseria infection.\",\"guideline_section\":\"What to Annotate 1 (Disease Class); Examples 6 and 14\"},{\"start\":588,\"end\":601,\"text\":\"C7 deficiency\",\"entity\":\"SpecificDisease\",\"rationale\":\"C7 deficiency is explicitly given as a Specific Disease example in the guidelines, and it is not a general term because it names a specific complement component deficiency.\",\"guideline_section\":\"Examples 6 (C7 deficiency); What to Annotate 1 (Specific Disease)\"},{\"start\":649,\"end\":669,\"text\":\"cutaneous vasculitis\",\"entity\":\"DiseaseClass\",\"rationale\":\"Duplicate mention of the Disease Class cutaneous vasculitis within the abstract, which must be annotated again.\",\"guideline_section\":\"What to Annotate 4 (Duplicate mentions) and 1 (Disease Class)\"}]}",
+ "thinking_summary": "I need to produce the JSON output as a single line without markdown, so I'm working through the text carefully to identify entities and calculate their precise character offsets within the full title and abstract.\n\nContinuing to classify: \"chronic meningococcemia\" looks like a SpecificDisease, while \"vasculitis\" and \"cutaneous vasculitis\" seem more like DiseaseClass mentions since they describe a family of vascular inflammatory conditions. I'm also weighing whether \"C7 deficiency\" and the longer phrase \"complete deficiency of the seventh component of complement\" should be tagged as SpecificDisease, since they both describe the complement deficiency condition central to the case.\n\nNow I'm considering \"Chronic neisserial infection\" — this parallels the \"Acute Neisseria infection\" guideline example, so I'm leaning toward annotating it as SpecificDisease, though it could arguably be a DiseaseClass given it refers broadly to infections caused by Neisseria organisms.\n\nI'm also noting the duplicate \"chronic meningococcemia\" mention later in the text needs its own annotation, and weighing whether \"fever\" and \"arthritis\" qualify as disease mentions—fever seems more like a sign than a disease, while arthritis could reasonably be tagged as a DiseaseClass since it represents a broader family of joint conditions rather than a specific diagnosis.\n\nI'm going through the remaining terms: complement system components, C7, and generation counts aren't disease entities, but \"cutaneous vasculitis\" appears again later and should be tagged consistently with its earlier annotation. I'm also considering whether \"heterozygous deficiency of C7\" constitutes its own specific disease mention worth separate annotation.\n\nNow I'm working through \"complete deficiency of the seventh component of complement\" and \"C7 deficiency\" (as in Chronic neisserial infection associated with C7 deficiency) as SpecificDisease mentions, and confirming \"chronic meningococcemia\" in the title gets annotated.\n\nNext I need to carefully compute character offsets for each annotation across the full text, starting with the first sentence about absence of the seventh complement component presenting as vasculitis.\n\nCounting character positions...\n\nStill calculating character offsets...\n\nI'm continuing to map out character offsets for the entities in this sentence about C7 deficiency and distinguishing it from other causes of cutaneous vasculitis, then shifting to the next line to locate \"chronic meningococcemia\" and \"cutaneous vasculitis\" as specific disease entities with their absolute positions.\n\nCalculating the span for \"complete deficiency of the seventh component of complement\" — I'll include it since it describes the specific C7 deficiency disease, going with an inclusive approach despite some risk of over-annotation, while skipping \"absence of functional and antigenic C7\" as not a disease name itself. Then I work out the span for \"heterozygous deficiency of C7\" and move to checking the next phrase about chronic neisserial infections.\n\nContinuing through, I'm marking \"Chronic neisserial infection\" as a DiseaseClass since it could refer to multiple underlying infections, and computing spans for \"C7 deficiency\" and \"cutaneous vasculitis.\" I note that another \"C7 deficiency\" mention only appears once more in the text, and I'm deciding to skip \"fever\" as just a symptom rather than a disease.\n\nI'm now working through the title, flagging \"vasculitis\" and \"chronic meningococcemia\" as DiseaseClass entries while skipping non-disease words like \"Absence\" and \"the seventh component of complement.\" I also confirm \"cutaneous vasculitis\" and \"arthritis\" in line 2 should be DiseaseClass rather than Modifier, then start rechecking my absolute offset calculations for line 2 by re-verifying word lengths against the original text to catch any accumulated errors.\n\nStill verifying character offsets...\n\nContinuing the character count through the rest of the sentence about chronic neisserial infection and cutaneous vasculitis, then double-checking my earlier letter counts for \"compatible,\" \"Absence,\" and \"seventh\" to confirm the offset is consistent from the title onward.\n\nNow I'm working through the position indices for the second line of text, mapping the relative offsets for \"arthritis,\" \"cutaneous vasculitis,\" and \"chronic meningococcemia\" to their absolute positions by adding the line's starting offset of 115, and verifying each span matches the entity's character length before moving to the next phrase about complement deficiency.\n\nI'm double-checking the \"C7 deficiency\" occurrence and carefully re-verifying the character offsets through \"Study of the patients\" segment, confirming each word boundary and space position matches up correctly.\n\nContinuing through \"family spanning four generations showed heterozygous\" and \"members\" and \"Chronic\" offsets, everything checks out consistently. I'm now cataloging the absolute character offsets for the disease entities found so far: \"chronic meningococcemia\" and \"vasculitis\" in the title, and \"arthritis,\" \"cutaneous vasculitis,\" \"chronic meningococcemia,\" and the start of \"complete deficiency of the seventh component of complement\" in line 2.\n\nNow I'm computing offsets for the remaining entities — \"complete deficiency of the seventh component of complement,\" \"heterozygous deficiency of C7,\" \"Chronic neisserial infection,\" a second \"C7 deficiency,\" and a second \"cutaneous vasculitis\" — and cross-checking each by adding the relative offset constant of 115 to confirm they land correctly. I decide to keep \"Chronic\" attached to \"neisserial infection\" for consistency with how I treated \"chronic meningococcemia,\" and I'm leaning toward including the \"complete deficiency...\" phrase as a valid disease mention despite it reading more like a description.\n\nI'm also deciding to tag \"arthritis\" and both \"vasculitis\" mentions as DiseaseClass, then structuring everything into a single-line JSON output with start/end offsets, entity type, a rationale explaining why each mention is Specific vs. Disease Class, and a guideline_section reference pointing to the relevant annotation rule — making sure to avoid embedded quotes or newlines that would break the JSON formatting.\n\n",
+ "status": "ok",
+ "annotations": [
+  {
+   "start": 65,
+   "end": 88,
+   "text": "chronic meningococcemia",
+   "entity": "SpecificDisease",
+   "rationale": "Chronic meningococcemia is one specific disease (meningococcal bloodstream infection) with no further categorization, so the whole phrase is annotated as a single Specific Disease mention.",
+   "guideline_section": "What to Annotate 1 (Specific Disease); Examples 2 and 13",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 103,
+   "end": 113,
+   "text": "vasculitis",
+   "entity": "DiseaseClass",
+   "rationale": "Vasculitis denotes a family of multiple specific inflammatory blood-vessel diseases, so it is a Disease Class mention.",
+   "guideline_section": "What to Annotate 1 (Disease Class); Example 10",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 176,
+   "end": 185,
+   "text": "arthritis",
+   "entity": "DiseaseClass",
+   "rationale": "Arthritis is a general category covering a family of joint diseases rather than one specific disease, so it is annotated as a Disease Class (grey-area term).",
+   "guideline_section": "What to Annotate 1 (Disease Class); Example 11",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 192,
+   "end": 212,
+   "text": "cutaneous vasculitis",
+   "entity": "DiseaseClass",
+   "rationale": "Cutaneous vasculitis refers to a family of vasculitides affecting the skin, so it is a Disease Class mention; the full phrase is used as the minimal necessary span.",
+   "guideline_section": "What to Annotate 1 (Disease Class) and 5 (minimum necessary span)",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 231,
+   "end": 254,
+   "text": "chronic meningococcemia",
+   "entity": "SpecificDisease",
+   "rationale": "Duplicate mention of the same specific disease in the abstract, which must be annotated again within the sentence/abstract.",
+   "guideline_section": "What to Annotate 4 (Duplicate mentions)",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 362,
+   "end": 420,
+   "text": "complete deficiency of the seventh component of complement",
+   "entity": "SpecificDisease",
+   "rationale": "This phrase describes one specific condition (complete C7 deficiency) and is not a general term, so it is annotated as a single Specific Disease.",
+   "guideline_section": "What to Annotate 1 (Specific Disease); Example 6",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 485,
+   "end": 514,
+   "text": "heterozygous deficiency of C7",
+   "entity": "SpecificDisease",
+   "rationale": "Heterozygous C7 deficiency is a specific genetic condition; the word deficiency is general on its own but is specified here by C7 and heterozygosity.",
+   "guideline_section": "What to Annotate 1 (Specific Disease); Example 6",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 533,
+   "end": 561,
+   "text": "Chronic neisserial infection",
+   "entity": "DiseaseClass",
+   "rationale": "Neisserial infection refers to a family of infections caused by Neisseria species (e.g., meningococcal and gonococcal disease), so it is a Disease Class; the qualifier chronic is retained as in the example for acute Neisseria infection.",
+   "guideline_section": "What to Annotate 1 (Disease Class); Examples 6 and 14",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 585,
+   "end": 598,
+   "text": "C7 deficiency",
+   "entity": "SpecificDisease",
+   "rationale": "C7 deficiency is explicitly given as a Specific Disease example in the guidelines, and it is not a general term because it names a specific complement component deficiency.",
+   "guideline_section": "Examples 6 (C7 deficiency); What to Annotate 1 (Specific Disease)",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 646,
+   "end": 666,
+   "text": "cutaneous vasculitis",
+   "entity": "DiseaseClass",
+   "rationale": "Duplicate mention of the Disease Class cutaneous vasculitis within the abstract, which must be annotated again.",
+   "guideline_section": "What to Annotate 4 (Duplicate mentions) and 1 (Disease Class)",
+   "uncertain": false,
+   "raw_entity": null
+  }
+ ],
+ "json_extraction": "plain"
+}

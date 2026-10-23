@@ -11,6 +11,11 @@ one call per document; model deepseek-flash; max_tokens 64000; loop set scoring.
 
     probe   10577908 x 2 per arm = 4 calls, order A_off r1, B_on r1, A_off r2, B_on r2   -> units_probe/
     run     dev10 x 5 per arm = 100 calls, rep-major, the two arms alternate per document -> units/
+    run --arms B_on --reps 20   step 2 (approved 2026-10-21): thinking on only, repeats 6-20 = 150 calls
+
+Label spelling: from 2026-10-21 the pipeline maps "Specific Disease" and similar to the schema name
+(pipeline.normalize_entity_labels). Units saved before that are mapped the same way when a report loads
+them; the files keep what the model wrote.
 
 Each unit stores the request settings, the prompt sha256, UTC start and finish, the response's id, model,
 created, system_fingerprint and finish_reason, the full usage block, the visible content and the
@@ -43,7 +48,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "src"))
 
 from llm_guideline_moderation import iterative as it  # noqa: E402
-from llm_guideline_moderation.pipeline import annotate_with_guidelines  # noqa: E402
+from llm_guideline_moderation.pipeline import annotate_with_guidelines, normalize_entity_labels  # noqa: E402
 from llm_guideline_moderation.providers.deepseek import DeepSeekProvider  # noqa: E402
 from llm_guideline_moderation.sampling import load_sampled_document  # noqa: E402
 from llm_guideline_moderation.types import Annotation, EntityDefinition, OutputConfiguration  # noqa: E402
@@ -132,10 +137,12 @@ def render_prompt(document, guideline, entities) -> str:
     return capture.prompt
 
 
-def plan(command: str, docs: list[str]) -> list[tuple[str, str, int]]:
+def plan(command: str, docs: list[str], arms: list[str] | None = None,
+         reps: int | None = None) -> list[tuple[str, str, int]]:
+    arms = arms or list(ARMS)
     if command == "probe":
-        return [(arm, PROBE_DOC, rep) for rep in range(1, PROBE_REPS + 1) for arm in ARMS]
-    return [(arm, doc, rep) for rep in range(1, RUN_REPS + 1) for doc in docs for arm in ARMS]
+        return [(arm, PROBE_DOC, rep) for rep in range(1, PROBE_REPS + 1) for arm in arms]
+    return [(arm, doc, rep) for rep in range(1, (reps or RUN_REPS) + 1) for doc in docs for arm in arms]
 
 
 def unit_id(arm: str, doc: str, rep: int) -> str:
@@ -150,6 +157,15 @@ def load_units(unit_dir: Path) -> list[dict]:
     return [json.loads(p.read_text(encoding="utf-8")) for p in sorted(unit_dir.glob("*.json"))]
 
 
+def fix_labels(units: list[dict], entities) -> list[dict]:
+    """Apply the pipeline's label mapping to units saved before it existed (a no-op on later units)."""
+    for u in units:
+        if u.get("annotations"):
+            fixed = normalize_entity_labels([Annotation(**a) for a in u["annotations"]], entities)
+            u["annotations"] = [asdict(a) for a in fixed]
+    return units
+
+
 def spent_jpy(unit_dir: Path) -> float:
     """Recorded spending at peak price; a unit without usage counts as the worst case."""
     total = 0.0
@@ -160,7 +176,7 @@ def spent_jpy(unit_dir: Path) -> float:
 
 def cmd_execute(args: argparse.Namespace) -> None:
     guideline, documents, entities = load_inputs()
-    units = plan(args.cmd, list(documents))
+    units = plan(args.cmd, list(documents), args.arms, args.reps)
     prompts = {doc: render_prompt(documents[doc], guideline, entities) for doc in {d for _, d, _ in units}}
     unit_dir = UNIT_DIRS[args.cmd]
     budget = BUDGET_JPY[args.cmd] if args.budget_jpy is None else args.budget_jpy
@@ -275,8 +291,8 @@ def summarize(values: list[float]) -> str:
 
 
 def cmd_report(args: argparse.Namespace) -> None:
-    _, documents, _ = load_inputs()
-    units = load_units(UNIT_DIRS[args.units])
+    _, documents, entities = load_inputs()
+    units = fix_labels(load_units(UNIT_DIRS[args.units]), entities)
     report: dict = {"units": args.units, "n_units": len(units), "arms": {}}
     print(f"== {args.units}: {len(units)} unit(s) in {UNIT_DIRS[args.units].name}/ ==")
 
@@ -287,7 +303,8 @@ def cmd_report(args: argparse.Namespace) -> None:
         pred = keyset(u.get("annotations") or [])
         rows.append({
             "unit": u["unit"], "arm": u["arm"], "doc": u["doc"], "rep": u["rep"], "status": u["status"],
-            "model": u["response"]["model"], "finish_reason": u["response"]["finish_reason"],
+            "model": u["response"]["model"], "fingerprint": u["response"].get("system_fingerprint"),
+            "finish_reason": u["response"]["finish_reason"],
             "seconds": u["seconds"], "prompt_tokens": usage.get("prompt_tokens"),
             "cache_hit": usage.get("prompt_cache_hit_tokens"), "cache_miss": usage.get("prompt_cache_miss_tokens"),
             "completion_tokens": usage.get("completion_tokens"),
@@ -317,6 +334,8 @@ def cmd_report(args: argparse.Namespace) -> None:
         cell = {
             "calls": len(arm_rows), "ok": len(ok),
             "models": sorted({str(r["model"]) for r in arm_rows}),
+            # The model field only echoes the alias, so the fingerprint is the one sign of a backend change.
+            "fingerprints": sorted({str(r["fingerprint"]) for r in arm_rows}),
             "finish_reasons": {k: sum(r["finish_reason"] == k for r in arm_rows)
                                for k in sorted({str(r["finish_reason"]) for r in arm_rows})},
             "reasoning_tokens": [r["reasoning_tokens"] for r in arm_rows],
@@ -327,6 +346,7 @@ def cmd_report(args: argparse.Namespace) -> None:
         report["arms"][arm] = cell
         out = [r["completion_tokens"] or 0 for r in arm_rows]
         print(f"  {arm}: {len(ok)}/{len(arm_rows)} ok; models {cell['models']}; finish {cell['finish_reasons']}")
+        print(f"    system_fingerprint {cell['fingerprints']}")
         print(f"    output tokens {summarize(out)}; reasoning tokens "
               f"{summarize([r['reasoning_tokens'] or 0 for r in arm_rows])}")
         print(f"    seconds {summarize([r['seconds'] for r in arm_rows])}; "
@@ -367,10 +387,12 @@ def cmd_report(args: argparse.Namespace) -> None:
     print(f"\nwritten to {out.name}")
 
 
-def score_run(units: list[dict], documents: dict) -> dict:
-    """dev10 F1 per complete repeat, its SD, prediction-level stability and the followed cases, per arm."""
+def score_run(units: list[dict], documents: dict, arms=None) -> dict:
+    """dev10 F1 per complete repeat, its SD, prediction-level stability and the followed cases, per arm.
+
+    ``arms`` defaults to this runner's arms; the Haiku trial passes its own (todo-temp/haiku-trial)."""
     result: dict = {}
-    for arm in ARMS:
+    for arm in arms or ARMS:
         by_rep: dict[int, dict[str, list[dict]]] = {}
         for u in units:
             if u["arm"] == arm and u["status"] == "ok":
@@ -415,6 +437,8 @@ def main() -> None:
         p.add_argument("--dry-run", action="store_true")
         p.add_argument("--budget-jpy", type=int, default=None, help=f"defaults: {BUDGET_JPY}")
         p.add_argument("--allow-peak", action="store_true")
+        p.add_argument("--arms", nargs="+", choices=list(ARMS), default=None, help="default: both arms")
+        p.add_argument("--reps", type=int, default=None, help=f"run only; default {RUN_REPS}")
     p_report = sub.add_parser("report")
     p_report.add_argument("units", choices=list(UNIT_DIRS))
     args = parser.parse_args()

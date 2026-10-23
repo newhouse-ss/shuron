@@ -1,0 +1,50 @@
+Haiku xhigh dev10 SD 0.0150 over 20 repeats; GPT-5.4 dev10 SD 0.015
+k point 1.00; k upper 1.46 (DeepSeek plan used 1.00 and 1.29)
+  point: loop SD 0.0123, one-guideline SD 0.0063
+  upper: loop SD 0.0179, one-guideline SD 0.0092
+
+1. E1 repeats; planning annotation share of the loop variance 26%; break-even 70%
+   x5: true SD up to 2.82x the measured one; if E1 measures the planning value, the true share could be up to 100% -> second annotation not ruled out
+   x10: true SD up to 1.82x the measured one; if E1 measures the planning value, the true share could be up to 87% -> second annotation not ruled out
+   x15: true SD up to 1.58x the measured one; if E1 measures the planning value, the true share could be up to 66% -> second annotation ruled out
+   x20: true SD up to 1.45x the measured one; if E1 measures the planning value, the true share could be up to 56% -> second annotation ruled out
+
+2. P1, top-1 loops vs E1 (alpha 0.025); detected share for true gain 0.01 / 0.015 / 0.02
+   k point, 15 loops vs E1 x5: bar 0.0106; 0.46 / 0.82 / 0.97
+   k point, 15 loops vs E1 x10: bar 0.0090; 0.61 / 0.93 / 1.00
+   k point, 15 loops vs E1 x15: bar 0.0086; 0.64 / 0.96 / 1.00
+   k point, 15 loops vs E1 x20: bar 0.0084; 0.68 / 0.96 / 1.00
+   k point, 20 loops vs E1 x5: bar 0.0100; 0.51 / 0.87 / 0.98
+   k point, 20 loops vs E1 x10: bar 0.0080; 0.71 / 0.98 / 1.00
+   k point, 20 loops vs E1 x15: bar 0.0075; 0.78 / 0.99 / 1.00
+   k point, 20 loops vs E1 x20: bar 0.0073; 0.80 / 0.99 / 1.00
+   k upper, 15 loops vs E1 x5: bar 0.0155; 0.22 / 0.48 / 0.74
+   k upper, 15 loops vs E1 x10: bar 0.0132; 0.30 / 0.63 / 0.89
+   k upper, 15 loops vs E1 x15: bar 0.0126; 0.33 / 0.68 / 0.92
+   k upper, 15 loops vs E1 x20: bar 0.0123; 0.35 / 0.70 / 0.93
+   k upper, 20 loops vs E1 x5: bar 0.0146; 0.25 / 0.54 / 0.80
+   k upper, 20 loops vs E1 x10: bar 0.0117; 0.38 / 0.74 / 0.94
+   k upper, 20 loops vs E1 x15: bar 0.0110; 0.44 / 0.79 / 0.97
+   k upper, 20 loops vs E1 x20: bar 0.0107; 0.45 / 0.82 / 0.98
+
+3. P2, top-4 vs top-1 loops (alpha 0.025); detected share for true gain 0.01 / 0.015 / 0.02
+   k point, 10 vs 10 loops: bar 0.0134; 0.28 / 0.60 / 0.87
+   k point, 15 vs 15 loops: bar 0.0106; 0.45 / 0.84 / 0.98
+   k point, 20 vs 20 loops: bar 0.0091; 0.60 / 0.93 / 1.00
+   k point, 25 vs 25 loops: bar 0.0080; 0.71 / 0.97 / 1.00
+   k upper, 10 vs 10 loops: bar 0.0196; 0.14 / 0.31 / 0.52
+   k upper, 15 vs 15 loops: bar 0.0155; 0.22 / 0.47 / 0.74
+   k upper, 20 vs 20 loops: bar 0.0132; 0.29 / 0.62 / 0.88
+   k upper, 25 vs 25 loops: bar 0.0117; 0.37 / 0.74 / 0.95
+
+4. costs at JPY 0.511 per call (Batch, xhigh dev10 mean; analysis calls priced the same)
+   E1: JPY 51 per valid100 run; one top-1 loop JPY 83, one top-4 loop JPY 95
+   E1 x10 + 15 loops per method: 6,220 calls, estimate JPY 3,178, upper JPY 4,836
+   E1 x15 + 15 loops per method: 6,720 calls, estimate JPY 3,434, upper JPY 5,091
+   E1 x20 + 15 loops per method: 7,220 calls, estimate JPY 3,690, upper JPY 5,347
+   E1 x15 + 20 loops per method: 8,460 calls, estimate JPY 4,323, upper JPY 6,533
+   E1 x20 + 20 loops per method: 8,960 calls, estimate JPY 4,579, upper JPY 6,789
+
+5. rule: the fewest loops per method with P2 power >= 80% for +0.015 at k point and for +0.02 at k upper; the fewest E1 repeats that rule out the second annotation and give P1 power >= 80% for +0.015 at k point with those loops
+   loops per method: 20
+   E1 repeats: 15

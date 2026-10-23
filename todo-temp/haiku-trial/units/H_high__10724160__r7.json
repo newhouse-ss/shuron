@@ -1,0 +1,72 @@
+{
+ "unit": "H_high__10724160__r7",
+ "arm": "H_high",
+ "doc": "10724160.json",
+ "rep": 7,
+ "prompt_chars": 9438,
+ "prompt_sha256": "cccbebba64a0621c77e3ae4b38b7b6312249396a1b61dcd31abd30f859a7cf67",
+ "mode": "batch",
+ "batch_id": "msgbatch_01KWrs3vcgxH15Hcw7UoFGff",
+ "batch_created_utc": "2026-10-22T04:45:45+00:00",
+ "batch_ended_utc": "2026-10-22T04:52:53.499997+00:00",
+ "settings": {
+  "model": "claude-haiku-5-5",
+  "effort": "high",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive",
+   "display": "summarized"
+  },
+  "output_format": "json_schema",
+  "schema_sha256": "d5140dd40e6b938f6e93e9ea0cad9f0d3f275a2d9722d1a47ba06603cc4b70d2"
+ },
+ "result_type": "succeeded",
+ "response": {
+  "id": "msg_011CgGfjQzsdGxXKwprGYd7G",
+  "model": "claude-haiku-5-5",
+  "stop_reason": "end_turn",
+  "stop_details": null
+ },
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "inference_geo": "global",
+  "input_tokens": 3955,
+  "output_tokens": 4268,
+  "output_tokens_details": {
+   "thinking_tokens": 3978
+  },
+  "service_tier": "batch",
+  "speed": "standard"
+ },
+ "content": "{\"annotations\":[{\"start\":48,\"end\":72,\"text\":\"Wiskott-Aldrich syndrome\",\"entity\":\"Modifier\",\"rationale\":\"The disease name 'Wiskott-Aldrich syndrome' in the title modifies the noun 'protein' (a protein name), so it is annotated as a Modifier rather than a standalone Specific Disease mention.\",\"guideline_section\":\"3. Annotate disease mentions that are used as Modifiers for other concepts\"},{\"start\":172,\"end\":196,\"text\":\"Wiskott-Aldrich syndrome\",\"entity\":\"Modifier\",\"rationale\":\"The disease name in 'Wiskott-Aldrich syndrome protein' modifies the noun 'protein', so it is annotated as a Modifier.\",\"guideline_section\":\"3. Annotate disease mentions that are used as Modifiers for other concepts\"}]}",
+ "thinking_summary": "I'm looking at the phrase \"Wiskott-Aldrich syndrome protein\" and weighing whether it counts as a disease mention since it's actually a protein name derived from the disease, which makes the annotation tricky.\n\nI'm leaning toward treating \"Wiskott-Aldrich syndrome\" as a Modifier when it modifies \"protein,\" and considering whether the abbreviation \"WASP\" should get the same treatment, then scanning through the text to locate all occurrences of this phrase.\n\nCalculating character offsets for each mention...\n\nContinuing to count character offsets word by word through the second sentence, tracking positions for \"Rho-family\", \"GTPase\", \"Cdc42\", and \"regulate\" to pin down exact span boundaries.\n\nI locate \"Wiskott-Aldrich syndrome\" spanning 173-197 and \"WASP\" at 208-212, and now I'm considering whether WASP should also be tagged as a Modifier since it's just the abbreviated form of the same protein name.\n\nI'm second-guessing whether WASP itself should count as a disease mention since it's technically the gene/protein named after the disease, not the disease itself, which complicates whether to tag every occurrence.\n\nI think the safer approach is to only annotate the two full \"Wiskott-Aldrich syndrome\" mentions as Modifier and leave the standalone WASP abbreviation untagged, since the full-name instances are unambiguous and sufficient.\n\nNow I'm working out the exact character offsets for both occurrences by counting through the title and first line character by character to confirm where each span starts and ends.\n\nContinuing the character-by-character position count, I'm tracking exactly where each word falls in the string, fixing a small offset error in \"actin\" and confirming \"cytoskeleton\" begins at 137, then working through \"through,\" \"activation,\" \"of,\" and into \"Wiskott-Aldrich\" while double-checking the earlier span for \"Rho-family,\" \"GTPase,\" \"Cdc42,\" \"can,\" and \"regulate\" to make sure the counts align.\n\n",
+ "status": "ok",
+ "annotations": [
+  {
+   "start": 48,
+   "end": 72,
+   "text": "Wiskott-Aldrich syndrome",
+   "entity": "Modifier",
+   "rationale": "The disease name 'Wiskott-Aldrich syndrome' in the title modifies the noun 'protein' (a protein name), so it is annotated as a Modifier rather than a standalone Specific Disease mention.",
+   "guideline_section": "3. Annotate disease mentions that are used as Modifiers for other concepts",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 172,
+   "end": 196,
+   "text": "Wiskott-Aldrich syndrome",
+   "entity": "Modifier",
+   "rationale": "The disease name in 'Wiskott-Aldrich syndrome protein' modifies the noun 'protein', so it is annotated as a Modifier.",
+   "guideline_section": "3. Annotate disease mentions that are used as Modifiers for other concepts",
+   "uncertain": false,
+   "raw_entity": null
+  }
+ ],
+ "json_extraction": "plain"
+}

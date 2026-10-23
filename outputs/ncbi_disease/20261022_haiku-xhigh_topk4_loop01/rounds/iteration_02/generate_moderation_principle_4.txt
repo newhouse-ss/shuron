@@ -1,0 +1,59 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: O vs LLM: SpecificDisease (Added)
+
+**INFERRED PATTERNS:**
+## Step 1: Deep Dive Analysis
+
+**Contrast:** Every True Positive is a self-identifying disease label that can be read without the surrounding sentence:
+- Eponyms: "Coats disease", "Norrie disease", "Wiskott-Aldrich syndrome"
+- Acronyms: "SLS"
+- Fixed conventional labels: "G6PD deficiency", "ovarian cancer"
+
+The discrepancies lack this property:
+- **Ex. 1, "this condition":** A deictic anaphor with no lexical disease content. Its referent (presumably fragile X syndrome) lies outside the span, and the gold standard leaves it untagged.
+- **Ex. 2, "absence of functional and antigenic C7":** A description of a measured assay result in one patient, not a named disease. Its head noun is a state noun ("absence"), and the span does not name a disease entity.
+
+**Single boolean feature:** Does the span *name* a disease (self-contained, conventional label), or does it *refer to or describe* one (anaphoric or patient-specific finding)?
+
+**Isolate the trigger:** The model responds to disease-semantic head nouns ("condition," "deficiency") and clinical-state vocabulary ("absence of," "complete deficiency"). It tags by semantic association with disease rather than by whether the span names a disease.
+
+**Hypothesis check:** The name-versus-reference distinction explains both examples. Refinement: the word "deficiency" alone is not the trigger, because TP 1303173 tags "G6PD deficiency" as SpecificDisease. The difference is a conventional, fixed disease label versus a patient-level description of a lab finding.
+
+## Step 2: Pattern Insight
+
+- **Pattern Name:** Anaphoric and Descriptive-Finding Spans Mistaken for Named Diseases
+- **Confusion Trigger:** Demonstrative or anaphoric noun phrases ("this condition") and descriptive lab or phenotype findings ("absence of functional and antigenic C7") whose head nouns are disease-semantic ("condition," "deficiency," "absence") but which do not lexically name a disease. The model labels by disease-semantic content rather than by name status.
+- **Contrastive Evidence:** True Positives are self-contained names: eponyms ("Coats disease"), acronyms ("SLS"), and fixed compound labels ("G6PD deficiency"). Each can be interpreted without resolving a pronoun or reading a finding, and the gold standard tags them as SpecificDisease.
+- **Linguistic Rule (Proposed):**
+  1. Tag a span as **SpecificDisease** only if it is a lexicalized disease name (proper noun or eponym, acronym, or a fixed compound label such as "X syndrome" or "X deficiency" recognized as a disease term).
+  2. Tag as **O** any span headed by a determiner or demonstrative that points back to an antecedent ("this/that/such/the condition or disease"). The antecedent carries the annotation.
+  3. Tag as **O** any span describing a measured or observed patient-level finding ("absence of [molecule]," "complete deficiency of [component]" in an assay context) unless it resolves to a conventional disease label.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10545613.json):
+Snippet: "... repeats ( full mutation ) in the FMR1 gene responsible for this condition . Hypermethylation of the expanded repeat and of the FMR1 p..."
+Gold: O, LLM: SpecificDisease
+Entity Text: "this condition"
+
+Example 2 (Doc: 6859721.json):
+Snippet: "...ngococcemia . Evaluation of his complement system showed an absence of functional and antigenic C7 , compatible with a complete deficiency of the seventh comp..."
+Gold: O, LLM: SpecificDisease
+Entity Text: "absence of functional and antigenic C7"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

@@ -1,0 +1,75 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+## Step 1: Deep Dive Analysis
+
+**Contrast:** All five discrepancies share one syntactic frame: a privative state noun (*deficiency*, *absence*, *deficient activity*) + *of/in* + a noun phrase naming a specific gene product, enzyme, or complement component. None of the True Positives has this frame. Their disease mentions use lexicalized disease heads (*Coats disease*, *Norrie disease*, *fragile X syndrome*, *Wiskott-Aldrich syndrome*, *ovarian cancer*, *mental retardation*). Their molecular names (*BRCA1*, *NDP*, *norrin*, *WASP*, *FMR1*, *Q356R*) are correctly left as O.
+
+**Single separating feature:** Is the mention headed by a privative state noun whose complement is a biomolecule? This is true for all five discrepancies and false for all True Positives.
+
+**Isolate Trigger:** The model treats the biomolecule argument (*fatty aldehyde dehydrogenase*, *G6PD*, *phenylalanine hydroxylase*, *component of complement*) as a biochemical description. The schema has no Gene/Protein class, so the enzyme or complement name gets no label, and the privative head triggers no disease cue. The model does recognize lexicalized conditions, since it caught *mental retardation* as a DiseaseClass in the same family of documents. It misses conditions that are expressed compositionally.
+
+**Hypothesis Check:**
+- Example 4 uses *Absence*, not *deficiency*, so the trigger is the privative-state class, not the surface string.
+- Example 2 uses *in* rather than *of*, so both prepositions must be accepted.
+- Example 5 has a pre-head intensifier (*complete*) that gold excludes, so span boundaries matter.
+- Document 10577908 contains a boundary case: "severe reduction of FALDH enzyme catalytic activity" is not annotated. "Reduction" is not a privative disease state, and that sentence describes an in vitro finding, so the rule must exclude it.
+
+The pattern explains all five cases. The refinement is that the head must be a privative state noun, and the context must frame the state as a disease.
+
+## Step 2: Pattern Insight
+
+- **Pattern Name:** Compositional Deficiency-State Disease (Privative Nominal + Biomolecule Complement)
+- **Confusion Trigger:** A privative state noun (*deficiency*, *absence*, *deficient activity*) taking an *of/in* complement that names a gene product, enzyme, or complement component. The model reads the biomolecule as a non-disease biochemical referent, which the schema doesn't cover, and misses that the whole construction names a disease.
+- **Contrastive Evidence:** True Positives express disease through lexicalized disease heads (*syndrome*, *disease*, *cancer*, *retardation*). Molecular names inside them (*BRCA1*, *NDP*, *norrin*, *WASP*) stay O. None contains a privative-state head governing a biomolecule.
+- **Linguistic Rule (Proposed):** Label the full nominal as SpecificDisease when all of the following hold:
+  1. The head is a privative state noun from {*deficiency*, *deficient activity*, *absence*, *lack*}.
+  2. The head is followed by *of* or *in* and an NP naming a specific gene product, enzyme, or complement component. Ordinal or descriptive modifiers of that NP (e.g., "seventh component of complement") are allowed.
+  3. The construction is in a disease or clinical frame (e.g., *patients*, *presenting as*, *caused by*, *responsible for*) rather than reporting a laboratory measurement.
+
+  Span rules: include the head, the preposition, the complement NP, and an internal article (*the*). Exclude pre-head intensifiers or nouns (*complete*, *enzyme* in "enzyme deficiency in G6PD") and parenthetical abbreviations (*(FALDH)*). Do not label generic reduction or activity phrases such as "reduction of ... activity" when they describe mechanistic or in vitro findings.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10577908.json):
+Snippet: "...rized by ichthyosis , mental retardation , spasticity , and deficient activity of fatty aldehyde dehydrogenase ( FALDH ) . To define the molecular defects causing SLS , w..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficient activity of fatty aldehyde dehydrogenase"
+
+Example 2 (Doc: 1303173.json):
+Snippet: "... coexistence of the two mutations is responsible for enzyme deficiency in G6PD A- because they act synergistically in causing instability ..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficiency in G6PD"
+
+Example 3 (Doc: 1671881.json):
+Snippet: "...enylketonuria is an autosomal recessive disease caused by a deficiency of hepatic phenylalanine hydroxylase ( PAH ) . The abolition of an invariant BamHI site located ..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficiency of hepatic phenylalanine hydroxylase"
+
+Example 4 (Doc: 6859721.json):
+Snippet: "...Absence of the seventh component of complement in a patient with chronic meningococcemia presenting as vas..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "Absence of the seventh component of complement"
+
+Example 5 (Doc: 6859721.json):
+Snippet: "...of functional and antigenic C7 , compatible with a complete deficiency of the seventh component of complement . Study of the patients family spanning four generations sh..."
+Gold: SpecificDisease, LLM: O
+Entity Text: "deficiency of the seventh component of complement"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

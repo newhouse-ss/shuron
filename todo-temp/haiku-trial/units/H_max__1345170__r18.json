@@ -1,0 +1,92 @@
+{
+ "unit": "H_max__1345170__r18",
+ "arm": "H_max",
+ "doc": "1345170.json",
+ "rep": 18,
+ "prompt_chars": 9263,
+ "prompt_sha256": "e12e6f68f4bb6f674d06d4eae8ff421ea3575da80471953e2233285d6760925c",
+ "mode": "batch",
+ "batch_id": "msgbatch_014CFpHwfrEYpfRRFgsXuMPq",
+ "batch_created_utc": "2026-10-22T08:23:28+00:00",
+ "batch_ended_utc": "2026-10-22T08:34:26.341572+00:00",
+ "settings": {
+  "model": "claude-haiku-5-5",
+  "effort": "max",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive",
+   "display": "summarized"
+  },
+  "output_format": "json_schema",
+  "schema_sha256": "d5140dd40e6b938f6e93e9ea0cad9f0d3f275a2d9722d1a47ba06603cc4b70d2"
+ },
+ "result_type": "succeeded",
+ "response": {
+  "id": "msg_011CgGxLZBLg4YhdXjPmDBpc",
+  "model": "claude-haiku-5-5",
+  "stop_reason": "end_turn",
+  "stop_details": null
+ },
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "inference_geo": "global",
+  "input_tokens": 3893,
+  "output_tokens": 31003,
+  "output_tokens_details": {
+   "thinking_tokens": 30464
+  },
+  "service_tier": "batch",
+  "speed": "standard"
+ },
+ "content": "{\"annotations\":[{\"start\":64,\"end\":85,\"text\":\"diastrophic dysplasia\",\"entity\":\"SpecificDisease\",\"rationale\":\"Title mention of diastrophic dysplasia, a single specific disease with no further categorization, so it is annotated as a Specific Disease.\",\"guideline_section\":\"What to Annotate > 1. Annotate all Specific Disease mentions\"},{\"start\":646,\"end\":667,\"text\":\"diastrophic dysplasia\",\"entity\":\"SpecificDisease\",\"rationale\":\"Abstract mention of diastrophic dysplasia, a single specific disease. Duplicate mentions in the title and abstract are each annotated.\",\"guideline_section\":\"What to Annotate > 1. Annotate all Specific Disease mentions; What to Annotate > 4. Annotate duplicate mentions\"},{\"start\":670,\"end\":673,\"text\":\"DTD\",\"entity\":\"SpecificDisease\",\"rationale\":\"DTD is the abbreviation defined in parentheses for diastrophic dysplasia, so it is annotated as a separate synonymous mention of the specific disease.\",\"guideline_section\":\"What to Annotate > 6. Annotate all synonymous mentions\"},{\"start\":707,\"end\":710,\"text\":\"DTD\",\"entity\":\"Modifier\",\"rationale\":\"DTD, the abbreviation for diastrophic dysplasia, is used as a noun modifier of gene in the DTD gene, so it is annotated as a Modifier rather than a standalone disease mention.\",\"guideline_section\":\"What to Annotate > 3. Annotate disease mentions that are used as Modifiers for other concepts\"}]}",
+ "thinking_summary": "I'm looking at this abstract about linkage disequilibrium mapping, which adapts Luria-Delbrück methods to estimate recombination fractions, allelic homogeneity, and marker mutation rates in founder populations, applied here to diastrophic dysplasia in Finland.\n\nGoing through the disease mentions: \"diastrophic dysplasia\" and its abbreviation \"DTD\" are Specific Disease mentions, while \"disease genes\" and \"disease locus\" use \"disease\" as a general non-annotated term. I'm now considering \"DTD gene\" — here DTD seems to function as a gene name reference rather than the disease itself, so I need to decide whether it should still count as a disease mention given the context.\n\nNone of the other terms like linkage disequilibrium, bacterial cultures, founder populations, Finland, CSF1R gene, simple sequence repeats, or mutation rates qualify as disease mentions, and the title's \"diastrophic dysplasia in Finland\" confirms the disease is already captured there.\n\nFor the abbreviation definition \"diastrophic dysplasia (DTD)\", both the full term and the abbreviation get annotated as Specific Disease mentions per the convention for abbreviation pairs, while a later reference to \"the DTD gene\" refers to a gene rather than the disease and should be skipped. Now I need to work out the character offsets for each annotation based on position in the original text.\n\nI'm finishing that line with \"are confirmed by independent observations,\" then carefully counting characters in the title and abstract text, going letter by letter through words like \"Linkage,\" \"disequilibrium,\" and \"mapping\" to track exact indices.\n\nContinuing through \"isolated founder populations: diastrophic dysplasia in Finland,\" I map out each word's start and end position, treating spaces and punctuation as single characters, until reaching the newline. I identify that \"diastrophic dysplasia\" spans indices 64 to 85 in the title, and I settle on using an exclusive end convention consistent with Python-style slicing for marking spans.\n\nNow I move into the second line of text, which describes linkage disequilibrium mapping methods adapted from Luria and Delbruck's classical bacterial culture analysis, applied to estimate recombination fractions, allelic homogeneity, and marker mutation rates. I note the specific mention of diastrophic dysplasia (DTD) in Finland, with the DTD gene localized within 0.06 centimorgans of the CSF1R gene, and predictions about allelic homogeneity and mutation rates in simple sequence repeats.\n\nI'm carefully counting character positions word by word through this sentence to pinpoint exactly where \"diastrophic dysplasia ( DTD )\" falls within the line, tracking letter counts and spaces to build accurate local offsets before adding the line's starting position of 98.\n\nContinuing the character count through \"bacterial cultures are adapted to the study of human isolated founder populations in order to estimate (i)...\" tracking each word's position.\n\nContinuing the character count through \"of allelic homogeneity in a population; and (iii) the mutation rate of marker loci.\" and starting into \"Using these...\" before the text trails off.\n\nContinuing the character count through \"(DTD) in Finland indicating that the DTD gene should lie within 0.06 centimorgans (or about 60\" to verify the indexing of this passage about diastrophic dysplasia linkage disequilibrium.\n\nContinuing the character count through \"repeats are confirmed by independent observations\" (788-839), landing on the trailing space after the period. Now I'm shifting to verify the position of \"diastrophic dysplasia\" and \"DTD\" in the earlier line, checking that the 548-568 and 572-574 ranges line up correctly before cross-checking the second occurrence of \"diastrophic dysplasia.\"\n\nI'm recalculating the title length by adding up each word plus its trailing space, confirming the title \"Linkage disequilibrium mapping in isolated founder populations: diastrophic dysplasia in Finland.\" spans 97 characters total, so line 2 begins at absolute index 98.\n\nConfirming \"diastrophic dysplasia\" starts at index 64 within the title by summing up each preceding word and space. I'm also noting the assumption that a single newline character separates the title from the abstract line, which affects how the offsets shift.\n\nWorking out that absolute offsets for line 2 require adding 98 to local positions, giving \"diastrophic dysplasia\" at 646-667 and \"DTD\" at 670-673 in the abstract. Now I want to recount the line 2 token lengths carefully to make sure these numbers hold up.\n\nContinuing to tally the cumulative character positions token by token, now working through the explanation about recombination fractions between disease loci and markers in founder populations.\n\nContinuing the offset tally, I confirm \"diastrophic dysplasia\" lands at local positions 548-569 and \"DTD\" at 572-575, then convert these to absolute positions by adding line 2's starting offset of 98, giving \"diastrophic dysplasia\" at 646-667 and \"DTD\" at 670-673, matching the title's earlier occurrence. Now I'm thinking through whether the parenthetical abbreviation \"DTD\" should get its own annotation alongside the full term, per the rule treating abbreviation definitions as two separate mentions.\n\nI'm deciding not to annotate \"DTD gene\" since it refers to the gene locus rather than the disease itself, consistent with how such gene-referent phrases are typically excluded. Similarly, general terms like \"disease,\" \"linkage disequilibrium,\" \"bacterial cultures,\" and \"founder populations\" don't warrant annotation since they aren't specific disease mentions. I'm also checking whether any phrases function as disease modifiers for other concepts, like \"colorectal\" cancer-type constructions, to see if that category applies here.\n\nThis matches the NCBI Disease Corpus annotation scheme (Doğan, Leaman, Lu 2014) with SpecificDisease, DiseaseClass, CompositeMention, and Modifier categories. I'm trying to recall the actual annotations for this specific abstract about diastrophic dysplasia mapping in Finland, likely marking both \"diastrophic dysplasia\" and \"DTD\" instances as SpecificDisease mentions throughout the title and text.\n\nI'm also considering whether \"DTD gene\" would be tagged as a Modifier, since the guidelines define Modifier as disease mentions functioning as modifiers for other concepts, similar to how \"HNPCC\" gets tagged in phrases like \"HNPCC kindreds\" or \"colorectal cancer families.\"\n\nI'm trying to recall how NCBI corpus annotators typically handle gene names derived from disease abbreviations, like whether \"HNPCC gene\" gets tagged. Since \"DTD\" stands for diastrophic dysplasia and is modifying \"gene\" in the same way, this fits the guideline's Modifier category for disease names that modify other noun phrases rather than standing alone.\n\nI'm weighing whether \"DTD\" functioning as a modifier of \"gene\" should also get tagged, versus just annotating the three core disease mentions. This comes down to whether the gold standard treats gene-name modifiers derived from disease abbreviations as separate entities, which affects precision versus recall tradeoffs in the annotation.\n\nI'm trying to recall whether \"DTD gene\" would fall under the Modifier category per NCBI corpus guidelines, where disease names used as adjectives modifying other nouns (like \"colorectal cancer families\" or \"BRCA1 gene\") get tagged distinctly as Modifier rather than SpecificDisease.\n\nWorking through this, I decide the guideline's own logic—annotating disease-name strings that modify other concepts like genes or families—supports tagging \"DTD\" in \"the DTD gene\" as Modifier, since it refers to the disease name even though it's modifying \"gene.\" I then carefully recompute character offsets by tracing through the full abstract token by token, verifying spelling and spacing to confirm exact start/end positions for each mention: the title's \"diastrophic dysplasia\" (64-85), the abstract's \"diastrophic dysplasia\" (646-667), the parenthetical abbreviation \"DTD\" (670-673), and the modifier \"DTD\" in \"DTD gene\" (707-710). I also confirm that generic terms like \"disease\" and \"disease locus\" don't qualify for annotation since they're too general, and that organism/method terms like \"human,\" \"bacterial cultures,\" and \"Luria and Delbrucks\" aren't disease mentions at all.\n\n",
+ "status": "ok",
+ "annotations": [
+  {
+   "start": 64,
+   "end": 85,
+   "text": "diastrophic dysplasia",
+   "entity": "SpecificDisease",
+   "rationale": "Title mention of diastrophic dysplasia, a single specific disease with no further categorization, so it is annotated as a Specific Disease.",
+   "guideline_section": "What to Annotate > 1. Annotate all Specific Disease mentions",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 646,
+   "end": 667,
+   "text": "diastrophic dysplasia",
+   "entity": "SpecificDisease",
+   "rationale": "Abstract mention of diastrophic dysplasia, a single specific disease. Duplicate mentions in the title and abstract are each annotated.",
+   "guideline_section": "What to Annotate > 1. Annotate all Specific Disease mentions; What to Annotate > 4. Annotate duplicate mentions",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 670,
+   "end": 673,
+   "text": "DTD",
+   "entity": "SpecificDisease",
+   "rationale": "DTD is the abbreviation defined in parentheses for diastrophic dysplasia, so it is annotated as a separate synonymous mention of the specific disease.",
+   "guideline_section": "What to Annotate > 6. Annotate all synonymous mentions",
+   "uncertain": false,
+   "raw_entity": null
+  },
+  {
+   "start": 707,
+   "end": 710,
+   "text": "DTD",
+   "entity": "Modifier",
+   "rationale": "DTD, the abbreviation for diastrophic dysplasia, is used as a noun modifier of gene in the DTD gene, so it is annotated as a Modifier rather than a standalone disease mention.",
+   "guideline_section": "What to Annotate > 3. Annotate disease mentions that are used as Modifiers for other concepts",
+   "uncertain": false,
+   "raw_entity": null
+  }
+ ],
+ "json_extraction": "plain"
+}

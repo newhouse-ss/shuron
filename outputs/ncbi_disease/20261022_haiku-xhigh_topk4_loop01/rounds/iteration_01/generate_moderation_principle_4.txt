@@ -1,0 +1,62 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: DiseaseClass vs LLM: O (Missed)
+
+**INFERRED PATTERNS:**
+**Step 1: Deep Dive Analysis**
+
+- **Contrast:** The three discrepancies are all pathological-state descriptions in a disease-characterization context. Each denotes an abnormal condition of the patient: an abnormal developmental process ("abnormal retinal vascular development"), a deficiency state ("deficiency of norrin"), and a symptom ("spasticity"). The true positives are either named disorders (*Coats disease*, *Sjogren-Larsson syndrome*, *diastrophic dysplasia*) or a lexicalized clinical diagnosis (*mental retardation*). The single feature that separates them is whether the span is a **named disorder or a fixed diagnostic term** (which the model catches) versus a **compositional, generic description of an abnormal state** (which the model misses).
+- **Isolate Trigger:** The model appears to anchor on the explicit disease names in each sentence and treat the adjacent descriptive phrases as background pathophysiology, labeling them O. These spans have no disease-name morphology (no *disease*, *syndrome*, *-osis*, or *-opathy*). Their head nouns are generic process, deficiency, or symptom nouns, and they occur in predicate complements or coordinated lists after "characterized by," "results in," or "secondary to."
+- **Hypothesis Check:**
+  - Ex. 1: "abnormal" + process noun ("development") is a compositional pathological description, not a named disorder.
+  - Ex. 2: "deficiency of norrin" is a deficiency-state nominal. The gold label marks the state, not the protein.
+  - Ex. 3: "spasticity" is a bare symptom noun in a list of clinical features, the same structure as the TP *mental retardation*. The model caught that one and missed this one, so the cue is lexical, not structural.
+  - The trigger explains all three. The one inconsistency is that the same sentence in Ex. 3 contains "deficient activity of FALDH," which is unlabeled in the gold. This looks like annotation noise rather than a model error, and it is worth flagging.
+
+**Step 2: Pattern Formulation**
+
+- **Pattern Name:** Pathological-State Descriptors Lacking Disease-Name Morphology
+
+- **Confusion Trigger:** Generic descriptive noun phrases denoting an abnormal patient state (an abnormal developmental process, a deficiency state, or a bare symptom noun) that appear as complements or list items in disease-characterization clauses. Without disease-name morphology, the model reads them as ordinary biomedical description and tags them O.
+
+- **Contrastive Evidence:** True positives are either named disorders (*Coats disease*, *SLS*, *diastrophic dysplasia*) or lexicalized diagnostic terms (*mental retardation*) that the model recognizes as clinical conditions. The discrepancy spans are compositional or generic phrasings of the same kind of abnormal state, so they lack that recognizable lexical signal.
+
+- **Linguistic Rule (Proposed):** Label a span as **DiseaseClass** when it:
+  1. denotes an abnormal or pathological condition of the patient (a symptom, phenotypic abnormality, deficiency state, or pathological developmental process), **and**
+  2. occurs as a feature, consequence, or manifestation of a named disease (in "characterized by" lists, "results in/secondary to" clauses, or as a symptom in a disease description), **regardless of whether it carries disease-name morphology**.
+
+  Include a preceding qualifier such as "abnormal" when it modifies the pathological process noun. Do **not** label the molecular entity inside a deficiency phrase (e.g., "norrin" in "deficiency of norrin" is not an entity). Do not label normal physiological processes or gene products.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 10484772.json):
+Snippet: "... in retinal angiogenesis.
+Coats disease is characterized by abnormal retinal vascular development ( so-called retinal telangiectasis ) which results in massi..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "abnormal retinal vascular development"
+
+Example 2 (Doc: 10484772.json):
+Snippet: "...dary to somatic mutation in the NDP gene which results in a deficiency of norrin ( the protein product of the NDP gene ) within the developi..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "deficiency of norrin"
+
+Example 3 (Doc: 10577908.json):
+Snippet: "...disorder characterized by ichthyosis , mental retardation , spasticity , and deficient activity of fatty aldehyde dehydrogenase ( ..."
+Gold: DiseaseClass, LLM: O
+Entity Text: "spasticity"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

@@ -1,0 +1,66 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: DiseaseClass (Label Mismatch)
+
+**INFERRED PATTERNS:**
+**Step 1: Analysis**
+
+- **Contrast:** The gold SpecificDisease true positives are eponyms or acronyms (Coats disease, Norrie disease, SLS, G6PD deficiency). The gold DiseaseClass true positives are lowercase, descriptive nouns (mental retardation, exudative retinal detachment). The discrepant mentions (vasculitis, arthritis, fever, cutaneous vasculitis) are also lowercase descriptive nouns, so surface form alone cannot separate gold SpecificDisease from gold DiseaseClass.
+- **Isolate trigger:** The model appears to fire on a generic medical head noun, such as an *-itis* category term or a symptom noun, in a coordinated clinical list. "Vasculitis" and "arthritis" read as umbrella categories, and "fever" reads as a symptom class.
+- **Hypothesis check:** The trigger fails as a complete explanation. "Mental retardation" sits in a list ("characterized by ichthyosis, mental retardation, spasticity") that is syntactically parallel to the discrepant "presenting with fever, arthritis, and cutaneous vasculitis," yet gold labels it DiseaseClass. The separating feature is semantic: whether the term denotes the patient's own, case-level diagnosed condition, or a type-level feature used to describe a disease. Examples 1–5 all name the patient's condition. The "characterized by" and parenthetical true positives describe a disease type.
+- **Caveat:** Labeling "fever" as SpecificDisease is questionable, since a sign is not normally a disease. The gold annotation may be over-labeling presenting manifestations, so this case should be reviewed.
+
+**Step 2: Pattern Insight**
+
+- **Pattern Name:** Case-Level Presenting Condition Mistaken for a Generic Category or Symptom
+- **Confusion Trigger:** Lowercase, non-eponymous, descriptive common nouns, especially *-itis* category words (vasculitis, arthritis) and symptom nouns (fever), read as umbrella classes. The trigger is strengthened by coordinated presenting-feature lists ("presenting with X, Y, and Z") and by "presenting as" or "distinguished from other causes of" frames.
+- **Contrastive Evidence:** The SpecificDisease true positives are proper eponyms or acronyms the model handles easily. The DiseaseClass true positives ("mental retardation," "exudative retinal detachment") occur inside "characterized by" lists or parenthetical glosses that describe a named disease type (SLS, Coats disease). They are phenotypic attributes of a disease type, not the condition an individual patient has. The discrepant mentions are the patient's own condition in the case narrative.
+- **Linguistic Rule (Proposed):** Assign the label by referent, not by lexical form.
+  - Label **SpecificDisease** when the mention names the individual patient's diagnosed or presenting condition. This includes arguments of case-level predicates such as "presenting with/as," "found to have," "diagnosed with," or "distinguished from other causes of." It also includes mentions narrowed by a subtype qualifier (e.g., *cutaneous*, *chronic*).
+  - Reserve **DiseaseClass** for type-level category or feature mentions that describe a disease or a grouping of diseases, such as "characterized by," "feature of," or "a broad class of."
+  - Lowercase, *-itis*, or symptom-like morphology must not by itself trigger DiseaseClass.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 6859721.json):
+Snippet: "...ent in a patient with chronic meningococcemia presenting as vasculitis.
+A previously healthy 40-year-old man presenting with fever..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "vasculitis"
+
+Example 2 (Doc: 6859721.json):
+Snippet: "...litis.
+A previously healthy 40-year-old man presenting with fever , arthritis , and cutaneous vasculitis was found to have ch..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "fever"
+
+Example 3 (Doc: 6859721.json):
+Snippet: "... previously healthy 40-year-old man presenting with fever , arthritis , and cutaneous vasculitis was found to have chronic mening..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "arthritis"
+
+Example 4 (Doc: 6859721.json):
+Snippet: "...thy 40-year-old man presenting with fever , arthritis , and cutaneous vasculitis was found to have chronic meningococcemia . Evaluation of h..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "cutaneous vasculitis"
+
+Example 5 (Doc: 6859721.json):
+Snippet: "...7 deficiency and must be distinguished from other causes of cutaneous vasculitis . . ..."
+Gold: SpecificDisease, LLM: DiseaseClass
+Entity Text: "cutaneous vasculitis"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.

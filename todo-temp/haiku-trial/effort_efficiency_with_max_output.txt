@@ -1,0 +1,23 @@
+1. cost per call, run-to-run SD, and money for the same precision (cost x variance, Haiku high = 1.00)
+   DeepSeek B_on (standard API, off-peak): JPY 1.270/call; FN SD 1.54, F1 SD 0.0194; relative money for same precision: FN 2.99, F1 2.62
+   Haiku H_high (batch): JPY 0.315/call; FN SD 1.79, F1 SD 0.0240; relative money for same precision: FN 1.00, F1 1.00
+   Haiku H_xhigh (batch): JPY 0.511/call; FN SD 1.27, F1 SD 0.0150; relative money for same precision: FN 0.81, F1 0.63
+   Haiku H_max (batch): JPY 1.431/call; FN SD 1.29, F1 SD 0.0163; relative money for same precision: FN 2.35, F1 2.09
+
+2. F-test of variances (two-sided)
+   high vs xhigh, FN: variance ratio high/xhigh 1.99 (SD ratio xhigh/high 0.71), p 0.143
+   high vs xhigh, F1: variance ratio high/xhigh 2.58 (SD ratio xhigh/high 0.62), p 0.046
+   xhigh vs max, FN: variance ratio xhigh/max 0.97 (SD ratio max/xhigh 1.01), p 0.905
+   xhigh vs max, F1: variance ratio xhigh/max 0.84 (SD ratio max/xhigh 1.09), p 0.716
+
+3. with 20 runs per level, an F-test calls an SD difference significant only when the smaller SD is below 0.63 x the larger one
+
+4. max vs xhigh, worked out before the max batch: measured cost step high -> xhigh = 1.62x
+   if max costs 1.30x xhigh per call: worth it only if SD_max < 0.88 x SD_xhigh; runs per level to detect that with 80% power: 459
+   if max costs 1.62x xhigh per call: worth it only if SD_max < 0.79 x SD_xhigh; runs per level to detect that with 80% power: 137
+   if max costs 2.00x xhigh per call: worth it only if SD_max < 0.71 x SD_xhigh; runs per level to detect that with 80% power: 68
+   if max costs 3.00x xhigh per call: worth it only if SD_max < 0.58 x SD_xhigh; runs per level to detect that with 80% power: 28
+   measured: max costs 2.80x xhigh per call (break-even SD ratio 0.60); FN SD ratio max/xhigh 1.01
+   measured: max costs 2.80x xhigh per call (break-even SD ratio 0.60); F1 SD ratio max/xhigh 1.09
+
+5. a 20-repeat max batch on dev10 (200 calls): worst case JPY 521 (every call at the 64,000-token cap); xhigh's measured batch for comparison: JPY 102

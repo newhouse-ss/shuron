@@ -1,0 +1,66 @@
+You are an expert "AI Moderator" for an annotation task.
+Your goal is to formulate **ONE Core Moderation Principle** based on the provided Linguistic Analysis of a single dominant error pattern.
+
+**ENTITY DEFINITIONS:**
+- SpecificDisease
+- DiseaseClass
+- Modifier
+- CompositeMention
+
+**LINGUISTIC ANALYSIS (The Problem):**
+Gold: SpecificDisease vs LLM: SpecificDisease (Span Boundary Error)
+
+**INFERRED PATTERNS:**
+### Step 1: Deep-Dive Analysis
+
+**Contrast:** All four discrepancies share one construction: the head noun **"deficiency"** followed by an **of/in prepositional phrase** whose object is a gene, protein, enzyme, or complement component (*deficiency in G6PD A-*, *deficiency of hepatic phenylalanine hydroxylase*, *deficiency of the seventh component of complement*, *deficiency of C7*). Gold and LLM agree on the label, so the error is in span extent or overlap: the model treats a molecular-state phrase as a disorder mention.
+
+The True Positives avoid this. Their disease spans are compact disorder names (*Coats disease*, *Sjogren-Larsson syndrome*, *Wiskott-Aldrich syndrome protein*) or Modifier uses. Two control documents also contain the same "deficiency/deficient + of + molecule" construction, and gold leaves it unannotated:
+- 10484772: "...results in a **deficiency of norrin** (the protein product of the NDP gene)" has no annotation.
+- 10577908: "...**deficient activity of fatty aldehyde dehydrogenase**" and "**severe reduction of FALDH enzyme** catalytic activity" have no annotation.
+
+**Isolate the trigger:** The word "deficiency" resembles a disease suffix, as in "G6PD deficiency" and "Coats disease," so lexical priors push it toward SpecificDisease. The model then extends the span rightward through the PP to capture the gene or protein name, which looks like part of the disorder's name. The positional cue is that the molecular entity is post-posed and introduced by of/in, rather than premodifying a lexicalized disease term.
+
+**Hypothesis check:**
+- Example 1 (in-PP, mechanistic "responsible for enzyme deficiency in G6PD A-") fits.
+- Example 2 (causal "caused by a deficiency of…") fits. The true disease here is the preceding *phenylketonuria*, and the span describes the mechanism.
+- Examples 3 and 4 (of-PP naming a complement component or gene) fit.
+
+The trigger explains all four, but the rule needs one refinement. The same doc 1303173 correctly labels the pre-nominal compound "G6PD deficiency" (SpecificDisease) and "G6PD deficient" (Modifier). So "deficiency" is not disqualifying on its own. The distinguishing feature is whether the molecular entity is a premodifier of a lexicalized disorder name or a post-nominal complement describing the mechanism. For Examples 2–4 the gold spans aren't shown, so whether gold has a shorter span or no entity at all is inferred. The rule below holds either way.
+
+### Step 2: Pattern Insight
+
+- **Pattern Name:** Post-nominal molecular "deficiency of/in X" mechanism phrases mislabeled as SpecificDisease.
+- **Confusion Trigger:** The head noun "deficiency" (a disease-suffix-like word) followed by an of/in prepositional phrase naming a gene, protein, enzyme, or complement component. The model treats the whole "deficiency + PP" string as a disorder entity and over-extends the span to include the molecular complement.
+- **Contrastive Evidence:** In the True Positives, "deficiency of norrin" and "deficient activity of fatty aldehyde dehydrogenase" are left unannotated because they describe a biochemical state. When a disorder is named, it appears as a compact noun phrase (*G6PD deficiency*, *Coats disease*) with the molecule as premodifier, and the adjectival form ("G6PD deficient") is tagged as Modifier, not SpecificDisease.
+- **Linguistic Rule (Proposed):** Do not tag a "deficiency/deficient" phrase as SpecificDisease when the head is followed by an of/in PP whose object is a gene, protein, enzyme, or component (e.g., "deficiency of C7," "deficiency in G6PD A-"). Treat that PP as a mechanistic description: label the disorder only if a separate, lexicalized disorder name exists (e.g., "phenylketonuria," "G6PD deficiency" as a compound), and keep the span limited to that name. Do not extend a disease span across the preposition into the molecular entity. Adjectival or state uses ("deficient," "deficiency state") should be Modifier at most.
+
+**SUPPORTING EXAMPLES (Evidence):**
+Example 1 (Doc: 1303173.json):
+Snippet: "... coexistence of the two mutations is responsible for enzyme deficiency in G6PD A- because they act synergistically in causing instability ..."
+Gold: SpecificDisease, LLM: SpecificDisease
+Entity Text: "deficiency in G6PD"
+
+Example 2 (Doc: 1671881.json):
+Snippet: "...enylketonuria is an autosomal recessive disease caused by a deficiency of hepatic phenylalanine hydroxylase ( PAH ) . The abolition of an invariant BamHI site located ..."
+Gold: SpecificDisease, LLM: SpecificDisease
+Entity Text: "deficiency of hepatic phenylalanine hydroxylase"
+
+Example 3 (Doc: 6859721.json):
+Snippet: "...of functional and antigenic C7 , compatible with a complete deficiency of the seventh component of complement . Study of the patients family spanning four generations sh..."
+Gold: SpecificDisease, LLM: SpecificDisease
+Entity Text: "deficiency of the seventh component of complement"
+
+Example 4 (Doc: 6859721.json):
+Snippet: "...tients family spanning four generations showed heterozygous deficiency of C7 in five members . Chronic neisserial infection can be assoc..."
+Gold: SpecificDisease, LLM: SpecificDisease
+Entity Text: "deficiency of C7"
+
+**TASK:**
+1. Review the **Linguistic Analysis** to understand the root cause.
+2. **Synthesize** a **Single General Principle**:
+   - **Structure**: IF [Condition] THEN [Action].
+   - **Negative Constraint**: Explicitly state when this rule does **NOT** apply.
+   - **Generalization**: Phrase the rule using abstract linguistic terms (e.g., "numeric modifiers", "prepositional phrases") rather than specific words, to ensure it applies to unseen data.
+3. **Check Validity**: Ensure the principle contradicts neither the Entity Definitions nor the Current Guidelines.
+4. Return the output as a Markdown list containing just this **Single General Principle**.
