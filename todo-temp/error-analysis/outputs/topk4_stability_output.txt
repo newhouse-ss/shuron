@@ -1,0 +1,141 @@
+A. Validation: what the 9 changed top-4 guidelines fixed and broke (one run each, against the 19 original runs)
+   original runs: F1 mean 0.705, range 0.692 to 0.724
+   loop              F1 group   fixed (gene word left out rest) broken (turned Modifier left out rest)
+   top-4 loop08   0.748 above      52 (       19        5   28)     30 (              6        7   17)
+   top-4 loop04   0.744 above      55 (        6       16   33)     31 (              1       10   20)
+   top-4 loop01   0.741 above      48 (        7       15   26)     21 (              0        4   17)
+   top-4 loop09   0.718 inside     50 (        4       11   35)     40 (             16        5   19)
+   top-4 loop02   0.715 inside     37 (        3       13   21)     36 (              0        5   31)
+   top-4 loop05   0.697 inside     34 (        6        4   24)     53 (              8       25   20)
+   top-4 loop07   0.691 below      42 (       24        3   15)     54 (             26        3   25)
+   top-4 loop06   0.685 below      44 (       11       15   18)     52 (             24        4   24)
+   top-4 loop10   0.659 below      22 (        4        3   15)     77 (             13       42   22)
+   chance level, fixed 'gene word': mean 1.3, max 4
+   chance level, fixed 'left out': mean 0.8, max 3
+   chance level, fixed 'rest': mean 7.1, max 18
+   chance level, broken 'turned Modifier': mean 0.6, max 2
+   chance level, broken 'left out': mean 2.4, max 6
+   chance level, broken 'rest': mean 9.0, max 16
+   chance level for all broken: mean 12.0, max 17
+   loops above the original range (3) against loops below it (3), means: fixed 51.7 vs 36.0, broken 27.3 vs 61.0, of which turned Modifier + left out 9.3 vs 37.3
+   Spearman between validation F1 and fixed: +0.82 (n = 9)
+   Spearman between validation F1 and broken: -0.88 (n = 9)
+   Spearman between validation F1 and turned Modifier + left out: -0.73 (n = 9)
+   'turned Modifier' by construction of the mention:
+      top-4 loop08: {"after 'history of'": 6}
+      top-4 loop04: {'other': 1}
+      top-4 loop01: {}
+      top-4 loop09: {'in a list': 5, 'other': 5, 'after a risk or population noun': 3, "after 'history of'": 3}
+      top-4 loop02: {}
+      top-4 loop05: {'after a risk or population noun': 2, "after 'history of'": 3, 'in a list': 1, 'other': 2}
+      top-4 loop07: {'after a risk or population noun': 15, 'other': 2, 'in a list': 2, "after 'history of'": 7}
+      top-4 loop06: {'other': 7, 'after a risk or population noun': 6, "after 'history of'": 8, 'in a list': 3}
+      top-4 loop10: {'after a risk or population noun': 7, 'other': 3, "after 'history of'": 3}
+   'left out' by construction of the mention:
+      top-4 loop08: {'other': 2, 'in a list': 5}
+      top-4 loop04: {'other': 8, 'in a list': 2}
+      top-4 loop01: {'other': 3, 'in a list': 1}
+      top-4 loop09: {'other': 3, "after 'history of'": 2}
+      top-4 loop02: {'in a list': 1, "after 'history of'": 2, 'other': 2}
+      top-4 loop05: {'after a risk or population noun': 1, 'other': 9, 'in a list': 13, "after 'history of'": 2}
+      top-4 loop07: {'other': 1, 'in a list': 2}
+      top-4 loop06: {'other': 3, 'in a list': 1}
+      top-4 loop10: {'in a list': 15, 'other': 24, 'after a risk or population noun': 1, "after 'history of'": 2}
+
+B. What each final guideline says about five development phrases, against their development gold label
+   development gold: FH ovarian cancer: {'SpecificDisease': 1}; FH cancer: {'DiseaseClass': 1}; Caucasian cancer cases: {'Modifier': 1}; ichthyosis, spasticity: {'DiseaseClass': 2}; gene word: {'Modifier': 4}
+   development gold after 'history of': {'CompositeMention': 1, 'DiseaseClass': 1, 'SpecificDisease': 1}
+      had a family history of [breast or ovarian cancer] CompositeMention
+      with a family history of [cancer] DiseaseClass
+      with a family history of [ovarian cancer] SpecificDisease
+   development gold after a risk or population noun: {'Modifier': 1, 'SpecificDisease': 5}
+      pulation-based series of [ovarian cancer] Modifier
+      ted eyes from males with [Coats disease] SpecificDisease
+      ds from 63 kindreds with [SLS] SpecificDisease
+      All of the patients with [SLS] SpecificDisease
+      The high prevalence of [glucose 6-phosphate dehydrogenase ( G6PD ) deficiency] SpecificDisease
+      lement in a patient with [chronic meningococcemia] SpecificDisease
+   top-4 loop01 (F1 0.741): 0 contradicting
+      FH ovarian cancer: SpecificDisease (L383) agrees
+      FH cancer: DiseaseClass (L389) agrees
+      Caucasian cancer cases: no claim -
+      ichthyosis, spasticity: DiseaseClass (L631) agrees
+      gene word: Modifier (L348) agrees
+   top-4 loop02 (F1 0.715): 2 contradicting
+      FH ovarian cancer: SpecificDisease (L241) agrees
+      FH cancer: not labeled (L482) CONTRADICTS
+      Caucasian cancer cases: not labeled (L483) CONTRADICTS
+      ichthyosis, spasticity: DiseaseClass (L450) agrees
+      gene word: Modifier (L428) agrees
+   top-4 loop04 (F1 0.744): 0 contradicting
+      FH ovarian cancer: SpecificDisease (L118) agrees
+      FH cancer: no claim -
+      Caucasian cancer cases: no claim -
+      ichthyosis, spasticity: DiseaseClass (L285) agrees
+      gene word: Modifier (L122) agrees
+   top-4 loop05 (F1 0.697): 4 contradicting
+      FH ovarian cancer: Modifier (L161) CONTRADICTS
+      FH cancer: not labeled (L160) CONTRADICTS
+      Caucasian cancer cases: not labeled (L160) CONTRADICTS
+      ichthyosis, spasticity: not labeled (L273) CONTRADICTS
+      gene word: Modifier (L91) agrees
+   top-4 loop06 (F1 0.685): 1 contradicting
+      FH ovarian cancer: Modifier (L340) CONTRADICTS
+      FH cancer: no claim -
+      Caucasian cancer cases: no claim -
+      ichthyosis, spasticity: DiseaseClass (L323) agrees
+      gene word: Modifier (L171) agrees
+   top-4 loop07 (F1 0.691): 1 contradicting
+      FH ovarian cancer: Modifier (L66) CONTRADICTS
+      FH cancer: no claim -
+      Caucasian cancer cases: no claim -
+      ichthyosis, spasticity: no claim (L232) -
+      gene word: Modifier (L70) agrees
+   top-4 loop08 (F1 0.748): 2 contradicting
+      FH ovarian cancer: Modifier (L48) CONTRADICTS
+      FH cancer: no claim -
+      Caucasian cancer cases: no claim -
+      ichthyosis, spasticity: not labeled (L247) CONTRADICTS
+      gene word: Modifier (L259) agrees
+   top-4 loop09 (F1 0.718): 1 contradicting
+      FH ovarian cancer: Modifier (L132) CONTRADICTS
+      FH cancer: no claim -
+      Caucasian cancer cases: no claim -
+      ichthyosis, spasticity: review (L205) -
+      gene word: Modifier (L127) agrees
+   top-4 loop10 (F1 0.659): 4 contradicting
+      FH ovarian cancer: Modifier (L148) CONTRADICTS
+      FH cancer: not labeled (L191) CONTRADICTS
+      Caucasian cancer cases: not labeled (L191) CONTRADICTS
+      ichthyosis, spasticity: not labeled (L209) CONTRADICTS
+      gene word: Modifier (L130) agrees
+   reach of the family-history Modifier rule, by its own wording: loop05 wider (L159); loop06 wider (L150); loop07 wider (L65); loop08 history only (L48); loop09 wider (L158); loop10 wider (L146)
+   claims that contradict the development gold, by phrase: FH ovarian cancer 6, FH cancer 3, Caucasian cancer cases 3, ichthyosis, spasticity 3, gene word 0
+   claims that agree with it, by phrase: FH ovarian cancer 3, FH cancer 1, Caucasian cancer cases 0, ichthyosis, spasticity 4, gene word 9
+
+C. The round in which each contradicting claim entered the guideline, and that round on the development documents
+   (family-history rule: first kept round coded Modifier in history_tally_output.txt; other claims: first kept candidate holding the coded phrase)
+   top-4 loop02 FH cancer: round 4, dev F1 0.876 -> 0.920 (+0.044, chance 1.9%); the phrase's dev label ['O'] -> ['O']; dev gold mentions right -> wrong 0, wrong -> right 3
+   top-4 loop02 Caucasian cancer cases: round 3, dev F1 0.871 -> 0.876 (+0.004, chance 41.5%); the phrase's dev label ['Modifier'] -> ['O']; dev gold mentions right -> wrong 3, wrong -> right 2
+   top-4 loop05 FH ovarian cancer: round 1, dev F1 0.741 -> 0.767 (+0.026, chance 10.6%); the phrase's dev label ['SpecificDisease'] -> ['Modifier']; dev gold mentions right -> wrong 7, wrong -> right 8
+   top-4 loop05 FH cancer: round 1, dev F1 0.741 -> 0.767 (+0.026, chance 10.6%); the phrase's dev label ['DiseaseClass'] -> ['O']; dev gold mentions right -> wrong 7, wrong -> right 8
+   top-4 loop05 Caucasian cancer cases: round 1, dev F1 0.741 -> 0.767 (+0.026, chance 10.6%); the phrase's dev label ['Modifier'] -> ['O']; dev gold mentions right -> wrong 7, wrong -> right 8
+   top-4 loop05 ichthyosis, spasticity: round 1, dev F1 0.741 -> 0.767 (+0.026, chance 10.6%); the phrase's dev label ['DiseaseClass', 'O'] -> ['O', 'O']; dev gold mentions right -> wrong 7, wrong -> right 8
+   top-4 loop06 FH ovarian cancer: round 2, dev F1 0.835 -> 0.849 (+0.014, chance 24.7%); the phrase's dev label ['SpecificDisease'] -> ['Modifier']; dev gold mentions right -> wrong 4, wrong -> right 5
+   top-4 loop07 FH ovarian cancer: round 1, dev F1 0.759 -> 0.838 (+0.079, chance 0.0%); the phrase's dev label ['SpecificDisease'] -> ['Modifier']; dev gold mentions right -> wrong 4, wrong -> right 9
+   top-4 loop08 FH ovarian cancer: round 1, dev F1 0.774 -> 0.847 (+0.073, chance 0.0%); the phrase's dev label ['SpecificDisease'] -> ['Modifier']; dev gold mentions right -> wrong 6, wrong -> right 11
+   top-4 loop08 ichthyosis, spasticity: round 1, dev F1 0.774 -> 0.847 (+0.073, chance 0.0%); the phrase's dev label ['DiseaseClass', 'O'] -> ['O', 'O']; dev gold mentions right -> wrong 6, wrong -> right 11
+   top-4 loop09 FH ovarian cancer: round 1, dev F1 0.768 -> 0.847 (+0.079, chance 0.0%); the phrase's dev label ['SpecificDisease'] -> ['Modifier']; dev gold mentions right -> wrong 7, wrong -> right 15
+   top-4 loop10 FH ovarian cancer: round 1, dev F1 0.765 -> 0.775 (+0.010, chance 30.9%); the phrase's dev label ['SpecificDisease'] -> ['Modifier']; dev gold mentions right -> wrong 6, wrong -> right 4
+   top-4 loop10 FH cancer: round 1, dev F1 0.765 -> 0.775 (+0.010, chance 30.9%); the phrase's dev label ['DiseaseClass'] -> ['O']; dev gold mentions right -> wrong 6, wrong -> right 4
+   top-4 loop10 Caucasian cancer cases: round 2, dev F1 0.775 -> 0.797 (+0.022, chance 15.0%); the phrase's dev label ['O'] -> ['O']; dev gold mentions right -> wrong 1, wrong -> right 4
+   top-4 loop10 ichthyosis, spasticity: round 2, dev F1 0.775 -> 0.797 (+0.022, chance 15.0%); the phrase's dev label ['O', 'O'] -> ['O', 'O']; dev gold mentions right -> wrong 1, wrong -> right 4
+   15 contradicting claims entered in 9 rounds, all kept; in 12 of the 15 the round's own development run turned the phrase from right to wrong; 5 of the 9 rounds gained so little that luck alone gives that at least 1 time in 20
+
+D. Keep decisions on rounds that wrote a family-history Modifier rule where the guideline had none (history_tally_output.txt)
+   top-1: rounds that wrote it kept 1 of 6 (loop02 r1 rejected, loop03 r1 rejected, loop04 r1 rejected, loop05 r2 kept, loop06 r1 rejected, loop10 r1 rejected); other rounds kept 4 of 9
+   top-4: rounds that wrote it kept 9 of 10 (loop01 r3 kept, loop02 r1 kept, loop03 r1 rejected, loop04 r1 kept, loop05 r1 kept, loop06 r2 kept, loop07 r1 kept, loop08 r1 kept, loop09 r1 kept, loop10 r1 kept); other rounds kept 12 of 19
+   two-sided Fisher exact p: rounds that wrote it, top-1 against top-4 0.008; within top-4, rounds that wrote it against other rounds 0.201
+   all rounds: top-1 kept 5 of 15, top-4 kept 21 of 29
+
+Coded statements: 45 (9 guidelines x 5 phrases); contradict the development gold 15, agree 17, no label or sent to review 13

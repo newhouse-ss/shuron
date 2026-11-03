@@ -1,0 +1,84 @@
+A. FN side: the 495 gold mentions outside the subset. Cells: gold label x state; original mean per run, then each changed guideline minus it. Error-state rows with |delta| >= 3 in some guideline are shown; 'other' sums the rest.
+                                               orig    1-05   1-07   4-01   4-02   4-04   4-05   4-06   4-07   4-08   4-09   4-10
+   right (strict TP share)                     335.0  -14.0   +1.0  +16.0   +8.0  +13.0  -13.0   -9.0  -19.0   -4.0  +15.0  -40.0
+   DiseaseClass boundary                         5.8   -1.8   +0.2   +1.2   +7.2   -0.8   -1.8   +1.2   +2.2   +0.2   -1.8   -2.8
+   DiseaseClass label->SpecificDisease           8.4   -0.4   -0.4  +10.6   -2.4   +4.6   +6.6   +0.6   +0.6   +8.6   +1.6   +0.6
+   DiseaseClass missed                          46.7   -6.7   -5.7  -16.7  -12.7   -3.7  +17.3  -13.7   -0.7   +5.3   -3.7  +43.3
+   SpecificDisease boundary                     23.0   -4.0   -1.0   +3.0   +3.0   +1.0   +3.0   -1.0   +4.0   +2.0   +7.0   +3.0
+   SpecificDisease label->CompositeMention      11.6   -0.6   -2.6   -5.6   +0.4   -5.6   -1.6   -1.6   +1.4   -4.6   -9.6   -4.6
+   SpecificDisease label->DiseaseClass          24.1  +27.9   +1.9   -2.1   +0.9   -2.1  -12.1  +17.9   +0.9   -5.1   -2.1   -4.1
+   SpecificDisease label->Modifier               0.3   +1.7   +2.7   -0.3   -0.3   +1.7   +1.7   +4.7   +6.7   -0.3  +11.7   +1.7
+   SpecificDisease missed                       15.1   -1.1   +2.9   -2.1   -0.1   +3.9   +1.9   -4.1   +0.9   +1.9   -4.1  +11.9
+   SpecificDisease unpaired                     11.1   -0.1   +0.9   -3.1   -1.1   -6.1   +0.9   +5.9   +1.9   -1.1  -11.1   -3.1
+   other error cells (each |delta| < 3)                -1.0   -0.0   -1.0   -3.0   -6.0   -3.0   -1.0   +1.0   -3.0   -3.0   -6.0
+   by state only (all gold labels):
+   missed                                       61.8   -7.8   -0.8  -18.8  -12.8   +0.2  +19.2  -17.8   +2.2   +7.2   -7.8  +55.2
+   label->DiseaseClass                          24.1  +27.9   +1.9   -2.1   +0.9   -2.1  -12.1  +17.9   +0.9   -5.1   -2.1   -4.1
+   label->SpecificDisease                        8.4   -0.4   -0.4  +10.6   -0.4   +5.6   +6.6   +1.6   +0.6   +9.6   +1.6   +0.6
+   label->CompositeMention                      14.3   -1.3   -2.3   -6.3   -1.3   -8.3   -2.3   -1.3   +1.7   -5.3  -12.3   -7.3
+   label->Modifier                               2.9   +3.1   +2.1   -0.9   -2.9   -0.9   +0.1   +4.1   +8.1   -2.9  +11.1   -0.9
+   boundary                                     33.9   -7.9   -1.9   +5.1   +8.1   -0.9   +1.1   -0.9   +4.1   +2.1   +7.1   +0.1
+   unpaired                                     14.6   +0.4   +0.4   -3.6   +0.4   -6.6   +0.4   +5.4   +1.4   -1.6  -12.6   -3.6
+
+B. FP account: every non-strict prediction once; buckets sum to FP for every run (checked). Original mean, then each changed guideline minus it
+   boundary error, paired gold is a member              11.6   +2.4   -0.6   +4.4   -4.6   +1.4   -5.6   +7.4   -0.6   -2.6   +4.4   -0.6
+   boundary error, paired gold outside                  33.9   -7.9   -1.9   +5.1   +8.1   -0.9   +1.1   -0.9   +4.1   +2.1   +7.1   +0.1
+   extra (no gold overlap), unattributed                14.0   +3.0  +13.0   +8.0   +2.0   +7.0   +5.0  +12.0   -2.0   +1.0   -1.0   -7.0
+   label error, paired gold is a member                 34.5  +10.5   -8.5  -12.5   -2.5   -7.5   -1.5   +2.5  +16.5  -10.5   +3.5   +2.5
+   label error, paired gold outside                     49.7  +29.3   +1.3   +1.3   -3.7   -5.7   -7.7  +22.3  +11.3   -3.7   -1.7  -11.7
+   unpaired prediction, overlaps members only            0.9   +0.1   +0.1   -0.9   +0.1   +0.1   +0.1   -0.9   +0.1   +0.1   -0.9   -0.9
+   unpaired prediction, overlaps outside gold only       0.5   -0.5   -0.5   -0.5   +0.5   -0.5   -0.5   -0.5   -0.5   -0.5   +0.5   -0.5
+   FP total                                            145.2  +36.8   +2.8   +4.8   -0.2   -6.2   -9.2  +41.8  +28.8  -14.2  +11.8  -18.2
+   (a label or boundary error is one FN and one FP; the FP is attributed to the paired gold)
+
+C. top-4 loop10 outside the subset: wrong in loop10 but right in >=15 of 19 orig: 48; right in loop10 but in <=4 of 19 orig: 14
+   the broken ones by gold label and loop10 state: {('DiseaseClass', 'missed'): 32, ('SpecificDisease', 'missed'): 6, ('DiseaseClass', 'label->SpecificDisease'): 3, ('SpecificDisease', 'label->Modifier'): 2, ('SpecificDisease', 'boundary'): 2, ('SpecificDisease', 'label->CompositeMention'): 1, ('SpecificDisease', 'unpaired'): 1, ('DiseaseClass', 'boundary'): 1}
+   their strings, most frequent: {'cancers': 5, 'bone dysplasia': 5, 'tumors': 3, 'tumours': 3, 'myotonia': 3, 'breast cancer': 2, 'adrenal insufficiency': 2, 'cancer': 2, 'renal hamartomas': 2, 'nonocular tumors': 1, 'myopathy': 1, 'cataract': 1, 'male-infertility': 1, 'iris hypoplasia': 1, 'inherited metabolic disorder': 1, 'parenchymal tumours of the kidney': 1, 'papillary renal cell tumours': 1, 'renal oncocytomas': 1, 'x-linked recessive neurological disorder': 1, 'meningitis': 1, 'jt': 1, 'autosomal recessive disorder': 1, 'cerebellar degeneration': 1, 'immunodeficiency': 1, 'duarte enzyme variant of galactosemia': 1}
+   -- 9072974 295-302 gold DiseaseClass 'cancers'; right in 19/19 orig; loop10: missed
+      sentence: Mapping of homozygous deletions on human chromosome 10q23 has led to the isolation of a candidate tumor suppressor gene , PTEN , that appears to be mutated at considerable frequency in human cancers .
+      gold in sentence: [(202, 207, 'tumor', 'Modifier'), (295, 302, 'cancers', 'DiseaseClass')]
+      loop10 predictions: []
+      E1 run01 predictions: [(295, 302, 'cancers', 'DiseaseClass')]
+   -- 8968760 204-220 gold DiseaseClass 'immunodeficiency'; right in 16/19 orig; loop10: missed
+      sentence: The ATM gene is responsible for the autosomal recessive disorder ataxia-telangiectasia ( A-T ) , characterized by cerebellar degeneration , immunodeficiency and cancer predisposition .
+      gold in sentence: [(100, 128, 'autosomal recessive disorder', 'DiseaseClass'), (129, 150, 'ataxia-telangiectasia', 'SpecificDisease'), (153, 156, 'A-T', 'SpecificDisease'), (178, 201, 'cerebellar degeneration', 'DiseaseClass'), (204, 220, 'immunodeficiency', 'DiseaseClass'), (225, 246, 'cancer predisposition', 'DiseaseClass')]
+      loop10 predictions: [(129, 150, 'ataxia-telangiectasia', 'SpecificDisease'), (153, 156, 'A-T', 'SpecificDisease')]
+      E1 run01 predictions: [(100, 128, 'autosomal recessive disorder', 'DiseaseClass'), (129, 150, 'ataxia-telangiectasia', 'SpecificDisease'), (153, 156, 'A-T', 'SpecificDisease'), (178, 201, 'cerebellar degeneration', 'DiseaseClass'), (204, 220, 'immunodeficiency', 'DiseaseClass'), (225, 231, 'cancer', 'Modifier')]
+   -- 8758207 224-257 gold DiseaseClass 'parenchymal tumours of the kidney'; right in 16/19 orig; loop10: missed
+      sentence: To define the possible role of the VHL gene in the development of sporadic renal cell carcinomas , 91 different parenchymal tumours of the kidney have been investigated for mutation of the VHL gene by single strand conformation polymorphism ( SSCP ) and / or heteroduplex ( HD ) techniques .
+      gold in sentence: [(147, 150, 'VHL', 'Modifier'), (178, 208, 'sporadic renal cell carcinomas', 'SpecificDisease'), (224, 257, 'parenchymal tumours of the kidney', 'DiseaseClass'), (301, 304, 'VHL', 'Modifier')]
+      loop10 predictions: [(178, 208, 'sporadic renal cell carcinomas', 'SpecificDisease')]
+      E1 run01 predictions: [(178, 208, 'sporadic renal cell carcinomas', 'DiseaseClass'), (224, 257, 'parenchymal tumours of the kidney', 'DiseaseClass')]
+   -- 9083764 1066-1080 gold DiseaseClass 'bone dysplasia'; right in 19/19 orig; loop10: missed
+      sentence: We tentatively isolate three different types of SJS  type 1A , usually recognized in childhood , with moderate bone dysplasia , corresponding to the original descriptions of Schwartz , Jampel and Aberfeld ; type 1B , similar to type 1A but recognizable at birth , with more pronounced bone dysplasia resembling Kniest dysplasia ; and type 2 , manifest at birth , with increased mortality and bone dysplasia resembling Pyle disease .
+      gold in sentence: [(1003, 1015, 'SJS  type 1A', 'SpecificDisease'), (1066, 1080, 'bone dysplasia', 'DiseaseClass'), (1240, 1254, 'bone dysplasia', 'DiseaseClass'), (1266, 1282, 'Kniest dysplasia', 'SpecificDisease'), (1347, 1361, 'bone dysplasia', 'DiseaseClass'), (1373, 1385, 'Pyle disease', 'SpecificDisease')]
+      loop10 predictions: [(1003, 1015, 'SJS  type 1A', 'SpecificDisease'), (1266, 1282, 'Kniest dysplasia', 'SpecificDisease'), (1373, 1385, 'Pyle disease', 'SpecificDisease')]
+      E1 run01 predictions: [(1003, 1006, 'SJS', 'SpecificDisease'), (1066, 1080, 'bone dysplasia', 'DiseaseClass'), (1240, 1254, 'bone dysplasia', 'DiseaseClass'), (1266, 1282, 'Kniest dysplasia', 'SpecificDisease'), (1347, 1361, 'bone dysplasia', 'DiseaseClass'), (1373, 1385, 'Pyle disease', 'SpecificDisease')]
+
+D. All 791 gold mentions by error type (FN side; the types sum to FN in every run, checked). Original mean (min-max), then each changed guideline minus the mean (* outside the original range); second line: the part of that change on the 78 retrieved non-Modifier gold
+                                                               orig    1-05    1-07    4-01    4-02    4-04    4-05    4-06    4-07    4-08    4-09    4-10
+   gold Modifier, any error (section 4)              107.7 (97-117)  -17.7*  -15.7*  -26.7*   -3.7   -26.7*   -8.7   -26.7*  -40.7*  -50.7*  -16.7*   +3.3 
+      of which on the 78                               0.0            +0.0    +0.0    +0.0    +0.0    +0.0    +0.0    +0.0    +0.0    +0.0    +0.0    +0.0 
+   other gold labelled Modifier (section 4)            7.2 (5-10)    +17.8*   +0.8    -3.2*   -6.2*   -2.2    +4.8*  +21.8*  +31.8*   +4.8*  +18.8*   +6.8*
+      of which on the 78                               4.3           +14.7    -1.3    -2.3    -3.3    -1.3    +4.7   +17.7   +23.7    +7.7    +7.7    +7.7 
+   Specific labelled DiseaseClass                     24.2 (18-31)   +35.8*   +1.8    -1.2    +0.8    -2.2   -12.2*  +17.8*   +0.8    -5.2    -2.2    -4.2 
+      of which on the 78                               0.1            +7.9    -0.1    +0.9    -0.1    -0.1    -0.1    -0.1    -0.1    -0.1    -0.1    -0.1 
+   DiseaseClass labelled Specific                      8.4 (6-12)     -0.4    -0.4   +10.6*   -2.4    +4.6*   +6.6*   +0.6    +0.6    +8.6*   +1.6    +0.6 
+      of which on the 78                               0.0            +0.0    +0.0    +0.0    +0.0    +0.0    +0.0    +0.0    +0.0    +0.0    +0.0    +0.0 
+   Specific or DiseaseClass labelled Composite        16.3 (13-18)    -1.3    -2.3    -6.3*   -1.3    -8.3*   -2.3    -1.3    +1.7    -5.3*  -14.3*   -7.3*
+      of which on the 78                               1.9            +0.1    +0.1    +0.1    +0.1    +0.1    +0.1    +0.1    +0.1    +0.1    -1.9    +0.1 
+   DiseaseClass missed                                46.8 (39-51)    -6.8    -5.8   -15.8*   -6.8    -2.8   +23.2*  -12.8*   -0.8    +5.2*   +0.2   +50.2*
+      of which on the 78                               0.1            -0.1    -0.1    +0.9    +5.9    +0.9    +5.9    +0.9    -0.1    -0.1    +3.9    +6.9 
+   SpecificDisease missed                             17.3 (13-20)    -0.3    +3.7*   -2.3    -0.3    +3.7*   +2.7    -4.3    +0.7    +1.7    -4.3   +12.7*
+      of which on the 78                               2.2            +0.8    +0.8    -0.2    -0.2    -0.2    +0.8    -0.2    -0.2    -0.2    -0.2    +0.8 
+   boundary (non-Modifier gold)                       38.2 (30-44)   -10.2*   -4.2    +3.8    +5.8    -2.2    -1.2    -2.2    +2.8    -0.2    +8.8*   -0.2 
+      of which on the 78                               4.3            -2.3    -2.3    -1.3    -2.3    -1.3    -2.3    -1.3    -1.3    -2.3    +1.7    -0.3 
+   unpaired gold side (non-Modifier gold)             15.6 (13-19)    +0.4    +0.4    -3.6*   +0.4    -6.6*   +0.4    +5.4*   +1.4    -1.6   -13.6*   -3.6*
+      of which on the 78                               1.0            +0.0    +0.0    +0.0    +0.0    +0.0    +0.0    +0.0    +0.0    +0.0    -1.0    +0.0 
+   rest (Composite gold label errors and misses)       0.1 (0-1)      -0.1    +1.9*   -0.1    +1.9*   +0.9    -0.1    +0.9    +1.9*   +0.9    -0.1    -0.1 
+      of which on the 78                               0.0            +0.0    +0.0    +0.0    +0.0    +0.0    +0.0    +0.0    +0.0    +0.0    +0.0    +0.0 
+   extra predictions (FP side, no gold overlap)       14.0 (9-24)     +3.0   +13.0    +8.0    +2.0    +7.0    +5.0   +12.0    -2.0    +1.0    -1.0    -7.0 
+   DiseaseClass missed, changed run's count: top-1 loop05 40, top-1 loop07 41, top-4 loop01 31, top-4 loop02 40, top-4 loop04 44, top-4 loop05 70, top-4 loop06 34, top-4 loop07 46, top-4 loop08 52, top-4 loop09 47, top-4 loop10 97
+
+E. top-4 loop10, all 791 gold: wrong in loop10 but right in >=15 of 19 orig: 77; among the 495 (coded): 48; among the 78 retrieved non-Modifier gold: 15; gold Modifier: 14
+   the 78-side ones, loop10 state: {'label->Modifier': 11, 'missed': 4}

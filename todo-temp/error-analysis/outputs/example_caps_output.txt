@@ -1,0 +1,26 @@
+1. Measured, 20 loops (top-1 and top-4 loop01-10), all calls with a saved reply, annotation including the 100 validation documents of each loop; total JPY 2129
+   step                            calls  prompt chars mean / max  input tok  output tok     JPY  share tok/char
+   annotate_with_guidelines         2640        27,290 / 116,526 27,341,202  43,375,451    1930  90.7%    0.395
+   infer_discrepancy_patterns        131        10,781 /  11,525    554,137   1,086,155      47   2.2%    0.392
+   generate_moderation_principle     131         5,332 /   6,935    273,014     359,818      16   0.8%    0.391
+   refine_guidelines                  44        35,032 / 106,427    566,800   3,303,133     135   6.3%    0.370
+   batch input price used for the estimates below: JPY 39.52 per million input tokens (run_haiku.cost_jpy)
+
+2. Rebuilt 'do not break' block, 44 rounds. Check: the rebuilt capped block occurs verbatim in the rewrite prompt in 43 of 44 rounds; not in: topk1_loop01 iteration_01
+   rewrite prompt now: mean 35,032 chars (max 106,427); block now: mean 8,203 chars, listing 19.3 matched annotations
+   per-document limit lifted (5 documents): +746 chars per block (max +989), listing 35.9
+   both limits lifted (every document): +5,672 chars per block (max +7,529), listing 55.3 in 9.2 documents
+   error-example limit lifted: +231 chars per round over its analysis prompts (max +1,309)
+
+3. Estimate (added characters x measured tokens per character x batch input price; the block is in the rewrite prompt and every analysis prompt of the round)
+   per-document limit lifted   +1,144 input tokens per round, JPY 0.05 per round, JPY 2.0 over these 44 rounds
+   both limits lifted          +8,782 input tokens per round, JPY 0.35 per round, JPY 15.3 over these 44 rounds
+   error-example limit lifted  +91 input tokens per round, JPY 0.00 per round, JPY 0.2 over these 44 rounds
+   for scale: the 44 rounds and their loops cost JPY 2129 in all
+
+4. Measured cost per call of what a replay repeats
+   rewrite, top-1: 15 calls, JPY 1.05 to 3.21 (mean 1.89)
+   rewrite, top-4: 29 calls, JPY 2.78 to 5.27 (mean 3.68)
+   one annotation of the 10 development documents: JPY 5.01 to 7.52 per loop (mean 6.18)
+   replay, one arm (every round rewritten once, each candidate annotated once): about JPY 407; two arms JPY 814 (estimate from these measured costs)
+   replay of the whole round step, one arm (analysis, principles and rewrite regenerated, each candidate annotated once): about JPY 471; two arms JPY 941 (estimate from these measured costs)

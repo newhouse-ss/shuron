@@ -1,0 +1,30 @@
+Development gold: 74 mentions in 10 documents, 43 distinct strings of at least 4 characters
+Rounds: 44. The five 'do not break' documents hold 44.2 gold mentions per round (range 42-47, 60% of the development gold); the capped list shows 19.3 of them
+
+Copy rate by what the rewrite prompt showed (string x round pairs; strings already in the guideline before the round excluded)
+   class                                 eligible  copied   rate   top-1 rate   top-4 rate   examples of copied strings
+   listed                                     228     104    46%   40% of 99    50% of 129   Coats telangiectasis, G6PD deficient, ichthyosis, Sjogren-Larsson syndrome, Norrie disease, G6PD deficiency
+   principle                                   10       8    80%   100% of 2    75% of 8     fever, arthritis, spasticity, vasculitis
+   text only, right but cut by the cap        160      73    46%   39% of 76    51% of 84    autosomal recessive disorder, ichthyosis, Sjogren-Larsson syndrome, retinal telangiectasis, breast or ovarian cancer, unilateral retinal telangiectasis
+   text only, wrong before the rewrite        179      95    53%   29% of 89    77% of 90    deficiency of norrin, spasticity, deficient activity of fatty aldehyde dehydrogenase, abnormal retinal vascular development, exudative retinal detachment, deficiency in G6PD
+   not shown                                  699       1     0%   0% of 249    0% of 450    deficiency of C7
+
+One parameter, n_examples = 5, sets three limits (iterative.py): documents in the block (line 399), matched annotations listed per document (line 397), error examples per cluster in the analysis prompts (line 379)
+1. Per-document limit only: if every string that was right but cut were listed and copied at the 'listed' rate: -0.0 copied strings per round (3.6 such strings per round)
+2. Document limit: documents with at least one correct mention before the rewrite 9.2 per round (range 8-10), shown 5.0; never shown in any round: 1671881.json, 6859721.json, 8326491.json
+   'not shown' strings per round 15.9; if they were shown and copied at the rate of shown strings that were right before the rewrite (46%): about +7.2 copied strings per round (extrapolation), and the block would cover all 74 development gold mentions instead of 44.2
+3. Error-example limit: targeted clusters 131, with more than 5 errors 31 (their sizes [6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 8, 8, 8, 8, 10]); error examples not shown to the analysis step: 43
+
+Changed final guidelines: development strings copied (not in the original guideline), dev F1, validation F1
+   topk1_loop05  copied  16 of 37 (43%)   dev F1 0.809   validation F1 0.6717   gap +0.137   guideline 22,085 chars
+   topk1_loop07  copied  12 of 37 (32%)   dev F1 0.820   validation F1 0.7207   gap +0.099   guideline 23,514 chars
+   topk4_loop01  copied  21 of 37 (57%)   dev F1 0.958   validation F1 0.7411   gap +0.217   guideline 113,338 chars
+   topk4_loop02  copied  20 of 37 (54%)   dev F1 0.920   validation F1 0.7152   gap +0.205   guideline 68,553 chars
+   topk4_loop04  copied  21 of 37 (57%)   dev F1 0.865   validation F1 0.7441   gap +0.121   guideline 32,423 chars
+   topk4_loop05  copied  13 of 37 (35%)   dev F1 0.767   validation F1 0.6971   gap +0.070   guideline 20,702 chars
+   topk4_loop06  copied  20 of 37 (54%)   dev F1 0.849   validation F1 0.6855   gap +0.163   guideline 31,470 chars
+   topk4_loop07  copied  14 of 37 (38%)   dev F1 0.838   validation F1 0.6906   gap +0.148   guideline 21,461 chars
+   topk4_loop08  copied  13 of 37 (35%)   dev F1 0.847   validation F1 0.7481   gap +0.099   guideline 22,358 chars
+   topk4_loop09  copied  19 of 37 (51%)   dev F1 0.897   validation F1 0.7181   gap +0.178   guideline 42,434 chars
+   topk4_loop10  copied  17 of 37 (46%)   dev F1 0.797   validation F1 0.6589   gap +0.138   guideline 37,941 chars
+   Spearman, copied strings against: dev F1 +0.73; validation F1 +0.08; dev minus validation gap +0.70 (n = 11)

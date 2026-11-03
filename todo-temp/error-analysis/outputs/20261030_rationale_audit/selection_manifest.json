@@ -1,0 +1,1234 @@
+{
+  "algorithm": {
+    "seed": 20261030,
+    "workload_cap": 16,
+    "per_cell_target": 2,
+    "cell_order": [
+      [
+        "original",
+        "correct"
+      ],
+      [
+        "original",
+        "label"
+      ],
+      [
+        "original",
+        "boundary"
+      ],
+      [
+        "original",
+        "extra"
+      ],
+      [
+        "changed",
+        "correct"
+      ],
+      [
+        "changed",
+        "label"
+      ],
+      [
+        "changed",
+        "boundary"
+      ],
+      [
+        "changed",
+        "extra"
+      ]
+    ],
+    "algorithm": "Two round-robin passes over cell_order. Within a cell require different documents, global unique (doc,start,end), and global document count <2. Lexicographic preference: unused document, unused prediction label, smaller label count, unused guideline text hash, smaller guideline count, unused run, smaller run count, SHA256(seed|case_key). No relaxation or replacement if insufficient candidates. Assign opaque R IDs by SHA256(seed|blind|case_key) after selection.",
+    "eligibility": "unique recorded calls.json custom_id association, full keyed request hash, exact full replayed (start,end,label) multiset, unique raw item identity, scoring kind in four states",
+    "original_definition": "SHA256 of UTF-8 guideline text read with universal newline conversion equals original guideline text hash; method labels ignored",
+    "excluded_selection_inputs": [
+      "rationale",
+      "guideline_section",
+      "rationale_missingness",
+      "validation_F1"
+    ],
+    "limitation_zh": "16 是工作量上限，不是统计充分性保证；按 gold 评分状态选样，不是与 gold 无关的抽样。不因语义发现替换或追加样本。unpaired 组计数不能衡量改进。"
+  },
+  "original_guideline_sha256": "e6232d944d68e9e98c6012328add622486a743f5978e48a5a56c77ac2743002d",
+  "eligible_counts_by_cell": [
+    {
+      "guideline_group": "original",
+      "kind": "correct",
+      "eligible_predictions": 9678,
+      "eligible_documents": 97,
+      "eligible_runs": 19,
+      "prediction_labels": {
+        "Modifier": 2095,
+        "SpecificDisease": 5970,
+        "DiseaseClass": 1080,
+        "CompositeMention": 533
+      },
+      "selected": 2
+    },
+    {
+      "guideline_group": "original",
+      "kind": "label",
+      "eligible_predictions": 1600,
+      "eligible_documents": 68,
+      "eligible_runs": 19,
+      "prediction_labels": {
+        "CompositeMention": 575,
+        "SpecificDisease": 396,
+        "DiseaseClass": 493,
+        "Modifier": 136
+      },
+      "selected": 2
+    },
+    {
+      "guideline_group": "original",
+      "kind": "boundary",
+      "eligible_predictions": 865,
+      "eligible_documents": 45,
+      "eligible_runs": 19,
+      "prediction_labels": {
+        "CompositeMention": 116,
+        "SpecificDisease": 478,
+        "DiseaseClass": 132,
+        "Modifier": 139
+      },
+      "selected": 2
+    },
+    {
+      "guideline_group": "original",
+      "kind": "extra",
+      "eligible_predictions": 266,
+      "eligible_documents": 17,
+      "eligible_runs": 19,
+      "prediction_labels": {
+        "Modifier": 133,
+        "SpecificDisease": 130,
+        "CompositeMention": 3
+      },
+      "selected": 2
+    },
+    {
+      "guideline_group": "changed",
+      "kind": "correct",
+      "eligible_predictions": 5695,
+      "eligible_documents": 99,
+      "eligible_runs": 11,
+      "prediction_labels": {
+        "Modifier": 1444,
+        "DiseaseClass": 601,
+        "CompositeMention": 299,
+        "SpecificDisease": 3351
+      },
+      "selected": 2
+    },
+    {
+      "guideline_group": "changed",
+      "kind": "label",
+      "eligible_predictions": 950,
+      "eligible_documents": 72,
+      "eligible_runs": 11,
+      "prediction_labels": {
+        "DiseaseClass": 309,
+        "CompositeMention": 248,
+        "SpecificDisease": 218,
+        "Modifier": 175
+      },
+      "selected": 2
+    },
+    {
+      "guideline_group": "changed",
+      "kind": "boundary",
+      "eligible_predictions": 522,
+      "eligible_documents": 55,
+      "eligible_runs": 11,
+      "prediction_labels": {
+        "CompositeMention": 61,
+        "SpecificDisease": 290,
+        "Modifier": 101,
+        "DiseaseClass": 70
+      },
+      "selected": 2
+    },
+    {
+      "guideline_group": "changed",
+      "kind": "extra",
+      "eligible_predictions": 195,
+      "eligible_documents": 34,
+      "eligible_runs": 11,
+      "prediction_labels": {
+        "SpecificDisease": 77,
+        "Modifier": 77,
+        "DiseaseClass": 39,
+        "CompositeMention": 2
+      },
+      "selected": 2
+    }
+  ],
+  "selected": [
+    {
+      "case_key": "Pe2abf858fe283846289f",
+      "run": "20261022_haiku-xhigh_topk1_loop05",
+      "doc": "8808605",
+      "prediction_index": 0,
+      "prediction_id": "T1",
+      "start": 363,
+      "end": 431,
+      "pred_label": "SpecificDisease",
+      "pred_text": "red-blood-cell glucose-6-phosphate dehydrogenase ( G6PD ) deficiency",
+      "kind": "boundary",
+      "guideline_group": "changed",
+      "guideline_path": "outputs/ncbi_disease/20261022_haiku-xhigh_topk1_loop05/final/final_guidelines.txt",
+      "guideline_sha256": "9547c3d2ffbaf89cc82a1f5a36c903935c018e35d4445c56e9f595e25f25e301",
+      "guideline_snapshot": "guidelines/9547c3d2ffbaf89cc82a1f5a36c903935c018e35d4445c56e9f595e25f25e301.txt",
+      "text_ref": "documents/8808605.txt",
+      "prompt_sha256": "670607dd59fe19a7d3fa711e6541362d8f44c129159221c235ab9be4f19e118e",
+      "provenance_status": "exact",
+      "annotation_provenance_exact": true,
+      "reply_file": "outputs/ncbi_disease/20261022_haiku-xhigh_batchqueue/replies/9ccf9217bc4f8498bc179cd54f7239a62ac7f9df225ce1a4.json",
+      "custom_id": "9ccf9217bc4f8498bc179cd54f7239a62ac7f9df225ce1a4",
+      "raw_item_index": 0,
+      "case_id": "R01"
+    },
+    {
+      "case_key": "P0aae5dadeeaeaf893aba",
+      "run": "20261022_haiku-xhigh_e1_run07",
+      "doc": "8968760",
+      "prediction_index": 6,
+      "prediction_id": "T7",
+      "start": 225,
+      "end": 231,
+      "pred_label": "Modifier",
+      "pred_text": "cancer",
+      "kind": "label",
+      "guideline_group": "original",
+      "guideline_path": "outputs/ncbi_disease/20261022_haiku-xhigh_e1_run07/inputs/initial_guidelines.txt",
+      "guideline_sha256": "e6232d944d68e9e98c6012328add622486a743f5978e48a5a56c77ac2743002d",
+      "guideline_snapshot": "guidelines/e6232d944d68e9e98c6012328add622486a743f5978e48a5a56c77ac2743002d.txt",
+      "text_ref": "documents/8968760.txt",
+      "prompt_sha256": "5b5f183297fc879488363d8bba59432ba382f55755804a0e3ac1f99aae6b7145",
+      "provenance_status": "exact",
+      "annotation_provenance_exact": true,
+      "reply_file": "outputs/ncbi_disease/20261022_haiku-xhigh_batchqueue/replies/cc03ab672cb133510aef0a4bb2f94765bf87570814725205.json",
+      "custom_id": "cc03ab672cb133510aef0a4bb2f94765bf87570814725205",
+      "raw_item_index": 6,
+      "case_id": "R02"
+    },
+    {
+      "case_key": "P889de12e37fd14b5feae",
+      "run": "20261022_haiku-xhigh_topk4_loop08",
+      "doc": "9050868",
+      "prediction_index": 1,
+      "prediction_id": "T2",
+      "start": 500,
+      "end": 514,
+      "pred_label": "DiseaseClass",
+      "pred_text": "aortic rupture",
+      "kind": "extra",
+      "guideline_group": "changed",
+      "guideline_path": "outputs/ncbi_disease/20261022_haiku-xhigh_topk4_loop08/final/final_guidelines.txt",
+      "guideline_sha256": "0702a16394a0d9c09940086f7d6647b8392ba676ba073d6a76e2fe8820be48ce",
+      "guideline_snapshot": "guidelines/0702a16394a0d9c09940086f7d6647b8392ba676ba073d6a76e2fe8820be48ce.txt",
+      "text_ref": "documents/9050868.txt",
+      "prompt_sha256": "9fa15282fc019d1c9e7ecce01c8642f40e0d8b4c49a2ab6ac803e60db5f5c6bf",
+      "provenance_status": "exact",
+      "annotation_provenance_exact": true,
+      "reply_file": "outputs/ncbi_disease/20261022_haiku-xhigh_batchqueue/replies/546a73458f14705755fcf8affd94442f8ebc5db84963e45a.json",
+      "custom_id": "546a73458f14705755fcf8affd94442f8ebc5db84963e45a",
+      "raw_item_index": 1,
+      "case_id": "R03"
+    },
+    {
+      "case_key": "P6ebeaecda552a166698c",
+      "run": "20261022_haiku-xhigh_topk4_loop07",
+      "doc": "9144439",
+      "prediction_index": 8,
+      "prediction_id": "T9",
+      "start": 1125,
+      "end": 1129,
+      "pred_label": "Modifier",
+      "pred_text": "IDDM",
+      "kind": "label",
+      "guideline_group": "changed",
+      "guideline_path": "outputs/ncbi_disease/20261022_haiku-xhigh_topk4_loop07/final/final_guidelines.txt",
+      "guideline_sha256": "d2677c7f422d5b823b28b9f57876b77316ca55ca9e872fc636c6c18fe2167889",
+      "guideline_snapshot": "guidelines/d2677c7f422d5b823b28b9f57876b77316ca55ca9e872fc636c6c18fe2167889.txt",
+      "text_ref": "documents/9144439.txt",
+      "prompt_sha256": "7d2e53178c9bc4194e84ecbaba73bb075ef756f4cc36f047684c84a310d0c830",
+      "provenance_status": "exact",
+      "annotation_provenance_exact": true,
+      "reply_file": "outputs/ncbi_disease/20261022_haiku-xhigh_batchqueue/replies/93cbb4057d02b9f949f166522e0d69d13fd5f91eb103f72e.json",
+      "custom_id": "93cbb4057d02b9f949f166522e0d69d13fd5f91eb103f72e",
+      "raw_item_index": 8,
+      "case_id": "R04"
+    },
+    {
+      "case_key": "P9e7cfaf90b54d0350227",
+      "run": "20261022_haiku-xhigh_topk1_loop02",
+      "doc": "9272171",
+      "prediction_index": 7,
+      "prediction_id": "T8",
+      "start": 1710,
+      "end": 1724,
+      "pred_label": "SpecificDisease",
+      "pred_text": "infantile form",
+      "kind": "extra",
+      "guideline_group": "original",
+      "guideline_path": "outputs/ncbi_disease/20261022_haiku-xhigh_topk1_loop02/final/final_guidelines.txt",
+      "guideline_sha256": "e6232d944d68e9e98c6012328add622486a743f5978e48a5a56c77ac2743002d",
+      "guideline_snapshot": "guidelines/e6232d944d68e9e98c6012328add622486a743f5978e48a5a56c77ac2743002d.txt",
+      "text_ref": "documents/9272171.txt",
+      "prompt_sha256": "aeed11ee79cb0ff60d0c6e973be4f5f63754435fa5603850bbc7417a23e941af",
+      "provenance_status": "exact",
+      "annotation_provenance_exact": true,
+      "reply_file": "outputs/ncbi_disease/20261022_haiku-xhigh_batchqueue/replies/80c70eb829294c93aad9d46a2ba65f84a191b692cba0da56.json",
+      "custom_id": "80c70eb829294c93aad9d46a2ba65f84a191b692cba0da56",
+      "raw_item_index": 7,
+      "case_id": "R05"
+    },
+    {
+      "case_key": "Peb0e7a97bb6098b500b2",
+      "run": "20261022_haiku-xhigh_topk1_loop01",
+      "doc": "8649785",
+      "prediction_index": 2,
+      "prediction_id": "T3",
+      "start": 774,
+      "end": 788,
+      "pred_label": "SpecificDisease",
+      "pred_text": "leiomyosarcoma",
+      "kind": "correct",
+      "guideline_group": "original",
+      "guideline_path": "outputs/ncbi_disease/20261022_haiku-xhigh_topk1_loop01/final/final_guidelines.txt",
+      "guideline_sha256": "e6232d944d68e9e98c6012328add622486a743f5978e48a5a56c77ac2743002d",
+      "guideline_snapshot": "guidelines/e6232d944d68e9e98c6012328add622486a743f5978e48a5a56c77ac2743002d.txt",
+      "text_ref": "documents/8649785.txt",
+      "prompt_sha256": "a5749f3e32dc2fa041e9638b6450a15072f67e16e1325c73308fed728bd62c39",
+      "provenance_status": "exact",
+      "annotation_provenance_exact": true,
+      "reply_file": "outputs/ncbi_disease/20261022_haiku-xhigh_batchqueue/replies/32b85637363bf182d715f475a8a15654066469c5701ace9b.json",
+      "custom_id": "32b85637363bf182d715f475a8a15654066469c5701ace9b",
+      "raw_item_index": 2,
+      "case_id": "R06"
+    },
+    {
+      "case_key": "P29b12d0b2df78d7ac194",
+      "run": "20261022_haiku-xhigh_e1_run06",
+      "doc": "8751855",
+      "prediction_index": 1,
+      "prediction_id": "T2",
+      "start": 107,
+      "end": 120,
+      "pred_label": "SpecificDisease",
+      "pred_text": "breast cancer",
+      "kind": "correct",
+      "guideline_group": "original",
+      "guideline_path": "outputs/ncbi_disease/20261022_haiku-xhigh_e1_run06/inputs/initial_guidelines.txt",
+      "guideline_sha256": "e6232d944d68e9e98c6012328add622486a743f5978e48a5a56c77ac2743002d",
+      "guideline_snapshot": "guidelines/e6232d944d68e9e98c6012328add622486a743f5978e48a5a56c77ac2743002d.txt",
+      "text_ref": "documents/8751855.txt",
+      "prompt_sha256": "8197f95cfe7829bfefeca8f86a950bd11e768df823363145d2c7bc8ab8dfe038",
+      "provenance_status": "exact",
+      "annotation_provenance_exact": true,
+      "reply_file": "outputs/ncbi_disease/20261022_haiku-xhigh_batchqueue/replies/e3916bfc02242b05d23abb059e5599b6d6a13362a86caed1.json",
+      "custom_id": "e3916bfc02242b05d23abb059e5599b6d6a13362a86caed1",
+      "raw_item_index": 1,
+      "case_id": "R07"
+    },
+    {
+      "case_key": "P4a61b49b6d6968223608",
+      "run": "20261022_haiku-xhigh_topk4_loop04",
+      "doc": "8845838",
+      "prediction_index": 0,
+      "prediction_id": "T1",
+      "start": 1310,
+      "end": 1337,
+      "pred_label": "CompositeMention",
+      "pred_text": "cardiac and muscle symptoms",
+      "kind": "extra",
+      "guideline_group": "changed",
+      "guideline_path": "outputs/ncbi_disease/20261022_haiku-xhigh_topk4_loop04/final/final_guidelines.txt",
+      "guideline_sha256": "8834ea8307a07ffe54f8f6f6c611563513a94e624656d9a445e878f5c6a24345",
+      "guideline_snapshot": "guidelines/8834ea8307a07ffe54f8f6f6c611563513a94e624656d9a445e878f5c6a24345.txt",
+      "text_ref": "documents/8845838.txt",
+      "prompt_sha256": "3389fd5599b6e4eef8bed97cda5b81b2fb6b74ad738bd780a365cf54f8aaaccd",
+      "provenance_status": "exact",
+      "annotation_provenance_exact": true,
+      "reply_file": "outputs/ncbi_disease/20261022_haiku-xhigh_batchqueue/replies/e4d2c51a2d9f2435961a3bf36f4da10cb9d8d99d54ae5476.json",
+      "custom_id": "e4d2c51a2d9f2435961a3bf36f4da10cb9d8d99d54ae5476",
+      "raw_item_index": 0,
+      "case_id": "R08"
+    },
+    {
+      "case_key": "P13d09194cc32a77fa191",
+      "run": "20261022_haiku-xhigh_topk4_loop01",
+      "doc": "8828602",
+      "prediction_index": 3,
+      "prediction_id": "T4",
+      "start": 74,
+      "end": 102,
+      "pred_label": "DiseaseClass",
+      "pred_text": "autosomal recessive disorder",
+      "kind": "correct",
+      "guideline_group": "changed",
+      "guideline_path": "outputs/ncbi_disease/20261022_haiku-xhigh_topk4_loop01/final/final_guidelines.txt",
+      "guideline_sha256": "a094230a404147d3aa7e3ab2e06659c744db8e4e9453dcb58dff17a64043939f",
+      "guideline_snapshot": "guidelines/a094230a404147d3aa7e3ab2e06659c744db8e4e9453dcb58dff17a64043939f.txt",
+      "text_ref": "documents/8828602.txt",
+      "prompt_sha256": "32c0eed4de098285249efed5b2d95e26b13e21ff41a53409aa4e7b2344e80294",
+      "provenance_status": "exact",
+      "annotation_provenance_exact": true,
+      "reply_file": "outputs/ncbi_disease/20261022_haiku-xhigh_batchqueue/replies/1cf86e6ab55efa441d5d535615db25f922c616258c7aec69.json",
+      "custom_id": "1cf86e6ab55efa441d5d535615db25f922c616258c7aec69",
+      "raw_item_index": 3,
+      "case_id": "R09"
+    },
+    {
+      "case_key": "P73771c4921e54c21c7fc",
+      "run": "20261022_haiku-xhigh_e1_run09",
+      "doc": "8666397",
+      "prediction_index": 3,
+      "prediction_id": "T4",
+      "start": 943,
+      "end": 966,
+      "pred_label": "DiseaseClass",
+      "pred_text": "lymphoreticular disease",
+      "kind": "boundary",
+      "guideline_group": "original",
+      "guideline_path": "outputs/ncbi_disease/20261022_haiku-xhigh_e1_run09/inputs/initial_guidelines.txt",
+      "guideline_sha256": "e6232d944d68e9e98c6012328add622486a743f5978e48a5a56c77ac2743002d",
+      "guideline_snapshot": "guidelines/e6232d944d68e9e98c6012328add622486a743f5978e48a5a56c77ac2743002d.txt",
+      "text_ref": "documents/8666397.txt",
+      "prompt_sha256": "171d4f83312acdb097e379a59a712dc4f2017ab89cc45d76e87deebed6e7433d",
+      "provenance_status": "exact",
+      "annotation_provenance_exact": true,
+      "reply_file": "outputs/ncbi_disease/20261022_haiku-xhigh_batchqueue/replies/8c5d111719a5c8818060fb0c7e8c4e0fbe3ba2ce3d9df8b3.json",
+      "custom_id": "8c5d111719a5c8818060fb0c7e8c4e0fbe3ba2ce3d9df8b3",
+      "raw_item_index": 3,
+      "case_id": "R10"
+    },
+    {
+      "case_key": "P87659131886d0baaf520",
+      "run": "20261022_haiku-xhigh_topk1_loop10",
+      "doc": "8931695",
+      "prediction_index": 17,
+      "prediction_id": "T18",
+      "start": 1701,
+      "end": 1711,
+      "pred_label": "CompositeMention",
+      "pred_text": "AO2 or DTD",
+      "kind": "label",
+      "guideline_group": "original",
+      "guideline_path": "outputs/ncbi_disease/20261022_haiku-xhigh_topk1_loop10/final/final_guidelines.txt",
+      "guideline_sha256": "e6232d944d68e9e98c6012328add622486a743f5978e48a5a56c77ac2743002d",
+      "guideline_snapshot": "guidelines/e6232d944d68e9e98c6012328add622486a743f5978e48a5a56c77ac2743002d.txt",
+      "text_ref": "documents/8931695.txt",
+      "prompt_sha256": "819f000897fccd3a000893bd3749d4b7b62f281f8a1ebdea4ba1cbd675295340",
+      "provenance_status": "exact",
+      "annotation_provenance_exact": true,
+      "reply_file": "outputs/ncbi_disease/20261022_haiku-xhigh_batchqueue/replies/be17aea25d2bb2dd4d6abc3570797ae9e88d0816030e06ba.json",
+      "custom_id": "be17aea25d2bb2dd4d6abc3570797ae9e88d0816030e06ba",
+      "raw_item_index": 17,
+      "case_id": "R11"
+    },
+    {
+      "case_key": "Pa69e4aa8d41d2f56411c",
+      "run": "20261022_haiku-xhigh_topk1_loop04",
+      "doc": "8640236",
+      "prediction_index": 5,
+      "prediction_id": "T6",
+      "start": 469,
+      "end": 494,
+      "pred_label": "CompositeMention",
+      "pred_text": "breast and ovarian cancer",
+      "kind": "boundary",
+      "guideline_group": "original",
+      "guideline_path": "outputs/ncbi_disease/20261022_haiku-xhigh_topk1_loop04/final/final_guidelines.txt",
+      "guideline_sha256": "e6232d944d68e9e98c6012328add622486a743f5978e48a5a56c77ac2743002d",
+      "guideline_snapshot": "guidelines/e6232d944d68e9e98c6012328add622486a743f5978e48a5a56c77ac2743002d.txt",
+      "text_ref": "documents/8640236.txt",
+      "prompt_sha256": "770e740713ae4fe77c081f92b0fcd42a2c283b9ff143c983825e04d9abc90e37",
+      "provenance_status": "exact",
+      "annotation_provenance_exact": true,
+      "reply_file": "outputs/ncbi_disease/20261022_haiku-xhigh_batchqueue/replies/a77f24e99362135be7f48eb4048317fc4bd6efca7c1a9e8b.json",
+      "custom_id": "a77f24e99362135be7f48eb4048317fc4bd6efca7c1a9e8b",
+      "raw_item_index": 5,
+      "case_id": "R12"
+    },
+    {
+      "case_key": "P9edf622e0513eb359cf0",
+      "run": "20261022_haiku-xhigh_topk4_loop06",
+      "doc": "8968716",
+      "prediction_index": 8,
+      "prediction_id": "T9",
+      "start": 1389,
+      "end": 1395,
+      "pred_label": "Modifier",
+      "pred_text": "cancer",
+      "kind": "label",
+      "guideline_group": "changed",
+      "guideline_path": "outputs/ncbi_disease/20261022_haiku-xhigh_topk4_loop06/final/final_guidelines.txt",
+      "guideline_sha256": "8893b2fb9b8c95539b9fc5d35e47b0b570f3ee3a310bbbea71971fa6d05be91e",
+      "guideline_snapshot": "guidelines/8893b2fb9b8c95539b9fc5d35e47b0b570f3ee3a310bbbea71971fa6d05be91e.txt",
+      "text_ref": "documents/8968716.txt",
+      "prompt_sha256": "2fac5cb0974450c65b79713f3427107168cc331f908cf34884359823fd7b12ce",
+      "provenance_status": "exact",
+      "annotation_provenance_exact": true,
+      "reply_file": "outputs/ncbi_disease/20261022_haiku-xhigh_batchqueue/replies/7f4bca1846ed85d07b5c3d960704c2e3f345f120a1363508.json",
+      "custom_id": "7f4bca1846ed85d07b5c3d960704c2e3f345f120a1363508",
+      "raw_item_index": 8,
+      "case_id": "R13"
+    },
+    {
+      "case_key": "P99f75dff23c5db9d8317",
+      "run": "20261022_haiku-xhigh_topk1_loop03",
+      "doc": "9012409",
+      "prediction_index": 2,
+      "prediction_id": "T3",
+      "start": 307,
+      "end": 313,
+      "pred_label": "Modifier",
+      "pred_text": "Duarte",
+      "kind": "extra",
+      "guideline_group": "original",
+      "guideline_path": "outputs/ncbi_disease/20261022_haiku-xhigh_topk1_loop03/final/final_guidelines.txt",
+      "guideline_sha256": "e6232d944d68e9e98c6012328add622486a743f5978e48a5a56c77ac2743002d",
+      "guideline_snapshot": "guidelines/e6232d944d68e9e98c6012328add622486a743f5978e48a5a56c77ac2743002d.txt",
+      "text_ref": "documents/9012409.txt",
+      "prompt_sha256": "dd781bfefc111bb07eabc8ce438567962ebe42af58e73951c24f78ec7035b318",
+      "provenance_status": "exact",
+      "annotation_provenance_exact": true,
+      "reply_file": "outputs/ncbi_disease/20261022_haiku-xhigh_batchqueue/replies/04339970d7e1f70634408703e633e66bd5fb997e3dd14dea.json",
+      "custom_id": "04339970d7e1f70634408703e633e66bd5fb997e3dd14dea",
+      "raw_item_index": 2,
+      "case_id": "R14"
+    },
+    {
+      "case_key": "Pc4d64215e98d430a601f",
+      "run": "20261022_haiku-xhigh_topk1_loop07",
+      "doc": "8841191",
+      "prediction_index": 3,
+      "prediction_id": "T4",
+      "start": 367,
+      "end": 390,
+      "pred_label": "CompositeMention",
+      "pred_text": "breast / ovarian cancer",
+      "kind": "boundary",
+      "guideline_group": "changed",
+      "guideline_path": "outputs/ncbi_disease/20261022_haiku-xhigh_topk1_loop07/final/final_guidelines.txt",
+      "guideline_sha256": "8635714314660d4a8438714d0144aca92997ad015286208a7556398cde35afe5",
+      "guideline_snapshot": "guidelines/8635714314660d4a8438714d0144aca92997ad015286208a7556398cde35afe5.txt",
+      "text_ref": "documents/8841191.txt",
+      "prompt_sha256": "b0bd38fe05518438ed02f5bd954eb8efb4fab4cf4b3b08be011111fd241ef98b",
+      "provenance_status": "exact",
+      "annotation_provenance_exact": true,
+      "reply_file": "outputs/ncbi_disease/20261022_haiku-xhigh_batchqueue/replies/4312553ada97527732c5dca641c340c53e9ee000afc4b786.json",
+      "custom_id": "4312553ada97527732c5dca641c340c53e9ee000afc4b786",
+      "raw_item_index": 3,
+      "case_id": "R15"
+    },
+    {
+      "case_key": "P65e4d4111883099914df",
+      "run": "20261022_haiku-xhigh_topk4_loop09",
+      "doc": "8636252",
+      "prediction_index": 4,
+      "prediction_id": "T5",
+      "start": 155,
+      "end": 170,
+      "pred_label": "DiseaseClass",
+      "pred_text": "genetic disease",
+      "kind": "correct",
+      "guideline_group": "changed",
+      "guideline_path": "outputs/ncbi_disease/20261022_haiku-xhigh_topk4_loop09/final/final_guidelines.txt",
+      "guideline_sha256": "dbca220f1e3148d187b71f3997537495a841d4402a9492be06ec9faeb6f6c2a7",
+      "guideline_snapshot": "guidelines/dbca220f1e3148d187b71f3997537495a841d4402a9492be06ec9faeb6f6c2a7.txt",
+      "text_ref": "documents/8636252.txt",
+      "prompt_sha256": "ee4b220ca25fbb21f2d221024be1da535669cca4e9a7ec01ae62e352e20e201d",
+      "provenance_status": "exact",
+      "annotation_provenance_exact": true,
+      "reply_file": "outputs/ncbi_disease/20261022_haiku-xhigh_batchqueue/replies/1fdeaf26f6efe292a395d9ebc1cf70ddf5cd270919d811db.json",
+      "custom_id": "1fdeaf26f6efe292a395d9ebc1cf70ddf5cd270919d811db",
+      "raw_item_index": 4,
+      "case_id": "R16"
+    }
+  ],
+  "selection_sha256": "aa9f32cea2f8587fdae7a6a3c14c569087c86771fb1d44ecb1e423c993dd0cf2",
+  "selected_label_counts": {
+    "SpecificDisease": 4,
+    "Modifier": 4,
+    "DiseaseClass": 4,
+    "CompositeMention": 4
+  },
+  "selected_document_counts": {
+    "8808605": 1,
+    "8968760": 1,
+    "9050868": 1,
+    "9144439": 1,
+    "9272171": 1,
+    "8649785": 1,
+    "8751855": 1,
+    "8845838": 1,
+    "8828602": 1,
+    "8666397": 1,
+    "8931695": 1,
+    "8640236": 1,
+    "8968716": 1,
+    "9012409": 1,
+    "8841191": 1,
+    "8636252": 1
+  },
+  "gold_and_status": [
+    {
+      "case_id": "R01",
+      "case_key": "Pe2abf858fe283846289f",
+      "scoring": {
+        "kind": "boundary",
+        "evidence": "error_rows.csv_prediction_key",
+        "paired_gold": [
+          {
+            "start": 378,
+            "end": 431,
+            "label": "SpecificDisease",
+            "text": "glucose-6-phosphate dehydrogenase ( G6PD ) deficiency"
+          }
+        ],
+        "all_gold_overlaps": [
+          {
+            "gold_index": 1,
+            "gold_id": "T2",
+            "start": 378,
+            "end": 431,
+            "label": "SpecificDisease",
+            "text": "glucose-6-phosphate dehydrogenase ( G6PD ) deficiency",
+            "overlap_chars": 53,
+            "overlapping_prediction_indices": [
+              0
+            ]
+          }
+        ],
+        "error_rows": [
+          {
+            "method": "top-1",
+            "loop": "loop05",
+            "run": "20261022_haiku-xhigh_topk1_loop05",
+            "guideline": "changed:9547c3d2ffba",
+            "doc": "8808605",
+            "kind": "boundary",
+            "gold_text": "glucose-6-phosphate dehydrogenase ( G6PD ) deficiency",
+            "gold_label": "SpecificDisease",
+            "gold_start": "378",
+            "gold_end": "431",
+            "pred_text": "red-blood-cell glucose-6-phosphate dehydrogenase ( G6PD ) deficiency",
+            "pred_label": "SpecificDisease",
+            "pred_start": "363",
+            "pred_end": "431",
+            "context": "es the opportunity for cell selection . In most people with red-blood-cell glucose-6-phosphate dehydrogenase ( G6PD ) deficiency , the enzyme-deficient phenotype is only moderately express",
+            "csv_line": 4291
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "R02",
+      "case_key": "P0aae5dadeeaeaf893aba",
+      "scoring": {
+        "kind": "label",
+        "evidence": "error_rows.csv_prediction_key",
+        "paired_gold": [
+          {
+            "start": 225,
+            "end": 246,
+            "label": "DiseaseClass",
+            "text": "cancer predisposition"
+          }
+        ],
+        "all_gold_overlaps": [
+          {
+            "gold_index": 6,
+            "gold_id": "T7",
+            "start": 225,
+            "end": 246,
+            "label": "DiseaseClass",
+            "text": "cancer predisposition",
+            "overlap_chars": 6,
+            "overlapping_prediction_indices": [
+              6
+            ]
+          }
+        ],
+        "error_rows": [
+          {
+            "method": "E1",
+            "loop": "run07",
+            "run": "20261022_haiku-xhigh_e1_run07",
+            "guideline": "original",
+            "doc": "8968760",
+            "kind": "label",
+            "gold_text": "cancer predisposition",
+            "gold_label": "DiseaseClass",
+            "gold_start": "225",
+            "gold_end": "246",
+            "pred_text": "cancer",
+            "pred_label": "Modifier",
+            "pred_start": "225",
+            "pred_end": "231",
+            "context": "acterized by cerebellar degeneration , immunodeficiency and cancer predisposition . A-T carriers were reported to be moderately cancer-prone ",
+            "csv_line": 2032
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "R03",
+      "case_key": "P889de12e37fd14b5feae",
+      "scoring": {
+        "kind": "extra",
+        "evidence": "error_rows.csv_prediction_key",
+        "paired_gold": [],
+        "all_gold_overlaps": [],
+        "error_rows": [
+          {
+            "method": "top-4",
+            "loop": "loop08",
+            "run": "20261022_haiku-xhigh_topk4_loop08",
+            "guideline": "changed:0702a16394a0",
+            "doc": "9050868",
+            "kind": "extra",
+            "gold_text": "",
+            "gold_label": "O",
+            "gold_start": "",
+            "gold_end": "",
+            "pred_text": "aortic rupture",
+            "pred_label": "DiseaseClass",
+            "pred_start": "500",
+            "pred_end": "514",
+            "context": "se of type IV Ehlers-Danlos syndrome , a disease leading to aortic rupture in early adult life . To directly study the role of Col3a1 ",
+            "csv_line": 8172
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "R04",
+      "case_key": "P6ebeaecda552a166698c",
+      "scoring": {
+        "kind": "label",
+        "evidence": "error_rows.csv_prediction_key",
+        "paired_gold": [
+          {
+            "start": 1125,
+            "end": 1129,
+            "label": "SpecificDisease",
+            "text": "IDDM"
+          }
+        ],
+        "all_gold_overlaps": [
+          {
+            "gold_index": 8,
+            "gold_id": "T9",
+            "start": 1125,
+            "end": 1129,
+            "label": "SpecificDisease",
+            "text": "IDDM",
+            "overlap_chars": 4,
+            "overlapping_prediction_indices": [
+              8
+            ]
+          }
+        ],
+        "error_rows": [
+          {
+            "method": "top-4",
+            "loop": "loop07",
+            "run": "20261022_haiku-xhigh_topk4_loop07",
+            "guideline": "changed:d2677c7f422d",
+            "doc": "9144439",
+            "kind": "label",
+            "gold_text": "IDDM",
+            "gold_label": "SpecificDisease",
+            "gold_start": "1125",
+            "gold_end": "1129",
+            "pred_text": "IDDM",
+            "pred_label": "Modifier",
+            "pred_start": "1125",
+            "pred_end": "1129",
+            "context": "hat IDDM2 locus is not responsible for the low incidence of IDDM in Japanese . ",
+            "csv_line": 7939
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "R05",
+      "case_key": "P9e7cfaf90b54d0350227",
+      "scoring": {
+        "kind": "extra",
+        "evidence": "error_rows.csv_prediction_key",
+        "paired_gold": [],
+        "all_gold_overlaps": [],
+        "error_rows": [
+          {
+            "method": "top-1",
+            "loop": "loop02",
+            "run": "20261022_haiku-xhigh_topk1_loop02",
+            "guideline": "original",
+            "doc": "9272171",
+            "kind": "extra",
+            "gold_text": "",
+            "gold_label": "O",
+            "gold_start": "",
+            "gold_end": "",
+            "pred_text": "infantile form",
+            "pred_label": "SpecificDisease",
+            "pred_start": "1710",
+            "pred_end": "1724",
+            "context": " of the GALC enzyme , whereas the reported mutations in the infantile form ( IF-GLD ) are in the central domain . This difference in m",
+            "csv_line": 3573
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "R06",
+      "case_key": "Peb0e7a97bb6098b500b2",
+      "scoring": {
+        "kind": "correct",
+        "evidence": "independent_strict_tuple_multiset",
+        "paired_gold": [
+          {
+            "start": 774,
+            "end": 788,
+            "label": "SpecificDisease",
+            "text": "leiomyosarcoma"
+          }
+        ],
+        "all_gold_overlaps": [
+          {
+            "gold_index": 5,
+            "gold_id": "T6",
+            "start": 774,
+            "end": 788,
+            "label": "SpecificDisease",
+            "text": "leiomyosarcoma",
+            "overlap_chars": 14,
+            "overlapping_prediction_indices": [
+              2
+            ]
+          }
+        ],
+        "error_rows": []
+      }
+    },
+    {
+      "case_id": "R07",
+      "case_key": "P29b12d0b2df78d7ac194",
+      "scoring": {
+        "kind": "correct",
+        "evidence": "independent_strict_tuple_multiset",
+        "paired_gold": [
+          {
+            "start": 107,
+            "end": 120,
+            "label": "SpecificDisease",
+            "text": "breast cancer"
+          }
+        ],
+        "all_gold_overlaps": [
+          {
+            "gold_index": 1,
+            "gold_id": "T2",
+            "start": 107,
+            "end": 120,
+            "label": "SpecificDisease",
+            "text": "breast cancer",
+            "overlap_chars": 13,
+            "overlapping_prediction_indices": [
+              1
+            ]
+          }
+        ],
+        "error_rows": []
+      }
+    },
+    {
+      "case_id": "R08",
+      "case_key": "P4a61b49b6d6968223608",
+      "scoring": {
+        "kind": "extra",
+        "evidence": "error_rows.csv_prediction_key",
+        "paired_gold": [],
+        "all_gold_overlaps": [],
+        "error_rows": [
+          {
+            "method": "top-4",
+            "loop": "loop04",
+            "run": "20261022_haiku-xhigh_topk4_loop04",
+            "guideline": "changed:8834ea8307a0",
+            "doc": "8845838",
+            "kind": "extra",
+            "gold_text": "",
+            "gold_label": "O",
+            "gold_start": "",
+            "gold_end": "",
+            "pred_text": "cardiac and muscle symptoms",
+            "pred_label": "CompositeMention",
+            "pred_start": "1310",
+            "pred_end": "1337",
+            "context": "t and skeletal muscle . This agrees well with the fact that cardiac and muscle symptoms are characteristic for patients with VLCAD deficiency . Nor",
+            "csv_line": 6933
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "R09",
+      "case_key": "P13d09194cc32a77fa191",
+      "scoring": {
+        "kind": "correct",
+        "evidence": "independent_strict_tuple_multiset",
+        "paired_gold": [
+          {
+            "start": 74,
+            "end": 102,
+            "label": "DiseaseClass",
+            "text": "autosomal recessive disorder"
+          }
+        ],
+        "all_gold_overlaps": [
+          {
+            "gold_index": 3,
+            "gold_id": "T4",
+            "start": 74,
+            "end": 102,
+            "label": "DiseaseClass",
+            "text": "autosomal recessive disorder",
+            "overlap_chars": 28,
+            "overlapping_prediction_indices": [
+              3
+            ]
+          }
+        ],
+        "error_rows": []
+      }
+    },
+    {
+      "case_id": "R10",
+      "case_key": "P73771c4921e54c21c7fc",
+      "scoring": {
+        "kind": "boundary",
+        "evidence": "error_rows.csv_prediction_key",
+        "paired_gold": [
+          {
+            "start": 937,
+            "end": 966,
+            "label": "DiseaseClass",
+            "text": "fatal lymphoreticular disease"
+          }
+        ],
+        "all_gold_overlaps": [
+          {
+            "gold_index": 2,
+            "gold_id": "T3",
+            "start": 937,
+            "end": 966,
+            "label": "DiseaseClass",
+            "text": "fatal lymphoreticular disease",
+            "overlap_chars": 23,
+            "overlapping_prediction_indices": [
+              3
+            ]
+          }
+        ],
+        "error_rows": [
+          {
+            "method": "E1",
+            "loop": "run09",
+            "run": "20261022_haiku-xhigh_e1_run09",
+            "guideline": "original",
+            "doc": "8666397",
+            "kind": "boundary",
+            "gold_text": "fatal lymphoreticular disease",
+            "gold_label": "DiseaseClass",
+            "gold_start": "937",
+            "gold_end": "966",
+            "pred_text": "lymphoreticular disease",
+            "pred_label": "DiseaseClass",
+            "pred_start": "943",
+            "pred_end": "966",
+            "context": "p a candidate for involvement in scurfy , a T cell-mediated fatal lymphoreticular disease of mice that has previously been proposed as a mouse homolo",
+            "csv_line": 2453
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "R11",
+      "case_key": "P87659131886d0baaf520",
+      "scoring": {
+        "kind": "label",
+        "evidence": "error_rows.csv_prediction_key",
+        "paired_gold": [
+          {
+            "start": 1701,
+            "end": 1704,
+            "label": "SpecificDisease",
+            "text": "AO2"
+          }
+        ],
+        "all_gold_overlaps": [
+          {
+            "gold_index": 19,
+            "gold_id": "T20",
+            "start": 1701,
+            "end": 1704,
+            "label": "SpecificDisease",
+            "text": "AO2",
+            "overlap_chars": 3,
+            "overlapping_prediction_indices": [
+              17
+            ]
+          },
+          {
+            "gold_index": 20,
+            "gold_id": "T21",
+            "start": 1708,
+            "end": 1711,
+            "label": "SpecificDisease",
+            "text": "DTD",
+            "overlap_chars": 3,
+            "overlapping_prediction_indices": [
+              17
+            ]
+          }
+        ],
+        "error_rows": [
+          {
+            "method": "top-1",
+            "loop": "loop10",
+            "run": "20261022_haiku-xhigh_topk1_loop10",
+            "guideline": "original",
+            "doc": "8931695",
+            "kind": "label",
+            "gold_text": "AO2",
+            "gold_label": "SpecificDisease",
+            "gold_start": "1701",
+            "gold_end": "1704",
+            "pred_text": "AO2 or DTD",
+            "pred_label": "CompositeMention",
+            "pred_start": "1701",
+            "pred_end": "1711",
+            "context": " of the DTDST R279W mutation in a total of 11 patients with AO2 or DTD emphasizes the overlap between these conditions . This muta",
+            "csv_line": 5838
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "R12",
+      "case_key": "Pa69e4aa8d41d2f56411c",
+      "scoring": {
+        "kind": "boundary",
+        "evidence": "error_rows.csv_prediction_key",
+        "paired_gold": [
+          {
+            "start": 460,
+            "end": 494,
+            "label": "CompositeMention",
+            "text": "familial breast and ovarian cancer"
+          }
+        ],
+        "all_gold_overlaps": [
+          {
+            "gold_index": 7,
+            "gold_id": "T8",
+            "start": 460,
+            "end": 494,
+            "label": "CompositeMention",
+            "text": "familial breast and ovarian cancer",
+            "overlap_chars": 25,
+            "overlapping_prediction_indices": [
+              5
+            ]
+          }
+        ],
+        "error_rows": [
+          {
+            "method": "top-1",
+            "loop": "loop04",
+            "run": "20261022_haiku-xhigh_topk1_loop04",
+            "guideline": "original",
+            "doc": "8640236",
+            "kind": "boundary",
+            "gold_text": "familial breast and ovarian cancer",
+            "gold_label": "CompositeMention",
+            "gold_start": "460",
+            "gold_end": "494",
+            "pred_text": "breast and ovarian cancer",
+            "pred_label": "CompositeMention",
+            "pred_start": "469",
+            "pred_end": "494",
+            "context": "n is BRCA1 , which contributes to a significant fraction of familial breast and ovarian cancer , but undergoes mutation at very low rates in sporadic brea",
+            "csv_line": 3872
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "R13",
+      "case_key": "P9edf622e0513eb359cf0",
+      "scoring": {
+        "kind": "label",
+        "evidence": "error_rows.csv_prediction_key",
+        "paired_gold": [
+          {
+            "start": 1389,
+            "end": 1395,
+            "label": "DiseaseClass",
+            "text": "cancer"
+          }
+        ],
+        "all_gold_overlaps": [
+          {
+            "gold_index": 8,
+            "gold_id": "T9",
+            "start": 1389,
+            "end": 1395,
+            "label": "DiseaseClass",
+            "text": "cancer",
+            "overlap_chars": 6,
+            "overlapping_prediction_indices": [
+              8
+            ]
+          }
+        ],
+        "error_rows": [
+          {
+            "method": "top-4",
+            "loop": "loop06",
+            "run": "20261022_haiku-xhigh_topk4_loop06",
+            "guideline": "changed:8893b2fb9b8c",
+            "doc": "8968716",
+            "kind": "label",
+            "gold_text": "cancer",
+            "gold_label": "DiseaseClass",
+            "gold_start": "1389",
+            "gold_end": "1395",
+            "pred_text": "cancer",
+            "pred_label": "Modifier",
+            "pred_start": "1389",
+            "pred_end": "1395",
+            "context": " a woman with breast cancer diagnosed at age 77 years , and cancer in one parent . R841W is likely to be an etiologically sign",
+            "csv_line": 7593
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "R14",
+      "case_key": "P99f75dff23c5db9d8317",
+      "scoring": {
+        "kind": "extra",
+        "evidence": "error_rows.csv_prediction_key",
+        "paired_gold": [],
+        "all_gold_overlaps": [],
+        "error_rows": [
+          {
+            "method": "top-1",
+            "loop": "loop03",
+            "run": "20261022_haiku-xhigh_topk1_loop03",
+            "guideline": "original",
+            "doc": "9012409",
+            "kind": "extra",
+            "gold_text": "",
+            "gold_label": "O",
+            "gold_start": "",
+            "gold_end": "",
+            "pred_text": "Duarte",
+            "pred_label": "Modifier",
+            "pred_start": "307",
+            "pred_end": "313",
+            "context": "-phosphate uridyltransferase ( GALT ) enzyme activity . The Duarte biochemical phenotype has a molecular genotype of N314D / N",
+            "csv_line": 3780
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "R15",
+      "case_key": "Pc4d64215e98d430a601f",
+      "scoring": {
+        "kind": "boundary",
+        "evidence": "error_rows.csv_prediction_key",
+        "paired_gold": [
+          {
+            "start": 357,
+            "end": 390,
+            "label": "CompositeMention",
+            "text": "inherited breast / ovarian cancer"
+          }
+        ],
+        "all_gold_overlaps": [
+          {
+            "gold_index": 3,
+            "gold_id": "T4",
+            "start": 357,
+            "end": 390,
+            "label": "CompositeMention",
+            "text": "inherited breast / ovarian cancer",
+            "overlap_chars": 23,
+            "overlapping_prediction_indices": [
+              3
+            ]
+          }
+        ],
+        "error_rows": [
+          {
+            "method": "top-1",
+            "loop": "loop07",
+            "run": "20261022_haiku-xhigh_topk1_loop07",
+            "guideline": "changed:863571431466",
+            "doc": "8841191",
+            "kind": "boundary",
+            "gold_text": "inherited breast / ovarian cancer",
+            "gold_label": "CompositeMention",
+            "gold_start": "357",
+            "gold_end": "390",
+            "pred_text": "breast / ovarian cancer",
+            "pred_label": "CompositeMention",
+            "pred_start": "367",
+            "pred_end": "390",
+            "context": "or approximately 45 % of familial breast cancer and 90 % of inherited breast / ovarian cancer , whereas mutations in BRCA2 account for a comparable perce",
+            "csv_line": 4893
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "R16",
+      "case_key": "P65e4d4111883099914df",
+      "scoring": {
+        "kind": "correct",
+        "evidence": "independent_strict_tuple_multiset",
+        "paired_gold": [
+          {
+            "start": 155,
+            "end": 170,
+            "label": "DiseaseClass",
+            "text": "genetic disease"
+          }
+        ],
+        "all_gold_overlaps": [
+          {
+            "gold_index": 4,
+            "gold_id": "T5",
+            "start": 155,
+            "end": 170,
+            "label": "DiseaseClass",
+            "text": "genetic disease",
+            "overlap_chars": 15,
+            "overlapping_prediction_indices": [
+              4
+            ]
+          }
+        ],
+        "error_rows": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+training documents: 543 (593 minus the 50 test documents)
+
+M1  disease name directly before a gene or protein word (same rule as pattern M1, e.g. 'VHL gene'); validation gold: Modifier
+    n=417: Modifier 389 (93%), not annotated 22 (5%), SpecificDisease 6 (1%)
+M2  tumor / cancer before a non-disease noun (tumor suppressor, tumor cells); validation gold: Modifier
+    n=60: Modifier 34 (57%), part of a longer mention 25 (42%), not annotated 1 (2%)
+M3  X-deficient (Atm-deficient mice); validation gold: Modifier
+    n=28: Modifier 18 (64%), not annotated 7 (25%), part of a longer mention 2 (7%), SpecificDisease 1 (4%)
+M7  qualifier + general word (genetic disorder, eye abnormalities); validation gold: DiseaseClass
+    n=134: DiseaseClass 60 (45%), part of a longer mention 53 (40%), not annotated 18 (13%), other overlapping span 3 (2%)
+M8  the 19 symptom / sign strings missed in >=10 of 19 runs (Neisseria meningitidis, acute radiation toxicity, atrophy, bacterial infections, blindness, chromosomal fragmentation during meiosis, demyelination of the central nervous system, fibre degeneration, ...); validation gold: DiseaseClass or SpecificDisease
+    n=22: part of a longer mention 9 (41%), DiseaseClass 7 (32%), SpecificDisease 3 (14%), not annotated 3 (14%)
+L1  gold mentions with 'and' / 'or' / '/', by what follows; validation gold: Modifier when a noun it modifies follows
+    a person, family, gene or risk noun follows: n=25: Modifier 23 (92%), DiseaseClass 1 (4%), CompositeMention 1 (4%)
+    another word follows: n=24: CompositeMention 22 (92%), Modifier 1 (4%), SpecificDisease 1 (4%)
+    nothing, or a function word, follows: n=95: CompositeMention 79 (83%), SpecificDisease 9 (9%), DiseaseClass 5 (5%), Modifier 2 (2%)
+    words in 'another word follows': {'for': 3, 'has': 2, 'that': 2, 'harbour': 1, 'involves': 1, 'repair': 1, 'remains': 1, 'resisted': 1, 'results': 1, 'caused': 1, 'led': 1, 'being': 1, 'must': 1, 'can': 1, 'at': 1, 'will': 1, 'but': 1, 'which': 1, 'had': 1, 'breast': 1}
+B1/B2 qualifier before a disease name: does the training gold include it? (counted where a gold mention starts at the qualifier or right after it)
+    familial     included  68, left out   3  (96% included)
+    sporadic     included  16, left out   7  (70% included)
+    inherited    included  24, left out  15  (62% included)
+    hereditary   included  52, left out   6  (90% included)
+    primary      included   4, left out   4  (50% included)
+    classical    included   5, left out   4  (56% included)
+    classic      included   3, left out   4  (43% included)
+    attenuated   included   6, left out   2  (75% included)
+    childhood    included   3, left out   1  (75% included)
+    early-onset  included   0, left out  11  (0% included)
+    severe       included   3, left out  40  (7% included)
+    mild         included   1, left out   9  (10% included)
+L5  the 20 strings Specific in validation gold, predicted DiseaseClass in >=5 of 19 runs; labels in the training gold
+    n=43: SpecificDisease 19 (44%), part of a longer mention 11 (26%), Modifier 10 (23%), DiseaseClass 2 (5%), not annotated 1 (2%)
+L6  the 6 strings DiseaseClass in validation gold, predicted Specific in >=5 of 19 runs; labels in the training gold
+    n=50: part of a longer mention 42 (84%), DiseaseClass 8 (16%)
+Strings from the original guideline's examples that the example leaves unannotated: training gold
+   'short stature' (Example under What to Annotate 1: the annotations listed omit it): n=4: DiseaseClass 4 (100%)
+   'infectious complications' (Example 6: 'too general a term'): n=1: not annotated 1 (100%)
+Training gold mentions in the 543 documents: 4691
+B1/B2 examples for sporadic and classical (document, included or left out, gold span in brackets when left out)
+    sporadic   included  10408776  'sporadic renal cell carcinoma'
+    sporadic   included  10408776  'sporadic RCC'
+    sporadic   included  10677309  'sporadic breast cancer'
+    sporadic   included  10807385  'sporadic ( nonhereditary ) ovarian cancers'
+    sporadic   included  10807385  'sporadic cancers'
+    sporadic   included  2352258   'sporadic cerebellar haemangioblastoma'
+    sporadic   included  2352258   'sporadic tumours'
+    sporadic   included  2352258   'sporadic renal cell carcinoma'
+    sporadic   included  2352258   'sporadic renal cell carcinoma '
+    sporadic   included  2352258   'sporadic cerebellar haemangioblastoma'
+    sporadic   included  2352258   'sporadic renal cell carcinoma'
+    sporadic   included  2352258   'Sporadic cerebellar haemangioblastoma'
+    sporadic   included  2894613   'Sporadic renal cell carcinomas'
+    sporadic   included  7795652   'sporadic ovarian tumours'
+    sporadic   included  7795653   'sporadic breast cancer'
+    sporadic   included  7939630   'sporadic breast and ovarian cancers'
+    sporadic   left out  10072428  'sporadic [colorectal and other cancers]'
+    sporadic   left out  10213492  'sporadic [APC]'
+    sporadic   left out  10417279  'sporadic [Pelizaeus-Merzbacher Disease]'
+    sporadic   left out  10947987  'sporadic [colorectal tumors]'
+    sporadic   left out  1978564   'sporadic [colorectal cancer]'
+    sporadic   left out  8522307   'sporadic [cystadenomas of the epididymis]'
+    sporadic   left out  8589721   'sporadic [breast and ovarian cancer]'
+    classical  included  10408771  'Classical galactosemia'
+    classical  included  10408771  'Classical galactosemia'
+    classical  included  1301201   'classical phenylketonuria'
+    classical  included  1671881   'Classical phenylketonuria'
+    classical  included  3615198   'Classical Phenylketonuria'
+    classical  left out  10662807  'classical [PLS]'
+    classical  left out  1769645   'classical [phenylketonuria]'
+    classical  left out  7981671   'classical [choroideremia]'
+    classical  left out  8301658   'classical [WAS]'

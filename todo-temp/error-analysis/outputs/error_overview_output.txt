@@ -1,0 +1,129 @@
+A. The 19 original-guideline runs (10 E1 runs + 9 loops that stopped at the original guideline). Per run: mean (SD, min-max)
+   TP               509.4 (SD   8.5, 497-529)
+   FP               145.2 (SD   6.3, 134-155)
+   FN               281.6 (SD   8.5, 262-294)
+   F1             0.7047 (0.6916-0.7241)
+   label             84.2 (SD   5.9, 76-99)
+   boundary          45.5 (SD   4.8, 36-55)
+   missed           135.6 (SD   6.7, 118-147)
+   unpaired_gold     16.3 (SD   1.7, 13-19)
+   extra             14.0 (SD   4.2, 9-24)
+   unpaired_pred      1.5 (SD   0.8, 1-4)
+   FN = label + boundary + missed + unpaired_gold; FP = label + boundary + extra + unpaired_pred (checked for all 30 runs)
+   label mismatches by gold -> predicted label, mean per run:
+      SpecificDisease   -> DiseaseClass        24.2
+      Modifier          -> CompositeMention    14.0
+      SpecificDisease   -> CompositeMention    13.6
+      Modifier          -> SpecificDisease     12.5
+      DiseaseClass      -> SpecificDisease      8.4
+      DiseaseClass      -> Modifier             4.3
+      DiseaseClass      -> CompositeMention     2.7
+      SpecificDisease   -> Modifier             2.6
+      Modifier          -> DiseaseClass         1.8
+      CompositeMention  -> Modifier             0.3
+   missed (no overlapping prediction) and unpaired gold, by gold label, mean per run:
+      missed         CompositeMention     0.1
+      missed         DiseaseClass        46.8
+      missed         Modifier            71.5
+      missed         SpecificDisease     17.3
+      unpaired_gold  CompositeMention     2.5
+      unpaired_gold  DiseaseClass         1.1
+      unpaired_gold  Modifier             0.7
+      unpaired_gold  SpecificDisease     12.1
+   extra (no overlapping gold) and unpaired prediction, by predicted label, mean per run:
+      extra          CompositeMention     0.2
+      extra          Modifier             7.0
+      extra          SpecificDisease      6.8
+      unpaired_pred  DiseaseClass         0.8
+      unpaired_pred  Modifier             0.2
+      unpaired_pred  SpecificDisease      0.4
+   boundary mismatches by gold label, mean per run:
+      SpecificDisease     25.2
+      Modifier             7.3
+      DiseaseClass         6.9
+      CompositeMention     6.1
+
+B. Method endpoints, 10 runs per method; each loop is scored with its final guideline
+   E1: 10 runs, 10 of them with the original guideline
+      F1 0.7048 (SD 0.0105); P 0.7789; R 0.6436
+      TP               509.1 (SD   8.4, 500-525)
+      FP               144.5 (SD   7.5, 134-155)
+      FN               281.9 (SD   8.4, 266-291)
+      label             82.6 (SD   5.1, 76-90)
+      boundary          46.6 (SD   3.7, 38-50)
+      missed           136.9 (SD   4.6, 127-141)
+      unpaired_gold     15.8 (SD   1.8, 13-19)
+      extra             13.9 (SD   5.0, 9-24)
+      unpaired_pred      1.4 (SD   0.5, 1-2)
+   top-1: 10 runs, 8 of them with the original guideline
+      F1 0.7017 (SD 0.0139); P 0.7716; R 0.6435
+      TP               509.0 (SD  11.9, 492-529)
+      FP               150.7 (SD  11.5, 141-182)
+      FN               282.0 (SD  11.9, 262-299)
+      label             89.3 (SD  13.9, 77-124)
+      boundary          44.0 (SD   5.5, 36-55)
+      missed           132.0 (SD   9.6, 118-147)
+      unpaired_gold     16.7 (SD   1.5, 15-19)
+      extra             15.9 (SD   5.0, 11-27)
+      unpaired_pred      1.5 (SD   1.0, 1-4)
+   top-4: 10 runs, 1 of them with the original guideline
+      F1 0.7115 (SD 0.0288); P 0.7780; R 0.6564
+      TP               519.2 (SD  31.2, 451-554)
+      FP               148.3 (SD  19.3, 127-187)
+      FN               271.8 (SD  31.2, 237-340)
+      label             83.1 (SD  15.2, 70-112)
+      boundary          48.1 (SD   5.3, 41-57)
+      missed           126.8 (SD  34.5, 97-208)
+      unpaired_gold     13.8 (SD   5.1, 3-21)
+      extra             16.3 (SD   5.7, 7-26)
+      unpaired_pred      0.8 (SD   0.6, 0-2)
+
+C. The 11 changed guidelines, one run each, minus the mean of the 19 original runs (original range in brackets)
+   guideline          F1       TP       FP       FN          label       boundary         missed  unpaired_gold          extra  unpaired_pred
+   orig mean       0.705    509.4    145.2    281.6           84.2           45.5          135.6           16.3           14.0            1.5
+   orig range             497-529  134-155  262-294        76-99          36-55         118-147         13-19           9-24           1-4   
+   top-4 loop08    0.748    +41.6    -14.2    -41.6         -14.2*          -0.5          -24.6*          -2.3           +1.0           -0.5 
+   top-4 loop04    0.744    +41.6     -6.2    -41.6         -13.2*          +0.5          -21.6*          -7.3*          +7.0           -0.5 
+   top-4 loop01    0.741    +44.6     +4.8    -44.6         -11.2*          +9.5          -38.6*          -4.3*          +8.0           -1.5*
+   top-1 loop07    0.721    +19.6     +2.8    -19.6          -7.2           -2.5           -9.6           -0.3          +13.0*          -0.5 
+   top-4 loop09    0.718    +21.6    +11.8    -21.6          +1.8          +11.5*         -21.6*         -13.3*          -1.0           -0.5 
+   top-4 loop02    0.715    +11.6     -0.2    -11.6          -6.2           +3.5           -9.6           +0.7           +2.0           +0.5 
+   top-4 loop05    0.697    -13.4     -9.2    +13.4          -9.2*          -4.5          +27.4*          -0.3           +5.0           -0.5 
+   top-4 loop07    0.691     -0.4    +28.8     +0.4         +27.8*          +3.5          -31.6*          +0.7           -2.0           -0.5 
+   top-4 loop06    0.685     +0.6    +41.8     -0.6         +24.8*          +6.5          -36.6*          +4.7*         +12.0*          -1.5*
+   top-1 loop05    0.672    -17.4    +36.8    +17.4         +39.8*          -5.5          -16.6           -0.3           +3.0           -0.5 
+   top-4 loop10    0.659    -58.4    -18.2    +58.4          -9.2*          -0.5          +72.4*          -4.3*          -7.0*          -1.5*
+   * outside the range of the 19 original runs. Delta FN = sum of the label, boundary, missed, unpaired_gold deltas; delta FP = sum of the label, boundary, extra, unpaired_pred deltas.
+   label-mismatch pairs, changed run minus original mean (pairs with |delta| >= 3 in some guideline):
+      CompositeMention->Modifier         orig   0.3  105:+4 107:-0 401:-0 402:-0 404:-0 405:-0 406:+4 407:+2 408:+1 409:-0 410:-0
+      DiseaseClass    ->Modifier         orig   4.3  105:+5 107:-1 401:-2 402:-4 404:-4 405:-3 406:-0 407:+5 408:+1 409:-2 410:-4
+      DiseaseClass    ->SpecificDisease  orig   8.4  105:-0 107:-0 401:+11 402:-2 404:+5 405:+7 406:+1 407:+1 408:+9 409:+2 410:+1
+      Modifier        ->CompositeMention orig  14.0  105:-3 107:-5 401:-3 402:+1 404:-3 405:-3 406:-9 407:-5 408:-7 409:+3 410:-3
+      Modifier        ->SpecificDisease  orig  12.5  105:-8 107:-2 401:-6 402:+1 404:-4 405:-3 406:-5 407:-2 408:-9 409:-4 410:-0
+      SpecificDisease ->CompositeMention orig  13.6  105:-1 107:-3 401:-6 402:+0 404:-6 405:-2 406:-2 407:+1 408:-5 409:-12 410:-5
+      SpecificDisease ->DiseaseClass     orig  24.2  105:+36 107:+2 401:-1 402:+1 404:-2 405:-12 406:+18 407:+1 408:-5 409:-2 410:-4
+      SpecificDisease ->Modifier         orig   2.6  105:+9 107:+2 401:-1 402:-2 404:+2 405:+8 406:+18 407:+25 408:+3 409:+21 410:+11
+   missed by gold label, changed run minus original mean (|delta| >= 3 in some guideline):
+      SpecificDisease   orig  17.3  105:-0 107:+4 401:-2 402:-0 404:+4 405:+3 406:-4 407:+1 408:+2 409:-4 410:+13
+      DiseaseClass      orig  46.8  105:-7 107:-6 401:-16 402:-7 404:-3 405:+23 406:-13 407:-1 408:+5 409:+0 410:+50
+      Modifier          orig  71.5  105:-9 107:-9 401:-20 402:-2 404:-22 405:+2 406:-19 407:-33 408:-31 409:-17 410:+10
+      CompositeMention  orig   0.1  105:-0 107:+2 401:-0 402:-0 404:-0 405:-0 406:-0 407:+2 408:-0 409:-0 410:-0
+   (column key: 105 = top-1 loop05, 408 = top-4 loop08, ...)
+
+D. Strict TP change per gold label, changed run minus the original mean (* outside the original range); in brackets the error state whose count changed most for that label (positive = more of that error)
+   original mean (range): SpecificDisease 314.2 (303-335)  DiseaseClass 56.8 (50-65)  Modifier 110.3 (101-121)  CompositeMention 28.1 (26-30)
+   top-4 loop08   F1 0.748  Spec   +4.8 (label->DiseaseClass -5.2)  Dise  -11.8*(label->SpecificDisease +8.6)  Modi  +50.7*(missed -31.5)  Comp   -2.1 (label->SpecificDisease +1.0)
+   top-4 loop04   F1 0.744  Spec   +7.8 (unpaired_gold -6.1)  Dise   +6.2 (label->SpecificDisease +4.6)  Modi  +26.7*(missed -22.5)  Comp   +0.9 (boundary -1.1)
+   top-4 loop01   F1 0.741  Spec  +10.8 (label->CompositeMention -5.6)  Dise   +8.2 (missed -15.8)  Modi  +26.7*(missed -20.5)  Comp   -1.1 (boundary +0.9)
+   top-1 loop07   F1 0.721  Spec   -3.2 (missed +3.7)  Dise   +6.2 (missed -5.8)  Modi  +15.7*(missed -9.5)  Comp   +0.9 (missed +1.9)
+   top-4 loop09   F1 0.718  Spec   -0.2 (label->Modifier +21.4)  Dise   +7.2 (boundary -2.9)  Modi  +16.7*(missed -17.5)  Comp   -2.1 (boundary +2.9)
+   top-4 loop02   F1 0.715  Spec   -0.2 (boundary +1.8)  Dise   +8.2 (missed -6.8)  Modi   +3.7 (missed -2.5)  Comp   -0.1 (boundary -2.1)
+   top-4 loop05   F1 0.697  Spec   -0.2 (label->DiseaseClass -12.2)  Dise  -21.8*(missed +23.2)  Modi   +8.7 (label->SpecificDisease -3.5)  Comp   -0.1 (unpaired_gold +0.5)
+   top-4 loop07   F1 0.691  Spec  -34.2*(label->Modifier +25.4)  Dise   -6.8 (label->Modifier +4.7)  Modi  +40.7*(missed -33.5)  Comp   -0.1 (boundary -2.1)
+   top-4 loop06   F1 0.685  Spec  -35.2*(label->Modifier +18.4)  Dise  +13.2*(missed -12.8)  Modi  +26.7*(missed -19.5)  Comp   -4.1*(label->Modifier +3.7)
+   top-1 loop05   F1 0.672  Spec  -39.2*(label->DiseaseClass +35.8)  Dise   +6.2 (missed -6.8)  Modi  +17.7*(missed -9.5)  Comp   -2.1 (label->Modifier +3.7)
+   top-4 loop10   F1 0.659  Spec  -16.2*(missed +12.7)  Dise  -38.8*(missed +50.2)  Modi   -3.3 (missed +9.5)  Comp   -0.1 (unpaired_gold +0.5)
+   rank correlation (Spearman, ties averaged) of F1 with each label's strict TP over the 11 changed runs: SpecificDisease +0.84, DiseaseClass +0.14, Modifier +0.44, CompositeMention +0.20
+   F1: below the original range 4 ['top-1 loop05', 'top-4 loop06', 'top-4 loop07', 'top-4 loop10']; above it 3 ['top-4 loop01', 'top-4 loop04', 'top-4 loop08']; inside 4
+   FN: below the original range 4 ['top-4 loop01', 'top-4 loop04', 'top-4 loop08', 'top-4 loop09']; above it 3 ['top-1 loop05', 'top-4 loop05', 'top-4 loop10']; inside 4
+   missed: fewer than the original mean 9; below the original range 6; above it 2

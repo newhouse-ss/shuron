@@ -1,0 +1,63 @@
+A. Validation mentions each changed guideline fixed / broke, by construction
+                            before a gene word          after 'history of'after a risk or population noun    before a population noun                   in a list                       other    symptom in a list (M7, M8)
+   chance mean              1.8 / 1.3                   0.0 / 0.0                   0.2 / 0.2                   1.0 / 1.4                   2.3 / 3.6                   3.8 / 5.6                     0.1 / 0.9         
+   chance max                 5 / 4                       0 / 0                       1 / 1                       3 / 4                       7 / 7                      12 / 10                        1 / 3           
+   top-4 loop08              22 / 0                       0 / 6                       1 / 0                       8 / 1                       5 / 9                      16 / 14                        1 / 5           
+   top-4 loop04              13 / 2                       0 / 0                       1 / 0                       3 / 2                      24 / 9                      14 / 18                       11 / 2           
+   top-4 loop01              13 / 1                       0 / 0                       2 / 0                       3 / 2                      16 / 6                      14 / 12                        7 / 1           
+   top-1 loop07              23 / 1                       0 / 0                       2 / 0                       2 / 1                       4 / 7                      11 / 12                        1 / 3           
+   top-4 loop09               7 / 2                       0 / 5                       1 / 4                       2 / 3                      19 / 9                      21 / 17                        5 / 0           
+   top-4 loop02               5 / 2                       0 / 2                       1 / 0                       1 / 4                      13 / 9                      17 / 19                        8 / 0           
+   top-4 loop05              12 / 1                       0 / 5                       1 / 3                       1 / 5                       5 / 18                     15 / 21                        0 / 12          
+   top-4 loop07              26 / 2                       0 / 7                       1 / 15                      3 / 1                       9 / 12                      3 / 17                        3 / 2           
+   top-4 loop06              14 / 1                       0 / 8                       0 / 6                       7 / 3                      11 / 11                     12 / 23                        6 / 1           
+   top-1 loop05               8 / 1                       0 / 7                       1 / 9                       5 / 0                       8 / 11                     14 / 35                        0 / 1           
+   top-4 loop10               7 / 2                       0 / 5                       1 / 8                       1 / 4                       7 / 18                      6 / 40                        0 / 13          
+   cells: fixed / broken. Chance: one original run against the other 18 (rule_links.py), mean and max over the 19 runs.
+
+B. What the rewrite step saw, over all 44 rounds of the 20 loops
+   'do not break' documents per rewrite prompt: {5: 44}; rounds showing each document: {'10196379.json': 44, '10484772.json': 44, '10545613.json': 22, '10577908.json': 44, '10724160.json': 29, '1303173.json': 27, '1345170.json': 10}
+   document blocks listing exactly 5 matched annotations (the n_examples cap): 132 of 220
+   what the list showed for 10196379 (label, text: count), rounds: 43 x [Modifier "ovarian cancer": 5]; 1 x [DiseaseClass "cancer": 1, Modifier "ovarian cancer": 4]
+   history: 1 development gold mention(s), gold {'SpecificDisease': 1}; labeled right in the run before the rewrite: 29 of 44
+      mention x round 44; rewrite: document shown 44; rewrite: label listed 0; rewrite: document shown, label not listed 44; analysis: error example with gold 7; analysis: error example, and rewrite showed the document without the label 7; analysis: error example, and rewrite did not show the document 0; target string appears in the principles 1
+   symptom list: 2 development gold mention(s), gold {'DiseaseClass': 2}; labeled right in the run before the rewrite: 53 of 88
+      mention x round 88; rewrite: document shown 88; rewrite: label listed 1; rewrite: document shown, label not listed 87; analysis: error example with gold 17; analysis: error example, and rewrite showed the document without the label 17; analysis: error example, and rewrite did not show the document 0; target string appears in the principles 1
+   gene word: 4 development gold mention(s), gold {'Modifier': 4}; labeled right in the run before the rewrite: 128 of 176
+      mention x round 176; rewrite: document shown 112; rewrite: label listed 105; rewrite: document shown, label not listed 7; analysis: error example with gold 23; analysis: error example, and rewrite showed the document without the label 3; analysis: error example, and rewrite did not show the document 20; target string appears in the principles 0
+   candidates that newly label a mention after 'history of' (development document 10196379) Modifier: kept rounds 10 of 26, rejected rounds 7 of 18
+   rounds: 44
+
+C. The label each final guideline gives, and the validation mentions of that construction it fixed / broke
+   guideline          F1 true miss  history rule               history broken  symptom-list rule            symptoms fixed/broken  gene word fixed
+   top-4 loop08    0.748       111  Modifier (L48)                          6  O (L104)                              1 / 5                      22
+   top-4 loop04    0.744       114  Specific (L118)                         0  DiseaseClass (L285)                  11 / 2                      13
+   top-4 loop01    0.741        97  not Modifier (L373)                     0  DiseaseClass (L631)                   7 / 1                      13
+   top-1 loop07    0.721       126  no rule                                 0  O, flagged (L42)                      1 / 3                      23
+   top-4 loop09    0.718       114  Modifier (L130)                         5  sent to review (L205)                 5 / 0                       7
+   top-4 loop02    0.715       126  Specific (L30)                          2  DiseaseClass (L450)                   8 / 0                       5
+   top-4 loop05    0.697       163  Modifier (L161)                         5  O (L273)                              0 / 12                     12
+   top-4 loop07    0.691       104  Modifier (L65)                          7  unchanged (L232)                      3 / 2                      26
+   top-4 loop06    0.685        99  Modifier (L120)                         8  DiseaseClass (L323)                   6 / 1                      14
+   top-1 loop05    0.672       119  Modifier (L63)                          7  no rule                               0 / 1                       8
+   top-4 loop10    0.659       208  Modifier (L146)                         5  O, sent to audit (L295)               0 / 13                      7
+   history: Modifier 7 guidelines, mean +6.1; other 4 guidelines, mean +0.5  (history: validation mentions broken)
+   symptom list: O 4 guidelines, mean -7.8; DiseaseClass 4 guidelines, mean +7.0; other 3 guidelines, mean +1.7  (symptom list: fixed minus broken)
+
+E. Construction coverage: the share of each changed guideline's fixed + broken mentions that fall in the three constructions (before a gene word, after 'history of', symptoms in a list), and its net change in gene-name misses (pattern M1). A string match on the construction only; it does not check that the guideline has a rule for the mention or that the change follows the rule
+   M1 in the 19 original runs: mean 40.3, range 33-49; F1 effect of the net change at the original mean (TP 509.4, FP 145.2, FN 281.6)
+   top-4 loop08   in the three constructions  34 of  82 (41%);  M1  14, net reduction  +26.3, F1 effect +0.0231
+   top-4 loop04   in the three constructions  28 of  86 (33%);  M1  25, net reduction  +15.3, F1 effect +0.0135
+   top-4 loop01   in the three constructions  22 of  69 (32%);  M1  24, net reduction  +16.3, F1 effect +0.0144
+   top-1 loop07   in the three constructions  28 of  63 (44%);  M1  25, net reduction  +15.3, F1 effect +0.0135
+   top-4 loop09   in the three constructions  19 of  90 (21%);  M1  24, net reduction  +16.3, F1 effect +0.0144
+   top-4 loop02   in the three constructions  17 of  73 (23%);  M1  28, net reduction  +12.3, F1 effect +0.0109
+   top-4 loop05   in the three constructions  30 of  87 (34%);  M1  39, net reduction   +1.3, F1 effect +0.0011
+   top-4 loop07   in the three constructions  40 of  96 (42%);  M1   8, net reduction  +32.3, F1 effect +0.0283
+   top-4 loop06   in the three constructions  30 of  96 (31%);  M1  21, net reduction  +19.3, F1 effect +0.0170
+   top-1 loop05   in the three constructions  17 of  99 (17%);  M1  40, net reduction   +0.3, F1 effect +0.0002
+   top-4 loop10   in the three constructions  27 of  99 (27%);  M1  35, net reduction   +5.3, F1 effect +0.0047
+
+D. Training gold, 543 documents (593 minus the 50 test documents)
+   disease mention right after 'history of': {'SpecificDisease': 9, 'CompositeMention': 5, 'not annotated': 4, 'DiseaseClass': 3}
+   single-word items of a 'characterized by' list: {'DiseaseClass': 11, 'SpecificDisease': 7, 'not annotated': 7, 'CompositeMention': 5}
