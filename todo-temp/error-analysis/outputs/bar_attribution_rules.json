@@ -1,0 +1,44 @@
+{
+ "purpose": "Frozen before any recomputation (11/03, after the review of bar_patterns.py). Defines the mention categories used to split each slide-5 bar exactly, and, for each coded clause option, the error type the clause's wording predicts. The script asserts this file's SHA-256.",
+ "categories": {
+  "order_note": "first matching rule wins, in the order listed per label",
+  "Modifier": [
+   ["M bare cancer/tumor", "gold text is exactly cancer(s) or tumo(u)r(s)"],
+   ["M deficient adjective", "gold text ends with 'deficient'"],
+   ["M coordinated names", "gold text contains ' and ', ' or ' or ' / '"],
+   ["M full name before gene/protein noun", "member of the 99 gene/protein-noun Modifier gold (modifier_subset.py B1, molecular head) whose text contains a lower-case word of 4+ letters, i.e. a written-out disease name rather than an abbreviation"],
+   ["M abbreviation before gene/protein noun", "the rest of the 99"],
+   ["M other", "everything else"]
+  ],
+  "SpecificDisease": [
+   ["S after relational noun", "modifier_subset.py B2 context (relational noun + of/with/for/to)"],
+   ["S coordinated", "only ',', 'and', 'or', '/', 'and / or' between it and another gold mention"],
+   ["S tumour word", "2+ tokens, last token cancer/carcinoma/tumo(u)r/neoplasm/lymphoma/sarcoma/hamartoma/adenoma/melanoma/glioma/leuk(a)emia/blastoma, singular or plural"],
+   ["S other", "everything else"]
+  ],
+  "DiseaseClass": [
+   ["D bare cancer/tumor", "gold text is exactly cancer(s) or tumo(u)r(s)"],
+   ["D after relational noun", "B2 context"],
+   ["D named or category", "head word (the word before the first ' of ' if any, else the last word) is a disease or category noun (disease, disorder, syndrome, condition, defect, malformation, cancer, tumo(u)r, carcinoma, neoplasm, neoplasia, dysplasia, dystrophy, infection, singular or plural) or ends in -itis, -pathy, -plegia, -osis, -oma(s)"],
+   ["D sign/state in a list", "remaining DiseaseClass gold that is coordinated with another gold mention"],
+   ["D sign/state elsewhere", "remaining DiseaseClass gold"]
+  ]
+ },
+ "predicted_error_types": {
+  "Q1 relational nouns -> Modifier": "non-Modifier gold after a relational noun labelled Modifier (count rises)",
+  "Q1 relational nouns -> not Modifier": "same count, not expected to rise",
+  "Q2 site word not enough": "Specific gold of the tumour-word category labelled DiseaseClass (count rises)",
+  "Q2 site word enough": "same count, not expected to rise",
+  "Q3 separate unless shared head": "Specific or DiseaseClass gold coordinated with another gold, labelled Composite or left unpaired (count falls)",
+  "Q4 signs/states -> DiseaseClass": "DiseaseClass gold of the two sign/state categories labelled right (count rises)",
+  "Q4 exception: not annotated or sent to review": "DiseaseClass gold of the two sign/state categories missed (count rises)",
+  "Q5 bare cancer/tumor not annotated or flagged": "bare cancer/tumor gold, DiseaseClass or Modifier, missed (count rises)",
+  "Q6 official gene names not annotated": "Modifier gold of the full-name gene/protein category missed (count rises)",
+  "Q6 Modifier including official names": "Modifier gold of the full-name gene/protein category labelled right (count rises)",
+  "Q7 patient-predicated condition -> Specific": "DiseaseClass gold labelled Specific (count rises)",
+  "Q8a deficient adjective -> Modifier": "Modifier gold of the deficient-adjective category labelled right (count rises)",
+  "Q8b coordinated names as modifier -> Modifier": "Modifier gold of the coordinated-names category labelled right (count rises)"
+ },
+ "evidence_rule": "A clause is credited with a change only if at least two of three hold: (1) the category part of the bar lies outside the 19 original runs' range for that category; (2) the predicted error type moved in the predicted direction outside its original range; (3) among the guideline's changed predictions in that category, the annotator's cited section names the section that holds the clause (any position in the citation). Missed mentions have no rationale, so (3) cannot hold for them.",
+ "controls": "For a guideline whose clauses predict losses in one DiseaseClass category, the DiseaseClass categories its clauses do not govern are reported beside it; if they fall outside range too, the clause effect and a general decline are not separable."
+}

@@ -1,6 +1,6 @@
 # 10/23 复现的错误分析：修改后的指南改变了哪些标注错误
 
-2026-10-31 版（按 10/30 seminar 意见增加逐循环表和按标签的错标）。全部离线完成，没有调用标注 API；历次修订见[附录](20261024_error_analysis_appendix_zh.md)第 E 节。英文版 `20261024_error_analysis_report.md` 尚未同步。
+2026-11-03 版（补上 Modifier 以外两类损失的条文对照、相关循环的逐轮记录和删条文检验的准备）。全部离线完成，没有调用标注 API；历次修订见[附录](20261024_error_analysis_appendix_zh.md)第 E 节。英文版 `20261024_error_analysis_report.md` 尚未同步。
 
 ## 本文回答什么
 
@@ -27,12 +27,13 @@
 ## 结论
 
 1. **方法的平均收益没有确认，但修改后的指南确实各不相同。** top-4 比原指南平均只高 0.0067；按运行波动推算，真实差值很可能不到主论文报告的提升（+0.03）。11 份修改后指南中有 7 份 F1 落在原指南范围外，纯波动只会有约 1 份。
-2. **改写几乎都标对了更多 Modifier，F1 的高低主要跟着 Specific 的损失走。** F1 最高的几份，Modifier 的收益没有带来更多 Modifier 错标，Specific 也没有损失；F1 低于范围的 top-4 loop07、loop06 和 top-1 loop05，多标对的 Modifier 伴随着差不多同样多的 Modifier 错标，同时有大量 Specific 被标成 Modifier 或 DiseaseClass。起点只能解释一部分：Modifier 原来只标对一半，但按个数，Specific 剩下没标对的（约 95 个）与 Modifier（约 108 个）差不多。
+2. **柱状图上的正负只有一半超出单次运行的波动，超出的那些对得上少数几类条文写法。** Specific 明显下降的四份都把 history of 之后的病名改标 Modifier，其中两份还规定部位词不足以算具体疾病；DiseaseClass 明显下降的三份都把列举中的症状或单独的 cancer、tumor 排除在自动标注之外。"三根都正"和"Specific 负、其余正"两组在单次运行下分不开。F1 的高低主要跟着 Specific 走（第 3 节）。
 3. **非 Modifier 提及被错标成 Modifier 的增量，几乎全在 history of、risk of、patients with 这类短语后。** 相对原指南多出的约 96 次中，约 91 次在这类短语后，其中多数来自 4 篇讨论 BRCA 与乳腺癌、卵巢癌的摘要；短语位置和这类文档各自都伴随误标增加，两者同时出现时最多。
 4. **这些误标都对应各指南新写的 Modifier 条文，模型把条文用得比字面宽。** 只有写了"这类位置标 Modifier"的指南才出现这类误标，模型写下的标注依据也都是这些条文。逐条对照条文的只是全部变化的一小部分。
-5. **F1 最低的 top-4 loop10 漏掉大量 DiseaseClass，多半是它自己的条文要求不标。** 它删掉了原指南"cancer、tumor 要标"的规定；Modifier 以外的其余损失还没有查原因。
+5. **Modifier 以外的两类损失也对得上新写的条文，但对得上的程度不同。** 把 Specific 标成 DiseaseClass，只出在规定"breast、colorectal 这类部位词不足以让病名算具体疾病"的两份指南，但另有三份字面相近的指南没有这类错误；DiseaseClass 漏标在 F1 最低的 top-4 loop10 一半多是它自己的条文要求不标的，在 top-4 loop05 只有约三分之一。
 6. **家族史规则是从一篇开发文档推广出来的，误标对应的是这条规则，不是照抄的字符串。** 改写首次写出这条规则时几乎都写成 Modifier，那时它没见过家族史位置的正确标签；11 份指南都抄进了这篇文档的短语，但只有把家族史写成 Modifier 的 7 份出现这类误标。
 7. **保留判定只看开发集总分，与 gold 相反的规则也能通过。** 事后核对 5 个开发集短语，被保留的规则中有 15 处与开发集 gold 相反；多数在写入的那一轮就让开发集上的对应提及从对变错，只是被总分的上升盖过了。
+8. **开发集看得出 DiseaseClass 漏标，看不出 Specific 标成 DiseaseClass。** 11 份指南都有一轮改写针对开发集上"Specific 被标成 DiseaseClass"这个错误簇，写出的规则方向相反；"部位词不足以算具体疾病"的害处在开发集上看不出来，因为 10 篇开发文档里没有 breast cancer 这类泛指的用法。DiseaseClass 漏标则在 top-4 loop05、loop10 的开发集上已经翻倍，仍被总分的上升盖过。
 
 ## 1. 方法的平均收益没有确认，修改后的指南各不相同
 
@@ -147,13 +148,44 @@ top-4 比原指南平均高 0.0067。95% 区间是按这些运行的波动推算
 
 **F1 高低的差别在错标一侧。** F1 最高的 3 份（top-4 loop08、loop04、loop01）多标对了 Modifier，Modifier 错标却没有超出范围，Specific 也没有损失。F1 低于范围的 top-4 loop07、loop06 和 top-1 loop05 则不同：多标对的 Modifier 伴随着差不多同样多的 Modifier 错标，Specific 各少标对三十多个。少标对的 Specific 大多就是新增的错标：它们被标成了 Modifier 或 DiseaseClass。
 
-没标对的提及去了哪里（括号内是相对原指南的增加）：
-- Specific 被标成 Modifier：top-4 loop07（+25.4）、top-4 loop06（+18.4），见第 4 节。
-- Specific 被标成 DiseaseClass：top-1 loop05（+35.8）、top-4 loop06（+17.8），见第 5 节。
-- DiseaseClass 真正漏标：top-4 loop10（+50.2）、top-4 loop05（+23.2），见第 5 节。
-- Modifier 的收益主要来自真正漏标减少，例如 top-4 loop08 少漏了 31.5 个。
+**第 5 页柱状图上的正负，只有一半超出了单次运行的波动；超出的那些都对得上少数几类条文写法。** 柱状图的每根柱子，是一份修改后的指南在一类 gold 上的标对数减去原指南 19 次运行的平均，也就是上表三个"标对"列。原指南重复标注时标对数本身也会浮动，一根柱子若落在这 19 次的最低到最高之间，它的正负可能只是这一次运行碰巧如此。33 根柱子中有 16 根超出这个范围。
 
-（来源：`outputs/loop_label_tables_output.txt` C、D 节；标对的变化与 `outputs/error_overview_output.txt` D 节逐格相同）
+| 按正负号分组（Specific / DiseaseClass / Modifier） | 指南 | 超出原指南范围的柱子 |
+| --- | --- | --- |
+| + + + | top-4 loop01、loop04 | 只有 Modifier |
+| + − + | top-4 loop08 | DiseaseClass、Modifier |
+| − + + | top-4 loop09，top-1 loop07 | 只有 Modifier |
+| − + + | top-4 loop02 | 没有 |
+| − + + | top-1 loop05 | Specific、Modifier |
+| − + + | top-4 loop06 | 三根都超出 |
+| − − + | top-4 loop07 | Specific、Modifier |
+| − − + | top-4 loop05 | 只有 DiseaseClass |
+| − − − | top-4 loop10 | Specific、DiseaseClass |
+
+**"三根都正"和"Specific 负、其余正"这两组，在单次运行下分不开。** top-4 loop01、loop04、loop09 和 top-1 loop07 都只有 Modifier 一根超出范围，它们的 Specific、DiseaseClass 是正是负都在波动之内。要把正负号分组坐实，每份修改后的指南需要在验证集上再标 2 次（费用见第 9 节）。
+
+**每根柱子都拆成几类提及，再由一位没看过结果的编码员只读指南原文编出各指南的条文。** 提及的类别只按原文和 gold 定义，例如"紧跟 history of、risk of、patients with 的 Specific"，一个标签下各类的变化相加正好等于柱子；165 个类别变化中 63 个超出原指南范围，纯靠波动约 16 个。一条条文算作对上某个类别变化，要满足三条证据中的至少两条：这个变化超出范围；这条条文按字面预言的错误（例如写"定为 Modifier"就看被标成 Modifier 的个数）也超出范围；模型的标注理由引用了这条条文所在的节。这些规则在重算之前写定。
+
+| 超出范围的柱子 | 指南 | 对上的条文写法 |
+| --- | --- | --- |
+| Specific 下降 | top-1 loop05、top-4 loop06、loop07、loop10 | 四份都把 history of 这类位置的病名改标 Modifier，被改标的提及的理由都引用这条；top-1 loop05（第 46 行）、top-4 loop06（第 29 行）还规定部位词不足以让病名算具体疾病 |
+| DiseaseClass 下降 | top-4 loop08、loop05、loop10 | 列举中的症状不标或送人工审核，即条文要求不自动标注、交给人看（top-4 loop05 第 157 行、loop08 第 104 行、loop10 第 84 行）；单独的 cancer、tumor 不标（top-4 loop05 第 160 行、loop10 第 191 行）；病人身上的状况升为 Specific（top-4 loop05 第 19 行、loop08 第 11 行） |
+| DiseaseClass 上升 | top-4 loop06 | 疾病描述中的症状、病理状态标 DiseaseClass（第 76 行） |
+| Modifier 上升 | 8 份 | 修饰别的名词的 "deficient" 形容词标 Modifier（其中 6 份对上）；基因、蛋白全名里的病名也标 Modifier（5 份对上）。多数指南里增加最多的一块是 "DTD gene" 这类缩写前的病名，11 份都有同一条通用规则，跨指南对比分不出来源 |
+
+**柱子落在范围内，不等于里面没有变化。** top-4 loop09 的 Specific 只有 −0.2，是两块方向相反的变化抵消的结果：history of 这类位置少标对 9.8 个，对上它的 history of 规则；与另一病名并列的 Specific 多标对 12.5 个，对上它第 105 行"各自完整的病名并列时分开标"。
+
+**由此得到的候选写法，都只是与这批指南的差异同时出现，没有经过删改条文的检验：**
+- **不把 history of、risk of、patients with 之后的病名定为 Modifier。** 写了这条的 7 份指南全部对上；训练集 gold 里紧跟 history of 的病名有 21 处，没有一处标 Modifier。
+- **部位词足以让病名算具体疾病。** 写了"不足以"的 5 份中，top-1 loop05、top-4 loop06 对上（部位加肿瘤词的名称被标成 DiseaseClass 的明显增加），另外 3 份没有；训练集 gold 里两个词以上、以肿瘤词结尾的名称，标 Specific 的 213 个，标 DiseaseClass 的 50 个。
+- **单独的 cancer、tumor 照原指南标注。** 写了"不标"或"送人工核对"的 3 份对上；训练集 gold 里单独出现的 cancer、tumor 有 125 处，118 处被标注。
+- **疾病描述中的症状标 DiseaseClass，不为列举中的症状设例外。** 两个方向都有对上的指南；但 gold 对症状的标法不统一，例如一篇摘要把 myotonia、cataract、male-infertility 这串症状标成 Specific。证据弱于上面三条。
+- **基因、蛋白全名里的病名也标 Modifier。** 这样写的 7 份中 5 份对上；写"官方全名不标"的 3 份，这类提及的标对数变化都在波动内，没有对上。
+- **各自完整的病名并列时分开标，共用中心词才合成 Composite。** 只有 top-4 loop09 写明，它的合并错误少了 24.5 个，理由也引用这一节；只有一份指南，证据最弱。
+
+"病人身上的状况升为 Specific"在 top-4 loop05、loop08 上对得上 DiseaseClass 的下降，但没有核对 gold 在这类语境里的惯例，不列为候选。还有几块超出范围的变化找不到对应条文：top-4 loop04、loop07 只沿用原指南"cancer、tumor 要标"那句，单独的 cancer、tumor 仍少标对 5.8、4.8 个；top-4 loop09 第 244 行有两种读法，可能要求单独的 cancer 不标；top-4 loop06、loop07 的其他 Specific 少标对 11.4、7.4 个。top-4 loop05、loop10 的 DiseaseClass 各类都受某条条文管辖，没有不受条文影响的类别可作对照，条文的作用和普遍下降分不开。
+
+（来源：`outputs/bar_attribution_output.txt` A 至 G 节；预先写定的规则 `outputs/bar_attribution_rules.json`，盲编码 `outputs/blind_clause_coding.csv`；训练集 history of 的统计见 `outputs/history_tally_output.txt`，肿瘤词名称的统计见 `outputs/dc_loss_clauses_output.txt` B 节；逐类数字见附录 P）
 
 ## 4. Modifier：收益在基因名词前，新增误标集中在短语后和 4 篇摘要
 
@@ -214,15 +246,48 @@ top-4 比原指南平均高 0.0067。95% 区间是按这些运行的波动推算
 
 这些对照只覆盖全部变化的一小部分。11 份指南相对原指南改对或改错的提及约有 940 个，逐条对照过条文的只有 130 个出错的预测，改对的一侧没有对照（判定方法和逐份结果见附录 G.6、G.7）。
 
-## 5. Modifier 以外的损失：F1 最低的指南漏标，多半是它自己的条文要求不标
+## 5. Modifier 以外的损失：新条文把一部分提及排除在 Specific 或标注之外
 
-Modifier 以外最大的两项损失，是漏掉 DiseaseClass 和把 Specific 标成 DiseaseClass（第 3 节）。只有前者查过原因，查的是 F1 最低的 top-4 loop10。
+Modifier 以外最大的两项损失，是把 Specific 标成 DiseaseClass 和漏掉 DiseaseClass（第 3 节）。这一节查了全部四份相关指南。条文对得最清楚的是 Specific 标成 DiseaseClass，最弱的是 top-4 loop05 的漏标。下面"原指南几乎总标对"指 19 次原指南运行中至少 15 次标对，"几乎总标错"指至多 4 次标对。
+
+### 5.1 Specific 标成 DiseaseClass：两份指南规定部位词不足以让疾病名算具体疾病
+
+**新增的这类错误，几乎都是 breast cancer、colorectal cancer 这类"部位词加肿瘤词"的名称用在泛指的句子里。** top-1 loop05 比原指南平均多把约 36 个 Specific 提及标成 DiseaseClass；它标成 DiseaseClass 的 Specific 提及，九成以 cancer、carcinoma、tumor 等肿瘤词结尾。例如 8589723 "have an 80 % risk of breast cancer" 中的 breast cancer，原指南 19 次都标对。
+
+**模型写下的依据是 top-1 loop05 的第 1.2 节，按它自己的第 71 行，这一节只用来把病名升为 Specific。** 第 46 行规定，没有专名的描述性病理名词，"不论有没有部位、生物或病因修饰语"，只有用在病人自己的病情陈述里（presented with、diagnosed with 等），或修饰语指明单一病原、病因时，才标 Specific；第 61 行接着规定，泛指一类疾病而两个条件都不满足的，"仍为 Disease Class"。第 71 行写明这一节"不会把 Specific 降级"，可一旦把 breast cancer 当成描述性病理名词，它就只有在病人陈述里才是 Specific。60 个中 59 个的标注理由引用了第 1.2 节，最多的是第 61 行，理由的典型写法是"risk of 不是病人层面的谓词……所以是泛指的一类"。
+
+**top-4 loop06 有同样的规定，还多一条"表示病理状态的名词标 DiseaseClass"。** 它的第 29 行规定 ovarian、colorectal 这类部位修饰语不算让疾病个体化的线索，第 35 行规定没有这类线索时按 DiseaseClass 的一般标准判断，以肿瘤词结尾的错误对应这两行。另一部分来自第 93 行：中心词表示病理状态、指一个生物所患状况的名词短语，一律标 DiseaseClass，例如 myopathy、iris hypoplasia。
+
+**这条"病理状态名词标 DiseaseClass"的规定，在两个方向上都改变了标注。** 标注理由首先引用它所在的第 1.4 节的预测中，原指南几乎总标错、这次标对的 DiseaseClass 有 10 个，原指南几乎总标对、这次标成 DiseaseClass 的 Specific 有 5 个，另有 5 个没有 gold 对应的多标，原指南平均每次没有这样的多标。top-4 loop06 的 DiseaseClass 标对数和错标数同时高于原指南范围（第 3 节），两边都有引用这一条的预测。top-1 loop05 的第 1.2 节则得少失多：标对 8 个原指南几乎总标错的 DiseaseClass，标错 33 个原指南几乎总标对的 Specific。
+
+**写了"足以"的三份指南，这类错误停在原指南的水平；写了"不足以"的五份里只有两份出错。** 验证集里以肿瘤词结尾的 Specific 提及有 124 个，下表是各指南把其中多少个标成了 DiseaseClass（各指南的写法按盲编码，见第 3 节）：
+
+| 指南 | 对部位词的规定 | 124 个中标成 DiseaseClass |
+| --- | --- | ---: |
+| 原指南（每次平均） | 没有 | 13.0（7 至 20） |
+| top-1 loop05 | 不足以算具体疾病（第 46、61 行） | 54 |
+| top-4 loop06 | 不足以算具体疾病（第 29、35 行） | 24 |
+| top-4 loop04、loop07、loop09 | 也写了不足以（第 46、34、35 行） | 14、14、12 |
+| top-4 loop01、loop02、loop10 | 足以（第 205、136、66 行） | 各 12 |
+| 其余 3 份 | 没有写 | 8 至 15 |
+
+另外三份写了"不足以"的指南，字面与前两份相近，这类错误却没有增加；差别出在哪里没有查。
+
+gold 的惯例在后一边：训练集里两个词以上、以肿瘤词结尾的名称，标 Specific 的 213 个，标 DiseaseClass 的 50 个。（来源：`outputs/dc_loss_clauses_output.txt` B 节；逐项拆分见附录 L）
+
+### 5.2 top-4 loop10 的 DiseaseClass 漏标：一半多是它自己的条文要求不标
 
 **top-4 loop10 删掉了原指南"cancer、tumor 要标"的规定。** 原指南写明，cancer 和 tumor 虽是泛称也要标注；top-4 loop10 改成只在构成具体病名（如 ovarian cancer）时才标，单独泛指的不标。验证集 gold 把这类单独的 cancer 标为 DiseaseClass，照这条规定执行就会漏标。例如文档 9072974 "... appears to be mutated at considerable frequency in human cancers ." 中的 cancers，原指南每次都标对，top-4 loop10 没有标出。
 
 **它新漏掉的提及，一半多是它自己的条文要求不标的。** 原指南几乎总能标对、top-4 loop10 却漏掉的提及，逐个核对了其中 38 个，21 个正是它的条文要求不标的：一类是上面单独泛指的 cancer、tumor；另一类是疾病介绍中列举的症状，条文要求"送人工审核，不自动标注"，可标注输出只能给出标注，没有送审这一项，结果就是漏标。其余的有的与它自己的条文相反，有的说不清条文是否适用（附录 I.2）。
 
-**其余损失还没有查原因。** top-1 loop05 把 Specific 标成 DiseaseClass，top-4 loop05 也漏掉了不少 DiseaseClass，这两处留给第 9 节。
+### 5.3 top-4 loop05 的 DiseaseClass 漏标：只有约三分之一对得上它的条文
+
+**top-4 loop05 新漏掉的 DiseaseClass，只有约三分之一是它自己的条文明确要求不标的。** 它比原指南平均多漏约 23 个 DiseaseClass，大部分来自原指南几乎总标对、它却漏掉的 20 个提及。逐个对照它的条文：
+- 明确要求不标的 6 个：4 个是家族史、风险描述中单独的 cancer，如 "had a family history of cancer"（第 159、160 行）；1 个是疾病特征列举中的症状（第 46 行）；1 个是括号里对疾病特征的说明（第 164 行）。
+- 其余 14 个：条文能否适用有两种读法的 6 个，与它自己的条文相反的 1 个，找不到要求不标的规定的 7 个。
+
+**这 20 个提及高度集中：8 个出自同一篇摘要，19 个 top-4 loop10 也漏了。** 9083764 描述 Schwartz-Jampel 综合征，myotonia、bone dysplasia 在里面反复出现；一篇文档只调用一次，这 8 个是同一次标注的结果。top-4 loop10 也写了"单独的 cancer 不标"和"列举中的症状不自动标注"，两份指南漏掉的几乎是同一批提及。其余 14 个为什么漏标，现有材料解释不了：漏标没有输出，也就没有标注理由可读。（来源：`outputs/dc_loss_clauses_output.txt` C 节；逐例编码见附录 M）
 
 ## 6. 流程记录：错误规则从哪里来，为什么没被拦下
 
@@ -244,6 +309,21 @@ Modifier 以外最大的两项损失，是漏掉 DiseaseClass 和把 Specific �
 一轮改写留不留，只看改写后开发集的总 F1 有没有上升，不看新写的规则本身对不对。我们事后挑了 5 个开发集里的短语（如 "a family history of ovarian cancer"、"91 Caucasian cancer cases"），看 top-4 方法得到的 9 份指南怎样规定它们。指南给这些短语明确写了标签的地方共 32 处，其中 15 处与开发集 gold 相反，都是在被保留的轮次写进去的。
 
 而且写进这些规定的那一轮，开发集上通常就有对应的提及从标对变成了标错；拿原指南重复标注几次来比，这种变化很少见。可见开发集已经显出了问题，只是总 F1 的上升把它盖过了。（来源：`outputs/topk4_stability_output.txt` C 节，`outputs/keep_criteria_output.txt`）
+
+### 6.3 开发集看得出 DiseaseClass 漏标，看不出 Specific 标成 DiseaseClass
+
+**11 份指南都有一轮被保留的改写针对"Specific 被标成 DiseaseClass"这个开发集错误簇，验证集上的这类错误却从减少 12.2 个到增加 35.8 个。** 选中它的轮次给分析看的例子，大多出自同一篇开发文档 6859721。这是一份病例报告，"presenting with fever , arthritis , and cutaneous vasculitis" 里的病名，gold 都标 Specific。看了这些例子，有的改写写成部位词也能让病名算具体疾病（top-4 loop01、loop02、loop09、loop10），有的写成反面：
+- top-1 loop05 第 2 轮：这一轮的 5 个例子全来自 6859721。分析那一步的原则已经写了"不论有没有部位修饰语"和"泛指一类疾病的仍为 DiseaseClass"，改写照写成第 46、61 行。
+- top-4 loop06 第 1 轮：原则只列了病因、生物、基因三种修饰语，"部位修饰语不算"（第 29 行）是改写明确写出的。
+
+**开发集看不出这条反面规定的害处。** 10 篇开发文档里，以肿瘤词结尾、gold 为 Specific 或 DiseaseClass 的只有 2 个，都在 "a family history of" 之后，没有一个是 breast cancer 这类名称用在泛指句子里。这个错误簇在开发集上起点是 5、6 个，11 份终版指南是 0 至 5 个；降到 0 的包括 top-1 loop05 和 top-4 loop06，验证集上增加最多的正是这两份。
+
+**DiseaseClass 漏标在开发集上已经显出来了。** 用原指南标注开发集时，这个错误簇是 2 至 3 个（20 个循环第 1 轮之前的标注）；top-4 loop05、loop10 的终版指南都升到 6 个，其余 9 份不超过 4 个；验证集上漏标增加最多的也是这两份。top-4 loop05 唯一保留的第 1 轮正好选中了这个错误簇，例子是 spasticity、abnormal retinal vascular development 等 gold 为 DiseaseClass 的提及：
+- 分析那一步的原则写的是"疾病特征里的这类表现标 DiseaseClass"。
+- 改写加了一条原则里没有的例外："疾病特征列举中的体征、症状不标"（第 46 行），点名的正是 spasticity 和 abnormal retinal vascular development。
+- 这一轮开发集上又多漏了 3 个 DiseaseClass（ichthyosis、"family history of cancer" 中的 cancer、exudative retinal detachment），但 Specific 标成 DiseaseClass 从 6 个降到 0，总 F1 从 0.741 升到 0.767，这一轮被保留。
+
+这与第 6.2 节相同：开发集已经显出问题，总分把它盖过了。（来源：`outputs/dc_loss_clauses_output.txt` D、E 节；逐轮记录见附录 N）
 
 ### 候选方向（未检验）
 
@@ -277,15 +357,23 @@ Modifier 以外最大的两项损失，是漏掉 DiseaseClass 和把 Specific �
 
 **重复分类判据，也不能确认分类前提。** R14 的理由称 Duarte 是疾病名、修饰 biochemical phenotype；修饰关系明确，但本篇也用 Duarte 指酶变体，原指南未充分裁定这里是否属于疾病提及。因此保留“无法确定”，不以 gold 没有标注来反推理由错误。本轮未确认同一条件下无优先顺序可解的条文冲突，也未追加案例。
 
-## 9. 下一步先比较两类未解释的损失
+## 9. 下一步：删条文检验和再标注都已备好，等文档、阈值和预算的决定
 
-Modifier 相关的变化已有计数和条文对照；Specific 标成 DiseaseClass（top-1 loop05、top-4 loop06）和 DiseaseClass 漏标（top-4 loop10、top-4 loop05）还只有计数。下一步在同一批提及上回答：哪些被找回，哪些新错；标出的提及，模型自述依据哪条条文；漏标的提及，有没有要求不标或送审的条文。改善、退化和不变的例子要一起看，再判断哪条规则修改值得检验。
+**四类损失都已对到条文内容，但都还没有删掉条文重标过。** Modifier 和 Specific 标成 DiseaseClass 两类对得最完整：写了条文的指南才出错，标注理由也引用这些条文；DiseaseClass 漏标只对上一部分。计划中的检验只针对"history of 这类短语后的疾病名标 Modifier"的规则（设计见 `notes/20261103_clause_ablation_design_review.md`），准备工作已离线完成：
+- **规则的位置：** 写了这条规则的 7 份指南，逐行列出了它出现的全部位置，每份 2 至 7 行。要删的 top-4 loop07 有 5 行，删改后的文本和 diff 已固定并记下哈希；离线检查确认这 5 行都已改掉，其余文字、基因名词前的 Modifier 规则逐字未动。
+- **用验证集：** 含短语后提及的 35 篇，加上含基因名词前 Modifier 等的共 79 篇，四组各重复 5 次，共 1,140 次调用。按已保存回复的实际用量计约 ¥906，接近需要通知管理员的 ¥1,000。
+- **用没用过的训练文档：** 可用 487 篇，其中 214 篇有短语后的提及，但紧跟 history of 的只有 10 个。只跑删前、删后两组，每篇约 ¥7.4，40 篇约 ¥298。
+
+待定：用哪批文档、四个判定阈值、预算，以及是否加入 top-1 loop05（只需删掉两处指向第 3 节的说明）。逐项数字见附录 O。
+
+**要判断柱状图的正负号分组，需要每份修改后的指南再标 2 次。** 现在每份只有一次运行，第 3 节有 6 份指南分到哪一组取决于落在波动内的柱子。11 份各在验证集上再标 2 次，共 2,200 次调用，按已保存回复的实测单价约 ¥1,874（$11.86）；原指南 19 次运行之间单次费用最多相差 14%，按这个幅度最多约 ¥2,135。超过 ¥1,000，需要通知管理员，未经批准不会运行。（来源：`outputs/rerun_cost_output.txt`）
 
 ## 10. 方法与局限
 
 - 每份修改后指南只在验证集上运行一次，单个提及的变化可能是波动；验证集上的波动参照只有原指南范围。
 - 家族史组、4 篇摘要和 5 个开发集短语都是看过结果后选的，检索短语的词表也有一部分来自看过误标后的检查；它们用于描述结果，不是预先设计的检验。
 - 条文与预测的对应、模型自述的依据，都不能证明条文造成了预测；本文没有删改条文后重新标注的对照。
+- 第 5 节按标注理由的第一个引用节分组，top-4 loop05 的 20 个漏标逐例对照条文，都是单人判读（附录 L、M）。
 - 既有条文编码只覆盖出错的预测，判定标准见附录 G.4；新增的 16 条理由核查包含正确对照，但没有正确的 Modifier 或 Composite 对照，也不涵盖真正漏标。本轮由助手判读，未经人工专家复核；材料隔离未完全执行，不能称严格盲审，见附录 J。
 - 验证集 100 篇的逐例错误已用于挑选下一步改动，它已不再是独立的评价集；据此选出的改动，要在新循环和没用过的文档上评价。
 - 数据、脚本和哈希见附录 F。

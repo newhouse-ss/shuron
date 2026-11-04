@@ -1,0 +1,54 @@
+A. Where each guideline states the rule (hand inventory rule_locations.csv; each line checked for its quoted words)
+   top-1 loop05   2 lines: L63, L268
+   top-4 loop05   2 lines: L159, L161
+   top-4 loop06   5 lines: L102, L120, L150, L339, L340
+   top-4 loop07   5 lines: L65, L66, L94, L112, L235
+   top-4 loop08   4 lines: L48, L159, L236, L237
+   top-4 loop09   7 lines: L33, L130, L132, L158, L268, L362, L397
+   top-4 loop10   6 lines: L57, L135, L146, L148, L284, L347
+   original: lines naming both a relational frame word and Modifier/Section 3: none; lines containing 'of' or 'with' in Section 3 (L27-L35): []
+
+B. Frozen guidelines (UTF-8, LF line ends, as the runner reads them) and diffs against their sources
+   topk4_loop07_rule_removed    from top-4 loop07  source d2677c7f422d5b82  edited 8bf42722c25ebdd2  diff 31d9b5e5b57a557e  characters 21,461 -> 21,163 (-298, -1.39%)
+   topk1_loop05_rule_removed    from top-1 loop05  source 9547c3d2ffbaf89c  edited 5432656a3f0b193e  diff 47af2caddc529613  characters 22,085 -> 22,046 (-39, -0.18%)
+   original_plus_rule           from original      source e6232d944d68e9e9  edited 78285e2287f1655c  diff 3042a4ccfa98c7a5  characters 7,367 -> 7,802 (+435, +5.90%)
+
+C. Offline checks of the edits
+   topk4_loop07_rule_removed: lines changed [65, 66, 94, 112, 235]; inventory lines [65, 66, 94, 112, 235]; inventory quotes still present: none
+      lines still containing 'history of', 'relatives with' or 'complement of': 4
+         L18: This is the narrower condition, so it is stated first. A noun phrase is annotated **Specific Disease** when its head is a state-denoting noun, it is t
+         L90: **Subtype/state-head span extension.** When a Specific Disease name is the complement of an “of”-phrase, the governing noun is a subtype or state noun
+         L93: - the disease name is not the complement of an “of”-phrase (for example, a bare name in subject or object position);
+         L227: 21. **“a deficiency of norrin” (complement of “results in”); “massive intraretinal and subretinal lipid accumulation”**
+      lines naming both a relational frame word and Modifier/Section 3 after the edit: [65, 66, 90, 268]
+         L65: **Context and population frames.** A disease name that premodifies a context or population noun (such as *cases*, *population*, *history*, *risk*, or *incidence*) is annotated **Modifier**.
+         L66: - “ovarian cancer population” and “ovarian cancer risk” are annotated as **Modifier**.
+         L90: **Subtype/state-head span extension.** When a Specific Disease name is the complement of an “of”-phrase, the governing noun is a subtype or state noun (a noun denoting a variety, stage, type, or form 
+         L268: 3. **Prevalence frames.** The reference set labels “glucose 6-phosphate dehydrogenase (G6PD) deficiency” in a “prevalence of …” frame as Specific Disease (1303173). §3 names “incidence” but not “preva
+      Section 3 definition, example and gene-designation rule (L55-L63, L69-L75) unchanged: True; premodifier sentence kept: True
+   topk1_loop05_rule_removed: lines changed [63, 268]; inventory lines [63, 268]; inventory quotes still present: none
+      lines still containing 'history of', 'relatives with' or 'complement of': 2
+         L63: - **(d) Family-history or relative frame.** The condition belongs to relatives rather than to the patients, as in “had a family history of ...” or “re
+         L267: 32. **“Both patients had a family history of breast or ovarian cancer.”**
+      lines naming both a relational frame word and Modifier/Section 3 after the edit: [52, 61]
+         L52: - **(ii) Single organism or etiology.** The modifier pins the term to one named organism (species or genus) or to one named causal agent, such as a specific pathogen, toxin, drug, or chemical, or a na
+         L61: - **(b) Generic category.** The term is used generically for a family of disorders, with no patient-level predicate and no single-organism or etiology modifier. It remains **Disease Class**.
+   original_plus_rule: three lines added after L35 (a blank line, loop07 L65, L66); every original line kept in order: True
+
+D. Documents and calls, chosen from text and gold only
+   validation: post-phrase non-Modifier gold 71 mentions in 35 documents; gene-noun Modifier gold 99 in 49; people/risk premodifier Modifier gold 60 in 32; union 79 documents
+   validation design, 5 repeats: unchanged 395, rule removed 395, original 175, original plus rule 175; total 1140
+   unused training pool: 487 documents (train 593 minus dev50, the 50 test documents and 6 BioRED PMIDs); with post-phrase non-Modifier gold: 214 documents, 364 mentions; in those documents gene-noun Modifier gold 154, people/risk premodifier Modifier gold 139
+      by relational noun, history                                  validation   9   training pool  10
+      by relational noun, risk/susceptibility/predisposition       validation  17   training pool  36
+      by relational noun, case(s) of                               validation   3   training pool  43
+      by relational noun, person noun + with/of                    validation  36   training pool 227
+      by relational noun, frequency/incidence/prevalence/presence/diagnosis validation   6   training pool  48
+   training design (two arms on these documents), 5 repeats: unchanged 1070, rule removed 1070; total 2140
+
+E. Cost at the saved batch prices (run_haiku.cost_jpy; JPY per USD 158.086954)
+   per validation call: top-4 loop07 mean 0.793 (min 0.155, max 2.052); original, mean of 19 runs per document, 0.657
+   original plus rule: 434 more prompt characters, about 174 input tokens (2.49 characters per token in the saved calls), at most JPY 0.0014 more per call before any change in output length; priced with the original's per-document cost
+   validation design: unchanged JPY 319, rule removed JPY 319, original JPY 134, original plus rule JPY 134; total JPY 906 (USD 5.73)
+   training design: per-call cost of top-4 loop07 on document length, intercept -0.042, slope 0.6173 per 1,000 characters (r = 0.58); training documents mean 1,272 characters, validation 1,351; estimate JPY 1,592 (at the validation mean per call JPY 1,696)
+   per training document in both arms (5 repeats each), at the fitted cost of the pool's mean length: JPY 7.44; e.g. 40 documents, 400 calls: JPY 298

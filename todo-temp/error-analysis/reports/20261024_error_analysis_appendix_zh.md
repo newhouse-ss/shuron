@@ -478,6 +478,23 @@
 - **第 3 节：** 前面加起点表（各标签的 gold 数、原指南平均标对数、还剩多少）；主表改为三个标签各列"标对"和"错标"的变化，删去真正漏标和总 FP 两列（真正漏标仍在第 7 节）；表下写明 Composite 的错标 11 份全部减少；"损失分在不同指南"改为"没标对的提及去了哪里"，补 top-4 loop06 的 Specific 标成 DiseaseClass（+17.8）和 Modifier 收益的来源。读前须知加"标对与错标"一条，"原指南运行"一条指向第 1 节的表。
 - **结论 2：** 补错标一侧（F1 高的几份没有更多 Modifier 错标，F1 低于范围的三份错标随收益同步增加）和起点只能解释一部分。其余结论不变。
 
+**11/03，补 Modifier 以外两类损失的条文对照、逐轮记录和删条文检验的准备。** 按 10/30 seminar 的两项 Todo（条文对应结果模式；Specific 标成 DiseaseClass、DiseaseClass 漏标照 Modifier 的做法查）和删条文检验设计说明里的准备步骤。新脚本 `dc_loss_clauses.py`、`ablation_stage0.py`，新的人工编码 `loop05_dc_missed_coding.csv`、`clause_ablation_stage0/rule_locations.csv`。没有改动已有脚本；新脚本经 runpy 运行上游脚本时会重写它们的输出，核对过与提交版本逐字节相同。条文一律读各循环 `final/final_guidelines.txt` 原文，引文由脚本核对。
+- **第 3 节（同日用户审阅后重写，11/04 再次重写）：** 第一版只把损失归成四种变化，没有解释 10/30 slides 第 5 页柱状图的正负组合；第二版（`bar_patterns.py`、`guideline_practices.csv`）经独立审阅后撤回，见下面 11/04 一条。
+- **第 5 节：** 分三小节。5.1 新增 Specific 标成 DiseaseClass 的条文对照（top-1 loop05、top-4 loop06）；5.2 是原有的 top-4 loop10；5.3 新增 top-4 loop05 的漏标对照。删去"其余损失还没有查原因"。
+- **第 6.3 节（新增）：** 11 份指南都处理过同一个开发集错误簇；Specific 标成 DiseaseClass 的害处开发集看不出来，DiseaseClass 漏标在开发集上已经翻倍。
+- **第 9 节：** 改为删条文检验的准备结果和待定事项。
+- **结论：** 改写第 5 条，新增第 8 条。
+- **附录：** 新增 L 至 P 节。
+
+**11/04，第 3 节与附录 P 按独立审阅重写。** 一位只读审阅者（统计审阅代理，按挑剔的 NLP 研究者要求审阅）指出 11/03 第二版的问题：33 根柱子中 17 根落在原指南范围内，按正负号分组是在给波动找原因；条文编码把"沿用原指南原文"记成"没写"，还漏编了几处；有几行统计的提及与条文对不上（例如基因名一行混入了缩写和单独的 tumor）；推断和措辞越界。审阅者随后又审了改法。据此：
+- **条文由没看过结果的编码员重编。** 只读 12 份指南原文，回答 8 个问题，记下方向、行号、逐字引文和是否沿用原文（`blind_clause_coding.csv`，99 行，引文由脚本核对）。
+- **重算前写定规则。** 提及类别、每种条文写法按字面预言的错误、"三条证据至少两条"的判定，写入 `bar_attribution_rules.json` 并记下哈希（6fc87d4c82e2，2026-11-03 12:46 UTC），脚本断言这个哈希。
+- **偏离预先规则的两处，在第一次运行之后决定：** 第三条证据（理由引用条文所在节）只统计处于条文所预言状态的预测，不统计所有变化了的预测；一条条文只记到方向与预言一致、超出范围的类别变化上。另修了一个实现错误（节号识别时正则里混入了退格字符）。都已在输出 D 节注明。
+- **只在类别一级筛选。** 每根柱子拆成的 165 个类别变化中，63 个超出原指南范围（纯波动约 16 个），只给这些找条文；落在范围内的照常列出。
+- **第 3 节：** 先说明 33 根柱子中只有 16 根超出波动，五组里"三根都正"和"Specific 负、其余正"分不开；再列出超出范围的柱子对上的条文；候选写法降级为"与这批指南的差异同时出现"，逐条写明依据。删去"不因病人有症状就升为 Specific"这条。
+- **第 9 节：** 补上每份指南再标 2 次的费用（约 ¥1,874，`rerun_cost.py`）。
+- **结论第 2 条**改写。`bar_patterns.py`、`guideline_practices.csv` 及其输出保留在目录里，标为已撤回，不再被正文引用。
+
 ## F. 核查记录
 
 | 产物 | SHA-256（前 12 位） | 内容 |
@@ -512,9 +529,18 @@
 | `rationale_audit_extract.py` → `20261030_rationale_audit/selection_manifest.json` | b5f3aa2c01e9 → 3dbcac191ad3 | 10/30：完整请求哈希、calls.json 请求编号、原始条目与对齐后预测的准确关联；3,000 篇次逐项重放一致。固定选样、原文及指南快照、原始对齐记录和来源索引均在该目录 |
 | `rationale_audit_summarize.py` → `20261030_rationale_audit/semantic_summary.json` | 0b8d82ec8258 → 2ffe13f1c7ed | 10/30：核对每条判读的证据原句与行号，生成 16 例汇总和可读案例卡；复核旧 92 条引用。判读数据 `semantic_coding.json` 哈希 b84925e8d5bc，不由脚本推断语义 |
 | `loop_label_tables.py` → `loop_label_tables_output.txt`、`loop_label_tables.json` | e3ff559cc308 → e5703f067e9e, 5affd0c9d31d | 10/31：20 个循环的逐循环表（A 节，断言起点和终版的开发集 F1 等于 `status.json`、验证集 F1 等于 `valid_metrics.json`，原指南运行 10 + 9 = 19）；44 轮逐轮表及波动推算（B 节）；各标签起点（C 节）；11 份修改后指南按标签的标对与错标变化及主要去向（D 节，断言各标签标对之和等于 TP、错标之和等于 FP，标对变化与 `error_overview.json` 逐格相同）。正文第 1、3 节，附录 K 节。重跑两次输出相同 |
+| `dc_loss_clauses.py` → `dc_loss_clauses_output.txt`、`dc_loss_clauses.json` | 2e4bd72bf75d → 3a9f0de84894, 264087127415 | 11/03：四种变化的归类（A 节）；Specific 标成 DiseaseClass 的精确拆分、同一条文两个方向的计数、各指南对部位词的规定、gold 惯例（B 节）；top-4 loop05 漏标的拆分与逐例编码（C 节，断言编码恰好覆盖 20 个提及）；三个循环的逐轮记录（D 节，断言关键条文的行号与引文）；11 份指南的开发集错误簇与验证集变化（E 节）；正文新引用的 20 行指南逐条核对（F 节）。理由与引用节取自 `20261030_rationale_audit/prediction_index.jsonl`。重跑两次输出相同 |
+| `loop05_dc_missed_coding.csv` | c7eceb628195 | 11/03：top-4 loop05 的 20 个漏标逐例对照它的条文（单人编码） |
+| `ablation_stage0.py` → `clause_ablation_stage0/stage0_output.txt`、`manifest.json`、三份删改后指南及 diff | 987e75086a5c → 76f283960d6a, 39fac4d85e33 | 11/03：规则位置清单核对（A 节）；冻结删改后指南并记哈希（B 节）；离线检查删改是否干净（C 节）；从原文和 gold 重算文档数、调用数（D 节）；按已保存回复的用量估费用（E 节）。没有发送任何请求。重跑两次输出相同 |
+| `bar_patterns.py` → `bar_patterns_output.txt`、`bar_patterns.json`；`guideline_practices.csv` | 35ace29f41db → 4f1480f0c28a, d9ff795da2d8；304536ba3501 | 11/03 第二版，11/04 撤回（见 E 节），正文不再引用 |
+| `bar_attribution_rules.json` | 6fc87d4c82e2 | 11/03 12:46 UTC 重算前写定：提及类别、条文写法预言的错误、判定规则 |
+| `blind_clause_coding.csv` | 66929fed1bf3 | 11/03 盲编码：12 份指南 × 8 个问题的方向、行号、逐字引文、是否沿用原文（编码员只读指南原文） |
+| `bar_attribution.py` → `bar_attribution_output.txt`、`bar_attribution.json` | a1fed9ae3ff9 → cc0b61f9c06a, 6d375eb1a53a | 11/04：柱子与原指南范围（A 节）；按类别精确拆分，断言相加等于柱子（B 节）；条文预言的错误（C 节）；每条条文的三条证据与判定（D 节）；对照（E 节）；各指南的归因与未解释部分（F 节）；训练集单独 cancer、tumor 的标注率（G 节）。断言规则文件哈希；重跑两次输出相同 |
+| `rerun_cost.py` → `rerun_cost_output.txt` | 7a1950e731ba → ff51af61639f | 11/03：每份修改后指南在验证集上再标 2 次的费用，按已保存回复的实测单价 |
+| `clause_ablation_stage0/rule_locations.csv` | f5491af85911 | 11/03：7 份指南中这条规则所在的 31 行（人工清单，引文由脚本核对） |
 
 - **原指南运行：** 19 次，按统一换行后的指南哈希识别（e6232d944d68）。
-- **规则引文**来自各循环的 `final/final_guidelines.txt`（行号如文中所注，由 `rule_chain.py` 核对；10/29 审稿后新增的引文由 `cited_sections.py` E 节核对）和轮次快照。提示引文来自 `rounds/iteration_NN/refine_guidelines.txt` 和 `infer_discrepancy_patterns_N.txt`。
+- **规则引文**来自各循环的 `final/final_guidelines.txt`（行号如文中所注，由 `rule_chain.py` 核对；10/29 审稿后新增的引文由 `cited_sections.py` E 节核对，11/03 新增的由 `dc_loss_clauses.py` F 节和 `ablation_stage0.py` A 节核对）和轮次快照。提示引文来自 `rounds/iteration_NN/refine_guidelines.txt` 和 `infer_discrepancy_patterns_N.txt`。
 - **其他来源：**
   - Tay-Sachs 和 TSD 的翻转率：`todo-temp/haiku-trial/report_output.txt` 第 27、28 行；
   - E1 运行费用和 P1 至 P3：`todo-temp/seminar-20261023/reproduction_analysis_output.txt`；
@@ -797,3 +823,198 @@ loop05、08 只阅读了相关规定，未逐例核对其遗漏：loop05 第 142
 | top-4 loop10 | 3 | 拒绝 | 0.797 → 0.758 | −0.039 | |
 
 被拒的轮次只列变化，不算机会：它们没有进入终版指南。（来源：`outputs/loop_label_tables_output.txt` B 节）
+
+## L. Specific 标成 DiseaseClass 的逐项拆分（正文第 5.1 节）
+
+**拆分方法。** 一份指南相对原指南的变化按提及精确拆开：这份指南标成 DiseaseClass 的每个 Specific 提及，贡献 1 减去 19 次原指南运行中把它标成 DiseaseClass 的比例；原指南有时这样标、这份指南没有这样标的提及，贡献负的这个比例。各组相加等于正文的变化（四舍五入差 0.1）。分组用标注理由里最先出现的引用节。"以肿瘤词结尾"指 gold 文本以 cancer、carcinoma、tumor（tumour）、neoplasm、lymphoma、sarcoma、hamartoma、adenoma、melanoma、glioma、leukemia、blastoma 或其复数结尾。
+
+| 指南 | 最先引用的节 | 提及 | 贡献 | 以肿瘤词结尾：提及 | 贡献 |
+| --- | --- | ---: | ---: | ---: | ---: |
+| top-1 loop05 | 第 1.2 节 (b) 泛指类别（第 61 行） | 33 | +27.1 | 33 | +27.1 |
+| | 第 1.2 节其他部分（第 46 至 57 行） | 19 | +14.0 | 18 | +14.0 |
+| | 第 1.2 节 (a)、(e)：疾病特征、伞形表型、无框架的列举（第 60、64 行） | 7 | +5.7 | 3 | +2.0 |
+| | 只引第 1 节或其他 | 1 | +0.4 | 0 | 0 |
+| | 原指南有时标成 DiseaseClass、这次没有 | | −11.4 | | |
+| | 合计（原指南平均 24.2，这次 60） | 60 | +35.8 | 54 | |
+| top-4 loop06 | 第 1.4 节 病理状态名词（第 93 行） | 17 | +11.9 | 3 | +3.0 |
+| | 第 1.1、1.5 节：部位、复数、遗传方式修饰语（第 29、35、117、119 行） | 20 | +8.7 | 17 | +8.7 |
+| | 只引第 1 节或其他 | 5 | +0.4 | 4 | 0 |
+| | 原指南有时标成 DiseaseClass、这次没有 | | −3.2 | | |
+| | 合计（这次 42） | 42 | +17.8 | 24 | |
+
+原指南几乎总标对（19 次中至少 15 次）、这次标成 DiseaseClass 的 Specific 提及：top-1 loop05 有 33 个，31 个以肿瘤词结尾（如 8589723、8640236、8898652、9019400 中的 breast cancer、colorectal cancers）；top-4 loop06 有 7 个：prostate carcinomas、ovarian cancers、cataract、male-infertility、iris hypoplasia 和两个 renal hamartomas。
+
+**同一节在两个方向上的计数。** "标对"指原指南几乎总标错（至多 4 次标对）、这次标对的 DiseaseClass；"标错"指原指南几乎总标对、这次标成 DiseaseClass 的 Specific；"多标"指没有 gold 对应的 DiseaseClass 预测，原指南平均每次 0 个。
+
+| 指南 | 最先引用的节 | 标对的 DiseaseClass | 标错的 Specific | DiseaseClass 多标 |
+| --- | --- | ---: | ---: | ---: |
+| top-1 loop05 | 第 1.2 节 (b) | 3 | 19 | 0 |
+| | 第 1.2 节 (a)、(e) | 0 | 2 | 0 |
+| | 第 1.2 节其他部分 | 5 | 12 | 0 |
+| top-4 loop06 | 第 1.4 节 | 10 | 5 | 5 |
+| | 第 1.1、1.5 节 | 5 | 2 | 0 |
+| | 第 1.3 节（疾病特征中的体征、症状） | 3 | 0 | 4 |
+
+**各指南对部位词的规定。** 11/04 起以盲编码为准（`outputs/blind_clause_coding.csv` 第 2 题）：写"不足以"的是 top-1 loop05（第 46 行）、top-4 loop06（第 29 行）、loop04（第 46 行）、loop07（第 34 行）、loop09（第 35 行）；写"足以"的是 top-4 loop01（第 205 行）、loop02（第 136 行）、loop10（第 66 行，对 cancer 类有两种读法）；top-1 loop07、top-4 loop05、loop08 没有规定。11/03 版把 top-4 loop09 记为"足以"（第 25 行），但它第 35 行写的是部位修饰语单独不改变标签，两处都在。top-1 loop05 第 52、61、71 行，top-4 loop06 第 35、93、117 行的引文仍由 `dc_loss_clauses.py` F 节核对。
+
+**gold 惯例。** 两个词以上、以肿瘤词结尾的 gold 名称：训练集（543 篇，不含 50 篇测试文档）Specific 213、Modifier 97、Composite 59、DiseaseClass 50；验证集 Specific 119、Modifier 42、Composite 29、DiseaseClass 9。10 篇开发文档里以肿瘤词结尾、gold 为 Specific 或 DiseaseClass 的只有 10196379 的两个，都在 "a family history of" 之后：cancer（DiseaseClass）和 ovarian cancer（Specific）。
+
+（来源：`outputs/dc_loss_clauses_output.txt` B、F 节；逐个提及的理由和引用节在 `outputs/dc_loss_clauses.json` 的 `spec_to_dc_top-1 loop05`、`spec_to_dc_top-4 loop06`）
+
+## M. top-4 loop05 漏标的逐例编码（正文第 5.3 节）
+
+对象是原指南几乎总标对、top-4 loop05 真正漏标的 20 个 DiseaseClass gold 提及，按增量拆分它们贡献 +18.9（原指南有时标对的 5 个贡献 +1.2，原指南几乎总标错的 45 个贡献 +3.1）。逐个对照 top-4 loop05 的条文，单人编码，四种关系：明确要求不标；与它自己的条文相反；有两种读法；找不到要求不标的规定。漏标没有输出，所以没有标注理由可对照。
+
+| 文档：位置 | 提及 | 关系 | 条文行 | 说明 |
+| --- | --- | --- | --- | --- |
+| 8640236:249 | cancer | 要求不标 | 31、159 | "inherited susceptibility to cancer"：风险描述中的单独 cancer；第 8 条标题和第 1a 节例外点名风险描述，正文第 160 行只举人群和家族史 |
+| 8968716:1389 | cancer | 要求不标 | 159、160 | "cancer in one parent"：亲属的单独 cancer |
+| 9012404:793 | cancer | 要求不标 | 160 | "had a family history of cancer"：第 160 行自己的例子 |
+| 9195227:645 | cancer | 要求不标 | 160 | "family history of cancer was known" |
+| 9083764:191 | myotonia | 要求不标 | 46、157 | "defined by myotonia, short stature, and bone dysplasia"：特征列举中的症状 |
+| 9090524:410 | renal nephropathy | 要求不标 | 164 | "Denys-Drash syndrome ( renal nephropathy , gonadal anomaly , ... )"：括号里对疾病特征的说明 |
+| 8692963:435 | inherited metabolic disorder | 与条文相反 | 7、26 | 类别名称，第 26 行说仍为 Disease Class；没有条文排除它 |
+| 8968760:178 | cerebellar degeneration | 两种读法 | 36、46 | "characterized by" 的列举：算状态级异常（第 36 行）就标 DiseaseClass，算体征或过程（第 46 行 (f)）就不标 |
+| 9083764:222 | bone dysplasia | 两种读法 | 36、46 | 同一列举，同上 |
+| 9056547:706 | mental retardation | 两种读法 | 36、48 | 第 36 行把它当状态级异常，但只限于刻画疾病的谓语之后；这句算不算那种谓语没有写明，不算就按第 48 行不标 |
+| 9083764:1066、1240、1347 | bone dysplasia（3 个） | 两种读法 | 27、37 | "type 1A ... with moderate bone dysplasia"：综合征亚型描述中的特征（第 27 行）除非第 1b 节适用否则不标，"with" 算不算刻画谓语没有写明 |
+| 8758207:224 | parenchymal tumours of the kidney | 找不到 | 142、160 | 第 142 行保留 tumor；第 160 行只管单独、未限定的 cancer |
+| 9019400:260 | metastatic tumors | 找不到 | 142 | "produce metastatic tumors in nude mice" |
+| 9241281:1548 | tumours | 找不到 | 142 | "prognosis and treatment of human tumours"；治疗语境的例外（第 45 行）只限第 1b 节 |
+| 9083764:737、823 | myotonia（2 个） | 找不到 | 46 | 不在列举中，也不是刻画谓语的补足语 |
+| 9083764:803 | bone dysplasia | 找不到 | 19、46 | "patients appear to have primary bone dysplasia"：归于病人，不在列举中；第 1a 节只管单独、无修饰的名词 |
+| 9272171:507 | spastic paraplegia | 找不到 | 46 | "initial symptoms were ... spastic paraplegia"：单个症状，不是列举 |
+
+合计：要求不标 6，两种读法 6，与条文相反 1，找不到 7。20 个中 8 个出自 9083764（一次调用），19 个 top-4 loop10 也漏了。（来源：`outputs/loop05_dc_missed_coding.csv`，`outputs/dc_loss_clauses_output.txt` C 节）
+
+## N. 三个循环的逐轮记录（正文第 6.3 节）
+
+**N.1 开发集错误簇与验证集变化。** 开发集的数是循环自己的错误簇计数（单次标注），"起点"是第 1 轮之前用原指南的标注，"终版"是最后一个被保留的候选；验证集的数是终版指南减去原指南 19 次运行的均值。原指南在 20 个循环起点的开发集计数：Specific 标成 DiseaseClass 5 至 6 个，DiseaseClass 漏标 2 至 3 个。
+
+| 指南 | Specific 标成 DiseaseClass：开发集起点 → 终版 | 验证集变化 | DiseaseClass 漏标：开发集起点 → 终版 | 验证集变化 |
+| --- | --- | ---: | --- | ---: |
+| top-1 loop05 | 5 → 0 | +35.8 | 3 → 4 | −6.8 |
+| top-4 loop06 | 6 → 0 | +17.8 | 3 → 2 | −12.8 |
+| top-1 loop07 | 6 → 3 | +1.8 | 3 → 3 | −5.8 |
+| top-4 loop02 | 6 → 0 | +0.8 | 3 → 4 | −6.8 |
+| top-4 loop07 | 5 → 2 | +0.8 | 3 → 3 | −0.8 |
+| top-4 loop01 | 6 → 0 | −1.2 | 3 → 1 | −15.8 |
+| top-4 loop04 | 5 → 5 | −2.2 | 3 → 1 | −2.8 |
+| top-4 loop09 | 6 → 2 | −2.2 | 3 → 0 | +0.2 |
+| top-4 loop10 | 6 → 2 | −4.2 | 3 → 6 | +50.2 |
+| top-4 loop08 | 5 → 1 | −5.2 | 3 → 4 | +5.2 |
+| top-4 loop05 | 6 → 0 | −12.2 | 3 → 6 | +23.2 |
+
+44 轮中选中"Specific 标成 DiseaseClass"的有 30 轮，给分析看的 138 个例子：6859721 有 118 个，1671881 有 16 个，10484772、10577908 各 2 个。选中"DiseaseClass 漏标"的有 24 轮，例子来自 10484772（54 个）、10577908（21 个）、10196379（4 个）。
+
+**N.2 逐轮。** "首次写出"指这一行的关键字句在本轮之前的指南里没有、在本轮候选里有；"原则已有"指分析那一步的原则里已有同样的说法。
+
+| 循环与轮次 | 结果与开发集 F1 | 选中的错误簇（开发集：本轮前 → 候选） | 首次写出的条文 | 开发集上的主要变化 |
+| --- | --- | --- | --- | --- |
+| top-1 loop05 第 1 轮 | 保留，0.761 → 0.783 | Specific 漏标 6 → 3 | 第 1.1 节（带基因产物的缺乏症名称） | 缺乏症提及找回 |
+| top-1 loop05 第 2 轮 | 保留，0.783 → 0.809 | Specific 标成 DiseaseClass 5 → 0，5 个例子全来自 6859721 | 第 46、61 行；原则已有 | 这 5 个改对；没有新的 Specific 标成 DiseaseClass；10196379 的家族史 ovarian cancer、cancer 等 3 个标成 Modifier，8326491 的 Tay-Sachs disease 标成 Modifier |
+| top-1 loop05 第 3 轮 | 拒绝，0.809 → 0.782 | DiseaseClass 漏标 4 → 5 | | |
+| top-4 loop06 第 1 轮 | 保留，0.774 → 0.835 | Specific 标成 DiseaseClass 6 → 2；Specific 漏标 4 → 6；Modifier 漏标 3 → 0；DiseaseClass 漏标 3 → 2 | 第 29 行；原则没有"部位"一词 | 6859721 的 vasculitis、cutaneous vasculitis 改对，arthritis 改成漏标 |
+| top-4 loop06 第 2 轮 | 保留，0.835 → 0.849 | 含 DiseaseClass 漏标 2 → 2（exudative retinal detachment、deficiency of norrin） | 第 93、117 行；原则已有 | 这两个目标都没有改对；10196379 的 cancer、ovarian cancer 和 8326491 的 Tay-Sachs disease、TSD 标成 Modifier |
+| top-4 loop06 第 3 轮 | 拒绝，0.849 → 0.817 | | | |
+| top-4 loop05 第 1 轮 | 保留，0.741 → 0.767 | Specific 标成 DiseaseClass 6 → 0；Specific 漏标 5 → 4；Modifier 漏标 4 → 4；DiseaseClass 漏标 3 → 6 | 第 46、156、160 行；原则都没有 | ichthyosis、"family history of cancer" 的 cancer、exudative retinal detachment 改成漏标；选中的 3 个 DiseaseClass 漏标都没有改对 |
+| top-4 loop05 第 2 轮 | 拒绝，0.767 → 0.750 | | | |
+
+三份终版指南都等于最后一个被保留的候选。（来源：`outputs/dc_loss_clauses_output.txt` D、E 节）
+
+## O. 删条文检验的准备（设计说明的 stage 0，正文第 9 节）
+
+**O.1 规则的位置。** 要找的规则是：疾病名跟在关系名词加 of、with 之后（a family history of、risk of、patients with）时标 Modifier。先检索同一行或相邻行同时出现关系名词和 Modifier（或第 3 节）的行，再逐行阅读；要删改的 top-4 loop07 和 top-1 loop05，所有含 Modifier 的行都读过。每行的引文由脚本核对。
+
+| 指南 | 规则所在的行 |
+| --- | --- |
+| top-1 loop05 | 63、268（都只指向第 3 节，第 3 节本身没有这条规定） |
+| top-4 loop05 | 159、161 |
+| top-4 loop06 | 102、120、150、339、340 |
+| top-4 loop07 | 65、66、94、112、235 |
+| top-4 loop08 | 48、159、236、237 |
+| top-4 loop09 | 33、130、132、158、268、362、397 |
+| top-4 loop10 | 57、135、146、148、284、347 |
+| 原指南 | 没有：没有一行同时出现关系名词和 Modifier，第 3 节没有 of、with 短语 |
+
+**O.2 冻结的指南。** 文件在 `outputs/clause_ablation_stage0/`，UTF-8、LF 换行（与运行时读到的文本相同）；哈希为 SHA-256 前 12 位。
+
+| 文件 | 来源 | 来源哈希 | 删改后哈希 | diff 哈希 | 字符数 |
+| --- | --- | --- | --- | --- | --- |
+| `topk4_loop07_rule_removed.txt` | top-4 loop07 终版 | d2677c7f422d | 8bf42722c25e | 31d9b5e5b57a | 21,461 → 21,163（−1.39%） |
+| `original_plus_rule.txt` | 原指南 | e6232d944d68 | 78285e2287f1 | 3042a4ccfa98 | 7,367 → 7,802（+5.90%） |
+| `topk1_loop05_rule_removed.txt`（是否使用待定） | top-1 loop05 终版 | 9547c3d2ffba | 5432656a3f0b | 47af2caddc52 | 22,085 → 22,046（−0.18%） |
+
+- **top-4 loop07 删去的内容：** 第 65 行删去 "or is the complement of," 和第二句 "This holds even when the context noun carries its own premodifier, as in *family history of*."；第 66 行的例子删去 "family history of ovarian cancer"；第 94 行删去 "Such frames are **Modifier** under §3"；第 112 行删去 "Cohort, history, risk, and population phrases are **Modifier**."；第 235 行的例子标题删去 "a family history of ovarian cancer"。
+- **原指南加规则：** 在第 3 节例子之后（第 35 行后）插入空行和 top-4 loop07 第 65、66 行原文。第 65 行原文同时含"作前置修饰语"和"作补足语"两部分，这一组加进去的因此不只是短语后的规则；如果这一组的短语后误标增加，严格说是两部分合起来的结果。
+- **top-1 loop05：** 第 63 行删去 "(Modifier under Section 3)"，第 268 行删去 "(Section 3)"。
+
+**O.3 离线检查。**
+- top-4 loop07 删改后只有第 65、66、94、112、235 行变了，正好是 O.1 的 5 行；清单里的引文都已不在。第 3 节的定义、例子和基因名词前的 Modifier 规则（第 55 至 63、69 至 75 行）逐字未变，第 65 行的前置修饰语一句保留。
+- 删改后仍含 "complement of" 的第 18、90、93、227 行都是 Specific 或跨度规则（如 "a deficiency of norrin" 作 results in 的补足语），不涉及 Modifier。同一行出现关系名词和 Modifier 的只剩第 65、66 行（前置修饰语，如 "ovarian cancer population"）、第 90 行（跨度规则）和第 268 行（"prevalence of" 框架保持 Specific）。
+- **残留一处：** 第 65 行的名词表仍有 *history*，按原文是给前置修饰用的（如 cancer history）。删后如果家族史位置仍有 Modifier 误标，分不清是规则本来不需要，还是模型把这个词读成了补足语。现在按设计逐字保留前置修饰语规则；要不要连这个词一起删，待定。
+- top-1 loop05 只改了第 63、268 行；仍含 "history of" 的第 63、267 行只描述家族史结构，不再指向 Modifier。
+
+**O.4 文档和调用数。** 只按原文和 gold 选文档，每组重复 5 次。设计说明里审阅者口头重算的 35 篇、79 篇和 1,140 次，脚本重算结果相同。
+
+| 方案 | 文档 | 调用 |
+| --- | --- | --- |
+| 验证集 | 短语后的非 Modifier gold 71 个，在 35 篇里；加上基因名词前的 Modifier gold（99 个，49 篇）和人群、风险名词前的 Modifier gold（60 个，32 篇），共 79 篇 | 删前、删后各 395，原指南、原指南加规则各 175，共 1,140 |
+| 没用过的训练文档 | 593 篇训练文档减去 dev50、50 篇测试文档和 6 篇 BioRED 重叠，余 487 篇；其中 214 篇有短语后的非 Modifier gold（364 个） | 只跑删前、删后两组：全部 214 篇 2,140；40 篇 400 |
+
+短语后提及按关系名词分：history 验证集 9 个、训练文档 10 个；risk、susceptibility 等 17、36 个；cases of 3、43 个；指人名词加 with、of 36、227 个；frequency、incidence、presence 等 6、48 个。top-4 loop07 在验证集上的 24 个短语后误标，16 个在 history 和 risk 之后（第 4.2 节表），而训练文档的这类提及大多在 patients with 之后。
+
+**O.5 费用。** 每次调用按已保存回复的用量和批处理价计算（`todo-temp/haiku-trial/run_haiku.py` 的 `cost_jpy`，与复现费用记录同一个函数；1 美元合 158.087 日元）。
+- top-4 loop07 在验证集上平均每次 ¥0.793（¥0.155 至 ¥2.052）；原指南按每篇 19 次的平均，每次 ¥0.657。
+- 验证集方案用每篇文档自己的实测费用：删前、删后两组用 top-4 loop07 那一次，原指南两组用 19 次的平均，共约 ¥906（$5.73）。原指南加规则多 434 个字符，约 174 个输入 token，每次多不到 ¥0.002，输出长度会不会变不知道。
+- 训练文档没有实测调用，用 top-4 loop07 每次费用对文档长度的最小二乘直线估计（相关系数 0.58）：训练文档平均 1,272 个字符，验证集 1,351 个；两组各 5 次，每篇约 ¥7.44，全部 214 篇约 ¥1,592，40 篇约 ¥298。
+
+**O.6 待定。** 用哪批文档；四个判定阈值；预算（验证集方案约 ¥906，接近需要通知管理员的 ¥1,000）；是否加入 top-1 loop05；第 65 行的 *history* 是否一起删。（来源：`outputs/clause_ablation_stage0/stage0_output.txt`、`manifest.json`、`rule_locations.csv`）
+
+## P. 柱状图的逐类拆分与条文对照（正文第 3 节）
+
+**拆分方法。** 柱子是一份修改后的指南在某个标签的 gold 上严格标对的个数，减去原指南 19 次运行的平均。每个提及贡献"这份指南标对为 1，否则为 0"减去原指南 19 次中标对的比例，所以同一标签下各类提及的变化相加正好等于柱子（脚本断言）。类别按 `outputs/bar_attribution_rules.json` 的定义，只看原文和 gold；* 表示超出原指南 19 次运行的最低到最高。
+
+| 类别 | 提及数 | 原指南平均标对 | 原指南范围 | 4-01 | 4-04 | 4-08 | 4-09 | 4-02 | 1-07 | 1-05 | 4-06 | 4-07 | 4-05 | 4-10 |
+| --- | ---: | ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Specific：关系名词之后 | 55 | 47.8 | −1.8 至 +3.2 | +1.2 | +1.2 | −1.8 | −9.8* | +1.2 | +2.2 | −14.8* | −12.8* | −18.8* | −5.8* | −11.8* |
+| Specific：并列 | 39 | 15.5 | −5.5 至 +3.5 | +1.5 | +3.5 | −1.5 | +12.5* | −4.5 | −4.5 | −1.5 | −3.5 | −3.5 | −4.5 | +0.5 |
+| Specific：其他 | 232 | 194.4 | −4.4 至 +7.6 | +3.6 | −0.4 | +4.6 | +4.6 | −1.4 | −2.4 | +5.6 | −11.4* | −7.4* | +6.6 | −1.4 |
+| Specific：以肿瘤词结尾 | 83 | 56.5 | −4.5 至 +6.5 | +4.5 | +3.5 | +3.5 | −7.5* | +4.5 | +1.5 | −28.5* | −7.5* | −4.5 | +3.5 | −3.5 |
+| DiseaseClass：关系名词之后 | 1 | 1.0 | +0.0 至 +0.0 | +0.0 | +0.0 | +0.0 | +0.0 | +0.0 | +0.0 | +0.0 | +0.0 | +0.0 | +0.0 | +0.0 |
+| DiseaseClass：单独的 cancer、tumor | 27 | 18.8 | −3.8 至 +4.2 | −0.8 | −5.8* | −3.8 | −8.8* | −0.8 | +1.2 | +0.2 | −2.8 | −4.8* | −7.8* | −18.8* |
+| DiseaseClass：病名或类别名词 | 51 | 25.9 | −2.9 至 +3.1 | +1.1 | +0.1 | −1.9 | +6.1* | +2.1 | +0.1 | +5.1* | +5.1* | −2.9 | −7.9* | −11.9* |
+| DiseaseClass：其他位置的症状、状态 | 33 | 7.5 | −3.5 至 +2.5 | +1.5 | +2.5 | −4.5* | +3.5* | +2.5 | +2.5 | +0.5 | +6.5* | +0.5 | −3.5 | −4.5* |
+| DiseaseClass：列举中的症状、状态 | 15 | 3.7 | −1.7 至 +1.3 | +6.3* | +9.3* | −1.7 | +6.3* | +4.3* | +2.3* | +0.3 | +4.3* | +0.3 | −2.7* | −3.7* |
+| Modifier：基因、蛋白名词前的缩写 | 46 | 17.6 | −4.6 至 +6.4 | +9.4* | +8.4* | +19.4* | +7.4* | +6.4 | +21.4* | +3.4 | +12.4* | +23.4* | +10.4* | +5.4 |
+| Modifier：单独的 cancer、tumor | 30 | 6.1 | −4.1 至 +2.9 | −0.1 | −1.1 | +2.9 | −2.1 | −6.1* | +0.9 | +1.9 | −1.1 | −0.1 | −5.1* | −6.1* |
+| Modifier：并列病名 | 13 | 0.7 | −0.7 至 +1.3 | −0.7 | +2.3* | +3.3* | −0.7 | −0.7 | −0.7 | +0.3 | +3.3* | +2.3* | −0.7 | +0.3 |
+| Modifier：deficient 形容词 | 15 | 6.6 | −2.6 至 +2.4 | +8.4* | +8.4* | +4.4* | +4.4* | −2.6 | −0.6 | +8.4* | +3.4* | +2.4 | +8.4* | −0.6 |
+| Modifier：基因、蛋白名词前的全名 | 33 | 18.1 | −5.1 至 +3.9 | +6.9* | +5.9* | +7.9* | +2.9 | +3.9 | −1.1 | +1.9 | +7.9* | +6.9* | −3.1 | +1.9 |
+| Modifier：其他 | 81 | 61.3 | −7.3 至 +4.7 | +2.7 | +2.7 | +12.7* | +4.7 | +2.7 | −4.3 | +1.7 | +0.7 | +5.7* | −1.3 | −4.3 |
+
+列名 4-01 表示 top-4 loop01，1-07 表示 top-1 loop07，依此类推，按正文第 3 节的分组排列。165 个类别变化中 63 个超出范围；如果每份修改后的指南只是原指南的又一次运行，约 16 个会超出。
+
+**判定规则。** 盲编码中每个可预言变化的选项，按字面对应一类提及和一种错误（例如"history of 之后定为 Modifier"对应"关系名词之后的 Specific"和"被标成 Modifier 的个数"）。三条证据：(1) 对应的类别变化超出范围且方向与预言一致；(2) 预言的错误超出范围且方向一致；(3) 处于预言状态的预测中，至少一半的理由引用了条文所在的节（漏标没有预测，这一条无法满足）。满足至少两条才算对上；只满足 (1)、(3) 而预言的错误没动的，输出里标为弱对应，正文不采用。
+
+**各指南超出范围的类别变化与对上的条文**（行号指各指南终版原文；"未解释"指没有条文满足判定）：
+
+| 指南 | 超出范围的类别变化及对上的条文 |
+| --- | --- |
+| top-4 loop01 | DiseaseClass 列举中的症状 +6.3：症状标 DiseaseClass（第 72 行）；Modifier 全名 +6.9：全名也标 Modifier（第 343 行）；deficient 形容词 +8.4（第 358 行）；缩写 +9.4：未解释 |
+| top-4 loop04 | 列举中的症状 +9.3（第 70 行）；全名 +5.9（第 120 行）；deficient +8.4（第 38 行）；单独的 cancer、tumor −5.8、Modifier 缩写 +8.4、并列病名 +2.3：未解释 |
+| top-4 loop08 | 其他位置的症状 −4.5：列举中的单词症状不标（第 104 行）、病人身上的状况升为 Specific（第 11 行）；全名 +7.9（第 52 行）；deficient +4.4（第 89 行）；缩写 +19.4、其他 Modifier +12.7、并列病名 +3.3：未解释 |
+| top-4 loop09 | 关系名词之后的 Specific −9.8：history of 与病例组描述定为 Modifier（第 158 行）；并列的 Specific +12.5：完整病名分开标（第 105 行）；症状 +3.5、+6.3（第 41 行）；deficient +4.4（第 48 行）；以肿瘤词结尾 −7.5 只有弱对应（第 35 行）；单独的 cancer、tumor −8.8、病名或类别 +6.1、缩写 +7.4：未解释 |
+| top-4 loop02 | 列举中的症状 +4.3（第 152 行）；Modifier 单独的 cancer、tumor −6.1：送人工核对（第 141 行） |
+| top-1 loop07 | 列举中的症状 +2.3、缩写 +21.4：未解释 |
+| top-1 loop05 | 关系名词之后 −14.8（第 63 行）；以肿瘤词结尾 −28.5：部位词不足以（第 46 行）；deficient +8.4（第 93 行）；病名或类别 +5.1：未解释 |
+| top-4 loop06 | 关系名词之后 −12.8（第 150 行）；以肿瘤词结尾 −7.5（第 29 行）；症状 +6.5、+4.3（第 76 行）；全名 +7.9（第 161 行）；deficient +3.4（第 68 行）；其他 Specific −11.4、病名或类别 +5.1、缩写 +12.4、并列病名 +3.3：未解释 |
+| top-4 loop07 | 关系名词之后 −18.8（第 65 行）；全名 +6.9（第 69 行）；其他 Specific −7.4、单独的 cancer、tumor −4.8、缩写 +23.4、其他 Modifier +5.7、并列病名 +2.3：未解释 |
+| top-4 loop05 | 关系名词之后 −5.8（第 161 行）；单独的 cancer、tumor −7.8、−5.1：不标（第 160 行）；病名或类别 −7.9：病人身上的状况升为 Specific（第 19 行）；列举中的症状 −2.7：列举中的症状不标（第 157 行）；deficient +8.4（第 56 行）；缩写 +10.4：未解释 |
+| top-4 loop10 | 关系名词之后 −11.8（第 146 行）；单独的 cancer、tumor −18.8、−6.1：不标（第 191 行）；症状 −4.5、−3.7：列举中的症状送审（第 84 行）；病名或类别 −11.9：只有弱对应，按未解释处理 |
+
+**对照。** top-4 loop04、loop07、loop09 的单独 cancer、tumor 不受任何新条文管辖，也少标对了，说明这一类有与条文无关的下降；top-4 loop05、loop10 的 DiseaseClass 各类都受某条条文管辖，没有对照类别，条文的作用和普遍下降分不开。
+
+**gold 惯例。** 训练集（543 篇，不含 50 篇测试文档）中，不在更长 gold 提及里的单独 cancer、tumor 有 125 处，118 处被标为提及（输出 G 节）；紧跟 history of 的病名 21 处，没有一处标 Modifier（`history_tally_output.txt`）；两个词以上、以肿瘤词结尾的名称，Specific 213 个、DiseaseClass 50 个（`dc_loss_clauses_output.txt` B 节）。
+
+（来源：`outputs/bar_attribution_output.txt`，`outputs/blind_clause_coding.csv`，`outputs/bar_attribution_rules.json`）
