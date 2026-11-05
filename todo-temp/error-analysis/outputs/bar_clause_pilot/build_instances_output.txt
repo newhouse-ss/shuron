@@ -22,53 +22,151 @@ CHECK 2 sum of d over gold instances of each label vs bar in bar_attribution.jso
    Modifier         sum d +40.7368  bar +40.7368  diff -7.11e-15  ok
    gold labels with d != 0 outside the three bars: ['CompositeMention']
    -> PASS
-CHECK 3 unlinked instances (expected 0): 12 -> FAIL
-   gold_now_wrong_with_prediction 9090524:560-590 SpecificDisease 'juvenile granulosa cell tumour' d -0.95 target state unpaired
-   gold_now_wrong_with_prediction 9090524:688-710 SpecificDisease 'acute myeloid leukemia' d -0.95 target state unpaired
-   gold_now_wrong_with_prediction 9090524:593-626 SpecificDisease 'non-asbestos related mesothelioma' d -0.89 target state unpaired
-   gold_now_wrong_with_prediction 8640236:63-70 DiseaseClass 'cancers' d -0.79 target state unpaired
-   gold_now_wrong_with_prediction 8954016:1803-1812 SpecificDisease 'jaw tumor' d -0.63 target state unpaired
-   gold_now_wrong_with_prediction 9056547:760-768 DiseaseClass 'dementia' d -0.37 target state unpaired
-   gold_now_wrong_with_prediction 8636252:731-734 SpecificDisease 'AMN' d -0.32 target state unpaired
-   gold_now_wrong_with_prediction 9271438:1886-1889 SpecificDisease 'RCC' d -0.11 target state unpaired
-   gold_now_wrong_with_prediction 8931695:618-621 SpecificDisease 'DTD' d -0.05 target state unpaired
-   gold_now_wrong_with_prediction 8931695:900-903 SpecificDisease 'DTD' d -0.05 target state unpaired
-   gold_now_wrong_with_prediction 8931695:1708-1711 SpecificDisease 'DTD' d -0.05 target state unpaired
-   gold_now_wrong_with_prediction 8954016:86-102 SpecificDisease 'renal hamartomas' d -0.05 target state unpaired
-   all 12 are golds the scorer left `unpaired` (target state ['unpaired']); summed d -5.21; number of target predictions the scorer lists as overlapping each (all_gold_overlaps): {1: 12}; label/scorer kind of those predictions: {'CompositeMention/label': 12}
-   (the overlapping prediction is shown in column unlinked_overlapping_prediction_info of the instances csv; it is not used as a link and these instances are not in the groups)
+CHECK 3 links of the 291 instances with a prediction: paired 279; overlap_unique 12 (expected 12); still unlinked 0 (expected 0) -> PASS
+   overlap_unique: scorer state of the gold ['unpaired'], summed d -5.21; label / scorer kind of the linked predictions: {'CompositeMention/scorer kind label': 12}; cited sections: {'Section 2 Composite Mention; Example 7': 3, 'Section 2: Composite Mention': 1, 'Section 2 - Composite Mention': 2, '2 Composite Mention': 1, '2 Composite Mention; What NOT to Annotate 3 overlapping mentions': 1, 'Section 2 - Contiguous text strings (Composite Mention)': 1, 'What to Annotate 2 Composite Mention': 3}
+   all_gold_overlaps agrees with overlapping_prediction_indices (same predictions, checked for every gold without a paired prediction): yes
    instances with more than one linked prediction: 0
-   linked-prediction kind by category: gold_now_right: correct=169; gold_now_wrong_with_prediction: boundary=25,label=75; nogold_new_prediction: extra=10
-CHECK 4 citation resolution against the target guideline (279 instances with a linked prediction, 391 references, one per distinct identifier per instance)
-   resolved 391, ambiguous 0, unresolved 0; citations with no parsable reference: 0
-   references whose scope was assumed (no scope word, taken as the '### N.' heading of What to Annotate): 328 of 391
-   assumed-scope references by identifier: {'3': 131, '1': 65, '5': 30, '2': 23, '6': 19, '1b(a)': 12, '1b': 11, '1b(g)': 9, '1b(c)': 7, '1b(b)': 6, '4': 6, '1a': 4, '1b(e)': 2, '1a(b)': 2, '3(b)': 1}
-   assumed-scope identifiers that also name an item in another list of the target guideline (NOT / Example / Pending / Precedence): 274 of 328 (column other_scope_candidates of the groups csv)
+   linked-prediction scorer kind by category: gold_now_right: correct=169; gold_now_wrong_with_prediction: boundary=25,label=87; nogold_new_prediction: extra=10
+CHECK 4 citation resolution by section number against the target guideline (291 instances with a linked prediction, 407 references, one per distinct identifier per instance)
+   resolved 407, ambiguous 0, unresolved 0; citations with no parsable reference: 0
+   references whose scope was assumed (no scope word, taken as the '### N.' heading of What to Annotate): 337 of 407
+   final resolution (title rules first, then section number): resolved 402, ambiguous 5, unresolved 0
 
 D. Other consistency checks
    extra rows of error_rows.csv vs extra predictions of prediction_index.jsonl (target + 19 original runs): equal
    lookup: original predictions found at the position equal n_orig_of_19: yes for all 62
+   lookup: cited_section strings of the original runs without any parsable reference (not resolved): 1, e.g. ['Annotate all Specific Disease mentions and Disease Class (Section 1); Tumor retained (What NOT to Annotate item 4)']
    context from document text (offsets agree with instance text): 353 of 353
-   groups: 26 resolved or ambiguous identifiers, 0 unresolved raw references, 1 pseudo rows (no_reference / unlinked)
+   groups: 31 resolved or ambiguous, 0 unresolved raw references, 0 pseudo rows (no_reference / unlinked)
 
-E. Ten largest section groups by total |d| (identifier | line | sum positive d | sum negative d | documents | strings | instances)
-   3              resolved   L55        53.2105  -29.6842   57 docs   54 strings  140 inst   L55: ### 3. Annotate disease mentions that are used as **Modifiers** f
-   1              resolved   L5         15.2105  -15.2632   40 docs   64 strings   78 inst   L5: ### 1. Annotate all **Specific Disease** mentions
-   5              resolved   L84         5.5263  -10.5789   18 docs   28 strings   30 inst   L84: ### 5. Annotate **minimum necessary span of text**
-   1b(c)          resolved   L39         2.6842   -5.0526    7 docs    7 strings   10 inst   L39: - (c) Cohort, case, or population phrases (for example, “One hund
-   1b(a)          resolved   L37         4.7368   -2.5263    7 docs    9 strings   12 inst   L37: - (a) Phenotypic, cognitive, or symptom-trait labels (for example
-   6              resolved   L101        1.1579   -6.0526   12 docs   14 strings   19 inst   L101: ### 6. Annotate all **synonymous mentions**
-   1b             resolved   L33         3.0526   -3.3158   11 docs   13 strings   13 inst   L33: **1b. Disease-process head nouns used as the patient's own condit
-   2              resolved   L47         2.2105   -4.0526   14 docs   23 strings   26 inst   L47: ### 2. Annotate **contiguous text strings**
-   NOT 2          resolved   L128        2.8947   -1.3684    3 docs    2 strings    7 inst   L128: 2. **Do not annotate gender**  
-   1a             resolved   L17         2.3158   -1.0000    3 docs    4 strings    4 inst   L17: **1a. Disease-defining state complements** *(provisional: pending
+E. Ten largest groups by total |d| (identifier | status | line | sum positive d | sum negative d | documents | strings | instances | line text)
+   Disease premodifier within a gene  resolved  L69         39.6316    0.0000   31 docs   24 strings   60 inst   L69: **Disease premodifier within a gene or protein designat
+   Context and population frames      resolved  L65          5.4737  -28.5789   20 docs   20 strings   43 inst   L65: **Context and population frames.** A disease name that 
+   1                                  resolved  L5          15.2105  -15.2632   40 docs   64 strings   78 inst   L5: ### 1. Annotate all **Specific Disease** mentions
+   2                                  resolved  L47          2.2105   -9.2632   14 docs   33 strings   38 inst   L47: ### 2. Annotate **contiguous text strings**
+   5                                  resolved  L84          4.6842   -6.7368   14 docs   22 strings   22 inst   L84: ### 5. Annotate **minimum necessary span of text**
+   3                                  resolved  L55          8.1053   -1.1053   24 docs   26 strings   37 inst   L55: ### 3. Annotate disease mentions that are used as **Mod
+   1b(c)                              resolved  L39          2.6842   -5.0526    7 docs    7 strings   10 inst   L39: - (c) Cohort, case, or population phrases (for example,
+   1b(a)                              resolved  L37          4.7368   -2.5263    7 docs    9 strings   12 inst   L37: - (a) Phenotypic, cognitive, or symptom-trait labels (f
+   6                                  resolved  L101         1.1579   -6.0526   12 docs   14 strings   19 inst   L101: ### 6. Annotate all **synonymous mentions**
+   1b                                 resolved  L33          3.0526   -3.3158   11 docs   13 strings   13 inst   L33: **1b. Disease-process head nouns used as the patient's 
 
-F. Files (sha256)
+F. Sub-item resolution (title rules; references counted once per instance and distinct identifier)
+   MIN_KEYWORDS = 2; STOPWORDS = ['about', 'after', 'also', 'annotate', 'annotated', 'annotation', 'annotations', 'been', 'before', 'between', 'both', 'could', 'disease', 'diseases', 'does', 'each', 'from', 'have', 'into', 'mention', 'mentions', 'more', 'only', 'other', 'over', 'shall', 'should', 'some', 'such', 'than', 'that', 'their', 'then', 'there', 'these', 'they', 'this', 'those', 'under', 'upon', 'used', 'using', 'were', 'what', 'when', 'where', 'which', 'will', 'with', 'within', 'without', 'would']
+   references by method: title_exact 124, title_keywords 55, title_ambiguous 5, section_only 223 (total 407)
+   title matches whose line lies in the same section as the cited number: yes 177, no 7, number not resolved to one line 0
+   section_only references: 223, of which scope assumed (no scope word, so the What to Annotate heading was taken): 165
+   scope changed by a title match (matched list differs from the assumed or explicit scope): yes 5, partial 2
+   title_keywords: 55 references, 28 distinct reference texts
+   x1   "§1b (disease-process head used as the patient's own condition)" -> L33 "Disease-process head nouns used as the patient's"  [keywords: condition,head,patient,process]  | number-based 1b=L33 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x3   '5. Minimum necessary span' -> L84 'Annotate minimum necessary span of text'  [keywords: minimum,necessary,span]  | number-based 5=L84 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x5   '§3 Modifiers for other concepts' -> L55 'Annotate disease mentions that are used as Modif'  [keywords: concepts,modifiers]  | number-based 3=L55 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   '§2 Contiguous text strings (Composite Mention)' -> L47 'Annotate contiguous text strings'  [keywords: contiguous,strings,text]  | number-based 2=L47 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x5   '§3 (gene/protein designation premodifier)' -> L69 'Disease premodifier within a gene or protein des'  [keywords: designation,gene,premodifier,protein]  | number-based 3=L55 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   '§3 gene designation not applied (position)' -> L69 'Disease premodifier within a gene or protein des'  [keywords: designation,gene]  | number-based 3=L55 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   '3 - disease premodifier within gene/protein designation' -> L69 'Disease premodifier within a gene or protein des'  [keywords: designation,gene,premodifier,protein]  | number-based 3=L55 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   '3 - gene/protein designation' -> L69 'Disease premodifier within a gene or protein des'  [keywords: designation,gene,protein]  | number-based 3=L55 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   '1b - Disease-process head nouns' -> L33 "Disease-process head nouns used as the patient's"  [keywords: head,nouns,process]  | number-based 1b=L33 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x2   '§4 General terms (fixed disease name)' -> L136 'Do not annotate general terms'  [keywords: general,terms]  | number-based 4=L79 | scope WTA(assumed)->NOT changed=yes same_section=no
+   x2   '3 (Modifiers for other concepts)' -> L55 'Annotate disease mentions that are used as Modif'  [keywords: concepts,modifiers]  | number-based 3=L55 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x4   '2 - Contiguous text strings (Composite Mention)' -> L47 'Annotate contiguous text strings'  [keywords: contiguous,strings,text]  | number-based 2=L47 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x2   '§5 minimum necessary span' -> L84 'Annotate minimum necessary span of text'  [keywords: minimum,necessary,span]  | number-based 5=L84 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   '1b(b) generic or plural class references' -> L262 'Generic or quantified class references (§1b(b))'  [keywords: class,generic,references]  | number-based 1b(b)=L38 | scope WTA(assumed)->PEND changed=yes same_section=no
+   x1   '§1b(b) generic/plural family references (Pending Annotation Review)' -> L262 'Generic or quantified class references (§1b(b))'  [keywords: generic,references]  | number-based 1b(b)=L38 | scope WTA(assumed)->PEND changed=yes same_section=no
+   x7   '5 minimum span' -> L84 'Annotate minimum necessary span of text'  [keywords: minimum,span]  | number-based 5=L84 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x2   "1b patient's own condition" -> L33 "Disease-process head nouns used as the patient's"  [keywords: condition,patient]  | number-based 1b=L33 | scope WTA->WTA changed=no same_section=yes
+   x1   "1b - Disease-process head nouns used as patient's condition" -> L33 "Disease-process head nouns used as the patient's"  [keywords: condition,head,nouns,patient,process]  | number-based 1b=L33 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   '3 - Disease mentions used as Modifiers for other concepts' -> L55 'Annotate disease mentions that are used as Modif'  [keywords: concepts,modifiers]  | number-based 3=L55 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x4   '3 Modifier (disease premodifier within gene or protein designation)' -> L69 'Disease premodifier within a gene or protein des'  [keywords: designation,gene,premodifier,protein]  | number-based 3=L55 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   '1b. Disease-process head nouns' -> L33 "Disease-process head nouns used as the patient's"  [keywords: head,nouns,process]  | number-based 1b=L33 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   '5 - Minimum necessary span' -> L84 'Annotate minimum necessary span of text'  [keywords: minimum,necessary,span]  | number-based 5=L84 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x2   "1b disease-process head nouns as patient's condition" -> L33 "Disease-process head nouns used as the patient's"  [keywords: condition,head,nouns,patient,process]  | number-based 1b=L33 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   '§1b Disease-process head nouns' -> L33 "Disease-process head nouns used as the patient's"  [keywords: head,nouns,process]  | number-based 1b=L33 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   '§5 Minimum necessary span' -> L84 'Annotate minimum necessary span of text'  [keywords: minimum,necessary,span]  | number-based 5=L84 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   '§5 minimum span' -> L84 'Annotate minimum necessary span of text'  [keywords: minimum,span]  | number-based 5=L84 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   '1b(b) generic/plural references flagged for review' -> L262 'Generic or quantified class references (§1b(b))'  [keywords: generic,references]  | number-based 1b(b)=L38 | scope WTA(assumed)->PEND changed=yes same_section=no
+   x1   '3 - Modifiers for other concepts' -> L55 'Annotate disease mentions that are used as Modif'  [keywords: concepts,modifiers]  | number-based 3=L55 | scope WTA(assumed)->WTA changed=no same_section=yes
+   title_ambiguous: 5 references, 4 distinct reference texts
+   x1   '5 - Span extension not applied' -> L90 'Subtype/state-head span extension' + L270 'Span extension outside the reference set (§5)'  [keywords: extension,span ; extension,span]  | number-based 5=L84 | scope WTA(assumed)->PEND,WTA changed=partial same_section=no
+   x2   '5 Minimum span (subtype/state-head)' -> L84 'Annotate minimum necessary span of text' + L90 'Subtype/state-head span extension'  [keywords: minimum,span ; head,span,state,subtype]  | number-based 5=L84 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   '5. Annotate minimum necessary span of text - Subtype/state-head span extension' -> L84 'Annotate minimum necessary span of text' + L90 'Subtype/state-head span extension'  [keywords:  ; ]  | number-based 5=L84 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   '5 Span extension' -> L90 'Subtype/state-head span extension' + L270 'Span extension outside the reference set (§5)'  [keywords: extension,span ; extension,span]  | number-based 5=L84 | scope WTA(assumed)->PEND,WTA changed=partial same_section=no
+   title_exact: 124 references by matched line (line, scope_changed, same_section): L5 '1' no/yes x17; L33 '1b' no/yes x2; L47 '2' no/yes x1; L55 '3' no/yes x4; L65 'Context and population f' no/yes x43; L69 'Disease premodifier with' no/yes x48; L79 '4' no/yes x1; L84 '5' no/yes x1; L90 'Subtype/state-head span ' no/yes x3; L101 '6' no/yes x3; L128 'NOT 2' no/yes x1
+   references whose scope changed (distinct reference text; instances; assumed or explicit scope -> matched list; method; number-based line -> matched line):
+   x1   '5 - Span extension not applied': WTA(assumed) -> PEND,WTA, title_ambiguous, 5=L84 -> L90|L270
+   x2   '§4 General terms (fixed disease name)': WTA(assumed) -> NOT, title_keywords, 4=L79 -> L136
+   x1   '1b(b) generic or plural class references': WTA(assumed) -> PEND, title_keywords, 1b(b)=L38 -> L262
+   x1   '§1b(b) generic/plural family references (Pending Annotation Review)': WTA(assumed) -> PEND, title_keywords, 1b(b)=L38 -> L262
+   x1   '1b(b) generic/plural references flagged for review': WTA(assumed) -> PEND, title_keywords, 1b(b)=L38 -> L262
+   x1   '5 Span extension': WTA(assumed) -> PEND,WTA, title_ambiguous, 5=L84 -> L90|L270
+   title matches in a different section than the cited number, not already listed as scope changes: 0
+
+G. Title inventory of the target guideline (line | list | number | kind | title | keywords)
+   L5   WTA  1       heading 'Annotate all Specific Disease mentions' | specific
+   L17  WTA  1a      run-in  'Disease-defining state complements' | complements,defining,state
+   L33  WTA  1b      run-in  "Disease-process head nouns used as the patient's own condition" | condition,head,nouns,patient,process
+   L47  WTA  2       heading 'Annotate contiguous text strings' | contiguous,strings,text
+   L55  WTA  3       heading 'Annotate disease mentions that are used as Modifiers for other concept' | concepts,modifiers
+   L65  WTA  -       run-in  'Context and population frames' | context,frames,population
+   L69  WTA  -       run-in  'Disease premodifier within a gene or protein designation' | designation,gene,premodifier,protein
+   L79  WTA  4       heading 'Annotate duplicate mentions' | duplicate
+   L84  WTA  5       heading 'Annotate minimum necessary span of text' | minimum,necessary,span,text
+   L90  WTA  -       run-in  'Subtype/state-head span extension' | extension,head,span,state,subtype
+   L101 WTA  6       heading 'Annotate all synonymous mentions' | synonymous
+   L108 PREC -       heading 'Precedence Between Overlapping Rules' | overlapping,precedence,rules
+   L110 PREC 1       item    '' | 
+   L111 PREC 2       item    '' | 
+   L112 PREC 3       item    '' | 
+   L113 PREC 4       item    '' | 
+   L114 PREC 5       item    '' | 
+   L120 NOT  1       item    'Do not annotate organism names' | names,organism
+   L128 NOT  2       item    'Do not annotate gender' | gender
+   L133 NOT  3       item    'Do not annotate overlapping mentions' | overlapping
+   L136 NOT  4       item    'Do not annotate general terms' | general,terms
+   L142 NOT  5       item    'Do not annotate references to biological processes' | biological,processes,references
+   L145 NOT  6       item    'Do not annotate disease mentions interrupted by nested mentions' | interrupted,nested
+   L152 NOT  7       item    'Do not annotate downstream consequences or findings' | consequences,downstream,findings
+   L160 EX   1       item    '“Insulin-dependent diabetes mellitus”' | dependent,diabetes,insulin,mellitus
+   L164 EX   2       item    'CDH1 mutations predispose to early onset “colorectal cancer.”' | cancer,cdh1,colorectal,early,mutations,onset,predispose
+   L169 EX   3       item    'Human “X-linked recessive disorder”' | disorder,human,linked,recessive
+   L171 EX   4       item    'Her fresh serum lacked complement-mediated bactericidal activity again' | activity,against,bactericidal,complement,fresh,gonorrhoeae,lacked,mediated,neisseria,serum
+   L173 EX   5       item    '“Huntington disease” (“HD”)' | huntington
+   L176 EX   6       item    'C7 deficiency' | deficiency
+   L181 EX   7       item    '“colorectal, endometrial, and ovarian cancers”' | cancers,colorectal,endometrial,ovarian
+   L184 EX   8       item    'WT1 dysfunction is implicated in both neoplastic (“Wilms tumor,” “meso' | breast,cancer,dysfunction,glomerulosclerosis,implicated,leukemias,mesothelioma,neoplastic,nonneoplastic,tumor,wilms
+   L188 EX   9       item    'Tumorigenesis and cancerogenesis' | cancerogenesis,tumorigenesis
+   L191 EX   10      item    '“autosomal recessive disease”' | autosomal,recessive
+   L194 EX   11      item    'Large phenotypic variability with “convulsive disorders,” “motor retar' | convulsive,disorders,large,mental,motor,phenotypic,retardation,variability
+   L198 EX   12      item    'Borjeson-Forssman-Lehmann syndrome (BFLS) is a syndromal X-linked ment' | bfls,borjeson,forssman,lehmann,linked,mental,retardation,syndromal,syndrome
+   L202 EX   13      item    'Acute meningococcal pericarditis' | acute,meningococcal,pericarditis
+   L205 EX   14      item    'Acute Neisseria infection' | acute,infection,neisseria
+   L209 EX   15      item    'Classical galactosemia' | classical,galactosemia
+   L212 EX   16      item    'Inherited spinocerebellar ataxia' | ataxia,inherited,spinocerebellar
+   L215 EX   17      item    '“Adenomatous polyps of the colon and rectum”' | adenomatous,colon,polyps,rectum
+   L218 EX   18      item    'Fibroepithelial or epithelial hyperplasias' | epithelial,fibroepithelial,hyperplasias
+   L221 EX   19      item    'Stage II or stage III colorectal cancer' | cancer,colorectal,stage
+   L224 EX   20      item    '“so-called retinal telangiectasis” in “Coats disease is characterized ' | abnormal,called,characterized,coats,development,retinal,telangiectasis,vascular
+   L227 EX   21      item    '“a deficiency of norrin” (complement of “results in”); “massive intrar' | accumulation,complement,deficiency,intraretinal,lipid,massive,norrin,results,subretinal
+   L230 EX   22      item    '“characterized by ichthyosis, mental retardation, spasticity, and defi' | activity,aldehyde,characterized,deficient,dehydrogenase,faldh,fatty,ichthyosis,mental,retardation,spasticity
+   L235 EX   23      item    '“One hundred and seven ovarian cancer cases were analyzed”; “a family ' | analyzed,cancer,cases,family,history,hundred,ovarian,risk,seven
+   L238 EX   24      item    '“DTD gene”; “ancient SLS genes”' | ancient,gene,genes
+   L241 EX   25      item    '“diastrophic dysplasia (DTD) in Finland” and “the DTD gene” in the sam' | abstract,diastrophic,dysplasia,finland,gene,same
+   L245 EX   26      item    '“G6PD A-”; “G6PD B”' | g6pd
+   L248 EX   27      item    '“the high prevalence of glucose 6-phosphate dehydrogenase (G6PD) defic' | african,alone,cause,deficiency,dehydrogenase,g6pd,glucose,high,phosphate,populations,prevalence,sufficient
+   L252 EX   28      item    '“G6PD deficient phenotype”' | deficient,g6pd,phenotype
+   L255 EX   29      item    '“an atypical form of Duchenne muscular dystrophy”' | atypical,duchenne,dystrophy,form,muscular
+   L262 PEND 1       item    'Generic or quantified class references (§1b(b))' | class,generic,quantified,references
+   L264 PEND 2       item    'Disease-defining state complements (§1a)' | complements,defining,state
+   L268 PEND 3       item    'Prevalence frames' | frames,prevalence
+   L270 PEND 4       item    'Span extension outside the reference set (§5)' | extension,outside,reference,span
+   L272 PEND 5       item    'Descriptive findings and title synonyms (§1b(e), §6)' | descriptive,findings,synonyms,title
+
+H. Files (sha256)
    input  error_rows.csv 012db607b14c137bbc4231a78248539bf5a36db91ebedb85ff6ee50520d8c436
    input  prediction_index.jsonl 4813b60e7dacc2fa97c6f2947b0aa91781340478cd3465cdf99f61a678caeea6
    input  run_manifest.json 1702873925076031a6a2995c73db0ca8f6e63eef3e73fbf960a4159c36e8b900
-   output loop07_instances.csv edbc36a7fda5e1b449a4c4a5af350725caba82d3d1726628c6e35430f6717768
-   output loop07_section_groups.csv 7a1bc21fec57e2ea0d9cd8250d88c35702039192164607f8af2dd4bd5c2be20d
+   output loop07_instances.csv a378616a04c5e744ed47f6f30da3639e8e64c52facedfa25225a851fc36c753a
+   output loop07_section_groups.csv a7240b9552aff608ae492e238bb561e64d3bba0a26dcdf5492b943659a693e1f
    output loop07_noprediction_lookup.csv 39aaf7580f4532946ce4169b5168e404f1c2b71a8bdaeba2d8eb9cbebc1f7949
 
-OVERALL: checks 1-3 NOT ALL PASS
+OVERALL: checks 1-3 PASS
