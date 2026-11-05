@@ -1,0 +1,161 @@
+build_instances.py: top-1 loop05 against the 19 original runs (offline, no API); prefix top1_loop05
+target run: 20261022_haiku-xhigh_topk1_loop05
+target guideline snapshot sha256: 9547c3d2ffbaf89cc82a1f5a36c903935c018e35d4445c56e9f595e25f25e301
+  identical to outputs/ncbi_disease/20261022_haiku-xhigh_topk1_loop05/final/final_guidelines.txt after CRLF -> LF: True
+original guideline snapshot sha256: e6232d944d68e9e98c6012328add622486a743f5978e48a5a56c77ac2743002d; identical to data/guidelines/ncbi_disease_guidelines.txt after CRLF -> LF: True
+original runs: 19; all 19 use the same snapshot (manifest guideline_sha256); instances with d != 0: 359
+manual overrides in citation_overrides.csv: 0 rows, 0 for this guideline
+
+A. Instances by category (n | sum d | sum of positive d | sum of negative d)
+   gold_now_right                    168 |   +65.53 |   +65.53 |    +0.00
+   gold_now_wrong_with_prediction    119 |   -72.42 |    +0.00 |   -72.42
+   nogold_new_prediction              15 |    +7.84 |    +7.84 |    +0.00
+   gold_now_unlabelled                27 |   -10.47 |    +0.00 |   -10.47
+   nogold_dropped_prediction          30 |    -4.84 |    +0.00 |    -4.84
+   with a prediction in this run: 302; without: 57
+
+CHECK 1 counts vs count_workload_output.txt: PASS
+   with prediction 302 (file 302); without 57 (file 57); summed d without -15.32 (file -15.3)
+CHECK 2 sum of d over gold instances of each label vs bar in bar_attribution.json (tolerance 0.05):
+   SpecificDisease  sum d -39.2105  bar -39.2105  diff +7.11e-15  ok
+   DiseaseClass     sum d +6.1579  bar +6.1579  diff +3.55e-15  ok
+   Modifier         sum d +17.7368  bar +17.7368  diff -3.55e-15  ok
+   gold labels with d != 0 outside the three bars: ['CompositeMention']
+   -> PASS
+CHECK 3 links of the 302 instances with a prediction: paired 291; overlap_unique 11; still unlinked 0 (expected 0) -> PASS
+   overlap_unique: scorer state of the gold ['unpaired'], summed d -3.00; label / scorer kind of the linked predictions: {'CompositeMention/scorer kind label': 11}
+   all_gold_overlaps agrees with overlapping_prediction_indices: yes
+CHECK 4 citation resolution by section number alone (302 instances with a linked prediction, 495 references, one per distinct identifier per instance): resolved 495, ambiguous 0, unresolved 0; citations with no parsable reference: 0
+CHECK 5 references by method after override and title rules (references | distinct reference texts):
+   override                     0 |    0
+   title_exact                 33 |   12
+   title_keywords               5 |    3
+   title_ambiguous              1 |    1
+   section_only_explicit       19 |   11
+   section_only_assumed       437 |   52
+   section_only_inline          0 |    0
+   section_only_ambiguous       0 |    0
+   unresolved                   0 |    0
+   distinct reference texts that are not title_exact, explicit-scope section_only or override (to verify by hand): 56 of 79; table top1_loop05_citation_audit.csv
+     by method: {'section_only_assumed': 52, 'title_ambiguous': 1, 'title_keywords': 3}; with the same number in another list of the guideline (other_scope_candidates): 25; assumed scope with no such collision (resolved to one line by number alone): 28
+   unresolved: none
+
+D. Other consistency checks
+   extra rows of error_rows.csv vs extra predictions of prediction_index.jsonl (target + 19 original runs): equal
+   lookup: original predictions found at the position equal n_orig_of_19: yes for all 57
+   lookup: cited_section strings of the original runs without any parsable reference (not resolved): 0
+   context from document text (offsets agree with instance text): 359 of 359
+   groups: 26 resolved or ambiguous, 0 unresolved raw references, 0 pseudo rows (no_reference / unlinked)
+
+E. Ten largest groups by total |d| (identifier | status | line | sum positive d | sum negative d | documents | strings | instances | line text)
+   1                                  resolved  L5          20.8421  -34.2105   43 docs   76 strings  113 inst   L5: ### 1. Annotate all **Specific Disease** mentions
+   3                                  resolved  L83         29.4737  -21.0526   51 docs   53 strings  108 inst   L83: ### 3. Annotate disease mentions that are used as **Mod
+   1.2(b)                             resolved  L61          7.6316  -19.0526   16 docs   22 strings   42 inst   L61: - **(b) Generic category.** The term is used genericall
+   1.2                                resolved  L45          7.3684  -18.6842   13 docs   26 strings   37 inst   L45: #### 1.2 Patient-level condition labeling for descripti
+   1.2(d)                             resolved  L63          0.0000  -12.0000    2 docs    6 strings   12 inst   L63: - **(d) Family-history or relative frame.** The conditi
+   2                                  resolved  L75          3.3684   -7.8947   16 docs   29 strings   36 inst   L75: ### 2. Annotate **contiguous text strings**
+   1.1(a)                             resolved  L28          9.4211   -0.8421    4 docs    7 strings   13 inst   L28: - **(a) Adjectival use.** The lack term is an adjective
+   5                                  resolved  L104         3.7895   -3.8947   11 docs   14 strings   15 inst   L104: ### 5. Annotate **minimum necessary span of text**
+   6                                  resolved  L112         5.6316   -0.5263   17 docs   19 strings   25 inst   L112: ### 6. Annotate all **synonymous mentions**
+   1.2(i)                             resolved  L48          3.9474   -1.7368    9 docs   10 strings   10 inst   L48: - **(i) Patient-level condition.** The term names a con
+
+F. Sub-item resolution (references counted once per instance and distinct identifier)
+   MIN_KEYWORDS = 2; STOPWORDS = ['about', 'after', 'also', 'annotate', 'annotated', 'annotation', 'annotations', 'been', 'before', 'between', 'both', 'could', 'disease', 'diseases', 'does', 'each', 'from', 'have', 'into', 'mention', 'mentions', 'more', 'only', 'other', 'over', 'shall', 'should', 'some', 'such', 'than', 'that', 'their', 'then', 'there', 'these', 'they', 'this', 'those', 'under', 'upon', 'used', 'using', 'were', 'what', 'when', 'where', 'which', 'will', 'with', 'within', 'without', 'would']
+   references by method: override 0, title_exact 33, title_keywords 5, title_ambiguous 1, section_only 456 (total 495)
+   title matches whose line lies in the same section as the cited number: yes 38, no 1, number not resolved to one line 0
+   scope changed by a title match or override (matched list differs from the assumed or explicit scope): yes 1, partial 0
+   title_keywords: 5 references, 3 distinct reference texts
+   x1   'Section 1.2 (association predicate and umbrella phenotype do not promote)' -> L60 'Defining trait or umbrella phenotype'  [keywords: phenotype,umbrella]  | number-based 1.2=L45 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x3   'Section 5 (minimum span)' -> L104 'Annotate minimum necessary span of text'  [keywords: minimum,span]  | number-based 5=L104 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   'Section 1.2 negative constraint (a) (defining trait keeps' -> L60 'Defining trait or umbrella phenotype'  [keywords: defining,trait]  | number-based 1.2=L45 | scope WTA(assumed)->WTA changed=no same_section=yes
+   title_ambiguous: 1 references, 1 distinct reference texts
+   x1   'Section 1.2(i) (patient-level predicate)' -> L45 'Patient-level condition labeling for descriptive' + L48 'Patient-level condition'  [keywords: level,patient ; level,patient]  | number-based 1.2(i)=L48 | scope WTA(assumed)->WTA changed=no same_section=yes
+   references whose scope changed: 1
+   x1   'Section 5 (minimum necessary span, e.g. classical galactosemia)': WTA(assumed) -> EX, title_exact, 5=L104 -> L213
+
+G. Title inventory of the target guideline (line | list | number | kind | titled | title | keywords)
+   L5   WTA  1           heading T 'Annotate all Specific Disease mentions' | specific
+   L17  WTA  1.1         heading T 'Lack-nominal disease names with gene-product arguments' | arguments,gene,lack,names,nominal,product
+   L27  WTA  -           run-in  T 'Negative constraints' | constraints,negative
+   L28  WTA  1.1(a)      run-in  T 'Adjectival use' | adjectival
+   L29  WTA  1.1(b)      run-in  T 'Molecular or biochemical state' | biochemical,molecular,state
+   L30  WTA  1.1(c)      run-in  T 'Disorder-class head' | class,disorder,head
+   L31  WTA  1.1(d)      run-in  T 'No gene-product argument' | argument,gene,product
+   L33  WTA  -           run-in  T 'Tie-breaker' | breaker
+   L45  WTA  1.2         heading T 'Patient-level condition labeling for descriptive pathology terms' | condition,descriptive,labeling,level,pathology,patient,terms
+   L48  WTA  1.2(i)      run-in  T 'Patient-level condition' | condition,level,patient
+   L52  WTA  1.2(ii)     run-in  T 'Single organism or etiology' | etiology,organism,single
+   L54  WTA  -           run-in  T 'Predicates that do not count' | count,predicates
+   L59  WTA  -           run-in  T 'Negative constraints' | constraints,negative
+   L60  WTA  1.2(a)      run-in  T 'Defining trait or umbrella phenotype' | defining,phenotype,trait,umbrella
+   L61  WTA  1.2(b)      run-in  T 'Generic category' | category,generic
+   L62  WTA  1.2(c)      run-in  T 'Proper name, eponym, or abbreviation' | abbreviation,eponym,name,proper
+   L63  WTA  1.2(d)      run-in  T 'Family-history or relative frame' | family,frame,history,relative
+   L64  WTA  1.2(e)      run-in  T 'Unframed list' | list,unframed
+   L66  WTA  -           run-in  T 'Precedence' | precedence
+   L67  WTA  1.2(1)      item    T 'Section 1.1 and item 7 of “What NOT to Annotate.”' | item,section
+   L68  WTA  1.2(2)      item    T 'Section 3 (Modifier)' | modifier,section
+   L69  WTA  1.2(3)      item    T '“What NOT to Annotate,” items 1, 4, and 5' | items
+   L71  WTA  -           run-in  T 'Scope' | scope
+   L75  WTA  2           heading T 'Annotate contiguous text strings' | contiguous,strings,text
+   L83  WTA  3           heading T 'Annotate disease mentions that are used as Modifiers for other concept' | concepts,modifiers
+   L99  WTA  4           heading T 'Annotate duplicate mentions' | duplicate
+   L104 WTA  5           heading T 'Annotate minimum necessary span of text' | minimum,necessary,span,text
+   L112 WTA  6           heading T 'Annotate all synonymous mentions' | synonymous
+   L119 NOT  1           item    T 'Do not annotate organism names' | names,organism
+   L128 NOT  2           item    T 'Do not annotate gender' | gender
+   L133 NOT  3           item    T 'Do not annotate overlapping mentions' | overlapping
+   L136 NOT  4           item    T 'Do not annotate general terms' | general,terms
+   L142 NOT  5           item    T 'Do not annotate references to biological processes' | biological,processes,references
+   L145 NOT  6           item    T 'Do not annotate disease mentions interrupted by nested mentions' | interrupted,nested
+   L152 NOT  7           item    T 'Do not annotate molecular or biochemical lack states' | biochemical,lack,molecular,states
+   L161 EX   1           item    T '“Insulin-dependent diabetes mellitus”' | dependent,diabetes,insulin,mellitus
+   L165 EX   2           item    T 'CDH1 mutations predispose to early onset “colorectal cancer.”' | cancer,cdh1,colorectal,early,mutations,onset,predispose
+   L170 EX   3           item    T 'Human “X-linked recessive disorder”' | disorder,human,linked,recessive
+   L173 EX   4           item    T 'Her fresh serum lacked complement-mediated bactericidal activity again' | activity,against,bactericidal,complement,fresh,gonorrhoeae,lacked,mediated,neisseria,serum
+   L176 EX   5           item    T '“Huntington disease” (“HD”)' | huntington
+   L179 EX   6           item    T 'C7 deficiency' | deficiency
+   L184 EX   7           item    T '“colorectal, endometrial, and ovarian cancers”' | cancers,colorectal,endometrial,ovarian
+   L187 EX   8           item    T 'WT1 dysfunction is implicated in both neoplastic (“Wilms tumor,” “meso' | breast,cancer,dysfunction,glomerulosclerosis,implicated,leukemias,mesothelioma,neoplastic,nonneoplastic,tumor,wilms
+   L192 EX   9           item    T 'Tumorigenesis and cancerogenesis' | cancerogenesis,tumorigenesis
+   L195 EX   10          item    T '“autosomal recessive disease”' | autosomal,recessive
+   L198 EX   11          item    T 'Large phenotypic variability with “convulsive disorders,” “motor retar' | convulsive,disorders,large,mental,motor,phenotypic,retardation,variability
+   L201 EX   12          item    T 'Borjeson-Forssman-Lehmann syndrome (BFLS) is a syndromal X-linked ment' | bfls,borjeson,forssman,lehmann,linked,mental,retardation,syndromal,syndrome
+   L205 EX   13          item    T 'Acute meningococcal pericarditis' | acute,meningococcal,pericarditis
+   L209 EX   14          item    T 'Acute Neisseria infection' | acute,infection,neisseria
+   L213 EX   15          item    T 'Classical galactosemia' | classical,galactosemia
+   L216 EX   16          item    T 'Inherited spinocerebellar ataxia' | ataxia,inherited,spinocerebellar
+   L220 EX   17          item    T '“Adenomatous polyps of the colon and rectum”' | adenomatous,colon,polyps,rectum
+   L223 EX   18          item    T 'Fibroepithelial or epithelial hyperplasias' | epithelial,fibroepithelial,hyperplasias
+   L226 EX   19          item    T 'Stage II or stage III colorectal cancer' | cancer,colorectal,stage
+   L229 EX   20          item    T '“glucose 6-phosphate dehydrogenase (G6PD) deficiency” in “The high pre' | african,deficiency,dehydrogenase,g6pd,glucose,high,phosphate,populations,prevalence
+   L232 EX   21          item    T '“G6PD deficient phenotype”' | deficient,g6pd,phenotype
+   L235 EX   22          item    T '“…resulting in absence of the FMR1 protein”' | absence,fmr1,protein,resulting
+   L238 EX   23          item    T '“…results in a deficiency of norrin (the protein product of the NDP ge' | deficiency,developing,gene,norrin,product,protein,results,retina
+   L241 EX   24          item    T '“…sister controls…” / “Sjogren-Larsson syndrome … characterized by ich' | activity,aldehyde,characterized,controls,deficient,dehydrogenase,faldh,fatty,ichthyosis,larsson,mental,retardation,sister,sjogren,spasticity,syndrome
+   L245 EX   25          item    T '“…the coexistence of the two mutations is responsible for enzyme defic' | coexistence,deficiency,enzyme,expression,g6pd,mutations,recombinant,responsible,study
+   L248 EX   26          item    T '“Twelve patients presented with cardiomyopathy.”' | cardiomyopathy,patients,presented,twelve
+   L251 EX   27          item    T '“Epstein-Barr virus-associated lymphoma”' | associated,barr,epstein,lymphoma,virus
+   L254 EX   28          item    T '“Cultures were obtained to rule out bacterial pneumonia.”' | bacterial,cultures,obtained,pneumonia,rule
+   L257 EX   29          item    T '“Coats disease is characterized by abnormal retinal vascular developme' | abnormal,accumulation,called,characterized,coats,detachment,development,exudative,intraretinal,lipid,massive,results,retinal,subretinal,telangiectasis,vascular
+   L261 EX   30          item    T '“Patients with infectious complications were excluded from the analysi' | analysis,complications,excluded,infectious,patients
+   L264 EX   31          item    T '“Forty-two colorectal cancer cases were enrolled.”' | cancer,cases,colorectal,enrolled,forty
+   L267 EX   32          item    T '“Both patients had a family history of breast or ovarian cancer.”' | breast,cancer,family,history,ovarian,patients
+
+   index keys: 61; extra block markers: []
+   section index (identifier=line) per list, in line order:
+   WTA    1=L5  1.1=L17  1.1(a)=L28  1.1(b)=L29  1.1(c)=L30  1.1(d)=L31  1.2=L45  1.2(i)=L48  1.2(ii)=L52  1.2(a)=L60  1.2(b)=L61  1.2(c)=L62  1.2(d)=L63  1.2(e)=L64  1.2(1)=L67  1.2(2)=L68  1.2(3)=L69  2=L75  3=L83  4=L99  5=L104  6=L112
+   NOT    1=L119  2=L128  3=L133  4=L136  5=L142  6=L145  7=L152
+   EX     1=L161  2=L165  3=L170  4=L173  5=L176  6=L179  7=L184  8=L187  9=L192  10=L195  11=L198  12=L201  13=L205  14=L209  15=L213  16=L216  17=L220  18=L223  19=L226  20=L229  21=L232  22=L235  23=L238  24=L241  25=L245  26=L248  27=L251  28=L254  29=L257  30=L261  31=L264  32=L267
+
+H. Files (sha256)
+   input  error_rows.csv 012db607b14c137bbc4231a78248539bf5a36db91ebedb85ff6ee50520d8c436
+   input  prediction_index.jsonl 4813b60e7dacc2fa97c6f2947b0aa91781340478cd3465cdf99f61a678caeea6
+   input  run_manifest.json 1702873925076031a6a2995c73db0ca8f6e63eef3e73fbf960a4159c36e8b900
+   input  citation_overrides.csv 5fbcc95e9b978dbaa0eaeaddfcb805eea81ea376ed9eb5c17831a43f878ddde7
+   output top1_loop05_instances.csv a28aacf7f02039e290eeab79e7f315ac3139543ea14a66616fdd47e770be628b
+   output top1_loop05_section_groups.csv e5e8a9fed5ff8aea77e185107e9b8c925260e0b09d01e77f9555ba8aa3ec39ff
+   output top1_loop05_noprediction_lookup.csv f0275c0974539a5c0efda7e493a305b609ac69bab970924501a7876eab5a97bb
+   output top1_loop05_citation_audit.csv 96dcfa8461de318c735fd64e04de721d490dff2567cdbd4dd98aa8ccb0447552
+
+OVERALL: checks 1-3 PASS

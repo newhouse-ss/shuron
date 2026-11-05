@@ -1,0 +1,224 @@
+build_instances.py: top-4 loop04 against the 19 original runs (offline, no API); prefix top4_loop04
+target run: 20261022_haiku-xhigh_topk4_loop04
+target guideline snapshot sha256: 8834ea8307a07ffe54f8f6f6c611563513a94e624656d9a445e878f5c6a24345
+  identical to outputs/ncbi_disease/20261022_haiku-xhigh_topk4_loop04/final/final_guidelines.txt after CRLF -> LF: True
+original guideline snapshot sha256: e6232d944d68e9e98c6012328add622486a743f5978e48a5a56c77ac2743002d; identical to data/guidelines/ncbi_disease_guidelines.txt after CRLF -> LF: True
+original runs: 19; all 19 use the same snapshot (manifest guideline_sha256); instances with d != 0: 361
+manual overrides in citation_overrides.csv: 0 rows, 0 for this guideline
+
+A. Instances by category (n | sum d | sum of positive d | sum of negative d)
+   gold_now_right                    193 |   +88.95 |   +88.95 |    +0.00
+   gold_now_wrong_with_prediction     74 |   -30.68 |    +0.00 |   -30.68
+   nogold_new_prediction              19 |   +17.79 |   +17.79 |    +0.00
+   gold_now_unlabelled                33 |   -16.63 |    +0.00 |   -16.63
+   nogold_dropped_prediction          42 |   -10.79 |    +0.00 |   -10.79
+   with a prediction in this run: 286; without: 75
+
+CHECK 1 counts vs count_workload_output.txt: PASS
+   with prediction 286 (file 286); without 75 (file 75); summed d without -27.42 (file -27.4)
+CHECK 2 sum of d over gold instances of each label vs bar in bar_attribution.json (tolerance 0.05):
+   SpecificDisease  sum d +7.7895  bar +7.7895  diff +7.11e-15  ok
+   DiseaseClass     sum d +6.1579  bar +6.1579  diff +3.55e-15  ok
+   Modifier         sum d +26.7368  bar +26.7368  diff -3.55e-15  ok
+   gold labels with d != 0 outside the three bars: ['CompositeMention']
+   -> PASS
+CHECK 3 links of the 286 instances with a prediction: paired 281; overlap_unique 5; still unlinked 0 (expected 0) -> PASS
+   overlap_unique: scorer state of the gold ['unpaired'], summed d -1.05; label / scorer kind of the linked predictions: {'CompositeMention/scorer kind label': 5}
+   all_gold_overlaps agrees with overlapping_prediction_indices: yes
+CHECK 4 citation resolution by section number alone (286 instances with a linked prediction, 455 references, one per distinct identifier per instance): resolved 454, ambiguous 0, unresolved 1; citations with no parsable reference: 0
+CHECK 5 references by method after override and title rules (references | distinct reference texts):
+   override                     0 |    0
+   title_exact                 48 |   28
+   title_keywords             166 |   61
+   title_ambiguous              3 |    3
+   section_only_explicit       23 |   13
+   section_only_assumed       214 |   94
+   section_only_inline          0 |    0
+   section_only_ambiguous       0 |    0
+   unresolved                   1 |    1
+   distinct reference texts that are not title_exact, explicit-scope section_only or override (to verify by hand): 159 of 200; table top4_loop04_citation_audit.csv
+     by method: {'section_only_assumed': 94, 'title_ambiguous': 3, 'title_keywords': 61, 'unresolved': 1}; with the same number in another list of the guideline (other_scope_candidates): 91; assumed scope with no such collision (resolved to one line by number alone): 50
+   unresolved: '8'
+
+D. Other consistency checks
+   extra rows of error_rows.csv vs extra predictions of prediction_index.jsonl (target + 19 original runs): equal
+   lookup: original predictions found at the position equal n_orig_of_19: yes for all 75
+   lookup: cited_section strings of the original runs without any parsable reference (not resolved): 0
+   context from document text (offsets agree with instance text): 361 of 361
+   groups: 33 resolved or ambiguous, 1 unresolved raw references, 0 pseudo rows (no_reference / unlinked)
+
+E. Ten largest groups by total |d| (identifier | status | line | sum positive d | sum negative d | documents | strings | instances | line text)
+   Adjacency-based attributive test ( resolved  L112        33.1053  -13.7895   56 docs   78 strings  122 inst   L112: **Adjacency-based attributive test (applies to disease
+   1c                                 resolved  L66         25.1579   -4.1579   18 docs   35 strings   38 inst   L66: **1c. Disease-manifestation nominals (broadest; applied
+   1b(d)                              resolved  L58          9.6316   -4.6842   21 docs   28 strings   36 inst   L58: - **(d) Unanchored, generic frame → Disease Class.** An
+   3                                  resolved  L102        12.2105   -1.9474   11 docs   13 strings   22 inst   L102: ### 3. Annotate disease mentions that are used as **Mo
+   1b(b)                              resolved  L46         11.4211   -2.6316    9 docs   15 strings   17 inst   L46: - **(b) Referential role of generic pathology heads → S
+   Locus-designator heads             resolved  L120        13.1053   -0.5789   18 docs   15 strings   23 inst   L120: **Locus-designator heads.** A disease-denoting premodi
+   1a                                 resolved  L20         12.3684    0.0000    8 docs   13 strings   19 inst   L20: **1a. Named deficiency conditions (narrowest; applied f
+   1b(e)                              resolved  L59          7.2632   -3.7368   18 docs   31 strings   33 inst   L59: - **(e) Default.** If none of (a)–(d) applies, decide u
+   1b(c)                              resolved  L57          7.0000   -2.4737   12 docs   15 strings   15 inst   L57: - **(c) Unanchored, individual's condition → Specific D
+   2                                  resolved  L86          4.5263   -4.0000   15 docs   21 strings   27 inst   L86: ### 2. Annotate **contiguous text strings**
+
+F. Sub-item resolution (references counted once per instance and distinct identifier)
+   MIN_KEYWORDS = 2; STOPWORDS = ['about', 'after', 'also', 'annotate', 'annotated', 'annotation', 'annotations', 'been', 'before', 'between', 'both', 'could', 'disease', 'diseases', 'does', 'each', 'from', 'have', 'into', 'mention', 'mentions', 'more', 'only', 'other', 'over', 'shall', 'should', 'some', 'such', 'than', 'that', 'their', 'then', 'there', 'these', 'they', 'this', 'those', 'under', 'upon', 'used', 'using', 'were', 'what', 'when', 'where', 'which', 'will', 'with', 'within', 'without', 'would']
+   references by method: override 0, title_exact 48, title_keywords 166, title_ambiguous 3, section_only 238 (total 455)
+   title matches whose line lies in the same section as the cited number: yes 213, no 4, number not resolved to one line 0
+   scope changed by a title match or override (matched list differs from the assumed or explicit scope): yes 1, partial 0
+   title_keywords: 166 references, 61 distinct reference texts
+   x29  'Rule 3 adjacency-based attributive test' -> L112 'Adjacency-based attributive test (applies to dis'  [keywords: adjacency,attributive,based,test]  | number-based 3=L102 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   'Rule 5 minimum necessary span' -> L136 'Annotate minimum necessary span of text'  [keywords: minimum,necessary,span]  | number-based 5=L136 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   '1a. Named deficiency conditions' -> L20 'Named deficiency conditions (narrowest; applied '  [keywords: conditions,deficiency,named]  | number-based 1a=L20 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   'Section 1b(d) unanchored generic frame' -> L58 'Unanchored, generic frame → Disease Class'  [keywords: frame,generic,unanchored]  | number-based 1b(d)=L58 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x26  'Rule 3 adjacency test' -> L112 'Adjacency-based attributive test (applies to dis'  [keywords: adjacency,test]  | number-based 3=L102 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x3   '1c Disease-manifestation nominals' -> L66 'Disease-manifestation nominals (broadest; applie'  [keywords: manifestation,nominals]  | number-based 1c=L66 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x2   '3 adjacency-based attributive test (OTHERWISE branch)' -> L112 'Adjacency-based attributive test (applies to dis'  [keywords: adjacency,attributive,based,test]  | number-based 3=L102 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x11  '1b(d) Unanchored generic frame' -> L58 'Unanchored, generic frame → Disease Class'  [keywords: frame,generic,unanchored]  | number-based 1b(d)=L58 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   '3 adjacency-based attributive test' -> L112 'Adjacency-based attributive test (applies to dis'  [keywords: adjacency,attributive,based,test]  | number-based 3=L102 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x3   '3 (adjacency-based attributive test)' -> L112 'Adjacency-based attributive test (applies to dis'  [keywords: adjacency,attributive,based,test]  | number-based 3=L102 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   'Section 3 adjacency-based attributive test (otherwise branch)' -> L112 'Adjacency-based attributive test (applies to dis'  [keywords: adjacency,attributive,based,test]  | number-based 3=L102 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x6   'rule 3 adjacency test' -> L112 'Adjacency-based attributive test (applies to dis'  [keywords: adjacency,test]  | number-based 3=L102 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x3   'Rule 3: Adjacency-based attributive test' -> L112 'Adjacency-based attributive test (applies to dis'  [keywords: adjacency,attributive,based,test]  | number-based 3=L102 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   '3 (Adjacency-based attributive test)' -> L112 'Adjacency-based attributive test (applies to dis'  [keywords: adjacency,attributive,based,test]  | number-based 3=L102 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x2   '1b(d) unanchored generic frame' -> L58 'Unanchored, generic frame → Disease Class'  [keywords: frame,generic,unanchored]  | number-based 1b(d)=L58 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x6   'Rule 1b(d) unanchored generic frame' -> L58 'Unanchored, generic frame → Disease Class'  [keywords: frame,generic,unanchored]  | number-based 1b(d)=L58 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   '3 (adjacency test, attributive use)' -> L112 'Adjacency-based attributive test (applies to dis'  [keywords: adjacency,attributive,test]  | number-based 3=L102 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x3   'Rule 3 Adjacency-based attributive test' -> L112 'Adjacency-based attributive test (applies to dis'  [keywords: adjacency,attributive,based,test]  | number-based 3=L102 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x4   '3 (adjacency test)' -> L112 'Adjacency-based attributive test (applies to dis'  [keywords: adjacency,test]  | number-based 3=L102 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x2   'Section 3 adjacency test' -> L112 'Adjacency-based attributive test (applies to dis'  [keywords: adjacency,test]  | number-based 3=L102 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   'Section 5 (minimum necessary span)' -> L136 'Annotate minimum necessary span of text'  [keywords: minimum,necessary,span]  | number-based 5=L136 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x2   'Section 3 adjacency-based attributive test' -> L112 'Adjacency-based attributive test (applies to dis'  [keywords: adjacency,attributive,based,test]  | number-based 3=L102 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   'Rule 3 adjacency-based attributive test and locus/acronym rules' -> L112 'Adjacency-based attributive test (applies to dis'  [keywords: adjacency,attributive,based,test]  | number-based 3=L102 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   'Section 3 Modifiers: Adjacency-based attributive test' -> L112 'Adjacency-based attributive test (applies to dis'  [keywords: adjacency,attributive,based,test]  | number-based 3=L102 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x2   'Rule 3 - Adjacency-based attributive test' -> L112 'Adjacency-based attributive test (applies to dis'  [keywords: adjacency,attributive,based,test]  | number-based 3=L102 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   "1b(c). Unanchored, individual's condition" -> L57 "Unanchored, individual's condition → Specific Di"  [keywords: condition,individual,unanchored]  | number-based 1b(c)=L57 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x3   '3 Adjacency-based attributive test' -> L112 'Adjacency-based attributive test (applies to dis'  [keywords: adjacency,attributive,based,test]  | number-based 3=L102 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   'Rule 3 (adjacency-based attributive test)' -> L112 'Adjacency-based attributive test (applies to dis'  [keywords: adjacency,attributive,based,test]  | number-based 3=L102 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   'Rule 3 (Modifier, adjacency-based attributive test)' -> L112 'Adjacency-based attributive test (applies to dis'  [keywords: adjacency,attributive,based,test]  | number-based 3=L102 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   'Section 3 (adjacency-based attributive test)' -> L112 'Adjacency-based attributive test (applies to dis'  [keywords: adjacency,attributive,based,test]  | number-based 3=L102 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   'Section 5 (minimum span)' -> L136 'Annotate minimum necessary span of text'  [keywords: minimum,span]  | number-based 5=L136 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   'Rule 3 adjacency test (followed by bracket or verb)' -> L112 'Adjacency-based attributive test (applies to dis'  [keywords: adjacency,test]  | number-based 3=L102 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   'Rule 3 adjacency test (followed by bracket)' -> L112 'Adjacency-based attributive test (applies to dis'  [keywords: adjacency,test]  | number-based 3=L102 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x2   'Rule 3 adjacency test (attributive use)' -> L112 'Adjacency-based attributive test (applies to dis'  [keywords: adjacency,attributive,test]  | number-based 3=L102 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x4   '3 adjacency test' -> L112 'Adjacency-based attributive test (applies to dis'  [keywords: adjacency,test]  | number-based 3=L102 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   'Rule 3 (attributive role before label; adjacency-based attributive test)' -> L112 'Adjacency-based attributive test (applies to dis'  [keywords: adjacency,attributive,based,test]  | number-based 3=L102 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   'Section 3 - Modifiers, adjacency-based attributive test' -> L112 'Adjacency-based attributive test (applies to dis'  [keywords: adjacency,attributive,based,test]  | number-based 3=L102 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   'Section 3 - adjacency-based attributive test (otherwise branch)' -> L112 'Adjacency-based attributive test (applies to dis'  [keywords: adjacency,attributive,based,test]  | number-based 3=L102 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   'Rule 3 Modifiers (attributive role) and adjacency-based attributive test' -> L112 'Adjacency-based attributive test (applies to dis'  [keywords: adjacency,attributive,based,test]  | number-based 3=L102 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x2   'Rule 3 adjacency test (OTHERWISE branch)' -> L112 'Adjacency-based attributive test (applies to dis'  [keywords: adjacency,test]  | number-based 3=L102 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   'Rule 3 - Modifier (adjacency-based attributive test)' -> L112 'Adjacency-based attributive test (applies to dis'  [keywords: adjacency,attributive,based,test]  | number-based 3=L102 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x5   'Rule 3 - adjacency-based attributive test' -> L112 'Adjacency-based attributive test (applies to dis'  [keywords: adjacency,attributive,based,test]  | number-based 3=L102 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   'Rule 1a named deficiency conditions' -> L20 'Named deficiency conditions (narrowest; applied '  [keywords: conditions,deficiency,named]  | number-based 1a=L20 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x3   'Section 3: Adjacency-based attributive test (immediately followed by head noun, so Modifier)' -> L112 'Adjacency-based attributive test (applies to dis'  [keywords: adjacency,attributive,based,test]  | number-based 3=L102 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   'Section 1b(d) - Unanchored generic frame yields Disease Class' -> L58 'Unanchored, generic frame → Disease Class'  [keywords: class,frame,generic,unanchored]  | number-based 1b(d)=L58 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   'rule 3 adjacency-based attributive test' -> L112 'Adjacency-based attributive test (applies to dis'  [keywords: adjacency,attributive,based,test]  | number-based 3=L102 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   'Rule 3 adjacency test (complement of preposition)' -> L112 'Adjacency-based attributive test (applies to dis'  [keywords: adjacency,test]  | number-based 3=L102 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   "Section 1b(d) (unanchored generic frame, 'characterized by')" -> L58 'Unanchored, generic frame → Disease Class'  [keywords: frame,generic,unanchored]  | number-based 1b(d)=L58 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   'Rule 1b(c) individual condition' -> L57 "Unanchored, individual's condition → Specific Di"  [keywords: condition,individual]  | number-based 1b(c)=L57 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   "1b(c) unanchored individual's presenting condition" -> L57 "Unanchored, individual's condition → Specific Di"  [keywords: condition,individual,unanchored]  | number-based 1b(c)=L57 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x3   'rule 5 minimum necessary span' -> L136 'Annotate minimum necessary span of text'  [keywords: minimum,necessary,span]  | number-based 5=L136 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   'Rule 3 - adjacency test (followed by bracket)' -> L112 'Adjacency-based attributive test (applies to dis'  [keywords: adjacency,test]  | number-based 3=L102 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   'Rule 3 - adjacency-based attributive test (OTHERWISE branch)' -> L112 'Adjacency-based attributive test (applies to dis'  [keywords: adjacency,attributive,based,test]  | number-based 3=L102 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   "Section 1b(c) (unanchored individual's condition)" -> L57 "Unanchored, individual's condition → Specific Di"  [keywords: condition,individual,unanchored]  | number-based 1b(c)=L57 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   'Section 4 (general terms: cancer and tumor retained)' -> L168 'Do not annotate general terms'  [keywords: general,terms]  | number-based 4=L131 | scope WTA(assumed)->NOT changed=yes same_section=no
+   x1   'Rule 6 - synonymous mentions (short form takes class of expanded antecedent)' -> L112 'Adjacency-based attributive test (applies to dis'  [keywords: form,short]  | number-based 6=L144 | scope WTA(assumed)->WTA changed=no same_section=no
+   x1   'Section 1b(d): unanchored head in generic frame (Disease Class)' -> L58 'Unanchored, generic frame → Disease Class'  [keywords: class,frame,generic,unanchored]  | number-based 1b(d)=L58 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   'Section 5 minimum span' -> L136 'Annotate minimum necessary span of text'  [keywords: minimum,span]  | number-based 5=L136 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x2   "Rule 1b(c) individual's condition" -> L57 "Unanchored, individual's condition → Specific Di"  [keywords: condition,individual]  | number-based 1b(c)=L57 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   '1b(b)(i) generic pathology head with demonstrative anaphor' -> L46 'Referential role of generic pathology heads → Sp'  [keywords: generic,pathology]  | number-based 1b(b)(i)=L47 | scope WTA(assumed)->WTA changed=no same_section=no
+   x1   'Rule 1c - Disease-manifestation nominals (etiology predicate within a disease-characterizing clause)' -> L66 'Disease-manifestation nominals (broadest; applie'  [keywords: manifestation,nominals]  | number-based 1c=L66 | scope WTA(assumed)->WTA changed=no same_section=yes
+   title_ambiguous: 3 references, 3 distinct reference texts
+   x1   'Rule 3 - adjacency test (alias takes antecedent class)' -> L112 'Adjacency-based attributive test (applies to dis'  [keywords: adjacency,test]  | number-based 3=L102 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   'Rule 3 adjacency-based attributive test (example: fragile X syndrome patients)' -> L72 'Example' + L94 'Example' + L118 'Example' + L122 'Example'  [keywords:  ;  ;  ; ]  | number-based 3=L102 | scope WTA(assumed)->WTA changed=no same_section=no
+   x1   "Rule 1b(c) (unanchored individual's condition, presenting-with frame)" -> L57 "Unanchored, individual's condition → Specific Di" + L58 'Unanchored, generic frame → Disease Class'  [keywords: condition,individual,unanchored ; frame,unanchored]  | number-based 1b(c)=L57 | scope WTA(assumed)->WTA changed=no same_section=yes
+   references whose scope changed: 1
+   x1   'Section 4 (general terms: cancer and tumor retained)': WTA(assumed) -> NOT, title_keywords, 4=L131 -> L168
+
+G. Title inventory of the target guideline (line | list | number | kind | titled | title | keywords)
+   L5   WTA  1           heading T 'Annotate all Specific Disease mentions' | specific
+   L20  WTA  1a          run-in  T 'Named deficiency conditions (narrowest; applied first)' | applied,conditions,deficiency,first,named,narrowest
+   L29  WTA  1a(i)       run-in  T 'Molecular-defect paraphrases (not a disease mention)' | defect,molecular,paraphrases
+   L31  WTA  -           run-in  T 'Carrier or genotype descriptors' | carrier,descriptors,genotype
+   L44  WTA  1b          run-in  T 'Specific vs. Disease Class test (Individuated-Referent Test)' | class,individuated,referent,specific,test
+   L45  WTA  1b(a)       run-in  T 'Anchored → Specific Disease' | anchored,specific
+   L46  WTA  1b(b)       run-in  T 'Referential role of generic pathology heads → Specific Disease' | generic,heads,pathology,referential,role,specific
+   L57  WTA  1b(c)       run-in  T "Unanchored, individual's condition → Specific Disease" | condition,individual,specific,unanchored
+   L58  WTA  1b(d)       run-in  T 'Unanchored, generic frame → Disease Class' | class,frame,generic,unanchored
+   L59  WTA  1b(e)       run-in  T 'Default' | default
+   L66  WTA  1c          run-in  T 'Disease-manifestation nominals (broadest; applied last)' | applied,broadest,last,manifestation,nominals
+   L72  WTA  -           run-in  T 'Example' | example
+   L86  WTA  2           heading T 'Annotate contiguous text strings' | contiguous,strings,text
+   L92  WTA  -           run-in  T 'Coordinated premodifiers over a non-disease head' | coordinated,head,premodifiers
+   L94  WTA  -           run-in  T 'Example' | example
+   L102 WTA  3           heading T 'Annotate disease mentions that are used as Modifiers for other concept' | concepts,modifiers
+   L112 WTA  -           run-in  T 'Adjacency-based attributive test (applies to disease-name spans, full ' | adjacency,aliases,applies,attributive,based,form,full,name,names,short,spans,test
+   L118 WTA  -           run-in  T 'Example' | example
+   L120 WTA  -           run-in  T 'Locus-designator heads' | designator,heads,locus
+   L122 WTA  -           run-in  T 'Example' | example
+   L131 WTA  4           heading T 'Annotate duplicate mentions' | duplicate
+   L136 WTA  5           heading T 'Annotate minimum necessary span of text' | minimum,necessary,span,text
+   L144 WTA  6           heading T 'Annotate all synonymous mentions' | synonymous
+   L151 NOT  1           item    T 'Do not annotate organism names' | names,organism
+   L160 NOT  2           item    T 'Do not annotate gender' | gender
+   L165 NOT  3           item    T 'Do not annotate overlapping mentions' | overlapping
+   L168 NOT  4           item    T 'Do not annotate general terms' | general,terms
+   L173 NOT  5           item    T 'Do not annotate references to biological processes' | biological,processes,references
+   L178 NOT  6           item    T 'Do not annotate disease mentions interrupted by nested mentions' | interrupted,nested
+   L187 NOT  7           item    T 'Do not annotate negated or normal-state deficiency adjectives' | adjectives,deficiency,negated,normal,state
+   L190 NOT  8           item    T 'Do not annotate gene-level alterations as disease mentions' | alterations,gene,level
+   L194 NOT  9           item    T 'Do not annotate molecular-defect paraphrases as disease mentions' | defect,molecular,paraphrases
+   L203 PREC 1           item    - 'Attributive role before label' | attributive,label,role
+   L204 PREC 2           item    - 'Named deficiency and molecular-defect paraphrases before general terms' | defect,deficiency,general,manifestations,molecular,named,paraphrases,terms
+   L205 PREC 3           item    - 'Referential names and named disease labels before manifestations' | labels,manifestations,named,names,referential
+   L206 PREC 4           item    - 'Abnormal states before neutral processes' | abnormal,neutral,processes,states
+   L207 PREC 5           item    - 'Gene-level before disease' | gene,level
+   L208 PREC 6           item    - 'Contiguity is never overridden' | contiguity,never,overridden
+   L209 PREC 7           item    - 'Coordinated shared-head premodifiers before manifestations' | coordinated,head,manifestations,premodifiers,shared
+   L215 EX   1           item    T '"Insulin-dependent diabetes mellitus"' | dependent,diabetes,insulin,mellitus
+   L219 EX   2           item    T 'CDH1 mutations predispose to early onset "colorectal cancer."' | cancer,cdh1,colorectal,early,mutations,onset,predispose
+   L224 EX   3           item    T 'Human "X-linked recessive disorder"' | disorder,human,linked,recessive
+   L226 EX   4           item    T 'Her fresh serum lacked complement-mediated bactericidal activity again' | activity,against,bactericidal,complement,fresh,gonorrhoeae,lacked,mediated,neisseria,serum
+   L229 EX   5           item    T '"Huntington disease" ("HD")' | huntington
+   L232 EX   6           item    T 'C7 deficiency' | deficiency
+   L236 EX   7           item    T '"colorectal, endometrial, and ovarian cancers"' | cancers,colorectal,endometrial,ovarian
+   L239 EX   8           item    T 'WT1 dysfunction is implicated in both neoplastic ("Wilms tumor," "meso' | breast,cancer,dysfunction,glomerulosclerosis,implicated,leukemias,mesothelioma,neoplastic,nonneoplastic,tumor,wilms
+   L243 EX   9           item    T 'Tumorigenesis and cancerogenesis' | cancerogenesis,tumorigenesis
+   L246 EX   10          item    T '"autosomal recessive disease"' | autosomal,recessive
+   L249 EX   11          item    T 'Large phenotypic variability with "convulsive disorders," "motor retar' | convulsive,disorders,large,mental,motor,phenotypic,retardation,variability
+   L252 EX   12          item    T 'Borjeson-Forssman-Lehmann syndrome (BFLS) is a syndromal X-linked ment' | bfls,borjeson,forssman,lehmann,linked,mental,retardation,syndromal,syndrome
+   L256 EX   13          item    T 'Acute meningococcal pericarditis' | acute,meningococcal,pericarditis
+   L259 EX   14          item    T 'Acute Neisseria infection' | acute,infection,neisseria
+   L262 EX   15          item    T 'Classical galactosemia' | classical,galactosemia
+   L265 EX   16          item    T 'Inherited spinocerebellar ataxia' | ataxia,inherited,spinocerebellar
+   L268 EX   17          item    T '"Adenomatous polyps of the colon and rectum"' | adenomatous,colon,polyps,rectum
+   L271 EX   18          item    T 'Fibroepithelial or epithelial hyperplasias' | epithelial,fibroepithelial,hyperplasias
+   L274 EX   19          item    T 'Stage II or stage III colorectal cancer' | cancer,colorectal,stage
+   L277 EX   20          item    T '"Coats disease is characterized by abnormal retinal vascular developme' | abnormal,characterized,coats,development,retinal,vascular
+   L281 EX   21          item    T '"Sjogren-Larsson syndrome (SLS) is an autosomal recessive disorder cha' | activity,aldehyde,autosomal,characterized,deficient,dehydrogenase,disorder,faldh,fatty,ichthyosis,larsson,mental,recessive,retardation,sjogren,spasticity,syndrome
+   L288 EX   22          item    T '"Wiskott-Aldrich syndrome protein (WASP) family members"' | aldrich,family,members,protein,syndrome,wasp,wiskott
+   L292 EX   23          item    T '"a family history of ovarian cancer"; "ovarian cancer cases"; "ovarian' | cancer,cases,family,history,ovarian,risk
+   L296 EX   24          item    T '"breast cancer susceptibility gene 1 (BRCA1)"' | brca1,breast,cancer,gene,susceptibility
+   L300 EX   25          item    T '"the G6PD deficient phenotype"; "non-deficient polymorphic variant G6P' | deficient,g6pd,phenotype,polymorphic,variant
+   L304 EX   26          item    T '"the coexistence of the two mutations is responsible for enzyme defici' | coexistence,deficiency,enzyme,g6pd,mutations,responsible
+   L308 EX   27          item    T '"Coats telangiectasis is secondary to somatic mutation in the NDP gene' | coats,deficiency,gene,mutation,norrin,product,protein,results,secondary,somatic,telangiectasis
+   L313 EX   28          item    T '"Germline BRCA1 alterations"; "truncating mutations"' | alterations,brca1,germline,mutations,truncating
+   L316 EX   29          item    T '"Coats\' disease of the retina (unilateral retinal telangiectasis) caus' | accumulation,caused,coats,detachment,exudative,gene,intraretinal,lipid,massive,mutation,retina,retinal,somatic,subretinal,telangiectasis,unilateral
+   L322 EX   30          item    T '"Most fragile X syndrome patients have expansion of a (CGG)(n) sequenc' | condition,expansion,fragile,most,patients,responsible,sequence,syndrome
+
+   index keys: 79; extra block markers: []
+   section index (identifier=line) per list, in line order:
+   WTA    1=L5  1a=L20  1a(i)=L29  1b=L44  1b(a)=L45  1b(b)=L46  1b(b)(i)=L47  1b(b)(ii)=L48  1b(c)=L57  1b(d)=L58  1b(e)=L59  1c=L66  1c(a)=L74  1c(b)=L75  1c(c)=L76  1c(d)=L77  1c(e)=L78  1c(f)=L79  1c(g)=L80  1c(h)=L81  1c(i)=L82  2=L86  2(a)=L96  2(b)=L97  2(c)=L98  3=L102  3(a)=L124  3(b)=L125  3(c)=L126  3(d)=L127  4=L131  5=L136  6=L144
+   NOT    1=L151  2=L160  3=L165  4=L168  5=L173  6=L178  7=L187  8=L190  9=L194
+   PREC   1=L203  2=L204  3=L205  4=L206  5=L207  6=L208  7=L209
+   EX     1=L215  2=L219  3=L224  4=L226  5=L229  6=L232  7=L236  8=L239  9=L243  10=L246  11=L249  12=L252  13=L256  14=L259  15=L262  16=L265  17=L268  18=L271  19=L274  20=L277  21=L281  22=L288  23=L292  24=L296  25=L300  26=L304  27=L308  28=L313  29=L316  30=L322
+
+H. Files (sha256)
+   input  error_rows.csv 012db607b14c137bbc4231a78248539bf5a36db91ebedb85ff6ee50520d8c436
+   input  prediction_index.jsonl 4813b60e7dacc2fa97c6f2947b0aa91781340478cd3465cdf99f61a678caeea6
+   input  run_manifest.json 1702873925076031a6a2995c73db0ca8f6e63eef3e73fbf960a4159c36e8b900
+   input  citation_overrides.csv 5fbcc95e9b978dbaa0eaeaddfcb805eea81ea376ed9eb5c17831a43f878ddde7
+   output top4_loop04_instances.csv 8073817158d71daf89b5660eaa5ea4e717a527372583583089819095a2e7ad52
+   output top4_loop04_section_groups.csv 40bee3fbf94176633a398b0a8fba855ea8aee442614efdf55ef94240a2ac6e03
+   output top4_loop04_noprediction_lookup.csv 17ea12327eafd82a83cf3f48e6b8fad6dc71045efa84c4b94196085f59f7f74b
+   output top4_loop04_citation_audit.csv ca280385cd43f6ea0d6bee4032470fd8616049fd4e9befdad31db4c9a76e92f0
+
+OVERALL: checks 1-3 PASS

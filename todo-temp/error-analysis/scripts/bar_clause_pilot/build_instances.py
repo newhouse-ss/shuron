@@ -40,7 +40,7 @@ Outputs (outputs/bar_clause_pilot/ or --outdir; <prefix> = <method>_<loop> witho
   <prefix>_instances.csv, <prefix>_section_groups.csv, <prefix>_noprediction_lookup.csv, <prefix>_citation_audit.csv,
   <prefix>_build_instances_output.txt; with --guideline all also original_citation_audit.csv and citation_audit_summary.txt.
   citation_overrides.csv is created with its header only when it does not exist; it is never overwritten.
-Usage: python -I build_instances.py [--guideline "top-4 loop07"|all] [--prefix loop07] [--outdir DIR]
+Usage: python -I build_instances.py [--guideline "top-4 loop07"|all] [--prefix loop07] [--outdir DIR] [--overrides FILE]
 """
 import argparse
 import collections
@@ -61,7 +61,7 @@ CATS = ["gold_now_right", "gold_now_wrong_with_prediction", "nogold_new_predicti
         "gold_now_unlabelled", "nogold_dropped_prediction"]
 WITH_PRED = CATS[:3]
 REF_CATS = ["override", "title_exact", "title_keywords", "title_ambiguous", "section_only_explicit", "section_only_assumed",
-            "section_only_ambiguous", "unresolved"]
+            "section_only_inline", "section_only_ambiguous", "unresolved"]
 SAFE_CATS = {"override", "title_exact", "section_only_explicit"}      # not listed for manual verification
 EPS = 1e-9
 CTX = 80
@@ -82,6 +82,7 @@ ap = argparse.ArgumentParser()
 ap.add_argument("--guideline", default=DEFAULT, help='changed guideline as "<method> <loop>", e.g. "top-4 loop07", or "all"')
 ap.add_argument("--prefix", default=None, help="output file prefix (default <method>_<loop> without the dash, e.g. top4_loop07)")
 ap.add_argument("--outdir", default=None, help="output directory (default outputs/bar_clause_pilot; use another one for trial runs)")
+ap.add_argument("--overrides", default=None, help="override file (default outputs/bar_clause_pilot/citation_overrides.csv)")
 args = ap.parse_args()
 WRITE = Path(args.outdir) if args.outdir else PILOT
 WRITE.mkdir(parents=True, exist_ok=True)
@@ -96,7 +97,7 @@ def one_line(s):
 
 
 # ---------------------------------------------------------------- manual overrides
-OV_FILE = PILOT / "citation_overrides.csv"
+OV_FILE = Path(args.overrides) if args.overrides else PILOT / "citation_overrides.csv"
 if not OV_FILE.exists():
     with open(OV_FILE, "w", encoding="utf-8", newline="") as f:
         csv.writer(f).writerow(OVERRIDE_HEADER)
@@ -168,10 +169,12 @@ def doc_text(doc):
 
 
 # ---------------------------------------------------------------- guideline structure: index and title inventory
-PREFIX_WORD = {"NOT": "NOT", "EX": "Example", "PEND": "Pending", "PREC": "Precedence", "PRINC": "Principle", "OTHER": "Block"}
+PREFIX_WORD = {"NOT": "NOT", "EX": "Example", "PEND": "Pending", "PREC": "Precedence", "PRINC": "Principle",
+               "MPRINC": "Moderation Principle", "OTHER": "Block"}
+PRINCIPLE = re.compile(r"\b(moderation\s+)?principles?\s+(\d+(?:\s*(?:,|;|and|&)\s*\d+)*)", re.I)
 SUB_ID = r"(?:[a-z]{1,4}|\d{1,2})"
 HEAD_ID = r"\d+(?:\.\d+)*[a-z]?(?:\(" + SUB_ID + r"\))*"
-LIST_SCOPES = ("NOT", "PEND", "PREC", "EX", "PRINC", "OTHER")
+LIST_SCOPES = ("NOT", "PEND", "PREC", "EX", "PRINC", "MPRINC", "OTHER")
 
 
 def display(scope, ident):
@@ -218,10 +221,17 @@ def build_index(lines):
          bullet titles ending in a period, numbered items (title = leading bold span; none for Precedence and other blocks).
     parent_of: line -> line of the enclosing ## block heading or ### section heading."""
     idx = collections.defaultdict(list)
-    inv, parent_of, scope_of_line = [], {}, {}
+    inv, parent_of, scope_of_line, chain_idents, cstack = [], {}, {}, {}, []
     base, prec_level, head, sub, sect = "OTHER", None, None, None, 0
     stack = []                                   # (indent, key) of lettered bullets
     other_title, other_markers = "", []
+
+    def push(level, ident, no):
+        """enclosing numbered headings of a line: ### 5 > #### 5.1 > **5.1a** > **(b)**"""
+        while cstack and cstack[-1][0] >= level:
+            cstack.pop()
+        cstack.append((level, ident))
+        chain_idents[no] = tuple(i for _, i in cstack if i)
 
     def add(no, scope, ident, title, kind):
         norm = norm_text(title)
@@ -233,12 +243,14 @@ def build_index(lines):
     for no, line in enumerate(lines, 1):
         scope = "PREC" if prec_level else base
         scope_of_line[no] = scope
+        chain_idents[no] = tuple(i for _, i in cstack if i)
         m = re.match(r"^(#{1,6})\s+(.*)", line)
         if m:
             level, title = len(m.group(1)), m.group(2).strip()
             head = sub = None
             stack = []
             if level <= 2:
+                cstack.clear()
                 base, prec_level, sect = scope_of_title(title), None, no
                 parent_of[no] = no
                 scope_of_line[no] = base
@@ -252,6 +264,7 @@ def build_index(lines):
             if ident:
                 idx[(base, ident)].append(no)
                 head = ident
+            push(level, ident, no)
             if is_prec:
                 prec_level = level
             if level == 3 or is_prec:
@@ -268,6 +281,7 @@ def build_index(lines):
         if mm:
             head, sub, stack = mm.group(1).lower(), None, []
             idx[(scope, head)].append(no)
+            push(7, head, no)
             add(no, scope, head, clean_title(mm.group(2)), "run-in")
             continue
         # bold paren sub-head at column 0: **(b) Title.** / **(ii) Title.**
@@ -278,6 +292,7 @@ def build_index(lines):
             if key:
                 idx[(scope, key)].append(no)
                 sub = key
+            push(8, key, no)
             add(no, scope, key, clean_title(mm.group(2)), "run-in")
             continue
         # other bold paragraph titles at column 0: "**Title.** text" or a bold-only line of two or more words
@@ -309,7 +324,7 @@ def build_index(lines):
                     key = f"{parent}({n})"
                     idx[(scope, key)].append(no)
                     ttl = item_title(mn.group(2))
-                    if ttl.endswith(("→", ")")) or mn.group(2).startswith("**"):
+                    if ttl:
                         add(no, scope, key, ttl, "item")
             continue
         # bullets
@@ -335,14 +350,19 @@ def build_index(lines):
             continue
         if indent == 0:
             stack = []
-    # "Principle N" / "Moderation Principle N" tags in titles
+    # "Principle N" / "Moderation Principle N" tags in titles (two numbering schemes, kept apart)
     for e in inv:
-        for mm in re.finditer(r"principles?\s+(\d+(?:\s*(?:,|;|and|&)\s*(?:moderation\s+principles?\s+)?\d+)*)", e["title"], re.I):
-            for n in re.findall(r"\d+", mm.group(1)):
-                if e["line"] not in idx[("PRINC", n)]:
-                    idx[("PRINC", n)].append(e["line"])
+        if e["scope"] != "WTA" or e["kind"] == "item":
+            continue
+        for mm in PRINCIPLE.finditer(e["title"]):
+            sc = "MPRINC" if mm.group(1) else "PRINC"
+            for n in re.findall(r"\d+", mm.group(2)):
+                if e["line"] not in idx[(sc, n)]:
+                    idx[(sc, n)].append(e["line"])
     extra_markers = [("OTHER", re.compile(r"\s+".join(re.escape(w) for w in t.split()[:2]), re.I)) for t in other_markers]
-    return {"idx": idx, "inv": inv, "parent_of": parent_of, "scope_of_line": scope_of_line, "extra_markers": extra_markers}
+    extra_chain = tuple(r"\s+".join(re.escape(w) for w in t.split()) for t in other_markers) + tuple(rx.pattern for _, rx in extra_markers)
+    return {"idx": idx, "inv": inv, "parent_of": parent_of, "scope_of_line": scope_of_line, "extra_markers": extra_markers,
+            "extra_chain": extra_chain, "chain": chain_idents}
 
 
 def load_guideline(sha):
@@ -365,12 +385,13 @@ ORIG_G = load_guideline(ORIG_SHA)
 
 # ---------------------------------------------------------------- citation parsing
 MARKERS = [("NOT", re.compile(r"what\s+not\s+to\s+annotate", re.I)),
+           ("NOT", re.compile(r"do\s+not\s+annotate", re.I)),
            ("WTA", re.compile(r"what\s+to\s+annotate", re.I)),
            ("PEND", re.compile(r"pending\s+annotation\s+review", re.I)),
-           ("PREC", re.compile(r"precedence(?:\s+(?:between\s+overlapping\s+)?rules?)?", re.I))]
+           ("PREC", re.compile(r"precedence(?:\s+(?:between\s+overlapping\s+)?rules?)?", re.I)),
+           ("EX", re.compile(r"\bexamples?\b(?=[\s,:]*(?:items?|no\.?|§|#)?\s*\d)", re.I))]
 DONOT = re.compile(r"do\s+not\s+annotate", re.I)
 EXAMPLE = re.compile(r"\bexamples?\s+#?(\d+(?:\s*(?:,|and|&)\s*\d+)*)", re.I)
-PRINCIPLE = re.compile(r"\b(?:moderation\s+)?principles?\s+(\d+(?:\s*(?:,|;|and|&)\s*(?:moderation\s+principles?\s+)?\d+)*)", re.I)
 NUM = re.compile(r"(?<![\w.])(?:§\s*)?(\d+(?:\.\d+)*)([a-z](?![a-z]))?((?:\((?:[a-z]{1,4}|\d{1,2})\))*)(?!\w)", re.I)
 LICENSE = re.compile(r"(?:section|sections|§|item|items|step|steps|rule|rules|guideline|guidelines|principle|principles|"
                      r"example|examples|annotate|review|precedence)\s*#?$", re.I)
@@ -378,9 +399,54 @@ CONTINUATION = re.compile(r"^\s*(?:,|;|and|&|or|to)?\s*(?:section|sections|§|it
 CHILD = re.compile(r"\b(?:step|steps|item|items)\s*$", re.I)
 
 
-def parse_citation(raw, extra_markers=()):
-    """-> list of dicts (scope, ident, assumed, segment, text); duplicates of (scope, ident) inside one citation are dropped.
-    text = the part of the segment from the reference's number (or "Example"/"Principle") to the next reference."""
+CHAIN_STATIC = (r"what\s+not\s+to\s+annotate|what\s+to\s+annotate|pending\s+annotation\s+review|"
+                r"precedence(?:\s+between\s+overlapping)?(?:\s+rules?)?|moderation\s+principles?|principles?|sections?|rules?|items?|"
+                r"steps?|guidelines?|examples?")
+_CHAIN_CACHE = {}
+
+
+def chain_rx(key):
+    if key not in _CHAIN_CACHE:
+        _CHAIN_CACHE[key] = re.compile(r"(?:(?:" + "|".join((CHAIN_STATIC,) + key) + r")\s*)+$", re.I)
+    return _CHAIN_CACHE[key]
+
+
+def tidy(t):
+    """Drop unbalanced closing/opening parentheses and trailing punctuation or connectives left by cutting a citation."""
+    t = t.strip()
+    while True:
+        u = re.sub(r"\s+(?:and|or|&)$", "", t.rstrip(" ,;:"))
+        if u.endswith(")") and u.count(")") > u.count("("):
+            u = u[:-1]
+        if u.endswith("(") or u.endswith("("):
+            u = u[:-1]
+        u = u.rstrip()
+        if u == t:
+            return t
+        t = u
+
+
+def _child_parent(items, last, val, idx):
+    """A number after "step"/"item" is the child of the previous reference (or of one of its ancestors) when that child exists in
+    the guideline index; -> (parent index, parent key with child, suffix) or None."""
+    base, suffix = val
+    m = re.fullmatch(r"(\d+)([a-z])", base)
+    if m:
+        base, suffix = m.group(1), f"({m.group(2)})" + suffix
+    p = last
+    while p is not None:
+        key = f"{items[p]['ident']}({base})"
+        if (items[p]["sc"], key) in idx:
+            return p, key, suffix
+        p = items[p]["parent"]
+    return None
+
+
+def parse_citation(raw, G):
+    """-> list of dicts (scope, ident, assumed, segment, text, core); duplicates of (scope, ident) inside one citation are dropped.
+    text = the reference as written: the list-name / Section / item / step words directly before the number, the number and what
+           follows up to the next reference (the key of the audit table and of the override file);
+    core = the same from the number on (what the title rules look at)."""
     depth, d = [], 0
     for ch in raw:
         depth.append(d)
@@ -392,16 +458,22 @@ def parse_citation(raw, extra_markers=()):
             s = i + 1
     bounds.append((s, len(raw)))
     refs, seen = [], set()
+    extra_markers, idx = G["extra_markers"], G["idx"]
+    chain = chain_rx(G["extra_chain"])
     for a, b in bounds:
         seg, dep = raw[a:b], depth[a:b]
         mask = list(seg)
         events = []                                     # (pos, order, kind, value)
-        for rx, scope in ((EXAMPLE, "EX"), (PRINCIPLE, "PRINC")):
-            for m in rx.finditer(seg):
-                for n in re.findall(r"\d+", m.group(1)):
-                    events.append((m.start(), 0, "ref", (scope, n, False)))
-                for i in range(m.start(), m.end()):
-                    mask[i] = " "
+        for m in EXAMPLE.finditer(seg):
+            for n in re.findall(r"\d+", m.group(1)):
+                events.append((m.start(), 0, "ref", ("EX", n, False)))
+            for i in range(m.start(), m.end()):
+                mask[i] = " "
+        for m in PRINCIPLE.finditer(seg):
+            for n in re.findall(r"\d+", m.group(2)):
+                events.append((m.start(), 0, "ref", ("MPRINC" if m.group(1) else "PRINC", n, False)))
+            for i in range(m.start(), m.end()):
+                mask[i] = " "
         masked = "".join(mask)
         wta_word = False
         for sc, rx in MARKERS + list(extra_markers):
@@ -423,16 +495,20 @@ def parse_citation(raw, extra_markers=()):
             else:
                 events.append((m.start(), 1, "num", (base_num + suffix).lower()))
         evs = sorted(events, key=lambda e: (e[0], e[1], e[2], str(e[3])))
-        cur, last = None, None                          # scope set by a list name; (scope, ident, assumed) of the previous reference
+        items = []
+        cur, last = None, None                          # scope set by a list name; index of the previous reference
         for k, (pos, _, kind, val) in enumerate(evs):
             if kind == "mark":
                 cur, last = val, None
                 continue
+            parent = None
             if kind == "ref":
                 sc, ident, assumed = val
-            elif kind == "child" and last is not None and k > 0 and evs[k - 1][2] != "mark":
-                sc, assumed = last[0], last[2]
-                ident = f"{last[1]}({val[0]}){val[1]}"
+            elif kind == "child" and last is not None and k > 0 and evs[k - 1][2] != "mark" and \
+                    _child_parent(items, last, val, idx) is not None:
+                parent, key, suffix = _child_parent(items, last, val, idx)
+                sc, assumed = items[parent]["sc"], items[parent]["assumed"]
+                ident = key + suffix
             else:
                 idn = val if kind == "num" else val[0] + val[1]
                 if cur:
@@ -441,35 +517,48 @@ def parse_citation(raw, extra_markers=()):
                     sc, ident, assumed = "NOT", idn, False
                 else:
                     sc, ident, assumed = "WTA", idn, not wta_word
-            last = (sc, ident, assumed)
-            end = len(seg)
-            for j in range(k + 1, len(evs)):
-                if evs[j][0] > pos:
-                    if evs[j][2] == "mark" and all(e[2] == "mark" for e in evs[j:]):
-                        continue                          # list-name words after the last reference belong to it
-                    end = evs[j][0]
-                    break
-            if (sc, ident) in seen:
+            items.append({"pos": pos, "sc": sc, "ident": ident, "assumed": assumed, "parent": parent})
+            last = len(items) - 1
+        for j, it in enumerate(items):                  # where each reference starts, including the words before its number
+            if j and it["pos"] == items[j - 1]["pos"]:
+                it["start"] = items[j - 1]["start"]
                 continue
-            seen.add((sc, ident))
-            refs.append({"scope": sc, "ident": ident, "assumed": assumed, "segment": seg.strip(), "text": one_line(seg[pos:end])})
+            mm = chain.search(seg[:it["pos"]])
+            st = mm.start() if mm else it["pos"]
+            if j:
+                st = max(st, items[j - 1]["pos"] + 1)
+            it["start"] = st
+        for j, it in enumerate(items):
+            end = next((o["start"] for o in items[j + 1:] if o["start"] > it["start"] and o["pos"] > it["pos"]), len(seg))
+            first = items[it["parent"]]["start"] if it["parent"] is not None else it["start"]
+            it["text"], it["core"] = tidy(one_line(seg[first:end])), tidy(one_line(seg[it["pos"]:end]))
+            if (it["sc"], it["ident"]) in seen:
+                continue
+            seen.add((it["sc"], it["ident"]))
+            refs.append({"scope": it["sc"], "ident": it["ident"], "assumed": it["assumed"], "segment": seg.strip(),
+                         "text": it["text"], "core": it["core"]})
     return refs
 
 
 def resolve_number(ref, G):
     """Section-number resolution -> dict(status, lines=[(no, text)], parent=(no, text)|None, note)."""
     lines, idx = G["lines"], G["idx"]
-    hits = idx.get((ref["scope"], ref["ident"]), [])
-    parent, note = None, ""
-    m = re.match(r"^(.*)\((?:[a-z]{1,4}|\d{1,2})\)$", ref["ident"])
+    hits = list(idx.get((ref["scope"], ref["ident"]), []))
+    if not hits and ref["scope"] in ("PRINC", "MPRINC"):      # the two numbering schemes are used interchangeably in citations
+        hits = list(idx.get(("MPRINC" if ref["scope"] == "PRINC" else "PRINC", ref["ident"]), []))
+    parent, note, inline = None, "", False
+    m = re.match(r"^(.*)\(([a-z]{1,4}|\d{1,2})\)$", ref["ident"])
     if m:
         ph = idx.get((ref["scope"], m.group(1)), [])
         if len(ph) == 1:
             parent = (ph[0], lines[ph[0] - 1])
+            if not hits and re.search(r"\(" + re.escape(m.group(2)) + r"\)", lines[ph[0] - 1]):
+                hits, inline = [ph[0]], True                     # the sub-item is listed inline in the text of the parent line
+                note = f"inline sub-item ({m.group(2)}) in the text of the parent line"
         if not hits:
             note = f"sub-item absent; parent {m.group(1)} " + (f"found at L{ph[0]}" if len(ph) == 1 else "not found uniquely")
     status = "resolved" if len(hits) == 1 else "ambiguous" if hits else "unresolved"
-    return {"status": status, "lines": [(n, lines[n - 1]) for n in hits], "parent": parent, "note": note}
+    return {"status": status, "lines": [(n, lines[n - 1]) for n in hits], "parent": parent, "note": note, "inline": inline}
 
 
 def title_match(text, inv):
@@ -495,9 +584,9 @@ def resolve_ref(ref, G, gname):
     lines = G["lines"]
     num = resolve_number(ref, G)
     ov = OVERRIDES.get((gname, ref["text"]))
-    tm = None
+    tm, tie, all_title = None, "", []
     if not ov and not (not ref["assumed"] and ref["scope"] in LIST_SCOPES):
-        tm = title_match(ref["text"], G["inv"])
+        tm = title_match(ref["core"], G["inv"])
     if ov:
         method, ents, kws = "override", [], []
         lns = [(n, lines[n - 1]) for n in ov if 1 <= n <= len(lines)]
@@ -506,6 +595,12 @@ def resolve_ref(ref, G, gname):
         changed = "no" if sc == {ref["scope"]} else "yes" if ref["scope"] not in sc else "partial"
     elif tm:
         method, ents, kws = tm
+        all_title = [e["line"] for e in ents]
+        if len(ents) > 1 and ref["scope"] == "WTA":              # keep the candidates inside the cited section when exactly one is
+            base_id = re.sub(r"\([^)]*\)", "", ref["ident"])
+            keep = [(e, k) for e, k in zip(ents, kws) if base_id in G["chain"].get(e["line"], ())]
+            if len(keep) == 1:
+                ents, kws, tie = [keep[0][0]], [keep[0][1]], "cited section"
         status = "resolved" if len(ents) == 1 else "ambiguous"
         lns = [(e["line"], lines[e["line"] - 1]) for e in ents]
         same = [e["scope"] == ref["scope"] for e in ents]
@@ -521,12 +616,19 @@ def resolve_ref(ref, G, gname):
         cat = "unresolved"
     elif status == "ambiguous":
         cat = "section_only_ambiguous"
+    elif num.get("inline"):
+        cat = "section_only_inline"
     else:
         cat = "section_only_assumed" if ref["assumed"] else "section_only_explicit"
     p = G["parent_of"].get(lns[0][0]) if lns else None
-    cand = sorted({n for n, _ in lns} | {n for n, _ in num["lines"]})
+    cand = sorted({n for n, _ in lns} | {n for n, _ in num["lines"]} | set(all_title))
+    other = ""
+    if ref["assumed"]:                                            # same number in another list of the guideline
+        other = "; ".join(f"{display(sc, ref['ident'])}=L{G['idx'][(sc, ref['ident'])][0]}" for sc in LIST_SCOPES
+                          if sc != ref["scope"] and (sc, ref["ident"]) in G["idx"])
     return {"num": num, "method": method, "cat": cat, "status": status, "lines": lns, "entries": ents, "kws": kws,
-            "scope_changed": changed, "agrees": agrees, "parent": (p, lines[p - 1]) if p else None, "candidates": cand}
+            "scope_changed": changed, "agrees": agrees, "parent": (p, lines[p - 1]) if p else None, "candidates": cand,
+            "tie_break": tie, "other": other}
 
 
 def lines_str(lns):
@@ -534,7 +636,8 @@ def lines_str(lns):
 
 
 AUDIT_COLS = ["guideline", "raw_reference_text", "identifier", "scope_given", "method", "needs_manual_check", "proposed_lines",
-              "proposed_line_text", "number_based_lines", "candidate_lines", "matched_keywords", "scope_changed"]
+              "proposed_line_text", "number_based_lines", "candidate_lines", "matched_keywords", "scope_changed", "tie_break",
+              "other_scope_candidates"]
 
 
 def audit_row(gname, text, ref, res):
@@ -544,7 +647,8 @@ def audit_row(gname, text, ref, res):
             "proposed_line_text": " || ".join(f"L{n}: {t.strip()}" for n, t in res["lines"]) or res["num"]["note"],
             "number_based_lines": lines_str(res["num"]["lines"]),
             "candidate_lines": "|".join(f"L{n}" for n in res["candidates"]) or "-",
-            "matched_keywords": " ; ".join(",".join(k) for k in res["kws"] if k), "scope_changed": res["scope_changed"]}
+            "matched_keywords": " ; ".join(",".join(k) for k in res["kws"] if k), "scope_changed": res["scope_changed"],
+            "tie_break": res["tie_break"], "other_scope_candidates": res["other"]}
 
 
 LOOKUP_USE = collections.defaultdict(set)         # reference text -> {(guideline, instance position)} over the lookup files
@@ -650,7 +754,7 @@ def process(gname, prefix):
         inst["rationale"] = " || ".join(one_line(p["raw_rationale"]) for p in inst["linked"])
         refs, seen = [], set()
         for c in cites:
-            for r in parse_citation(c, G["extra_markers"]):
+            for r in parse_citation(c, G):
                 if (r["scope"], r["ident"]) not in seen:
                     seen.add((r["scope"], r["ident"]))
                     r["res"] = resolve_ref(r, G, gname)
@@ -815,12 +919,12 @@ def process(gname, prefix):
                     rats.append(r)
             refcount = collections.OrderedDict()
             for p in found:
-                refs_p = parse_citation(p["cited_section"], ORIG_G["extra_markers"])
+                refs_p = parse_citation(p["cited_section"], ORIG_G)
                 if not refs_p:
                     numberless[p["cited_section"]] += 1
                 for r in refs_p:
                     res = resolve_ref(r, ORIG_G, "original")
-                    LOOKUP_USE[r["text"]].add((gname, i["pos"]))
+                    LOOKUP_USE[(r["text"], r["scope"], r["assumed"])].add((gname, i["pos"]))
                     key = (display(r["scope"], r["ident"]), res["method"], res["status"], tuple(n for n, _ in res["lines"]), res["scope_changed"])
                     ent = refcount.setdefault(key, [res, 0, 0])
                     ent[1] += 1
@@ -842,12 +946,12 @@ def process(gname, prefix):
     all_refs = [(i, r) for i in instances for r in i["refs"]]
     aud = collections.OrderedDict()
     for i, r in all_refs:
-        a = aud.setdefault(r["text"], {"ref": r, "insts": set(), "cited": []})
+        a = aud.setdefault((r["text"], r["scope"], r["assumed"]), {"ref": r, "insts": set(), "cited": []})
         a["insts"].add(i["pos"])
         if r["cited"] not in a["cited"] and len(a["cited"]) < 2:
             a["cited"].append(r["cited"])
     audit_rows = []
-    for text, a in aud.items():
+    for (text, _, _), a in aud.items():
         row = audit_row(gname, text, a["ref"], a["ref"]["res"])
         row["n_instances"], row["example_cited_sections"] = len(a["insts"]), " || ".join(a["cited"])
         audit_rows.append(row)
@@ -937,8 +1041,14 @@ def process(gname, prefix):
     P("CHECK 5 references by method after override and title rules (references | distinct reference texts):")
     for c in REF_CATS:
         P(f"   {c:24s} {cc_[c]:5d} | {dist[c]:4d}")
-    n_manual = sum(1 for row in audit_rows if row["needs_manual_check"] == "yes")
+    manual_rows = [row for row in audit_rows if row["needs_manual_check"] == "yes"]
+    n_manual = len(manual_rows)
+    manual_by = collections.Counter(row["method"] for row in manual_rows)
+    n_coll = sum(1 for row in manual_rows if row["other_scope_candidates"])
+    n_low = sum(1 for row in manual_rows if row["method"] == "section_only_assumed" and not row["other_scope_candidates"])
     P(f"   distinct reference texts that are not title_exact, explicit-scope section_only or override (to verify by hand): {n_manual} of {len(audit_rows)}; table {f_audit.name}")
+    P(f"     by method: {dict(manual_by)}; with the same number in another list of the guideline (other_scope_candidates): {n_coll}; "
+      f"assumed scope with no such collision (resolved to one line by number alone): {n_low}")
     P(f"   unresolved: {', '.join(repr(row['raw_reference_text']) for row in audit_rows if row['method'] == 'unresolved')[:600] or 'none'}")
 
     P("")
@@ -1007,6 +1117,11 @@ def process(gname, prefix):
         P(f"   L{e['line']:<4d}{e['scope']:5s}{e['ident'] or '-':12s}{e['kind']:8s}{'T' if e['titled'] else '-'} {e['title'][:70]!r} | {','.join(sorted(e['kw']))}")
     P("")
     P(f"   index keys: {len(G['idx'])}; extra block markers: {[rx.pattern for _, rx in G['extra_markers']]}")
+    P("   section index (identifier=line) per list, in line order:")
+    for sc in ("WTA", "NOT", "PEND", "PREC", "EX", "PRINC", "MPRINC", "OTHER"):
+        its = sorted(((ls[0], i, ls) for (s_, i), ls in G["idx"].items() if s_ == sc))
+        if its:
+            P(f"   {sc:6s} " + "  ".join(f"{i}=L" + "|".join(map(str, ls)) for _, i, ls in its))
     P("")
     P("H. Files (sha256)")
     P(f"   input  error_rows.csv {sha256(OUT / 'error_rows.csv')}")
@@ -1021,7 +1136,8 @@ def process(gname, prefix):
     (WRITE / summary_name).write_text("\n".join(L) + "\n", encoding="utf-8")
     SUMMARY_ROWS.append({"guideline": gname, "prefix": prefix, "c1": c1, "c2": c2, "unlinked": len(unlinked), "overlap_unique": len(ou),
                          "refs": cc_, "distinct": dist, "n_manual": n_manual, "n_distinct": len(audit_rows), "audit": f_audit.name,
-                         "n_inst": len(instances)})
+                         "n_inst": len(instances), "manual_by": manual_by, "n_coll": n_coll, "n_low": n_low, "n_refs": nrefs,
+                         "no_ref": len(no_ref)})
     return L
 
 
@@ -1030,16 +1146,17 @@ def original_audit():
     aud = collections.OrderedDict()
     for o in orig:
         for p in pred_by_run[o]:
-            for r in parse_citation(p["cited_section"], ORIG_G["extra_markers"]):
-                a = aud.setdefault(r["text"], {"ref": r, "n_pred": 0, "cited": []})
+            for r in parse_citation(p["cited_section"], ORIG_G):
+                a = aud.setdefault((r["text"], r["scope"], r["assumed"]), {"ref": r, "n_pred": 0, "cited": []})
                 a["n_pred"] += 1
                 if p["cited_section"] not in a["cited"] and len(a["cited"]) < 2:
                     a["cited"].append(p["cited_section"])
     rows_ = []
-    for text, a in aud.items():
+    for key_, a in aud.items():
+        text = key_[0]
         res = resolve_ref(a["ref"], ORIG_G, "original")
         row = audit_row("original", text, a["ref"], res)
-        row["n_lookup_instances"] = len(LOOKUP_USE.get(text, ()))
+        row["n_lookup_instances"] = len(LOOKUP_USE.get(key_, ()))
         row["n_predictions_in_19_original_runs"] = a["n_pred"]
         row["example_cited_sections"] = " || ".join(a["cited"])
         rows_.append(row)
@@ -1060,11 +1177,26 @@ if args.guideline == "all":
     dist = collections.Counter(r["method"] for r in orows)
     used = [r for r in orows if r["n_lookup_instances"] > 0]
     dist_used = collections.Counter(r["method"] for r in used)
-    out = ["Citation audit summary (references | distinct reference texts) per guideline"]
-    out.append(f"{'guideline':14s} " + " ".join(f"{c[:14]:>14s}" for c in REF_CATS) + "   to_verify/distinct  checks(1,2,unlinked,overlap_unique)")
-    for s in SUMMARY_ROWS:
-        out.append(f"{s['guideline']:14s} " + " ".join(f"{s['refs'][c]:>6d}|{s['distinct'][c]:<7d}" for c in REF_CATS) +
-                   f"   {s['n_manual']}/{s['n_distinct']}   {s['c1']},{s['c2']},{s['unlinked']},{s['overlap_unique']}   {s['audit']}")
+    SHORT = {"override": "override", "title_exact": "t_exact", "title_keywords": "t_kw", "title_ambiguous": "t_amb",
+             "section_only_explicit": "s_expl", "section_only_assumed": "s_assum", "section_only_inline": "s_inline",
+             "section_only_ambiguous": "s_amb", "unresolved": "unres"}
+    out = ["Citation audit summary: references | distinct reference texts, by method, per guideline",
+           "  override = manual override; t_exact / t_kw / t_amb = title_exact / title_keywords / title_ambiguous; s_expl / s_assum = section number",
+           "  with explicit / assumed scope; s_inline = sub-item listed inline in the parent line; s_amb = number matches several lines; unres = no line",
+           f"{'guideline':13s} {'refs':>5s} " + " ".join(f"{SHORT[c]:>9s}" for c in REF_CATS) + "   to verify/distinct"]
+    for s_ in SUMMARY_ROWS:
+        out.append(f"{s_['guideline']:13s} {s_['n_refs']:5d} " + " ".join(f"{s_['refs'][c]:>4d}|{s_['distinct'][c]:<4d}" for c in REF_CATS) +
+                   f"   {s_['n_manual']}/{s_['n_distinct']}")
+    out.append("")
+    out.append("To verify by hand (distinct reference texts that are not title_exact / explicit-scope / override): by method; with the same number in another list; assumed scope without collision; table")
+    for s_ in SUMMARY_ROWS:
+        out.append(f"{s_['guideline']:13s} {s_['n_manual']:4d}  " + ", ".join(f"{SHORT[c]} {s_['manual_by'][c]}" for c in REF_CATS if s_['manual_by'][c]) +
+                   f";  other-list collision {s_['n_coll']};  assumed without collision {s_['n_low']};  {s_['audit']}")
+    out.append("")
+    out.append("Checks per guideline (1 counts vs count_workload_output.txt, 2 gold sums vs bars, unlinked, overlap_unique, citations without a parsable reference)")
+    for s_ in SUMMARY_ROWS:
+        out.append(f"{s_['guideline']:13s} counts {'PASS' if s_['c1'] else 'FAIL'}  bars {'PASS' if s_['c2'] else 'FAIL'}  unlinked {s_['unlinked']}  "
+                   f"overlap_unique {s_['overlap_unique']}  no-reference citations {s_['no_ref']}")
     out.append("")
     out.append(f"original-run citations (19 runs, all predictions): {len(orows)} distinct reference texts; by method: "
                + ", ".join(f"{c} {dist[c]}" for c in REF_CATS))

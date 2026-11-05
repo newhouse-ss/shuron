@@ -1,0 +1,256 @@
+build_instances.py: top-4 loop01 against the 19 original runs (offline, no API); prefix top4_loop01
+target run: 20261022_haiku-xhigh_topk4_loop01
+target guideline snapshot sha256: a094230a404147d3aa7e3ab2e06659c744db8e4e9453dcb58dff17a64043939f
+  identical to outputs/ncbi_disease/20261022_haiku-xhigh_topk4_loop01/final/final_guidelines.txt after CRLF -> LF: True
+original guideline snapshot sha256: e6232d944d68e9e98c6012328add622486a743f5978e48a5a56c77ac2743002d; identical to data/guidelines/ncbi_disease_guidelines.txt after CRLF -> LF: True
+original runs: 19; all 19 use the same snapshot (manifest guideline_sha256); instances with d != 0: 343
+manual overrides in citation_overrides.csv: 0 rows, 0 for this guideline
+
+A. Instances by category (n | sum d | sum of positive d | sum of negative d)
+   gold_now_right                    189 |   +82.53 |   +82.53 |    +0.00
+   gold_now_wrong_with_prediction     70 |   -25.84 |    +0.00 |   -25.84
+   nogold_new_prediction              20 |   +16.79 |   +16.79 |    +0.00
+   gold_now_unlabelled                28 |   -12.05 |    +0.00 |   -12.05
+   nogold_dropped_prediction          36 |    -8.79 |    +0.00 |    -8.79
+   with a prediction in this run: 279; without: 64
+
+CHECK 1 counts vs count_workload_output.txt: PASS
+   with prediction 279 (file 279); without 64 (file 64); summed d without -20.84 (file -20.8)
+CHECK 2 sum of d over gold instances of each label vs bar in bar_attribution.json (tolerance 0.05):
+   SpecificDisease  sum d +10.7895  bar +10.7895  diff +7.11e-15  ok
+   DiseaseClass     sum d +8.1579  bar +8.1579  diff +3.55e-15  ok
+   Modifier         sum d +26.7368  bar +26.7368  diff -3.55e-15  ok
+   gold labels with d != 0 outside the three bars: ['CompositeMention']
+   -> PASS
+CHECK 3 links of the 279 instances with a prediction: paired 272; overlap_unique 7; still unlinked 0 (expected 0) -> PASS
+   overlap_unique: scorer state of the gold ['unpaired'], summed d -0.89; label / scorer kind of the linked predictions: {'CompositeMention/scorer kind label': 7}
+   all_gold_overlaps agrees with overlapping_prediction_indices: yes
+CHECK 4 citation resolution by section number alone (279 instances with a linked prediction, 469 references, one per distinct identifier per instance): resolved 450, ambiguous 9, unresolved 10; citations with no parsable reference: 0
+CHECK 5 references by method after override and title rules (references | distinct reference texts):
+   override                     0 |    0
+   title_exact                 13 |    5
+   title_keywords              35 |    6
+   title_ambiguous              2 |    2
+   section_only_explicit       14 |    7
+   section_only_assumed       389 |   56
+   section_only_inline          0 |    0
+   section_only_ambiguous       9 |    4
+   unresolved                   7 |    2
+   distinct reference texts that are not title_exact, explicit-scope section_only or override (to verify by hand): 70 of 82; table top4_loop01_citation_audit.csv
+     by method: {'section_only_ambiguous': 4, 'section_only_assumed': 56, 'title_ambiguous': 2, 'title_keywords': 6, 'unresolved': 2}; with the same number in another list of the guideline (other_scope_candidates): 12; assumed scope with no such collision (resolved to one line by number alone): 44
+   unresolved: 'Section 1.6(iii)', '1.6(iii)'
+
+D. Other consistency checks
+   extra rows of error_rows.csv vs extra predictions of prediction_index.jsonl (target + 19 original runs): equal
+   lookup: original predictions found at the position equal n_orig_of_19: yes for all 64
+   lookup: cited_section strings of the original runs without any parsable reference (not resolved): 0
+   context from document text (offsets agree with instance text): 343 of 343
+   groups: 48 resolved or ambiguous, 2 unresolved raw references, 0 pseudo rows (no_reference / unlinked)
+
+E. Ten largest groups by total |d| (identifier | status | line | sum positive d | sum negative d | documents | strings | instances | line text)
+   1.1                                resolved  L19         19.8947   -4.0000   30 docs   46 strings   50 inst   L19: #### 1.1 Referential scope takes precedence over head-n
+   1.3                                resolved  L63         16.6842   -4.9474   15 docs   27 strings   28 inst   L63: #### 1.3 Generic pathological-state descriptors as Dise
+   3.1                                resolved  L342        20.1053   -0.1053   29 docs   22 strings   48 inst   L342: #### 3.1 Disease premodifiers of gene or protein heads
+   1.4                                resolved  L127        13.2632   -4.2632   13 docs   23 strings   25 inst   L127: #### 1.4 Referent over form for common-noun condition 
+   3.4(b)                             resolved  L393        11.2105   -3.1579   23 docs   24 strings   38 inst   L393: **(b) Syntactic role decides Modifier status (Moderati
+   3.2                                resolved  L357        10.4211   -0.8421    5 docs    8 strings   14 inst   L357: #### 3.2 Privative adjectives modifying a phenotype, p
+   1.6                                resolved  L198         6.8947   -4.2105   20 docs   30 strings   36 inst   L198: #### 1.6 Named-entity versus category reference test
+   Negative constraint (Modifier)     resolved  L373         7.9474   -2.7895   21 docs   18 strings   30 inst   L373: **Negative constraint (Modifier).** Do not apply this 
+   1.2                                resolved  L49          6.2105   -1.4737    6 docs    8 strings   11 inst   L49: #### 1.2 Privative phrases that name a gene-product con
+   Moderation Principle 6             resolved  L133         2.4737   -2.7368    5 docs    6 strings    6 inst   L133: **Generic condition nouns in patient-presentation fram
+
+F. Sub-item resolution (references counted once per instance and distinct identifier)
+   MIN_KEYWORDS = 2; STOPWORDS = ['about', 'after', 'also', 'annotate', 'annotated', 'annotation', 'annotations', 'been', 'before', 'between', 'both', 'could', 'disease', 'diseases', 'does', 'each', 'from', 'have', 'into', 'mention', 'mentions', 'more', 'only', 'other', 'over', 'shall', 'should', 'some', 'such', 'than', 'that', 'their', 'then', 'there', 'these', 'they', 'this', 'those', 'under', 'upon', 'used', 'using', 'were', 'what', 'when', 'where', 'which', 'will', 'with', 'within', 'without', 'would']
+   references by method: override 0, title_exact 13, title_keywords 35, title_ambiguous 2, section_only 419 (total 469)
+   title matches whose line lies in the same section as the cited number: yes 47, no 0, number not resolved to one line 3
+   scope changed by a title match or override (matched list differs from the assumed or explicit scope): yes 0, partial 0
+   title_keywords: 35 references, 6 distinct reference texts
+   x16  'Section 3.3 (negative constraint)' -> L373 'Negative constraint (Modifier)'  [keywords: constraint,negative]  | number-based 3.3=L364 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x7   '3.3 (negative constraint)' -> L373 'Negative constraint (Modifier)'  [keywords: constraint,negative]  | number-based 3.3=L364 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x3   'Section 1.6(iii) fixed site-plus-category compound' -> L52 'Fixed nomenclature compound → Specific Disease ('  [keywords: compound,fixed]  | number-based 1.6(iii)=unresolved | scope WTA(assumed)->WTA changed=no same_section=n/a
+   x7   'Section 3.3 negative constraint' -> L373 'Negative constraint (Modifier)'  [keywords: constraint,negative]  | number-based 3.3=L364 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   'Section 1.3 (bare sign or state noun in manifestation list)' -> L147 'Bare sign or symptom nouns'  [keywords: bare,sign]  | number-based 1.3=L63 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   'Section 1.3 (compositional form' -> L84 'Compositional form (Moderation Principle 2)'  [keywords: compositional,form]  | number-based 1.3=L63 | scope WTA(assumed)->WTA changed=no same_section=yes
+   title_ambiguous: 2 references, 2 distinct reference texts
+   x1   '1.3 (deviation operator' -> L82 'Deviation-operator and compositional pathologica' + L83 'Deviation operator on a head'  [keywords: deviation,operator ; deviation,operator]  | number-based 1.3=L63 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   'Section 1.3 deviation operator and compositional form' -> L82 'Deviation-operator and compositional pathologica' + L83 'Deviation operator on a head' + L84 'Compositional form (Moderation Principle 2)'  [keywords: compositional,deviation,operator ; deviation,operator ; compositional,form]  | number-based 1.3=L63 | scope WTA(assumed)->WTA changed=no same_section=yes
+   references whose scope changed: 0
+
+G. Title inventory of the target guideline (line | list | number | kind | titled | title | keywords)
+   L5   WTA  1           heading T 'Annotate all Specific Disease mentions' | specific
+   L19  WTA  1.1         heading T 'Referential scope takes precedence over head-noun genericity' | genericity,head,noun,precedence,referential,scope,takes
+   L37  WTA  -           run-in  T 'Etiology-anchored condition mentions (Principle 4)' | anchored,condition,etiology,principle
+   L49  WTA  1.2         heading T 'Privative phrases that name a gene-product condition' | condition,gene,name,phrases,privative,product
+   L52  WTA  -           run-in  T 'Fixed nomenclature compound → Specific Disease (whole string)' | compound,fixed,nomenclature,specific,string,whole
+   L53  WTA  -           run-in  T 'Free "of" or "in" complement → not a Specific Disease span across the ' | across,applies,complement,free,moderation,preposition,principle,section,span,specific,unless
+   L63  WTA  1.3         heading T 'Generic pathological-state descriptors as Disease Class' | class,descriptors,generic,pathological,state
+   L70  WTA  -           run-in  T 'Manifestation-frame details' | details,frame,manifestation
+   L82  WTA  -           run-in  T 'Deviation-operator and compositional pathological-state phrases (Princ' | compositional,deviation,moderation,operator,pathological,phrases,principle,state
+   L83  WTA  -           run-in  T 'Deviation operator on a head' | deviation,head,operator
+   L84  WTA  -           run-in  T 'Compositional form (Moderation Principle 2)' | compositional,form,moderation,principle
+   L87  WTA  -           run-in  T 'Process heads' | heads,process
+   L88  WTA  -           run-in  T 'Molecular complements' | complements,molecular
+   L89  WTA  -           run-in  T 'Measured values' | measured,values
+   L90  WTA  -           run-in  T 'Causal agents' | agents,causal
+   L91  WTA  -           run-in  T 'Non-disease events' | events
+   L92  WTA  -           run-in  T 'Lexicalized names and umbrella heads' | heads,lexicalized,names,umbrella
+   L93  WTA  -           run-in  T 'Nosological heads' | heads,nosological
+   L95  WTA  -           run-in  T 'Moderation Principle 2 negative constraints' | constraints,moderation,negative,principle
+   L115 WTA  -           run-in  T 'Causal condition-state phrases (Moderation Principle 8)' | causal,condition,moderation,phrases,principle,state
+   L127 WTA  1.4         heading T 'Referent over form for common-noun condition phrases' | common,condition,form,noun,phrases,referent
+   L133 WTA  -           run-in  T 'Generic condition nouns in patient-presentation frames (Moderation Pri' | condition,frames,generic,moderation,nouns,patient,presentation,principle
+   L140 WTA  -           run-in  T 'Negative constraints' | constraints,negative
+   L146 WTA  -           run-in  T 'Alternative names' | alternative,names
+   L147 WTA  -           run-in  T 'Bare sign or symptom nouns' | bare,nouns,sign,symptom
+   L149 WTA  1.5         heading T 'Post-nominal molecular complements of state nouns' | complements,molecular,nominal,nouns,post,state
+   L156 WTA  -           run-in  T 'Does NOT apply when' | apply
+   L162 WTA  -           run-in  T 'Span boundary for deficit constructions (Principle 2)' | boundary,constructions,deficit,principle,span
+   L177 WTA  -           run-in  T 'Patient-condition frame for privative biomolecule phrases (Moderation ' | biomolecule,condition,frame,moderation,patient,phrases,principle,privative
+   L184 WTA  -           run-in  T 'Negative constraints' | constraints,negative
+   L193 WTA  -           run-in  T 'Causal predicates' | causal,predicates
+   L194 WTA  -           run-in  T 'Relation to the span rule' | relation,rule,span
+   L198 WTA  1.6         heading T 'Named-entity versus category reference test' | category,entity,named,reference,test,versus
+   L207 WTA  -           run-in  T 'Scope and exclusions' | exclusions,scope
+   L218 WTA  1.7         heading T 'Name-versus-reference gate' | gate,name,reference,versus
+   L227 WTA  -           run-in  T 'Negative constraints' | constraints,negative
+   L236 WTA  1.8         heading T 'Nosological-state spans that name the disorder' | disorder,name,nosological,spans,state
+   L239 WTA  1.8(a)      run-in  T 'Identity alias, gloss, or appositive' | alias,appositive,gloss,identity
+   L240 WTA  1.8(b)      run-in  T 'Sole defining phenotype' | defining,phenotype,sole
+   L241 WTA  1.8(c)      run-in  T 'Recognized clinical condition' | clinical,condition,recognized
+   L243 WTA  -           run-in  T 'Does not apply when' | apply
+   L260 WTA  1.9         heading T 'Finding- or state-anchored named-target mentions' | anchored,finding,named,state,target
+   L263 WTA  -           run-in  T 'Relation to Section 1.5 (narrower rule first)' | first,narrower,relation,rule,section
+   L265 WTA  -           run-in  T 'Relation to Section 1.10' | relation,section
+   L267 WTA  -           run-in  T 'Does NOT apply when' | apply
+   L280 WTA  1.10        heading T 'Named conditions without a nosological head (Moderation Principle 1)' | conditions,head,moderation,named,nosological,principle
+   L283 WTA  1.10(a)     run-in  T 'Identity under a causal or defining predicate' | causal,defining,identity,predicate
+   L284 WTA  1.10(b)     run-in  T 'Finding noun as alternate label' | alternate,finding,label,noun
+   L285 WTA  1.10(c)     run-in  T 'Bare abbreviation with a document-level expansion' | abbreviation,bare,document,expansion,level
+   L287 WTA  -           run-in  T 'Does not apply when' | apply
+   L297 WTA  -           run-in  T 'Relation to other sections' | relation,sections
+   L303 WTA  2           heading T 'Annotate contiguous text strings' | contiguous,strings,text
+   L309 WTA  2.1         heading T 'Shared-head coordination' | coordination,head,shared
+   L324 WTA  -           run-in  T 'Coordinated modifiers over a shared finding or event head (Moderation ' | coordinated,event,finding,head,moderation,modifiers,principle,shared
+   L332 WTA  3           heading T 'Annotate disease mentions that are used as Modifiers for other concept' | concepts,modifiers
+   L342 WTA  3.1         heading T 'Disease premodifiers of gene or protein heads' | gene,heads,premodifiers,protein
+   L357 WTA  3.2         heading T 'Privative adjectives modifying a phenotype, patient, or sample' | adjectives,modifying,patient,phenotype,privative,sample
+   L364 WTA  3.3         heading T 'Referent introduction versus attributive label' | attributive,introduction,label,referent,versus
+   L373 WTA  -           run-in  T 'Negative constraint (Modifier)' | constraint,modifier,negative
+   L385 WTA  3.4         heading T 'Disease mentions in prepositional complements and syntactic role (Mode' | complements,moderation,prepositional,principles,role,syntactic
+   L387 WTA  3.4(a)      run-in  T 'Prepositional complements are not Modifiers (Moderation Principle 3)' | complements,moderation,modifiers,prepositional,principle
+   L393 WTA  3.4(b)      run-in  T 'Syntactic role decides Modifier status (Moderation Principle 4)' | decides,moderation,modifier,principle,role,status,syntactic
+   L394 WTA  -           run-in  T 'Argument role' | argument,role
+   L395 WTA  -           run-in  T 'Attributive role' | attributive,role
+   L396 WTA  -           run-in  T 'Decision order' | decision,order
+   L398 WTA  3.4(c)      run-in  T 'Negative constraints' | constraints,negative
+   L402 WTA  3.5         heading T 'Note on exclusions' | exclusions,note
+   L405 WTA  4           heading T 'Annotate duplicate mentions' | duplicate
+   L408 WTA  5           heading T 'Annotate minimum necessary span of text' | minimum,necessary,span,text
+   L416 WTA  6           heading T 'Annotate all synonymous mentions' | synonymous
+   L425 PREC 1           item    - 'Composite Mention' | composite
+   L426 PREC 2           item    - 'Modifier labelling' | labelling,modifier
+   L427 PREC 3           item    - 'Referent introduction' | introduction,referent
+   L428 PREC 4           item    - 'Name-versus-reference gate' | gate,name,reference,versus
+   L429 PREC 5           item    - 'Mechanism and measured-finding frames' | finding,frames,measured,mechanism
+   L430 PREC 6           item    - 'Nosological naming' | naming,nosological
+   L431 PREC 7           item    - 'Post-nominal molecular complements' | complements,molecular,nominal,post
+   L432 PREC 8           item    - 'Fixed-nomenclature compounds' | compounds,fixed,nomenclature
+   L433 PREC 9           item    - 'Named-entity versus category' | category,entity,named,versus
+   L434 PREC 10          item    - 'Referent over form' | form,referent
+   L435 PREC 11          item    - 'Individuated generic heads' | generic,heads,individuated
+   L436 PREC 12          item    - 'Biological-process nominals' | biological,nominals,process
+   L437 PREC 13          item    - 'Measured or mechanistic quantities' | measured,mechanistic,quantities
+   L438 PREC 14          item    - 'Named disorders' | disorders,named
+   L439 PREC 15          item    - 'Deficit-construction span boundary' | boundary,construction,deficit,span
+   L440 PREC 16          item    - 'Finding- or state-anchored named-target mentions' | anchored,finding,named,state,target
+   L441 PREC 17          item    - 'Deviation-operator Disease Class' | class,deviation,operator
+   L442 PREC 18          item    - 'Etiology-anchored condition mentions' | anchored,condition,etiology
+   L443 PREC 19          item    - 'Named conditions without a nosological head' | conditions,head,named,nosological
+   L444 PREC 20          item    - 'Compositional pathological-state Disease Class' | class,compositional,pathological,state
+   L445 PREC 21          item    - 'Prepositional-complement and syntactic-role test' | complement,prepositional,role,syntactic,test
+   L446 PREC 22          item    - 'Privative patient-condition spans' | condition,patient,privative,spans
+   L447 PREC 23          item    - 'Generic condition nouns in patient-presentation frames' | condition,frames,generic,nouns,patient,presentation
+   L448 PREC 24          item    - 'Coordinated modifiers over a shared finding or event head' | coordinated,event,finding,head,modifiers,shared
+   L449 PREC 25          item    - 'Causal condition-state Disease Class' | causal,class,condition,state
+   L451 PREC -           run-in  - 'Relations among Moderation Principles 5 to 8' | among,moderation,principles,relations
+   L462 NOT  1           item    T 'Do not annotate organism names' | names,organism
+   L470 NOT  2           item    T 'Do not annotate gender' | gender
+   L475 NOT  3           item    T 'Do not annotate overlapping mentions' | overlapping
+   L480 NOT  4           item    T 'Do not annotate general terms' | general,terms
+   L486 NOT  5           item    T 'Do not annotate references to biological processes' | biological,processes,references
+   L492 NOT  6           item    T 'Do not annotate disease mentions interrupted by nested mentions' | interrupted,nested
+   L499 NOT  7           item    T 'Do not annotate mechanistic, biochemical, or experimental quantities' | biochemical,experimental,mechanistic,quantities
+   L504 NOT  8           item    T 'Do not annotate causal etiological agents, even inside a deviation or ' | agents,causal,deviation,etiological,even,frame,inside,pathological
+   L513 EX   1           item    T '"Insulin-dependent diabetes mellitus"' | dependent,diabetes,insulin,mellitus
+   L517 EX   2           item    T 'CDH1 mutations predispose to early onset "colorectal cancer."' | cancer,cdh1,colorectal,early,mutations,onset,predispose
+   L522 EX   3           item    T 'Human "X-linked recessive disorder"' | disorder,human,linked,recessive
+   L525 EX   4           item    T 'Her fresh serum lacked complement-mediated bactericidal activity again' | activity,against,bactericidal,complement,fresh,gonorrhoeae,lacked,mediated,neisseria,serum
+   L528 EX   5           item    T '"Huntington disease" ("HD")' | huntington
+   L531 EX   6           item    T 'C7 deficiency' | deficiency
+   L536 EX   7           item    T '"colorectal, endometrial, and ovarian cancers"' | cancers,colorectal,endometrial,ovarian
+   L539 EX   8           item    T 'WT1 dysfunction is implicated in both neoplastic ("Wilms tumor," "meso' | breast,cancer,dysfunction,glomerulosclerosis,implicated,leukemias,mesothelioma,neoplastic,nonneoplastic,tumor,wilms
+   L543 EX   9           item    T 'Tumorigenesis and cancerogenesis' | cancerogenesis,tumorigenesis
+   L546 EX   10          item    T '"autosomal recessive disease"' | autosomal,recessive
+   L550 EX   11          item    T 'Large phenotypic variability with "convulsive disorders," "motor retar' | convulsive,disorders,large,mental,motor,phenotypic,retardation,variability
+   L554 EX   12          item    T 'Borjeson-Forssman-Lehmann syndrome (BFLS) is a syndromal X-linked ment' | bfls,borjeson,forssman,lehmann,linked,mental,retardation,syndromal,syndrome
+   L558 EX   13          item    T 'Acute meningococcal pericarditis' | acute,meningococcal,pericarditis
+   L561 EX   14          item    T 'Acute Neisseria infection' | acute,infection,neisseria
+   L565 EX   15          item    T 'Classical galactosemia' | classical,galactosemia
+   L568 EX   16          item    T 'Inherited spinocerebellar ataxia' | ataxia,inherited,spinocerebellar
+   L571 EX   17          item    T '"Adenomatous polyps of the colon and rectum"' | adenomatous,colon,polyps,rectum
+   L574 EX   18          item    T 'Fibroepithelial or epithelial hyperplasias' | epithelial,fibroepithelial,hyperplasias
+   L577 EX   19          item    T 'Stage II or stage III colorectal cancer' | cancer,colorectal,stage
+   L580 EX   20          item    T '"Patients with deficiency of adenosine deaminase presented with recurr' | adenosine,deaminase,deficiency,infections,patients,presented,recurrent
+   L586 EX   21          item    T '"the G6PD deficient phenotype"' | deficient,g6pd,phenotype
+   L589 EX   22          item    T '"ancient SLS genes"' | ancient,genes
+   L592 EX   23          item    T '"breast cancer susceptibility gene 1 (BRCA1)"' | brca1,breast,cancer,gene,susceptibility
+   L595 EX   24          item    T '"ovarian cancer cases," "ovarian cancer population"' | cancer,cases,ovarian,population
+   L598 EX   25          item    T '"The proband was diagnosed with an X-linked disorder."' | diagnosed,disorder,linked,proband
+   L602 EX   26          item    T '"Disorder X is characterized by mental retardation, seizures, and hypo' | characterized,disorder,hypotonia,mental,retardation,seizures
+   L607 EX   27          item    T '"Coats disease is characterized by abnormal retinal vascular developme' | abnormal,accumulation,characterized,coats,development,intraretinal,lipid,massive,results,retinal,subretinal,vascular
+   L612 EX   28          item    T '"Specific activity and enzyme yield were measured for each recombinant' | activity,enzyme,measured,recombinant,specific,variant,yield
+   L615 EX   29          item    T '"Coats\' disease of the retina (unilateral retinal telangiectasis) caus' | caused,coats,gene,mutation,retina,retinal,somatic,telangiectasis,unilateral
+   L620 EX   30          item    T '"…which results in a deficiency of norrin (the protein product of the ' | deficiency,developing,gene,norrin,product,protein,results,retina
+   L627 EX   31          item    T '"Sjogren-Larsson syndrome (SLS) is an autosomal recessive disorder cha' | activity,aldehyde,autosomal,characterized,deficient,dehydrogenase,disorder,faldh,fatty,ichthyosis,larsson,mental,recessive,retardation,sjogren,spasticity,syndrome
+   L635 EX   32          item    T '"Coats disease is characterized by abnormal retinal vascular developme' | abnormal,accumulation,called,characterized,coats,detachment,development,exudative,intraretinal,lipid,massive,results,retinal,subretinal,telangiectasis,vascular
+   L641 EX   33          item    T '"Two patients had Coats disease. This condition was bilateral in one."' | bilateral,coats,condition,patients
+   L645 EX   34          item    T '"Both patients had a family history of breast or ovarian cancer."' | breast,cancer,family,history,ovarian,patients
+   L649 EX   35          item    T '"…massive intraretinal and subretinal lipid accumulation…" (standalone' | accumulation,fragment,intraretinal,lipid,massive,standalone,subretinal
+   L654 EX   36          item    T '"Autoinhibition and activation mechanisms of the Wiskott-Aldrich syndr' | activation,aldrich,autoinhibition,family,mechanisms,members,protein,syndrome,wasp,wiskott
+   L659 EX   37          item    T '"…in the ovarian cancer population…," "…a population-based series of o' | based,cancer,cases,family,history,ovarian,population,series
+   L664 EX   38          item    T '"…in probands from 63 kindreds with SLS."' | kindreds,probands
+   L667 EX   39          item    T '"We infer that the coexistence of the two mutations is responsible for' | coexistence,deficiency,enzyme,g6pd,infer,mutations,responsible
+   L672 EX   40          item    T 'Finding-anchored named target (Section 1.9)' | anchored,finding,named,section,target
+   L676 EX   41          item    T 'Deficit-construction span boundary and the patient-condition exception' | boundary,condition,construction,deficit,exception,moderation,patient,principle,section,span
+   L682 EX   42          item    T 'Compositional and deviation-operator Disease Class (Section 1.3; Moder' | class,compositional,deviation,moderation,operator,principle,section
+   L689 EX   43          item    T 'Etiology-anchored condition (Section 1.1; Principle 4)' | anchored,condition,etiology,principle,section
+   L693 EX   44          item    T 'Finding noun as alternate label (Section 1.10(b); Moderation Principle' | alternate,finding,label,moderation,noun,principle,section
+   L699 EX   45          item    T 'Bare abbreviation with a document-level expansion (Section 1.10(c); Mo' | abbreviation,bare,document,expansion,level,moderation,principle,section
+   L704 EX   46          item    T 'Prepositional complement and syntactic role (Section 3.4; Moderation P' | complement,moderation,prepositional,principles,role,section,syntactic
+   L709 EX   47          item    T 'Gene-product deficit in a result-introduced mechanism frame (Moderatio' | deficit,frame,gene,introduced,mechanism,moderation,principle,principles,product,result,section
+   L714 EX   48          item    T 'Argument role in a complement of "of" or "by" (Section 3.4(b); Moderat' | argument,complement,moderation,principle,role,section
+   L717 EX   49          item    T 'Patient-condition privative phrase (Moderation Principle 5; Section 1.' | condition,moderation,patient,phrase,principle,privative,section
+   L721 EX   50          item    T 'Patient-presentation frame for generic condition nouns (Moderation Pri' | condition,frame,generic,moderation,nouns,patient,presentation,principle,section
+   L726 EX   51          item    T 'Coordinated modifiers over a shared finding head (Moderation Principle' | coordinated,finding,head,moderation,modifiers,principle,section,shared
+   L731 EX   52          item    T 'Causal condition-state Disease Class (Moderation Principle 8; Section ' | causal,class,condition,moderation,principle,section,state
+
+   index keys: 158; extra block markers: []
+   section index (identifier=line) per list, in line order:
+   WTA    1=L5  1.1=L19  1.2=L49  1.3=L63  1.3(1)=L65  1.3(2)=L66  1.3(a)=L96  1.3(b)=L97  1.3(c)=L98  1.3(d)=L99  1.3(e)=L100  1.3(f)=L101  1.4=L127  1.5=L149  1.5(a)=L178  1.5(b)=L179  1.5(c)=L180  1.6=L198  1.6(a)=L200  1.6(b)=L201  1.7=L218  1.7(a)=L220  1.7(b)=L221  1.8=L236  1.8(a)=L239  1.8(b)=L240  1.8(c)=L241  1.9=L260  1.9(a)=L268  1.9(b)=L269  1.9(c)=L270  1.9(d)=L271  1.9(e)=L272  1.9(f)=L273  1.10=L280  1.10(a)=L283  1.10(b)=L284  1.10(c)=L285  2=L303  2.1=L309  2.1(a)=L315  2.1(b)=L316  2.1(c)=L317  2.1(d)=L318  2.1(e)=L319  2.1(f)=L320  3=L332  3.1=L342  3.2=L357  3.3=L364  3.3(i)=L366  3.3(ii)=L367  3.3(iii)=L368  3.3(iv)=L369  3.4=L385  3.4(a)=L387  3.4(b)=L393  3.4(c)=L398  3.5=L402  4=L405  5=L408  6=L416
+   NOT    1=L462  2=L470  3=L475  4=L480  5=L486  6=L492  7=L499  8=L504
+   PREC   1=L425  2=L426  3=L427  4=L428  5=L429  6=L430  7=L431  8=L432  9=L433  10=L434  11=L435  12=L436  13=L437  14=L438  15=L439  16=L440  17=L441  18=L442  19=L443  20=L444  21=L445  22=L446  23=L447  24=L448  25=L449
+   EX     1=L513  2=L517  3=L522  4=L525  5=L528  6=L531  7=L536  8=L539  9=L543  10=L546  11=L550  12=L554  13=L558  14=L561  15=L565  16=L568  17=L571  18=L574  19=L577  20=L580  21=L586  22=L589  23=L592  24=L595  25=L598  26=L602  27=L607  28=L612  29=L615  30=L620  31=L627  32=L635  33=L641  34=L645  35=L649  36=L654  37=L659  38=L664  39=L667  40=L672  41=L676  42=L682  43=L689  44=L693  45=L699  46=L704  47=L709  48=L714  49=L717  50=L721  51=L726  52=L731
+   PRINC  4=L37  3=L82  2=L162
+   MPRINC 5=L53|177  2=L82|84|95  8=L115  6=L133  1=L280  7=L324  3=L385|387  4=L385|393
+
+H. Files (sha256)
+   input  error_rows.csv 012db607b14c137bbc4231a78248539bf5a36db91ebedb85ff6ee50520d8c436
+   input  prediction_index.jsonl 4813b60e7dacc2fa97c6f2947b0aa91781340478cd3465cdf99f61a678caeea6
+   input  run_manifest.json 1702873925076031a6a2995c73db0ca8f6e63eef3e73fbf960a4159c36e8b900
+   input  citation_overrides.csv 5fbcc95e9b978dbaa0eaeaddfcb805eea81ea376ed9eb5c17831a43f878ddde7
+   output top4_loop01_instances.csv e8e93c46da7f2cb21c274a501441e9e29a15ad2e088b13dc2af922bbec2dc209
+   output top4_loop01_section_groups.csv 7d58ccca189dabaaec54d57e97d5bdaa0443d55a03e132e894b0c662ec9043ab
+   output top4_loop01_noprediction_lookup.csv 9300192a5dc80ef0c0ae1dd9d1e5a6b5aecd7a19dd190ee0910e868c1909a905
+   output top4_loop01_citation_audit.csv d8e965d99759f39f1d13cafa21d7936c73af1cd1f070c785e740a81de94c120c
+
+OVERALL: checks 1-3 PASS

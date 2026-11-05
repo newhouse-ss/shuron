@@ -1,0 +1,173 @@
+build_instances.py: top-4 loop06 against the 19 original runs (offline, no API); prefix top4_loop06
+target run: 20261022_haiku-xhigh_topk4_loop06
+target guideline snapshot sha256: 8893b2fb9b8c95539b9fc5d35e47b0b570f3ee3a310bbbea71971fa6d05be91e
+  identical to outputs/ncbi_disease/20261022_haiku-xhigh_topk4_loop06/final/final_guidelines.txt after CRLF -> LF: True
+original guideline snapshot sha256: e6232d944d68e9e98c6012328add622486a743f5978e48a5a56c77ac2743002d; identical to data/guidelines/ncbi_disease_guidelines.txt after CRLF -> LF: True
+original runs: 19; all 19 use the same snapshot (manifest guideline_sha256); instances with d != 0: 376
+manual overrides in citation_overrides.csv: 0 rows, 0 for this guideline
+
+A. Instances by category (n | sum d | sum of positive d | sum of negative d)
+   gold_now_right                    179 |   +74.26 |   +74.26 |    +0.00
+   gold_now_wrong_with_prediction    116 |   -61.47 |    +0.00 |   -61.47
+   nogold_new_prediction              24 |   +19.79 |   +19.79 |    +0.00
+   gold_now_unlabelled                24 |   -12.16 |    +0.00 |   -12.16
+   nogold_dropped_prediction          33 |    -7.79 |    +0.00 |    -7.79
+   with a prediction in this run: 319; without: 57
+
+CHECK 1 counts vs count_workload_output.txt: PASS
+   with prediction 319 (file 319); without 57 (file 57); summed d without -19.95 (file -19.9)
+CHECK 2 sum of d over gold instances of each label vs bar in bar_attribution.json (tolerance 0.05):
+   SpecificDisease  sum d -35.2105  bar -35.2105  diff +7.11e-15  ok
+   DiseaseClass     sum d +13.1579  bar +13.1579  diff +3.55e-15  ok
+   Modifier         sum d +26.7368  bar +26.7368  diff -3.55e-15  ok
+   gold labels with d != 0 outside the three bars: ['CompositeMention']
+   -> PASS
+CHECK 3 links of the 319 instances with a prediction: paired 305; overlap_unique 14; still unlinked 0 (expected 0) -> PASS
+   overlap_unique: scorer state of the gold ['unpaired'], summed d -6.37; label / scorer kind of the linked predictions: {'CompositeMention/scorer kind label': 14}
+   all_gold_overlaps agrees with overlapping_prediction_indices: yes
+CHECK 4 citation resolution by section number alone (319 instances with a linked prediction, 431 references, one per distinct identifier per instance): resolved 431, ambiguous 0, unresolved 0; citations with no parsable reference: 0
+CHECK 5 references by method after override and title rules (references | distinct reference texts):
+   override                     0 |    0
+   title_exact                  9 |    4
+   title_keywords              24 |   10
+   title_ambiguous              0 |    0
+   section_only_explicit       10 |    8
+   section_only_assumed       388 |   76
+   section_only_inline          0 |    0
+   section_only_ambiguous       0 |    0
+   unresolved                   0 |    0
+   distinct reference texts that are not title_exact, explicit-scope section_only or override (to verify by hand): 86 of 98; table top4_loop06_citation_audit.csv
+     by method: {'section_only_assumed': 76, 'title_keywords': 10}; with the same number in another list of the guideline (other_scope_candidates): 29; assumed scope with no such collision (resolved to one line by number alone): 48
+   unresolved: none
+
+D. Other consistency checks
+   extra rows of error_rows.csv vs extra predictions of prediction_index.jsonl (target + 19 original runs): equal
+   lookup: original predictions found at the position equal n_orig_of_19: yes for all 57
+   lookup: cited_section strings of the original runs without any parsable reference (not resolved): 0
+   context from document text (offsets agree with instance text): 376 of 376
+   groups: 33 resolved or ambiguous, 0 unresolved raw references, 0 pseudo rows (no_reference / unlinked)
+
+E. Ten largest groups by total |d| (identifier | status | line | sum positive d | sum negative d | documents | strings | instances | line text)
+   3                                  resolved  L149        16.9474  -27.3158   39 docs   42 strings   80 inst   L149: ### 3. Annotate disease mentions that are used as **Mo
+   1.4                                resolved  L91         20.6842   -9.7895   26 docs   38 strings   43 inst   L91: #### 1.4 Head-driven condition labeling (Disease Class)
+   3.1                                resolved  L159        25.9474   -1.3158   33 docs   25 strings   50 inst   L159: #### 3.1 Disease names embedded in gene or protein des
+   1.5(f)                             resolved  L120         6.9474   -9.0000   16 docs   19 strings   26 inst   L120: - (f) The phrase is an attributive qualifier of a huma
+   1.1                                resolved  L19          6.8947   -7.2632   19 docs   24 strings   27 inst   L19: #### 1.1 Individuated category heads (Specific Disease 
+   2                                  resolved  L139         1.5789   -8.9474   13 docs   29 strings   36 inst   L139: ### 2. Annotate **contiguous text strings**
+   1.3                                resolved  L74          8.4211   -1.0000    9 docs   13 strings   13 inst   L74: #### 1.3 Signs, symptoms, and abnormalities characteriz
+   1.5                                resolved  L108         5.8421   -2.9474   11 docs   22 strings   22 inst   L108: #### 1.5 Subtype-restricted generic heads (Specific Di
+   1                                  resolved  L5           2.6842   -6.0526   21 docs   31 strings   35 inst   L5: ### 1. Annotate all **Specific Disease** mentions
+   1.5(c)                             resolved  L117         3.2105   -5.0000   10 docs   17 strings   21 inst   L117: - (c) The phrase denotes a family or set: plurals, enu
+
+F. Sub-item resolution (references counted once per instance and distinct identifier)
+   MIN_KEYWORDS = 2; STOPWORDS = ['about', 'after', 'also', 'annotate', 'annotated', 'annotation', 'annotations', 'been', 'before', 'between', 'both', 'could', 'disease', 'diseases', 'does', 'each', 'from', 'have', 'into', 'mention', 'mentions', 'more', 'only', 'other', 'over', 'shall', 'should', 'some', 'such', 'than', 'that', 'their', 'then', 'there', 'these', 'they', 'this', 'those', 'under', 'upon', 'used', 'using', 'were', 'what', 'when', 'where', 'which', 'will', 'with', 'within', 'without', 'would']
+   references by method: override 0, title_exact 9, title_keywords 24, title_ambiguous 0, section_only 398 (total 431)
+   title matches whose line lies in the same section as the cited number: yes 33, no 0, number not resolved to one line 0
+   scope changed by a title match or override (matched list differs from the assumed or explicit scope): yes 0, partial 0
+   title_keywords: 24 references, 10 distinct reference texts
+   x2   '1.3 Signs and symptoms characterizing a disease' -> L74 'Signs, symptoms, and abnormalities characterizin'  [keywords: characterizing,signs,symptoms]  | number-based 1.3=L74 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x3   'Section 1.4 (head-driven condition labeling)' -> L91 'Head-driven condition labeling (Disease Class)'  [keywords: condition,driven,head,labeling]  | number-based 1.4=L91 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   'Section 1.4 head-driven condition labeling' -> L91 'Head-driven condition labeling (Disease Class)'  [keywords: condition,driven,head,labeling]  | number-based 1.4=L91 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   'Section 1.3 (characterizing signs, symptoms, and abnormalities)' -> L74 'Signs, symptoms, and abnormalities characterizin'  [keywords: abnormalities,characterizing,signs,symptoms]  | number-based 1.3=L74 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   '1.1 Individuated category heads (iii) standard Disease Class criteria' -> L19 'Individuated category heads (Specific Disease ov'  [keywords: category,class,heads,individuated]  | number-based 1.1=L19 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x8   '1.5 Subtype-restricted generic heads' -> L108 'Subtype-restricted generic heads (Specific Disea'  [keywords: generic,heads,restricted,subtype]  | number-based 1.5=L108 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x2   '1.1 Individuated category heads' -> L19 'Individuated category heads (Specific Disease ov'  [keywords: category,heads,individuated]  | number-based 1.1=L19 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x2   '5 minimum span' -> L180 'Annotate minimum necessary span of text'  [keywords: minimum,span]  | number-based 5=L180 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x3   '1.4 Head-driven condition labeling' -> L91 'Head-driven condition labeling (Disease Class)'  [keywords: condition,driven,head,labeling]  | number-based 1.4=L91 | scope WTA(assumed)->WTA changed=no same_section=yes
+   x1   'Section 1.4 Head-driven condition labeling' -> L91 'Head-driven condition labeling (Disease Class)'  [keywords: condition,driven,head,labeling]  | number-based 1.4=L91 | scope WTA(assumed)->WTA changed=no same_section=yes
+   title_ambiguous: 0 references, 0 distinct reference texts
+   references whose scope changed: 0
+
+G. Title inventory of the target guideline (line | list | number | kind | titled | title | keywords)
+   L5   WTA  1           heading T 'Annotate all Specific Disease mentions' | specific
+   L19  WTA  1.1         heading T 'Individuated category heads (Specific Disease over Disease Class)' | category,class,heads,individuated,specific
+   L42  WTA  1.2         heading T 'Privative state and finding nouns used as disease names (Specific Dise' | finding,names,nouns,privative,specific,state
+   L44  WTA  1.2(a)      run-in  T 'Framed privative state nominals with gene-product complements' | complements,framed,gene,nominals,privative,product,state
+   L47  WTA  -           run-in  T 'Does NOT apply when' | apply
+   L53  WTA  1.2(b)      run-in  T 'Name-function labels for finding and state head nouns' | finding,function,head,labels,name,nouns,state
+   L67  WTA  1.2(c)      run-in  T 'Deficit heads followed by a molecular “of”-complement (not a disease m' | complement,deficit,followed,heads,molecular
+   L70  WTA  -           run-in  T 'Does NOT apply when' | apply
+   L74  WTA  1.3         heading T 'Signs, symptoms, and abnormalities characterizing a disease (Disease C' | abnormalities,characterizing,class,signs,symptoms
+   L79  WTA  -           run-in  T 'Narrower rules first' | first,narrower,rules
+   L80  WTA  -           run-in  T 'The disease must be the subject' | must,subject
+   L82  WTA  -           run-in  T 'Coordinated lists' | coordinated,lists
+   L83  WTA  -           run-in  T 'Disease-name morphology' | morphology,name
+   L85  WTA  -           run-in  T 'Does NOT apply when' | apply
+   L91  WTA  1.4         heading T 'Head-driven condition labeling (Disease Class)' | class,condition,driven,head,labeling
+   L96  WTA  -           run-in  T 'Trait nouns are not pathological heads' | heads,nouns,pathological,trait
+   L97  WTA  -           run-in  T 'Named diseases and attributive terms are not reclassified' | attributive,named,reclassified,terms
+   L99  WTA  -           run-in  T 'Does NOT apply when' | apply
+   L108 WTA  1.5         heading T 'Subtype-restricted generic heads (Specific Disease)' | generic,heads,restricted,specific,subtype
+   L114 WTA  -           run-in  T 'Does NOT apply when' | apply
+   L122 WTA  1.6         heading T 'Precedence between overlapping rules' | overlapping,precedence,rules
+   L125 PREC 1           item    - '' | 
+   L126 PREC 2           item    - '' | 
+   L127 PREC 3           item    - '' | 
+   L128 PREC 4           item    - '' | 
+   L129 PREC 5           item    - '' | 
+   L130 PREC 6           item    - '' | 
+   L131 PREC 7           item    - '' | 
+   L132 PREC 8           item    - '' | 
+   L133 PREC 9           item    - '' | 
+   L139 WTA  2           heading T 'Annotate contiguous text strings' | contiguous,strings,text
+   L149 WTA  3           heading T 'Annotate disease mentions that are used as Modifiers for other concept' | concepts,modifiers
+   L159 WTA  3.1         heading T 'Disease names embedded in gene or protein designations' | designations,embedded,gene,names,protein
+   L163 WTA  -           run-in  T 'Does NOT apply when' | apply
+   L175 WTA  4           heading T 'Annotate duplicate mentions' | duplicate
+   L180 WTA  5           heading T 'Annotate minimum necessary span of text' | minimum,necessary,span,text
+   L188 WTA  6           heading T 'Annotate all synonymous mentions' | synonymous
+   L195 NOT  1           item    T 'Do not annotate organism names' | names,organism
+   L203 NOT  2           item    T 'Do not annotate gender' | gender
+   L208 NOT  3           item    T 'Do not annotate overlapping mentions' | overlapping
+   L211 NOT  4           item    T 'Do not annotate general terms' | general,terms
+   L217 NOT  5           item    T 'Do not annotate references to biological processes' | biological,processes,references
+   L221 NOT  6           item    T 'Do not annotate disease mentions interrupted by nested mentions' | interrupted,nested
+   L232 EX   1           item    T '“Insulin-dependent diabetes mellitus”' | dependent,diabetes,insulin,mellitus
+   L236 EX   2           item    T 'CDH1 mutations predispose to early onset “colorectal cancer.”' | cancer,cdh1,colorectal,early,mutations,onset,predispose
+   L241 EX   3           item    T 'Human “X-linked recessive disorder”' | disorder,human,linked,recessive
+   L245 EX   4           item    T 'Her fresh serum lacked complement-mediated bactericidal activity again' | activity,against,bactericidal,complement,fresh,gonorrhoeae,lacked,mediated,neisseria,serum
+   L248 EX   5           item    T '“Huntington disease” (“HD”)' | huntington
+   L251 EX   6           item    T 'C7 deficiency' | deficiency
+   L255 EX   7           item    T '“colorectal, endometrial, and ovarian cancers”' | cancers,colorectal,endometrial,ovarian
+   L258 EX   8           item    T 'WT1 dysfunction is implicated in both neoplastic (“Wilms tumor,” “meso' | breast,cancer,dysfunction,glomerulosclerosis,implicated,leukemias,mesothelioma,neoplastic,nonneoplastic,tumor,wilms
+   L262 EX   9           item    T 'Tumorigenesis and cancerogenesis' | cancerogenesis,tumorigenesis
+   L265 EX   10          item    T '“autosomal recessive disease”' | autosomal,recessive
+   L269 EX   11          item    T 'Large phenotypic variability with “convulsive disorders,” “motor retar' | convulsive,disorders,large,mental,motor,phenotypic,retardation,variability
+   L272 EX   12          item    T 'Borjeson-Forssman-Lehmann syndrome (BFLS) is a syndromal X-linked ment' | bfls,borjeson,forssman,lehmann,linked,mental,retardation,syndromal,syndrome
+   L276 EX   13          item    T 'Acute meningococcal pericarditis' | acute,meningococcal,pericarditis
+   L279 EX   14          item    T 'Acute Neisseria infection' | acute,infection,neisseria
+   L283 EX   15          item    T 'Classical galactosemia' | classical,galactosemia
+   L286 EX   16          item    T 'Inherited spinocerebellar ataxia' | ataxia,inherited,spinocerebellar
+   L289 EX   17          item    T '“Adenomatous polyps of the colon and rectum”' | adenomatous,colon,polyps,rectum
+   L292 EX   18          item    T 'Fibroepithelial or epithelial hyperplasias' | epithelial,fibroepithelial,hyperplasias
+   L295 EX   19          item    T 'Stage II or stage III colorectal cancer' | cancer,colorectal,stage
+   L298 EX   20          item    T '“breast cancer susceptibility gene 1 (BRCA1)”' | brca1,breast,cancer,gene,susceptibility
+   L302 EX   21          item    T '“ancient SLS genes”' | ancient,genes
+   L306 EX   22          item    T '“a population-based series of ovarian cancer cases”' | based,cancer,cases,ovarian,population,series
+   L309 EX   23          item    T '“The patient was diagnosed with meningococcal infection.”' | diagnosed,infection,meningococcal,patient
+   L312 EX   24          item    T '“Coats disease is characterized by abnormal retinal vascular developme' | abnormal,accumulation,called,characterized,coats,detachment,development,exudative,intraretinal,lipid,massive,results,retinal,subretinal,telangiectasis,vascular
+   L317 EX   25          item    T '“… somatic mutation in the NDP gene which results in a deficiency of n' | absence,deficiency,fmr1,gene,mutation,norrin,protein,resulting,results,somatic,suppresses,transcription
+   L320 EX   26          item    T '“Sjogren-Larsson syndrome (SLS) is an autosomal recessive disorder cha' | activity,aldehyde,autosomal,characterized,deficient,dehydrogenase,disorder,faldh,fatty,ichthyosis,larsson,mental,recessive,retardation,sjogren,spasticity,syndrome
+   L326 EX   27          item    T '“We infer that the coexistence of the two mutations is responsible for' | coexistence,deficiency,enzyme,g6pd,infer,mutations,responsible
+   L330 EX   28          item    T "“Coats' disease of the retina (unilateral retinal telangiectasis) caus" | caused,coats,gene,mutation,retina,retinal,somatic,telangiectasis,unilateral
+   L335 EX   29          item    T '“… the G6PD deficient phenotype.”' | deficient,g6pd,phenotype
+   L339 EX   30          item    T '“Both patients had a family history of ovarian cancer.”' | cancer,family,history,ovarian,patients
+
+   index keys: 85; extra block markers: []
+   section index (identifier=line) per list, in line order:
+   WTA    1=L5  1.1=L19  1.1(a)=L22  1.1(b)=L23  1.1(i)=L33  1.1(ii)=L34  1.1(iii)=L35  1.1(iv)=L36  1.1(v)=L37  1.1(vi)=L38  1.2=L42  1.2(a)=L44  1.2(b)=L53  1.2(b)(1)=L55  1.2(b)(2)=L56  1.2(b)(3)=L57  1.2(c)=L67  1.3=L74  1.4=L91  1.4(a)=L100  1.4(b)=L101  1.4(c)=L102  1.4(d)=L103  1.4(e)=L104  1.4(f)=L105  1.4(g)=L106  1.5=L108  1.5(a)=L115  1.5(b)=L116  1.5(c)=L117  1.5(d)=L118  1.5(e)=L119  1.5(f)=L120  1.6=L122  2=L139  3=L149  3.1=L159  4=L175  5=L180  6=L188
+   NOT    1=L195  2=L203  3=L208  4=L211  5=L217  6=L221
+   PREC   1=L125  2=L126  3=L127  4=L128  5=L129  6=L130  7=L131  8=L132  9=L133
+   EX     1=L232  2=L236  3=L241  4=L245  5=L248  6=L251  7=L255  8=L258  9=L262  10=L265  11=L269  12=L272  13=L276  14=L279  15=L283  16=L286  17=L289  18=L292  19=L295  20=L298  21=L302  22=L306  23=L309  24=L312  25=L317  26=L320  27=L326  28=L330  29=L335  30=L339
+
+H. Files (sha256)
+   input  error_rows.csv 012db607b14c137bbc4231a78248539bf5a36db91ebedb85ff6ee50520d8c436
+   input  prediction_index.jsonl 4813b60e7dacc2fa97c6f2947b0aa91781340478cd3465cdf99f61a678caeea6
+   input  run_manifest.json 1702873925076031a6a2995c73db0ca8f6e63eef3e73fbf960a4159c36e8b900
+   input  citation_overrides.csv 5fbcc95e9b978dbaa0eaeaddfcb805eea81ea376ed9eb5c17831a43f878ddde7
+   output top4_loop06_instances.csv 12a9aeb7d683fcb815f69ddb39e987d933e09d13fcd9dac6d6f88ef0cdaa8427
+   output top4_loop06_section_groups.csv 73b2be50cf3a40f161be8d17d78285aecfd82b81289fd4f3058340238f57542a
+   output top4_loop06_noprediction_lookup.csv 6cf3572fe0ec1968962a8cd9ac93c5e2779542e7497c4c789f837b76b81fbae7
+   output top4_loop06_citation_audit.csv 234d634b7ae34898a312fa45270613286c6e5097c501b54445ae8b9d6ff77553
+
+OVERALL: checks 1-3 PASS
