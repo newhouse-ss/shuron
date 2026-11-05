@@ -1,0 +1,74 @@
+build_instances.py: top-4 loop07 against the 19 original runs (offline, no API)
+target run: 20261022_haiku-xhigh_topk4_loop07
+target guideline snapshot sha256: d2677c7f422d5b823b28b9f57876b77316ca55ca9e872fc636c6c18fe2167889
+  identical to outputs/ncbi_disease/20261022_haiku-xhigh_topk4_loop07/final/final_guidelines.txt after CRLF -> LF: True
+original guideline snapshot sha256: e6232d944d68e9e98c6012328add622486a743f5978e48a5a56c77ac2743002d; identical to data/guidelines/ncbi_disease_guidelines.txt after CRLF -> LF: True
+original runs: 19; all 19 use the same snapshot (manifest guideline_sha256); instances with d != 0: 353
+
+A. Instances by category (n | sum d | sum of positive d | sum of negative d)
+   gold_now_right                    169 |   +72.37 |   +72.37 |    +0.00
+   gold_now_wrong_with_prediction    112 |   -64.53 |    +0.00 |   -64.53
+   nogold_new_prediction              10 |    +6.26 |    +6.26 |    +0.00
+   gold_now_unlabelled                25 |    -8.21 |    +0.00 |    -8.21
+   nogold_dropped_prediction          37 |    -8.26 |    +0.00 |    -8.26
+   with a prediction in this run: 291; without: 62
+
+CHECK 1 counts vs count_workload_output.txt: PASS
+   with prediction 291 (file 291); without 62 (file 62); summed d without -16.47 (file -16.5)
+   gold left unlabelled 25, summed d -8.21 (file (25, -8.2)); no-gold dropped 37, summed d -8.26 (file (37, -8.3))
+CHECK 2 sum of d over gold instances of each label vs bar in bar_attribution.json (tolerance 0.05):
+   SpecificDisease  sum d -34.2105  bar -34.2105  diff +7.11e-15  ok
+   DiseaseClass     sum d -6.8421  bar -6.8421  diff +3.55e-15  ok
+   Modifier         sum d +40.7368  bar +40.7368  diff -7.11e-15  ok
+   gold labels with d != 0 outside the three bars: ['CompositeMention']
+   -> PASS
+CHECK 3 unlinked instances (expected 0): 12 -> FAIL
+   gold_now_wrong_with_prediction 9090524:560-590 SpecificDisease 'juvenile granulosa cell tumour' d -0.95 target state unpaired
+   gold_now_wrong_with_prediction 9090524:688-710 SpecificDisease 'acute myeloid leukemia' d -0.95 target state unpaired
+   gold_now_wrong_with_prediction 9090524:593-626 SpecificDisease 'non-asbestos related mesothelioma' d -0.89 target state unpaired
+   gold_now_wrong_with_prediction 8640236:63-70 DiseaseClass 'cancers' d -0.79 target state unpaired
+   gold_now_wrong_with_prediction 8954016:1803-1812 SpecificDisease 'jaw tumor' d -0.63 target state unpaired
+   gold_now_wrong_with_prediction 9056547:760-768 DiseaseClass 'dementia' d -0.37 target state unpaired
+   gold_now_wrong_with_prediction 8636252:731-734 SpecificDisease 'AMN' d -0.32 target state unpaired
+   gold_now_wrong_with_prediction 9271438:1886-1889 SpecificDisease 'RCC' d -0.11 target state unpaired
+   gold_now_wrong_with_prediction 8931695:618-621 SpecificDisease 'DTD' d -0.05 target state unpaired
+   gold_now_wrong_with_prediction 8931695:900-903 SpecificDisease 'DTD' d -0.05 target state unpaired
+   gold_now_wrong_with_prediction 8931695:1708-1711 SpecificDisease 'DTD' d -0.05 target state unpaired
+   gold_now_wrong_with_prediction 8954016:86-102 SpecificDisease 'renal hamartomas' d -0.05 target state unpaired
+   all 12 are golds the scorer left `unpaired` (target state ['unpaired']); summed d -5.21; number of target predictions the scorer lists as overlapping each (all_gold_overlaps): {1: 12}; label/scorer kind of those predictions: {'CompositeMention/label': 12}
+   (the overlapping prediction is shown in column unlinked_overlapping_prediction_info of the instances csv; it is not used as a link and these instances are not in the groups)
+   instances with more than one linked prediction: 0
+   linked-prediction kind by category: gold_now_right: correct=169; gold_now_wrong_with_prediction: boundary=25,label=75; nogold_new_prediction: extra=10
+CHECK 4 citation resolution against the target guideline (279 instances with a linked prediction, 391 references, one per distinct identifier per instance)
+   resolved 391, ambiguous 0, unresolved 0; citations with no parsable reference: 0
+   references whose scope was assumed (no scope word, taken as the '### N.' heading of What to Annotate): 328 of 391
+   assumed-scope references by identifier: {'3': 131, '1': 65, '5': 30, '2': 23, '6': 19, '1b(a)': 12, '1b': 11, '1b(g)': 9, '1b(c)': 7, '1b(b)': 6, '4': 6, '1a': 4, '1b(e)': 2, '1a(b)': 2, '3(b)': 1}
+   assumed-scope identifiers that also name an item in another list of the target guideline (NOT / Example / Pending / Precedence): 274 of 328 (column other_scope_candidates of the groups csv)
+
+D. Other consistency checks
+   extra rows of error_rows.csv vs extra predictions of prediction_index.jsonl (target + 19 original runs): equal
+   lookup: original predictions found at the position equal n_orig_of_19: yes for all 62
+   context from document text (offsets agree with instance text): 353 of 353
+   groups: 26 resolved or ambiguous identifiers, 0 unresolved raw references, 1 pseudo rows (no_reference / unlinked)
+
+E. Ten largest section groups by total |d| (identifier | line | sum positive d | sum negative d | documents | strings | instances)
+   3              resolved   L55        53.2105  -29.6842   57 docs   54 strings  140 inst   L55: ### 3. Annotate disease mentions that are used as **Modifiers** f
+   1              resolved   L5         15.2105  -15.2632   40 docs   64 strings   78 inst   L5: ### 1. Annotate all **Specific Disease** mentions
+   5              resolved   L84         5.5263  -10.5789   18 docs   28 strings   30 inst   L84: ### 5. Annotate **minimum necessary span of text**
+   1b(c)          resolved   L39         2.6842   -5.0526    7 docs    7 strings   10 inst   L39: - (c) Cohort, case, or population phrases (for example, “One hund
+   1b(a)          resolved   L37         4.7368   -2.5263    7 docs    9 strings   12 inst   L37: - (a) Phenotypic, cognitive, or symptom-trait labels (for example
+   6              resolved   L101        1.1579   -6.0526   12 docs   14 strings   19 inst   L101: ### 6. Annotate all **synonymous mentions**
+   1b             resolved   L33         3.0526   -3.3158   11 docs   13 strings   13 inst   L33: **1b. Disease-process head nouns used as the patient's own condit
+   2              resolved   L47         2.2105   -4.0526   14 docs   23 strings   26 inst   L47: ### 2. Annotate **contiguous text strings**
+   NOT 2          resolved   L128        2.8947   -1.3684    3 docs    2 strings    7 inst   L128: 2. **Do not annotate gender**  
+   1a             resolved   L17         2.3158   -1.0000    3 docs    4 strings    4 inst   L17: **1a. Disease-defining state complements** *(provisional: pending
+
+F. Files (sha256)
+   input  error_rows.csv 012db607b14c137bbc4231a78248539bf5a36db91ebedb85ff6ee50520d8c436
+   input  prediction_index.jsonl 4813b60e7dacc2fa97c6f2947b0aa91781340478cd3465cdf99f61a678caeea6
+   input  run_manifest.json 1702873925076031a6a2995c73db0ca8f6e63eef3e73fbf960a4159c36e8b900
+   output loop07_instances.csv edbc36a7fda5e1b449a4c4a5af350725caba82d3d1726628c6e35430f6717768
+   output loop07_section_groups.csv 7a1bc21fec57e2ea0d9cd8250d88c35702039192164607f8af2dd4bd5c2be20d
+   output loop07_noprediction_lookup.csv 39aaf7580f4532946ce4169b5168e404f1c2b71a8bdaeba2d8eb9cbebc1f7949
+
+OVERALL: checks 1-3 NOT ALL PASS
