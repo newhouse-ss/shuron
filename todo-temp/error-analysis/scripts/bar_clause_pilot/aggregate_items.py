@@ -10,6 +10,7 @@ with the user on 2026-11-06:
 - gains (d > 0 on gold) and losses (d < 0 on gold) are kept apart; no-gold positions predicted this run (new false
   positives) are reported separately; positions with no prediction in this run have no rationale and form their own bucket.
 Check: per guideline, the sum of d over gold instances of each label equals the slide-5 bar (bar_attribution.json).
+Usage: python -I aggregate_items.py [prefix ...]  (default: all 11)
 Outputs: outputs/bar_clause_pilot/codex_locate/aggregate/<prefix>_items.csv, <prefix>_joint.csv, aggregate_output.txt.
 """
 import collections
@@ -57,7 +58,8 @@ def main():
     OUT.mkdir(exist_ok=True)
     bars = json.loads((ROOT / "todo-temp" / "error-analysis" / "outputs" / "bar_attribution.json").read_text(encoding="utf-8"))["bars"]
     report = []
-    for prefix in PREFIXES:
+    chosen = [a for a in __import__("sys").argv[1:] if a in PREFIXES] or PREFIXES
+    for prefix in chosen:
         inst = list(csv.DictReader(open(PILOT / f"{prefix}_instances.csv", encoding="utf-8")))
         loc = {r["pred_id"]: r for f in (f"{prefix}_locate.jsonl", f"{prefix}_locate_haiku.jsonl")
                for r in jl(BASE / "outputs" / f)}
