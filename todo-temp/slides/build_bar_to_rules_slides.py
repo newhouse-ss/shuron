@@ -26,7 +26,7 @@ from build_error_analysis_slides import (
     boxed_text, drop, legend_bottom, new_slide, place, put, quiet_axis,
     read, rgb, table_at_placeholder, table_font, text,
 )
-from build_faldh_slides import WHITE, arrow, normalize_slide_ids
+from build_faldh_slides import WHITE, arrow, normalize_slide_ids, style_run
 
 
 OUT = TEMPLATE.parents[1] / "20261106_bar_to_rules_en.pptx"
@@ -259,25 +259,39 @@ def build(out):
     # 7. Resolve imprecise citations.
     slide = content_slide(
         prs, "12 Results table", "When the citation is imprecise, the rationale decides",
-        "Row 1: the citation names a sub-item that exists only inside a sentence. Row 2: the reason is the exception, "
-        "not the gene rule itself. Row 3: one cited part does not describe the case, so it is not recorded as the reason.",
+        "The left column quotes the model's citation and explains how to read it. The last column quotes excerpts "
+        "from the final guideline used for each annotation. Row 1: Section 1.6 lists route (iii) within a sentence "
+        "on line 205. The same line gives ovarian cancer as an example of a fixed site-plus-category compound. "
+        "Row 2: the Section 3 exception is item (c) on line 74, under the heading Not applied on line 71. "
+        "Row 3: rule 1b(d) on line 58 covers the generic statement. The negative constraint in rule 1b(b) concerns "
+        "enumerated findings and does not apply to this example.",
         keep=(2,),
     )
-    results_table(slide, 1.78, [
-        ["Citation", "Rationale says", "Sentence recorded as the reason"],
-        ['"Section 1.6(iii)" (no item 1.6(iii); top-4 loop01)',
-         '"fixed site-plus-category compound" for "[breast carcinoma]"',
-         '"... through (i) an eponym, (ii) an acronym of a named disease, (iii) a fixed nomenclature compound '
-         'in which the modifier is attached directly to the head ..."'],
-        ['"§3 gene designation not applied (position)" (top-4 loop07)',
-         '"DCC (deleted in [colorectal cancer]) gene": not the leading premodifier, so the gene rule does not apply',
-         '"Not applied: (c) The span is not in the leading premodifying position."'],
-        ['"Rule 1b(d) unanchored generic frame; Rule 1b(b) negative constraints" (top-4 loop04)',
-         '"the [tumours] they develop": a generic statement, a class',
-         '"(d) Unanchored, generic frame → Disease Class. An unanchored head noun in a generic frame is a Disease '
-         'Class." (the cited negative constraint, about items in a list of findings, does not cover this case)'],
-    ], [3.05, 3.28, 5.3366667], [0.48, 1.13, 1.13, 1.41], size=15)
-    body(slide, 6.27, ["All 2,918 annotations that differ from the baseline were matched"], size=20)
+    evidence_table = results_table(slide, 1.78, [
+        ["Model citation and how to read it", "Clue from the rationale", "Verbatim guideline excerpt"],
+        ['"Section 1.6(iii)"',
+         '"[breast carcinoma]" combines a site and a cancer type in a fixed expression.',
+         '"(iii) a fixed nomenclature compound in which the modifier is attached directly to the head rather than '
+         'linked by a free preposition"'],
+        ['"§1 Specific Disease; §3 gene designation not applied (position)"',
+         '"DCC (deleted in [colorectal cancer]) gene": the disease name is inside the gene’s expanded name.',
+         '"(c) The span is not in the leading premodifying position."'],
+        ['"Rule 1b(d) unanchored generic frame; Rule 1b(b) negative constraints"',
+         '"the [tumours] they develop" refers to tumours as a class.',
+         '"(d) Unanchored, generic frame → Disease Class. An unanchored head noun in a generic frame is a Disease Class."'],
+    ], [3.62, 3.30, 4.7466667], [0.48, 1.25, 1.25, 1.24], size=15)
+    for row, (explanation, source) in enumerate([
+        ("Section 1.6 lists (iii) within a sentence.", "top-4 loop01 · line 205"),
+        ("The §3 citation points to an exception.", "top-4 loop07 · line 74"),
+        ("Only 1b(d) fits. Rule 1b(b) concerns lists of findings.", "top-4 loop04 · line 58"),
+    ], start=1):
+        for column, detail in ((0, explanation), (2, source)):
+            paragraph = evidence_table.table.cell(row, column).text_frame.add_paragraph()
+            paragraph.space_before = Pt(4)
+            run = paragraph.add_run()
+            run.text = detail
+            style_run(run, size=13, color=MUTED, font=FONT)
+    body(slide, 6.34, ["All 2,918 annotations that differ from the baseline were matched"], size=20)
 
     # 8. Group the rule conditions.
     slide = content_slide(
