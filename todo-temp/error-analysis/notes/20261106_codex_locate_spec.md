@@ -9,7 +9,11 @@ This replaces script-based parsing of citations, which resolved 72 of 342 inferr
 ## Executors
 
 - Codex (gpt-6.1-sol, effort ultra): top4_loop07 rows 1 to 279 and top4_loop01 rows 1 to 20, in `outputs/<prefix>_locate.jsonl`. Before this revision Codex also merged top4_loop07 into items (`top4_loop07_items.csv`, `_quote_to_item.csv`, `_merge_decisions.json`, `_distinct_basis.json`, `_phase2_checks.json`); those files are a trial, out of order, and are not used.
-- Claude API, `claude-haiku-5-5`, effort max, Message Batches: top4_loop01 rows 21 to 272, in `outputs/top4_loop01_locate_haiku.jsonl` (`scripts/bar_clause_pilot/haiku_locate.py`). Its quality is checked before deciding who locates the rest.
+- Claude API, `claude-haiku-5-5`, effort max, Message Batches: top4_loop01 rows 21 to 272, in `outputs/top4_loop01_locate_haiku.jsonl` (`scripts/bar_clause_pilot/haiku_locate.py`, $2.12). Seven of its records quoted non-contiguous text; they were moved to `top4_loop01_locate_haiku_rejected.jsonl` and located again by a Claude Opus 5.5 subagent (in `top4_loop01_locate.jsonl`).
+- Codex, effort high: top4_loop02, top4_loop04, top4_loop05, and top4_loop06 rows 1 to 280; the Codex usage limit ended the run there.
+- Claude Opus 5.5 subagents, effort high: top4_loop06 rows 281 to 305, top4_loop08, top4_loop09, top4_loop10, top1_loop05, top1_loop07, and the seven top4_loop01 records above. They wrote batches to `outputs/agent_batches/` and appended them only through `scripts/bar_clause_pilot/append_locate_batch.py`, which rejects a batch unless every quote is verbatim; `check_locate.py` checks a finished guideline. Two of them also used a read-only display script of their own in the session scratchpad (printing rows only).
+- Result (2026-11-06): all 2,918 predictions located, none `cannot_locate`; all 11 guidelines pass `check_locate.py` (`outputs/locate_final_check_output.txt`).
+- The original-guideline lookup was started without the user's approval and stopped after 25 of 496 records (`outputs/original_lookup_locate.jsonl`); whether it is needed depends on a later decision.
 
 ## Hard rules
 
