@@ -53,14 +53,16 @@
 
 gold 从一种错变成另一种错的情况，比如原指南多数时候标成 DiseaseClass、这次标成 Modifier，标对数不变，处理起来也麻烦，暂时不做。
 
-## 4. 有预测的实例按理由引用的章节号分组，再读条目原文
+## 4. 有预测的实例由 LLM 读引用和理由，逐字摘出依据的原文，再归并成条目
 
-每条标注都输出两个字段：`rationale` 是模型自己写的一句解释，`guideline_section` 是它引用的章节号。例如 top-1 loop05 把文档 9012404 的 "breast and / or ovarian cancer" 标成 Modifier，引用的是 "Section 1.2(d); Section 3; Example 32"。章节号是唯一的，比按理由文字聚类可靠。
+每条标注都输出两个字段：`rationale` 是模型自己写的一句解释，`guideline_section` 是它引用的章节。例如 top-1 loop05 把文档 9012404 的 "breast and / or ovarian cancer" 标成 Modifier，引用的是 "Section 1.2(d); Section 3; Example 32"。引用的写法很杂，理由也不照抄原文。
 
-1. 用脚本解析每个实例的 `guideline_section`，拆成章节号。引用几节，就同时进入几组。
-2. 章节号只在当前这份指南内有效。不同循环、不同轮次的指南内容不同，同一个章节号或行号对应的条目也不同，所以不跨指南合并。
-3. 每组读出被引用条目的原文，记下行号，并标记三种情况之一：原文要求这样标；原文没有这样要求；这份指南里找不到这一节。
-4. 读组内的理由，归纳共性。
+2026-11-06 修订：按编号、标题和关键词解析引用的脚本已经停用。原因是在 top-4 loop04、05、06 的 342 个靠推断解析的引用里，有 72 个解析错了，大多是引用指的是某条规则下面的例外或子项，脚本却停在了规则的标题行（`outputs/bar_clause_pilot/citation_verdicts_top4_loop04_05_06.csv`）。现在的做法交给 Codex 执行，规格见 `notes/20261106_codex_locate_spec.md`：
+
+1. **定位靠阅读。** 读每条预测的引用、理由和上下文，在当前指南里逐字摘出它依据的最短原文，并标出这段原文在理由里的作用：依据、判定不适用，还是只作背景。只有"依据"计入条目。脚本只检查摘录是否逐字存在。定位时看不到 gold 和差异 d。
+2. **摘录只在当前这份指南内有效。** 不同循环、不同轮次的指南内容不同，不跨指南合并。
+3. **归并规则：** 指向同一个条件、同一个动作的摘录算同一条；理由写明了是哪一支，就归那一支，否则归父条款；同一条规则在别处重复写的，记为"重复"，但不合并。归并时同样看不到 d。
+4. **汇总：** 得和失分开列，一次用到几条的记成联合组，总数里每个实例只算一次。
 5. 原指南已有同样内容的条目照样算候选，标注"原指南已有同样内容"。这类条目内容相同、写法不同，和"好的指南写法"直接相关。
 
 理由只说明模型自称用了哪一条。条目是否造成了差异，由对照实验检验。
@@ -103,8 +105,9 @@ gold 从一种错变成另一种错的情况，比如原指南多数时候标成
 
 ## 9. 分工与范围
 
-- **脚本**（`exp-python` subagent，离线）：生成逐实例差异表，解析并分组理由章节号，为没有预测的实例取出原指南运行的理由。计数必须与 `count_workload_output.txt` 一致。
-- **语义判断**：Claude 和 `research-guideline-auditor`。
+- **脚本**（`exp-python` subagent，离线）：生成逐实例差异表。计数必须与 `count_workload_output.txt` 一致。
+- **定位、归并、汇总**（2026-11-06 起）：交给 Codex，按 `notes/20261106_codex_locate_spec.md` 执行。输入是看不到 gold 和差异 d 的盲化文件（`scripts/bar_clause_pilot/prepare_locate_inputs.py` 生成），共 2,918 条预测，另有 496 条原指南预测用于反查。
+- **没有预测的实例的语义判断**：top-4 loop07 已由 Claude 完成，其余 10 份待定。
 - **范围**：只用 valid100 上已保存的 30 次运行输出，不调用 API，不读 heldout50。
 - **试做后再定**：其余 10 份做多大范围；"一种错换成另一种错"是否补做；对照实验怎么设计（在 valid100 上做）。
 
@@ -115,4 +118,6 @@ gold 从一种错变成另一种错的情况，比如原指南多数时候标成
 - 工作量和 top-4 loop07 的 62 个位置：`python -I todo-temp/error-analysis/scripts/bar_clause_pilot/count_workload.py`，输出 `todo-temp/error-analysis/outputs/bar_clause_pilot/count_workload_output.txt`（sha256 75b8ae479f61…），输入 `error_rows.csv`（sha256 012db607b14c…）。
 - CHD 原指南 19 次都标对：`outputs/bar_cluster_sample/step34_output.txt`。enzyme defect：`error_rows.csv` 中 top-4 loop06 的 extra 行。top-4 loop10 删掉"cancer、tumor 要标"：错误分析报告（中文版）第 280 行。
 - 修订依据：2026-11-05 的三份独立审阅（只在对话中提供，未存入仓库），以及用户逐项确认的决定。
-- 尚未运行：正式脚本、语义判断。没有调用任何 API。
+- 已运行（2026-11-05）：逐实例差异表 `scripts/bar_clause_pilot/build_instances.py`，11 份指南的柱子核对全部通过；top-4 loop07 的 62 个没有预测的位置的语义判断 `scripts/bar_clause_pilot/noprediction_judgments.py`。
+- 已运行（2026-11-06）：盲化输入 `python -I todo-temp/error-analysis/scripts/bar_clause_pilot/prepare_locate_inputs.py`，输出和哈希见 `outputs/bar_clause_pilot/codex_locate/inputs/manifest.json`；2,918 条预测，496 条反查，文档偏移全部对上。
+- 定位、归并、汇总：尚未运行，交给 Codex。至今没有调用任何外部 API。

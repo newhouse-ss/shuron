@@ -1,0 +1,154 @@
+0001	# Biomedical Annotation Guidelines
+0002	
+0003	## What to Annotate
+0004	
+0005	### 1. Annotate all **Specific Disease** mentions
+0006	A textual string referring to a disease name may refer to a **Specific Disease** or a **Disease Class**.  
+0007	- **Disease Class**: Mentions that could be described as a family of multiple specific diseases.  
+0008	- **Specific Disease**: Mentions that can be linked to one specific definition that does not include further categorization.
+0009	
+0010	**Example**  
+0011	> Diastrophic dysplasia is an autosomal recessive disease characterized by short stature, very short limbs and joint problems that restrict mobility.
+0012	
+0013	- **Annotate**:  
+0014	  - “Diastrophic dysplasia” as **Specific Disease**  
+0015	  - “autosomal recessive disease” as **Disease Class**
+0016	
+0017	---
+0018	
+0019	### 2. Annotate **contiguous text strings**
+0020	A textual string may refer to two or more separate disease mentions. Such mentions are annotated with the **Composite Mention** category.
+0021	
+0022	**Example**  
+0023	> The text phrase “Duchenne and Becker muscular dystrophy” refers to two separate diseases. If this phrase is separated into two strings: “Duchenne” and “Becker muscular dystrophy,” it results in information loss, because the word “Duchenne” on its own is not a disease mention.
+0024	
+0025	---
+0026	
+0027	### 3. Annotate disease mentions that are used as **Modifiers** for other concepts
+0028	A textual string may refer to a disease name, but it may modify a noun phrase (or may not be a noun phrase itself). In such cases, annotate using the **Modifier** category.
+0029	
+0030	**Example**  
+0031	> Although this mutation was initially detected in four of 33 colorectal cancer families analysed from eastern England, more extensive analysis has reduced the frequency to four of 52 English HNPCC kindreds analysed.
+0032	
+0033	- **Annotate**:  
+0034	  - “colorectal cancer” as **Modifier**  
+0035	  - “HNPCC” as **Modifier**
+0036	
+0037	---
+0038	
+0039	### 4. Annotate **duplicate mentions**
+0040	For each sentence in the PubMed abstract and title, the locations of all disease mentions are marked, including duplicates within the same sentence.
+0041	
+0042	---
+0043	
+0044	### 5. Annotate **minimum necessary span of text**
+0045	Use the smallest span necessary to include all tokens expressing the most specific form of the disease.
+0046	
+0047	**Example**  
+0048	> In the case of “insulin-dependent diabetes mellitus,” the disease mention including the whole phrase was preferred over its substrings such as “diabetes mellitus” or “diabetes.”
+0049	
+0050	---
+0051	
+0052	### 6. Annotate all **synonymous mentions**
+0053	Abbreviation definitions such as “Huntington disease” (“HD”) are separated into two annotated mentions (one for the long form, one for the abbreviation).
+0054	
+0055	---
+0056	
+0057	## What NOT to Annotate
+0058	
+0059	1. **Do not annotate organism names**  
+0060	   - Organism names such as “human” were excluded from the preferred mention.  
+0061	   - Viruses, bacteria, and other organism names were not annotated **unless** it was clear that the disease caused by these organisms is being discussed.  
+0062	   - **Example**  
+0063	     > Studies of biopsied tissue for the presence of Epstein-Barr virus and cytomegalovirus were negative.  
+0064	     
+0065	     In this case: “Epstein-Barr virus” and “cytomegalovirus” are annotated as **Specific Disease** category **only** if the context clearly indicates the diseases they cause, otherwise not.
+0066	
+0067	2. **Do not annotate gender**  
+0068	   - Tokens such as “male” and “female” were only included if they specifically identified a new form of the disease.  
+0069	   - **Example**  
+0070	     > “male breast cancer”
+0071	
+0072	3. **Do not annotate overlapping mentions**  
+0073	   - **Example**: The phrase “von Hippel-Lindau (VHL) disease” is annotated as **one single disease mention** (Specific Disease category).
+0074	
+0075	4. **Do not annotate general terms**  
+0076	   - Very general terms such as “disease,” “syndrome,” “deficiency,” “complications,” “abnormalities,” etc. were excluded.  
+0077	   - However, the terms “cancer” and “tumor” were retained.
+0078	
+0079	5. **Do not annotate references to **biological processes**  
+0080	   - e.g. Terms corresponding to biological processes such as “tumorigenesis” or “cancerogenesis.”
+0081	
+0082	6. **Do not annotate disease mentions interrupted by nested mentions**  
+0083	   - Essentially, do not break the contiguous text rule.  
+0084	   - **Example**  
+0085	     > WT1 dysfunction is implicated in both neoplastic (Wilms tumor, mesothelioma, leukemia, and breast cancer) and nonneoplastic (glomerulosclerosis) disease.  
+0086	     
+0087	     Here, the mentions “neoplastic disease” and “nonneoplastic disease” are not annotated because other tokens break up these phrases.
+0088	
+0089	---
+0090	
+0091	## Examples
+0092	
+0093	1. **“Insulin-dependent diabetes mellitus”**  
+0094	   - **Specific Disease**  
+0095	   - Prefer the whole string.
+0096	
+0097	2. **CDH1 mutations predispose to early onset “colorectal cancer.”**  
+0098	   - “early onset” may or may not be part of the disease mention, depending on:  
+0099	     1. If there is a UMLS concept specifying this as a separate form of disease  
+0100	     2. If the annotator believes it should be included
+0101	
+0102	3. **Human “X-linked recessive disorder”**
+0103	
+0104	4. **Her fresh serum lacked complement-mediated bactericidal activity against Neisseria gonorrhoeae.**
+0105	
+0106	5. **“Huntington disease” (“HD”)**  
+0107	   - The long form and the short form constitute two separate mentions.
+0108	
+0109	6. **C7 deficiency**  
+0110	   - “This report represents the first cases of C7 deficiency associated with infectious complications.”  
+0111	   - “infectious complications” is too general a term; C7 deficiency is a **Specific Disease**.
+0112	
+0113	7. **“colorectal, endometrial, and ovarian cancers”**  
+0114	   - Considered one **Composite Mention** of several Specific Diseases.
+0115	
+0116	8. **WT1 dysfunction is implicated in both neoplastic (“Wilms tumor,” “mesothelioma,” “leukemias,” and “breast cancer”) and nonneoplastic (“glomerulosclerosis”) disease.**  
+0117	   - Potential disease mentions include: “neoplastic disease,” “nonneoplastic disease,” “Wilms tumor,” “mesothelioma,” “leukemias,” “breast cancer,” and “glomerulosclerosis.”  
+0118	   - “neoplastic disease” and “nonneoplastic disease” are **not** annotated because these phrases are interrupted by nested mentions.
+0119	
+0120	9. **Tumorigenesis and cancerogenesis**  
+0121	   - These refer to processes, not diseases.
+0122	
+0123	10. **“autosomal recessive disease”**  
+0124	    - Refers to a family of diseases that can be passed down genetically → **Disease Class** category.
+0125	
+0126	11. **Large phenotypic variability with “convulsive disorders,” “motor retardation,” and “mental retardation.”**  
+0127	    - These are “grey area” terms: they may not correspond to a single **Specific Disease**, so they are annotated as **Disease Class** category if appropriate.
+0128	
+0129	12. **Borjeson-Forssman-Lehmann syndrome (BFLS) is a syndromal X-linked mental retardation.**  
+0130	    - “Borjeson-Forssman-Lehmann syndrome” = **Specific Disease**  
+0131	    - “X-linked mental retardation syndrome” = a family of diseases (i.e., **Disease Class**)
+0132	
+0133	13. **Acute meningococcal pericarditis**  
+0134	    - Exists as a separate concept in UMLS.
+0135	
+0136	14. **Acute Neisseria infection**  
+0137	    - May or may not include “acute” depending on context.
+0138	
+0139	15. **Classical galactosemia**  
+0140	    - Includes “classical” because it corresponds to a particular form of the disease.
+0141	
+0142	16. **Inherited spinocerebellar ataxia**  
+0143	    - May or may not include “inherited,” depending on the annotator.
+0144	
+0145	17. **“Adenomatous polyps of the colon and rectum”**  
+0146	    - **Composite Mention**
+0147	
+0148	18. **Fibroepithelial or epithelial hyperplasias**  
+0149	    - **Composite Mention**
+0150	
+0151	19. **Stage II or stage III colorectal cancer**  
+0152	    - **Composite Mention**
+0153	
+0154	---

@@ -1,0 +1,268 @@
+0001	# Biomedical Annotation Guidelines
+0002	
+0003	## What to Annotate
+0004	
+0005	### 1. Annotate all **Specific Disease** mentions
+0006	A textual string referring to a disease name may refer to a **Specific Disease** or a **Disease Class**.  
+0007	- **Disease Class**: Mentions that could be described as a family of multiple specific diseases, unless Section 1.2 applies.  
+0008	- **Specific Disease**: Mentions that can be linked to one specific definition that does not include further categorization. Unnamed descriptive pathology terms that denote a patient's condition, or that are pinned to a single organism or etiology, are also Specific Disease under Section 1.2, even when their form is category-like.  
+0009	
+0010	**Example**  
+0011	> Diastrophic dysplasia is an autosomal recessive disease characterized by short stature, very short limbs and joint problems that restrict mobility.
+0012	
+0013	- **Annotate**:  
+0014	  - “Diastrophic dysplasia” as **Specific Disease**  
+0015	  - “autosomal recessive disease” as **Disease Class**
+0016	
+0017	#### 1.1 Lack-nominal disease names with gene-product arguments
+0018	A noun phrase headed by a state noun of absence or insufficiency (“deficiency,” “deficiencies,” or “absence”) that takes a gene-product argument (a protein, enzyme, or complement component, named in full or abbreviated form) is annotated as one **Specific Disease** span, including the state noun, when the clause presents the lack as a condition of a patient or population: as its cause, its manifestation, or a genotype-linked state.
+0019	
+0020	The gene-product argument may appear as:
+0021	- a premodifier: “C7 deficiency”
+0022	- a prepositional complement: “deficiency of C7”
+0023	- part of a genitive chain: “deficiency of the C7 component”
+0024	
+0025	The span covers the whole chain from its first token to its last, including any determiner or ordinal inside the chain. Leading articles outside the chain are not included (see Section 5).
+0026	
+0027	**Negative constraints.** This rule does **not** apply, and the phrase is handled as follows, when:
+0028	- **(a) Adjectival use.** The lack term is an adjective describing a phenotype or patient (e.g., “G6PD deficient phenotype”). The adjective is annotated as **Modifier** (see Section 3).
+0029	- **(b) Molecular or biochemical state.** The phrase describes a property of a protein, enzyme, or complement component rather than a condition of the patient: its activity level, catalytic yield, thermal stability, kinetics, or abundance within a cell or tissue. This includes a mechanistic consequence of a mutation stated at the molecular level, and applies to purified or recombinant proteins as well as patient-derived material. Phrases such as “deficient activity of [enzyme]” fall under this sub-case, even when listed among a disease’s features. Such phrases remain **O**; the disease is labeled by its own mention.
+0030	- **(c) Disorder-class head.** The head noun is itself a disorder-class noun (e.g., “disease,” “syndrome,” “cancer”). The phrase is labeled by that head under the existing rules.
+0031	- **(d) No gene-product argument.** The argument is not a gene product, or the lack has no molecular argument (e.g., “vitamin D deficiency,” “iron deficiency”). The general-term exclusion applies (see “What NOT to Annotate,” item 4).
+0032	
+0033	**Tie-breaker.** When a phrase could be read either as a named condition of the patient or as a measured molecular state, annotate it as a condition only if the text uses it to name the patient’s or population’s disorder (e.g., “patients with C7 deficiency,” “G6PD deficiency in African populations”). Otherwise, leave it **O**.
+0034	
+0035	This section takes precedence over Section 1.2 for any phrase it governs.
+0036	
+0037	Verb forms such as “lacked” are not state nouns and are not covered by this rule.
+0038	
+0039	**Example**  
+0040	> The high prevalence of glucose 6-phosphate dehydrogenase (G6PD) deficiency in African populations is due almost entirely to the enzyme variant A-.
+0041	
+0042	- **Annotate**:  
+0043	  - “glucose 6-phosphate dehydrogenase (G6PD) deficiency” as **Specific Disease** (whole span, state noun included; names a population-level condition)
+0044	
+0045	#### 1.2 Patient-level condition labeling for descriptive pathology terms
+0046	An unnamed, descriptive pathology head noun (for example, “cardiomyopathy,” “pneumonia,” “lymphoma,” or “retinal detachment”), with no proper name, eponym, or abbreviation and with or without a site, organism, or etiology modifier, is labeled **Specific Disease** rather than **Disease Class**, even when its form is generic or category-like, if either of the following holds:
+0047	
+0048	- **(i) Patient-level condition.** The term names a condition that a specific patient has, is diagnosed with, or is being differentiated from. This is signaled by one of these predicate types:
+0049	  - *Presentation predicate:* “presented with,” “presenting with,” “admitted with,” “developed,” “suffered from,” “affected by,” “affected with,” “had” or “has” when the condition itself is the object, or a patient-group noun followed by its condition (“patients with,” “children with,” “cases of”).
+0050	  - *Diagnostic-finding predicate:* “diagnosed with,” “diagnosed as,” “found to have,” “confirmed,” “revealed.”
+0051	  - *Differential-exclusion predicate:* “to rule out,” “to exclude,” “differentiated from,” “distinguished from,” “differential diagnosis of.”
+0052	- **(ii) Single organism or etiology.** The modifier pins the term to one named organism (species or genus) or to one named causal agent, such as a specific pathogen, toxin, drug, or chemical, or a named causative gene or gene variant. No predicate is needed. Inheritance patterns (“autosomal recessive,” “X-linked,” “inherited,” “familial”), onset or sex descriptors, and broad class descriptors (“viral,” “bacterial,” “fungal,” “genetic”) are **not** single etiologies. For those terms, (i) is required.
+0053	
+0054	**Predicates that do not count.** The following do not, by themselves, make a term patient-level:
+0055	- Copular definitions, such as “X is an autosomal recessive disorder.”
+0056	- Trait, consequence, and association predicates, such as “characterized by,” “defined by,” “marked by,” “featuring,” “consisting of,” “which results in,” “predisposes to,” “implicated in,” and “associated with.” Trait frames are also governed by negative constraint (a).
+0057	- Test and presence frames, such as “analyzed for,” “screened for,” “tested for,” and “presence of,” unless the sentence reports that a patient was diagnosed with the condition.
+0058	
+0059	**Negative constraints.** This rule does **not** apply, and the mention keeps the label it would receive under Sections 1–3 without this rule, when:
+0060	- **(a) Defining trait or umbrella phenotype.** The term is a defining trait of a named syndrome or disorder, introduced by a “characterized by”-type predicate (including consequence clauses inside that description), or it is listed as an umbrella phenotype with no individuated diagnosis. A trait is a feature of the named disorder, not a separate diagnosis of the patient, so this exclusion takes precedence over (ii). Such a term is not promoted. It keeps the label it would receive under Section 1 without this rule (Disease Class where it names a family of disorders; otherwise not annotated).
+0061	- **(b) Generic category.** The term is used generically for a family of disorders, with no patient-level predicate and no single-organism or etiology modifier. It remains **Disease Class**.
+0062	- **(c) Proper name, eponym, or abbreviation.** These are **Specific Disease** by default (see Section 1 and Example 1). This rule adds no test for them.
+0063	- **(d) Family-history or relative frame.** The condition belongs to relatives rather than to the patients, as in “had a family history of ...” or “relatives with ...”. Such a term keeps its existing treatment (Modifier under Section 3).
+0064	- **(e) Unframed list.** A bare pathology noun in a list, with no presentation, diagnostic, or differential-exclusion predicate and no single-organism or etiology modifier, is ambiguous. Do not force this rule. Keep the existing label and flag the mention for guideline review.
+0065	
+0066	**Precedence.** Apply the following before this rule:
+0067	1. **Section 1.1 and item 7 of “What NOT to Annotate.”** Lack phrases with gene-product arguments and molecular or biochemical lack states are not promoted, even when they contain a patient-level predicate or a single-etiology modifier.
+0068	2. **Section 3 (Modifier).** A term that premodifies or otherwise modifies another noun phrase keeps its Modifier tag, even if it meets (i) or (ii).
+0069	3. **“What NOT to Annotate,” items 1, 4, and 5.** Bare organism names, general terms (“disease,” “syndrome,” “deficiency,” “complications,” “abnormalities”), and biological processes are never promoted. “Deficiency” and “absence” are governed only by Section 1.1.
+0070	
+0071	**Scope.** This rule governs label choice only. It does not change span boundaries (see Section 5), and the predicate (for example, “presented with”) is never part of the span. It can move a mention from Disease Class to Specific Disease, but it never demotes a Specific Disease mention and never changes a Modifier tag.
+0072	
+0073	---
+0074	
+0075	### 2. Annotate **contiguous text strings**
+0076	A textual string may refer to two or more separate disease mentions. Such mentions are annotated with the **Composite Mention** category.
+0077	
+0078	**Example**  
+0079	> The text phrase “Duchenne and Becker muscular dystrophy” refers to two separate diseases. If this phrase is separated into two strings: “Duchenne” and “Becker muscular dystrophy,” it results in information loss, because the word “Duchenne” on its own is not a disease mention.
+0080	
+0081	---
+0082	
+0083	### 3. Annotate disease mentions that are used as **Modifiers** for other concepts
+0084	A textual string may refer to a disease name, but it may modify a noun phrase (or may not be a noun phrase itself). In such cases, annotate using the **Modifier** category.
+0085	
+0086	**Example**  
+0087	> Although this mutation was initially detected in four of 33 colorectal cancer families analysed from eastern England, more extensive analysis has reduced the frequency to four of 52 English HNPCC kindreds analysed.
+0088	
+0089	- **Annotate**:  
+0090	  - “colorectal cancer” as **Modifier**  
+0091	  - “HNPCC” as **Modifier**
+0092	
+0093	- Lack terms used as adjectives that describe a phenotype or patient (e.g., “G6PD deficient” in “G6PD deficient phenotype”) are annotated as **Modifier**, not as lack-nominal **Specific Disease** spans (see Section 1.1(a)).
+0094	
+0095	- Section 1.2 does not change this tagging. A descriptive pathology term that premodifies another noun phrase (for example, “ovarian cancer cases” or “SLS genes”) stays **Modifier**, even when it names a patient’s condition or is pinned to a single organism or etiology.
+0096	
+0097	---
+0098	
+0099	### 4. Annotate **duplicate mentions**
+0100	For each sentence in the PubMed abstract and title, the locations of all disease mentions are marked, including duplicates within the same sentence.
+0101	
+0102	---
+0103	
+0104	### 5. Annotate **minimum necessary span of text**
+0105	Use the smallest span necessary to include all tokens expressing the most specific form of the disease.
+0106	
+0107	**Example**  
+0108	> In the case of “insulin-dependent diabetes mellitus,” the disease mention including the whole phrase was preferred over its substrings such as “diabetes mellitus” or “diabetes.”
+0109	
+0110	---
+0111	
+0112	### 6. Annotate all **synonymous mentions**
+0113	Abbreviation definitions such as “Huntington disease” (“HD”) are separated into two annotated mentions (one for the long form, one for the abbreviation).
+0114	
+0115	---
+0116	
+0117	## What NOT to Annotate
+0118	
+0119	1. **Do not annotate organism names**  
+0120	   - Organism names such as “human” were excluded from the preferred mention.  
+0121	   - Viruses, bacteria, and other organism names were not annotated **unless** it was clear that the disease caused by these organisms is being discussed.  
+0122	   - A pathology noun pinned to a single organism (e.g., “Neisseria infection”) is governed by Section 1.2(ii). This item still excludes bare organism names.  
+0123	   - **Example**  
+0124	     > Studies of biopsied tissue for the presence of Epstein-Barr virus and cytomegalovirus were negative.  
+0125	     
+0126	     In this case: “Epstein-Barr virus” and “cytomegalovirus” are annotated as **Specific Disease** category **only** if the context clearly indicates the diseases they cause, otherwise not.
+0127	
+0128	2. **Do not annotate gender**  
+0129	   - Tokens such as “male” and “female” were only included if they specifically identified a new form of the disease.  
+0130	   - **Example**  
+0131	     > “male breast cancer”
+0132	
+0133	3. **Do not annotate overlapping mentions**  
+0134	   - **Example**: The phrase “von Hippel-Lindau (VHL) disease” is annotated as **one single disease mention** (Specific Disease category).
+0135	
+0136	4. **Do not annotate general terms**  
+0137	   - Very general terms such as “disease,” “syndrome,” “deficiency,” “complications,” “abnormalities,” etc. were excluded.  
+0138	   - A bare “deficiency” or “absence” is excluded in the same way. When either term takes a gene-product argument, the phrase is governed by Section 1.1 instead.  
+0139	   - However, the terms “cancer” and “tumor” were retained.  
+0140	   - General terms stay excluded even when a patient-level predicate is present (for example, “patients with complications”). Descriptive pathology head nouns such as “cardiomyopathy” are not general terms and are governed by Section 1.2.
+0141	
+0142	5. **Do not annotate references to **biological processes**  
+0143	   - e.g. Terms corresponding to biological processes such as “tumorigenesis” or “cancerogenesis.”
+0144	
+0145	6. **Do not annotate disease mentions interrupted by nested mentions**  
+0146	   - Essentially, do not break the contiguous text rule.  
+0147	   - **Example**  
+0148	     > WT1 dysfunction is implicated in both neoplastic (Wilms tumor, mesothelioma, leukemia, and breast cancer) and nonneoplastic (glomerulosclerosis) disease.  
+0149	     
+0150	     Here, the mentions “neoplastic disease” and “nonneoplastic disease” are not annotated because other tokens break up these phrases.
+0151	
+0152	7. **Do not annotate molecular or biochemical lack states**  
+0153	   - Lack phrases that describe a molecular or biochemical property of a gene product remain **O**, even when they contain a state noun and a gene-product argument.  
+0154	   - **Examples**: “deficient activity of fatty aldehyde dehydrogenase,” “absence of the FMR1 protein,” “a deficiency of norrin within the developing retina.”  
+0155	   - See Section 1.1(b). Section 1.2 does not promote these phrases.
+0156	
+0157	---
+0158	
+0159	## Examples
+0160	
+0161	1. **“Insulin-dependent diabetes mellitus”**  
+0162	   - **Specific Disease**  
+0163	   - Prefer the whole string.
+0164	
+0165	2. **CDH1 mutations predispose to early onset “colorectal cancer.”**  
+0166	   - “early onset” may or may not be part of the disease mention, depending on:  
+0167	     1. If there is a UMLS concept specifying this as a separate form of disease  
+0168	     2. If the annotator believes it should be included
+0169	
+0170	3. **Human “X-linked recessive disorder”**  
+0171	   - “X-linked” is an inheritance pattern, not a single-etiology pin (Section 1.2(ii)). With no patient-level predicate, the term remains **Disease Class**.
+0172	
+0173	4. **Her fresh serum lacked complement-mediated bactericidal activity against Neisseria gonorrhoeae.**
+0174	   - Remains **O**: “lacked” is a verb, not a state noun, and the span describes a functional property (Section 1.1).
+0175	
+0176	5. **“Huntington disease” (“HD”)**  
+0177	   - The long form and the short form constitute two separate mentions.
+0178	
+0179	6. **C7 deficiency**  
+0180	   - “This report represents the first cases of C7 deficiency associated with infectious complications.”  
+0181	   - “infectious complications” is too general a term; C7 deficiency is a **Specific Disease**.  
+0182	   - Consistent with Section 1.1: “C7 deficiency” is one **Specific Disease** span because C7 is a complement-component argument and the phrase names a patient condition.
+0183	
+0184	7. **“colorectal, endometrial, and ovarian cancers”**  
+0185	   - Considered one **Composite Mention** of several Specific Diseases.
+0186	
+0187	8. **WT1 dysfunction is implicated in both neoplastic (“Wilms tumor,” “mesothelioma,” “leukemias,” and “breast cancer”) and nonneoplastic (“glomerulosclerosis”) disease.**  
+0188	   - Potential disease mentions include: “neoplastic disease,” “nonneoplastic disease,” “Wilms tumor,” “mesothelioma,” “leukemias,” “breast cancer,” and “glomerulosclerosis.”  
+0189	   - “neoplastic disease” and “nonneoplastic disease” are **not** annotated because these phrases are interrupted by nested mentions.  
+0190	   - “mesothelioma,” “leukemias,” “breast cancer,” and “glomerulosclerosis” are bare nouns in an unframed list (Section 1.2(e)). Their existing labels are kept, and they are flagged for guideline review.
+0191	
+0192	9. **Tumorigenesis and cancerogenesis**  
+0193	   - These refer to processes, not diseases.
+0194	
+0195	10. **“autosomal recessive disease”**  
+0196	    - Refers to a family of diseases that can be passed down genetically → **Disease Class** category.
+0197	
+0198	11. **Large phenotypic variability with “convulsive disorders,” “motor retardation,” and “mental retardation.”**  
+0199	    - These are “grey area” terms: they may not correspond to a single **Specific Disease**, so they are annotated as **Disease Class** category if appropriate. A list of phenotypic variability terms is an umbrella phenotype (Section 1.2(a)).
+0200	
+0201	12. **Borjeson-Forssman-Lehmann syndrome (BFLS) is a syndromal X-linked mental retardation.**  
+0202	    - “Borjeson-Forssman-Lehmann syndrome” = **Specific Disease**  
+0203	    - “X-linked mental retardation syndrome” = a family of diseases (i.e., **Disease Class**). The copula “is a” is not a patient-level predicate (Section 1.2).
+0204	
+0205	13. **Acute meningococcal pericarditis**  
+0206	    - Exists as a separate concept in UMLS.  
+0207	    - “meningococcal” pins the term to a single organism (Section 1.2(ii)).
+0208	
+0209	14. **Acute Neisseria infection**  
+0210	    - May or may not include “acute” depending on context.  
+0211	    - “Neisseria” pins the term to a single organism, so “Neisseria infection” is a **Specific Disease** (Section 1.2(ii)).
+0212	
+0213	15. **Classical galactosemia**  
+0214	    - Includes “classical” because it corresponds to a particular form of the disease.
+0215	
+0216	16. **Inherited spinocerebellar ataxia**  
+0217	    - May or may not include “inherited,” depending on the annotator.  
+0218	    - “inherited” is an inheritance pattern, not a single-etiology pin, and does not make the term patient-level (Section 1.2(ii)).
+0219	
+0220	17. **“Adenomatous polyps of the colon and rectum”**  
+0221	    - **Composite Mention**
+0222	
+0223	18. **Fibroepithelial or epithelial hyperplasias**  
+0224	    - **Composite Mention**
+0225	
+0226	19. **Stage II or stage III colorectal cancer**  
+0227	    - **Composite Mention**
+0228	
+0229	20. **“glucose 6-phosphate dehydrogenase (G6PD) deficiency” in “The high prevalence of glucose 6-phosphate dehydrogenase (G6PD) deficiency in African populations”**  
+0230	    - **Specific Disease** (Section 1.1). The whole chain, including the state noun, is one span. It names a population-level condition.
+0231	
+0232	21. **“G6PD deficient phenotype”**  
+0233	    - “G6PD deficient” → **Modifier** (adjective describing a phenotype; Section 1.1(a)). “phenotype” is not annotated.
+0234	
+0235	22. **“…resulting in absence of the FMR1 protein”**  
+0236	    - Remains **O**: “absence of the FMR1 protein” is a molecular consequence of promoter hypermethylation (Section 1.1(b)). The disease is labeled by its own mention, not by this phrase.
+0237	
+0238	23. **“…results in a deficiency of norrin (the protein product of the NDP gene) within the developing retina”**  
+0239	    - Remains **O**: this is a tissue-level protein abundance stated as a mechanism (Section 1.1(b)). Disease mentions in the same sentence are labeled separately.
+0240	
+0241	24. **“…sister controls…” / “Sjogren-Larsson syndrome … characterized by ichthyosis, mental retardation, spasticity, and deficient activity of fatty aldehyde dehydrogenase (FALDH)”**  
+0242	    - “Sjogren-Larsson syndrome” → **Specific Disease**, labeled by its own mention.  
+0243	    - “deficient activity of fatty aldehyde dehydrogenase (FALDH)” → **O**: an enzymatic activity level, even though it appears among the disease’s features (Section 1.1(b)).
+0244	
+0245	25. **“…the coexistence of the two mutations is responsible for enzyme deficiency in G6PD A-…” (recombinant expression study)**  
+0246	    - Remains **O**: the span describes biochemical instability of a recombinant enzyme (Section 1.1(b)).
+0247	
+0248	26. **“Twelve patients presented with cardiomyopathy.”**  
+0249	    - “cardiomyopathy” → **Specific Disease**. It is an unnamed pathology head noun with a category-like form, but the presentation predicate makes it a patient-level condition (Section 1.2(i)).
+0250	
+0251	27. **“Epstein-Barr virus-associated lymphoma”**  
+0252	    - One **Specific Disease** span. The organism modifier pins the term to a single named organism, so no predicate is needed (Section 1.2(ii)). “Epstein-Barr virus” on its own remains unannotated (What NOT to Annotate, item 1).
+0253	
+0254	28. **“Cultures were obtained to rule out bacterial pneumonia.”**  
+0255	    - “bacterial pneumonia” → **Specific Disease**. The differential-exclusion predicate (“to rule out”) makes it a condition being differentiated. “Bacterial” names a class of organisms, so it does not supply the single-etiology pin, but (i) is satisfied (Section 1.2(i)).
+0256	
+0257	29. **“Coats disease is characterized by abnormal retinal vascular development (so-called retinal telangiectasis), which results in massive intraretinal and subretinal lipid accumulation (exudative retinal detachment).”**  
+0258	    - “Coats disease” → **Specific Disease** (eponym).  
+0259	    - “retinal telangiectasis” and “exudative retinal detachment” are defining-trait and consequence clauses of a named disorder. They are not promoted (Section 1.2(a)) and remain unannotated.
+0260	
+0261	30. **“Patients with infectious complications were excluded from the analysis.”**  
+0262	    - Nothing is annotated. “complications” is a general term (What NOT to Annotate, item 4) and is not promoted even with a patient-level predicate. “infectious” describes a broad class, not a single organism or etiology.
+0263	
+0264	31. **“Forty-two colorectal cancer cases were enrolled.”**  
+0265	    - “colorectal cancer” → **Modifier**. Although it names the enrolled patients’ condition, it premodifies “cases,” so the Modifier tag stands (Section 3; Section 1.2 precedence).
+0266	
+0267	32. **“Both patients had a family history of breast or ovarian cancer.”**  
+0268	    - The “had” predicate attaches the condition to relatives, not to the patients. The mention is not promoted under Section 1.2(i) and keeps its existing treatment (Section 3).

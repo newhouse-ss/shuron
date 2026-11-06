@@ -1,0 +1,259 @@
+0001	# Biomedical Annotation Guidelines
+0002	
+0003	## What to Annotate
+0004	
+0005	### 1. Annotate all **Specific Disease** mentions
+0006	A textual string referring to a disease name may refer to a **Specific Disease** or a **Disease Class**.  
+0007	- **Disease Class**: Mentions that could be described as a family of multiple specific diseases.  
+0008	- **Specific Disease**: Mentions that can be linked to one specific definition that does not include further categorization.
+0009	
+0010	**Referential anchoring test.** The label is decided by whether the phrase refers to a concrete, identifiable disorder, not by its surface form.
+0011	- Annotate as **Specific Disease** when the phrase refers to a concrete disorder that is being diagnosed, manifested, or ruled out in a specific individual. This is signalled by a governing verb or prepositional frame such as "presenting with/as X," "distinguished from X," "has X," "affected by X," or "variant/form of X." It also applies when the phrase refers to a disorder defined by a specific gene, enzyme, or locus.
+0012	- The label applies regardless of surface form. A condition-suffixed head noun, a plural count inflection, or a type-modifier-plus-head structure does not by itself make a phrase a Disease Class, and the label applies even when the phrase has no eponym, acronym, or proper name. The full mention span is treated as one unit, so a type modifier does not turn it into a subtype class (see "classical galactosemia," Example 15).
+0013	- Plural number, suffix morphology, or coordination in a list is never sufficient on its own to assign either label.
+0014	
+0015	**Disease Class remains correct** when the phrase is used at the kind level, that is, as an indefinite generic predication (e.g., "is an autosomal recessive disease," "is a syndromal X-linked mental retardation") that does not refer to any particular patient or gene-defined disorder. Members of an unanchored feature list describing a syndrome category are handled under item 8. The predicate frame alone does not decide the label. In "Coats disease is characterized by ...", the subject names a particular disorder and is **Specific Disease**; the generic features in the complement are governed by item 8.
+0016	
+0017	**Precedence.** This rule does not apply to a disease-denoting expression that is an attributive premodifier of a non-disease head noun (e.g., "ovarian cancer cases," "the DTD gene"). Those spans are **Modifier** mentions under item 3, which takes precedence over the referential test and its gene-defined clause. This rule does not alter the boundaries of Modifier or Composite Mention spans.
+0018	
+0019	**Example**  
+0020	> Diastrophic dysplasia is an autosomal recessive disease characterized by short stature, very short limbs and joint problems that restrict mobility.
+0021	
+0022	- **Annotate**:  
+0023	  - “Diastrophic dysplasia” as **Specific Disease**  
+0024	  - “autosomal recessive disease” as **Disease Class**
+0025	
+0026	---
+0027	
+0028	### 2. Annotate **contiguous text strings**
+0029	A textual string may refer to two or more separate disease mentions. Such mentions are annotated with the **Composite Mention** category. A coordinated list of disease terms that functions as one mention is a Composite Mention. Coordination alone never turns a list of symptoms into a Disease Class (see item 8).
+0030	
+0031	**Example**  
+0032	> The text phrase “Duchenne and Becker muscular dystrophy” refers to two separate diseases. If this phrase is separated into two strings: “Duchenne” and “Becker muscular dystrophy,” it results in information loss, because the word “Duchenne” on its own is not a disease mention.
+0033	
+0034	---
+0035	
+0036	### 3. Annotate disease mentions that are used as **Modifiers** for other concepts
+0037	A textual string may refer to a disease name, but it may modify a noun phrase (or may not be a noun phrase itself). In such cases, annotate using the **Modifier** category.
+0038	
+0039	**Example**  
+0040	> Although this mutation was initially detected in four of 33 colorectal cancer families analysed from eastern England, more extensive analysis has reduced the frequency to four of 52 English HNPCC kindreds analysed.
+0041	
+0042	- **Annotate**:  
+0043	  - “colorectal cancer” as **Modifier**  
+0044	  - “HNPCC” as **Modifier**
+0045	
+0046	**Narrower condition (takes precedence over items 1 and 7).** A disease-denoting expression is a **Modifier** when it specifies a non-disease head noun rather than naming the disorder itself. This includes:
+0047	- an attributive premodifier of a case, patient, population, sample, study, family/kindred, series, risk, phenotype, gene, or allele noun (e.g., "ovarian cancer cases," "population-based ovarian cancer study," "ovarian cancer risk," "HNPCC kindreds," "ancient SLS genes," "the DTD gene," "G6PD deficient phenotype");
+0048	- the complement of a history frame (e.g., "a family history of ovarian cancer").
+0049	
+0050	The Modifier label applies only when the disease expression functions as a modifier. If the disease expression is itself the head of the phrase, or stands as a complete entity (e.g., "Coats telangiectasis"), item 1 or item 7 governs.
+0051	
+0052	**Disease expression inside a nomenclature span.** When a disease-denoting expression (a full-form name whose head is a disease-category noun, or a short form that the document has explicitly defined as a disease) is an attributive premodifier of a non-disease head, label the disease-denoting substring **Modifier**, even when that head sits inside an out-of-schema nomenclature or proper-name construction (e.g., in "the Norrie disease gene (NDP)," "Norrie disease" is a Modifier). Assess that substring independently of the enclosing span, so that the span's out-of-scope status does not suppress the label. Leave non-disease material, such as the head noun or identifier ("gene," "NDP"), unlabelled.
+0053	- Do not apply this rule when (a) the disease expression is itself the head of the phrase or stands as a complete entity, in which case the disease-class or specific-disease labels govern; (b) the enclosing name contains no disease-denoting substring, so the span is simply out of scope and remains O; or (c) a short form has no disease definition in the document, so it is not anchored as a disease reference and cannot be promoted to Modifier by position alone.
+0054	
+0055	**Specification versus post-modification.** A disease name that follows a non-disease noun through a "with" or "has" frame is not an attributive premodifier and is annotated as **Specific Disease** under item 1 (e.g., "63 kindreds with SLS"). A disease name that is the disorder of which a form or variant is described (e.g., "the classical form of Coats disease") names the disorder itself and is **Specific Disease**.
+0056	
+0057	---
+0058	
+0059	### 4. Annotate **duplicate mentions**
+0060	For each sentence in the PubMed abstract and title, the locations of all disease mentions are marked, including duplicates within the same sentence.
+0061	
+0062	---
+0063	
+0064	### 5. Annotate **minimum necessary span of text**
+0065	Use the smallest span necessary to include all tokens expressing the most specific form of the disease.
+0066	
+0067	**Example**  
+0068	> In the case of “insulin-dependent diabetes mellitus,” the disease mention including the whole phrase was preferred over its substrings such as “diabetes mellitus” or “diabetes.”
+0069	
+0070	For enzyme-deficiency states (item 7), the span runs from the state head through the end of its prepositional complement and includes any enzyme name that premodifies the head, because those tokens express the most specific form of the disorder.
+0071	
+0072	---
+0073	
+0074	### 6. Annotate all **synonymous mentions**
+0075	Abbreviation definitions such as “Huntington disease” (“HD”) are separated into two annotated mentions (one for the long form, one for the abbreviation).
+0076	
+0077	---
+0078	
+0079	### 7. Annotate **enzyme-deficiency states** that define a documented disorder
+0080	IF a deficiency-type state noun (deficiency, insufficiency, deficit, or a noun that itself denotes reduced activity) is the head of a noun phrase, AND a following prepositional complement introduced by "of" or "in" names a biochemical or gene-product entity (enzyme, protein, or gene symbol) that is the defining molecular phenotype of a disorder described in the document, THEN label the entire span, from the state head through the end of the prepositional complement, as **Specific Disease**. The biochemical name inside the complement must not by itself cause an O label; the negative constraints below are the only exceptions.
+0081	
+0082	- "Defining" means an established characterization of the documented disorder. A deficiency offered as a hypothesized mechanism does not meet this condition.
+0083	- The pathological qualifier must be carried by the head noun itself. A neutral head noun (activity, level, expression, function) qualified by a deficiency adjective (e.g., "deficient activity of X," "reduced level of X") is not a state head, and the span remains O.
+0084	
+0085	**Example**  
+0086	> “glucose 6-phosphate dehydrogenase (G6PD) deficiency”: the enzyme name premodifies the head, so the full string is one **Specific Disease** mention (Negative Constraint 2).
+0087	
+0088	**Negative constraints.** Do NOT apply this rule when:
+0089	1. The deficiency term is an adjectival modifier that does not head a disease noun phrase (e.g., “[enzyme]-deficient”). Label it **Modifier** (item 3).
+0090	2. The enzyme or gene name is a premodifier of the disease head (e.g., “[enzyme] deficiency”). The head is already the disease mention, and no prepositional restructuring applies.
+0091	3. The head is a bare symptom or sign noun, especially one in a coordinated list. This falls under the symptom-level convention (item 8).
+0092	4. The deficiency is reported as a generic biochemical observation and is not tied to a disorder described in the document. This includes in-vitro measurements on individual mutant constructs (e.g., “a severe reduction of FALDH enzyme catalytic activity when expressed in mammalian cells”) and hypothesized mechanisms (e.g., “we suggest that … results in a deficiency of X”). Keep the O label.
+0093	5. The state noun is premodified only by a generic word (e.g., “enzyme deficiency”) and its complement is an allele or variant designation (e.g., “in G6PD A-”). This is a variant-level biochemical description. The disorder is annotated through its named mention (e.g., “G6PD deficiency”), and the descriptive phrase remains O.
+0094	
+0095	---
+0096	
+0097	### 8. Annotate **generic manifestations and pathological states** as **Disease Class**
+0098	IF a noun phrase’s head denotes a generic clinical manifestation (a sign, symptom, or discrete structural/developmental abnormality) or a generic pathological state (such as a deficiency or dysfunction of a biomolecule expressed through a prepositional complement), with no disease-type head noun and no proper-name disease label, AND the phrase is the complement of a predicate that characterizes a disease or causally links it to a disease-governed subject (e.g., “is characterized by,” “results in,” “is caused by”), THEN tag the full noun phrase, including its premodifiers and prepositional complement, as one **Disease Class** span rather than O.
+0099	
+0100	**Application conditions:**
+0101	- **Predicate subject.** The predicate’s subject must be the disease, or a finding already attributed to the disease. A predicate whose subject is an etiological lesion that causes the disease (e.g., “a mutation in the NDP gene, which results in a deficiency of X”) does not license the label.
+0102	- **Head-noun test.** Decide from the semantic role of the head noun (manifestation or state versus named entity), not from any particular symptom word or from the predicate verb alone. A neutral head carrying a pathological adjective does not qualify (see item 7).
+0103	- **Processes excluded.** Developmental and pathophysiological process descriptions (e.g., “abnormal retinal vascular development,” or accumulation described as a mechanism step) are biological processes under What NOT to Annotate, item 5. Only discrete clinical findings are tagged.
+0104	- **Symptom-level convention.** A bare, single-word sign or symptom noun that is a member of a coordinated list (e.g., “ichthyosis,” “spasticity”) remains O. Multi-word phenotype terms, including the grey-area terms “mental retardation” and “motor retardation” (Example 11), are Disease Class.
+0105	- **Complement position only.** The noun phrase must be a complement of the characterizing predicate. A noun phrase that is the subject of a predicate (e.g., “WT1 dysfunction is implicated in …”) is not tagged.
+0106	
+0107	**Does NOT apply when:**
+0108	- (a) the span is a named disease or uses a disease-type head noun (e.g., “[X] disease/syndrome/disorder/cancer,” or a named “[X] deficiency”), which is **Specific Disease** (item 1 or item 7);
+0109	- (b) the span is only a gene, protein, or molecule name with no pathological qualifier, which is O;
+0110	- (c) the predicate frame is present but the complement is not a manifestation or pathological state (e.g., a treatment, a population, or a neutral anatomical site), because the frame alone does not license the label;
+0111	- (d) the span is a coordinated list of disease terms functioning as a single composite mention, which is **Composite Mention** (item 2);
+0112	- (e) the head is a general term (e.g., “complications,” “abnormalities”), which is excluded under What NOT to Annotate, item 4.
+0113	
+0114	---
+0115	
+0116	## What NOT to Annotate
+0117	
+0118	1. **Do not annotate organism names**  
+0119	   - Organism names such as “human” were excluded from the preferred mention.  
+0120	   - Viruses, bacteria, and other organism names were not annotated **unless** it was clear that the disease caused by these organisms is being discussed.  
+0121	   - **Example**  
+0122	     > Studies of biopsied tissue for the presence of Epstein-Barr virus and cytomegalovirus were negative.  
+0123	     
+0124	     In this case: “Epstein-Barr virus” and “cytomegalovirus” are annotated as **Specific Disease** category **only** if the context clearly indicates the diseases they cause, otherwise not.
+0125	
+0126	2. **Do not annotate gender**  
+0127	   - Tokens such as “male” and “female” were only included if they specifically identified a new form of the disease.  
+0128	   - **Example**  
+0129	     > “male breast cancer”
+0130	
+0131	3. **Do not annotate overlapping mentions**  
+0132	   - **Example**: The phrase “von Hippel-Lindau (VHL) disease” is annotated as **one single disease mention** (Specific Disease category).
+0133	
+0134	4. **Do not annotate general terms**  
+0135	   - Very general terms such as “disease,” “syndrome,” “deficiency,” “complications,” “abnormalities,” etc. were excluded when used bare or without a specifying qualifier.  
+0136	   - A qualified phrase that names a particular disorder is annotated (e.g., “C7 deficiency,” “Coats disease”) under items 1 and 7. Generic heads such as “complications” or “abnormalities” are not made into mentions by item 8.  
+0137	   - However, the terms “cancer” and “tumor” were retained.
+0138	
+0139	5. **Do not annotate references to **biological processes**  
+0140	   - e.g. Terms corresponding to biological processes such as “tumorigenesis” or “cancerogenesis.”  
+0141	   - This includes pathophysiological and developmental process descriptions (e.g., “abnormal retinal vascular development”), even when they are complements of predicates such as “is characterized by” or “results in” (see item 8).
+0142	
+0143	6. **Do not annotate disease mentions interrupted by nested mentions**  
+0144	   - Essentially, do not break the contiguous text rule.  
+0145	   - **Example**  
+0146	     > WT1 dysfunction is implicated in both neoplastic (Wilms tumor, mesothelioma, leukemia, and breast cancer) and nonneoplastic (glomerulosclerosis) disease.  
+0147	     
+0148	     Here, the mentions “neoplastic disease” and “nonneoplastic disease” are not annotated because other tokens break up these phrases.
+0149	
+0150	7. **Do not annotate non-disease deficiency descriptions**  
+0151	   - Deficiency-type phrases whose head is a neutral noun (e.g., “deficient activity of fatty aldehyde dehydrogenase”), and generic or in-vitro biochemical observations, are not annotated even when an enzyme name is present (see item 7, Negative Constraints 1, 4, and 5).
+0152	
+0153	---
+0154	
+0155	## Precedence Between Overlapping Rules
+0156	
+0157	Where two rules above would label the same span differently, the narrower condition is applied first and the broader rule explicitly excludes it.
+0158	
+0159	1. **Modifier before Specific Disease / Disease Class (item 3 before item 1).** A disease-denoting expression that is an attributive premodifier of a non-disease head, or that specifies a history frame, is a **Modifier** even when its referent is a concrete individual’s disorder. The referential test and its gene-defined clause in item 1 do not override this. A disease expression that is itself the head of a phrase is never a Modifier.
+0160	
+0161	2. **Enzyme-deficiency before generic pathological state (item 7 before item 8).** When the item 7 conditions are satisfied, the span is **Specific Disease** and item 8 does not apply. Where item 7 is not satisfied (e.g., hypothesized mechanism, neutral head, generic or in-vitro observation), item 8 is evaluated on its own conditions. Its predicate-subject and head-noun tests keep such spans O unless every item 8 condition is met.
+0162	
+0163	3. **Item 8 never overrides named disorders, composites, or general-term exclusions.** A named “[X] deficiency” or “[X] disease” remains **Specific Disease**. Coordinated lists of disease terms remain **Composite Mention**. Item 8 and the kind-level rule in item 1 both yield **Disease Class**, so they are consistent.
+0164	
+0165	4. **Adjectival deficiency forms.** An adjectival deficiency form (“[enzyme]-deficient”) is a **Modifier** (item 7, Negative Constraint 1), not a Specific Disease.
+0166	
+0167	---
+0168	
+0169	## Examples
+0170	
+0171	1. **“Insulin-dependent diabetes mellitus”**  
+0172	   - **Specific Disease**  
+0173	   - Prefer the whole string.
+0174	
+0175	2. **CDH1 mutations predispose to early onset “colorectal cancer.”**  
+0176	   - “early onset” may or may not be part of the disease mention, depending on:  
+0177	     1. If there is a UMLS concept specifying this as a separate form of disease  
+0178	     2. If the annotator believes it should be included
+0179	
+0180	3. **Human “X-linked recessive disorder”**
+0181	
+0182	4. **Her fresh serum lacked complement-mediated bactericidal activity against Neisseria gonorrhoeae.**
+0183	
+0184	5. **“Huntington disease” (“HD”)**  
+0185	   - The long form and the short form constitute two separate mentions.
+0186	
+0187	6. **C7 deficiency**  
+0188	   - “This report represents the first cases of C7 deficiency associated with infectious complications.”  
+0189	   - “infectious complications” is too general a term; C7 deficiency is a **Specific Disease**.
+0190	
+0191	7. **“colorectal, endometrial, and ovarian cancers”**  
+0192	   - Considered one **Composite Mention** of several Specific Diseases.
+0193	
+0194	8. **WT1 dysfunction is implicated in both neoplastic (“Wilms tumor,” “mesothelioma,” “leukemias,” and “breast cancer”) and nonneoplastic (“glomerulosclerosis”) disease.**  
+0195	   - Potential disease mentions include: “neoplastic disease,” “nonneoplastic disease,” “Wilms tumor,” “mesothelioma,” “leukemias,” “breast cancer,” and “glomerulosclerosis.”  
+0196	   - “neoplastic disease” and “nonneoplastic disease” are **not** annotated because these phrases are interrupted by nested mentions.
+0197	   - “WT1 dysfunction” is the subject of the predicate, not a complement, so it is not a Disease Class mention (item 8).
+0198	
+0199	9. **Tumorigenesis and cancerogenesis**  
+0200	   - These refer to processes, not diseases.
+0201	
+0202	10. **“autosomal recessive disease”**  
+0203	    - Refers to a family of diseases that can be passed down genetically → **Disease Class** category.
+0204	
+0205	11. **Large phenotypic variability with “convulsive disorders,” “motor retardation,” and “mental retardation.”**  
+0206	    - These are “grey area” terms: they may not correspond to a single **Specific Disease**, so they are annotated as **Disease Class** category if appropriate (see item 8).
+0207	
+0208	12. **Borjeson-Forssman-Lehmann syndrome (BFLS) is a syndromal X-linked mental retardation.**  
+0209	    - “Borjeson-Forssman-Lehmann syndrome” = **Specific Disease**  
+0210	    - “X-linked mental retardation syndrome” = a family of diseases (i.e., **Disease Class**)
+0211	
+0212	13. **Acute meningococcal pericarditis**  
+0213	    - Exists as a separate concept in UMLS.
+0214	
+0215	14. **Acute Neisseria infection**  
+0216	    - May or may not include “acute” depending on context.
+0217	
+0218	15. **Classical galactosemia**  
+0219	    - Includes “classical” because it corresponds to a particular form of the disease.
+0220	
+0221	16. **Inherited spinocerebellar ataxia**  
+0222	    - May or may not include “inherited,” depending on the annotator.
+0223	
+0224	17. **“Adenomatous polyps of the colon and rectum”**  
+0225	    - **Composite Mention**
+0226	
+0227	18. **Fibroepithelial or epithelial hyperplasias**  
+0228	    - **Composite Mention**
+0229	
+0230	19. **Stage II or stage III colorectal cancer**  
+0231	    - **Composite Mention**
+0232	
+0233	20. **“the classical form of Coats disease”**  
+0234	    - “Coats disease” = **Specific Disease**. The phrase names the disorder whose form is described; “classical form” is not part of the mention.
+0235	
+0236	21. **“a family history of ovarian cancer”; “ovarian cancer cases”**  
+0237	    - “ovarian cancer” = **Modifier** in both. In the first it is the complement of a history frame; in the second it is an attributive premodifier of a non-disease head.
+0238	
+0239	22. **“63 kindreds with SLS”**  
+0240	    - “SLS” = **Specific Disease**. The “with” frame is post-modification, not an attributive premodifier.
+0241	
+0242	23. **“the Norrie disease gene (NDP)”**  
+0243	    - “Norrie disease” = **Modifier**. “gene” and “NDP” remain unlabelled.
+0244	
+0245	24. **“… is an autosomal recessive disorder characterized by ichthyosis, mental retardation, spasticity, and deficient activity of fatty aldehyde dehydrogenase”**  
+0246	    - “mental retardation” = **Disease Class** (item 8; multi-word grey-area phenotype term).  
+0247	    - “ichthyosis” and “spasticity” = O (bare symptom nouns in a coordinated list).  
+0248	    - “deficient activity of fatty aldehyde dehydrogenase” = O (neutral head carrying a deficiency adjective; item 7).
+0249	
+0250	25. **“Coats disease is characterized by abnormal retinal vascular development, which results in massive intraretinal and subretinal lipid accumulation”**  
+0251	    - “Coats disease” = **Specific Disease**.  
+0252	    - The developmental and accumulation descriptions are pathophysiological processes and remain O (What NOT to Annotate, item 5).
+0253	
+0254	26. **“a mutation in the NDP gene which results in a deficiency of norrin”**  
+0255	    - O. The subject of “results in” is an etiological lesion, not the disease, and the deficiency is offered as a hypothesized mechanism (items 7 and 8).
+0256	
+0257	27. **“diastrophic dysplasia (DTD) … the DTD gene”**  
+0258	    - The defined short form “DTD” in parentheses is **Specific Disease** (item 6).  
+0259	    - “DTD” as a premodifier of “gene” is **Modifier** (item 3, short form defined in the document).
