@@ -221,8 +221,9 @@ def build(out):
     ], [5.27, 1.64, 2.00, 1.22, 1.5366667], [0.66, 0.77, 0.77], center=(2, 3, 4))
     body(slide, 5.36, [
         "All Modifier mentions add up to the Modifier bar: +40.7",
-        'Predictions without a gold mention: same rule, "predicted" instead of "right"',
-    ], size=21)
+        "False positives (FPs) with no gold overlap are counted separately.",
+        "FP difference = (1 if predicted this run, 0 otherwise) − baseline rate for that prediction",
+    ], size=21, spacing=6)
 
     # 5. Show the saved annotation evidence.
     slide = content_slide(
