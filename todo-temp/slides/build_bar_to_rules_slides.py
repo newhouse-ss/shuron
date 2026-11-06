@@ -296,24 +296,25 @@ def build(out):
     # 8. Group the rule conditions.
     slide = content_slide(
         prs, "12 Results table", "Step 3 groups sentences into rules and counts each condition",
-        "The same sentence is often quoted at different lengths; all such quotes count for one rule. A rule written "
-        "again elsewhere in the guideline is kept as a separate rule here; the places of a candidate rule are "
-        "collected before step 5.", keep=(2,),
+        "Excerpts of different lengths from the same guideline sentence or list item are grouped into one rule. "
+        "If the same rule appears elsewhere in the guideline, that occurrence is tracked separately. "
+        "Line 65 assigns Modifier in both examples. In risk of breast cancer, breast cancer is the complement "
+        "of risk. In cancer risk, cancer comes before and modifies risk. Three annotations were linked to line 65 "
+        "without a condition identified in the rationale.", keep=(2,),
     )
     body(slide, 2.00, [
-        "A rule: one sentence or list item, condition → action",
-        "Quotes of the same sentence form one rule",
-        'Conditions joined by "or" are counted separately',
-        "Grouping rules were fixed before seeing any difference",
-    ], size=22, spacing=6)
-    text(slide, LEFT, 4.09, WIDTH, 0.34, "Guideline line 65 of top-4 loop07",
+        "Group excerpts from the same guideline sentence or list item as one rule.",
+        "Count annotations by the condition named in each rationale.",
+    ], size=22)
+    text(slide, LEFT, 3.50, WIDTH, 0.34,
+         "45 annotations linked to one Modifier rule (top-4 loop07, line 65)",
          size=18, color=MUTED, name="Table title")
-    results_table(slide, 4.48, [
-        ["Condition named in the rationale", "Annotations"],
-        ["is the complement of", "27"],
-        ["premodifies", "15"],
-        ["not stated", "3"],
-    ], [6.10, 2.15], [0.49, 0.48, 0.48, 0.48], center=(1,))
+    results_table(slide, 3.91, [
+        ["Condition named in the rationale", "Example", "Annotations"],
+        ['"is the complement of"', '"risk of [breast cancer]"', "27"],
+        ['"premodifies"', '"[cancer] risk"', "15"],
+        ["No condition named", "", "3"],
+    ], [4.95, 4.64, 2.0766667], [0.56, 0.59, 0.59, 0.59], center=(2,))
 
     # 9. Sum the differences.
     slide = content_slide(
