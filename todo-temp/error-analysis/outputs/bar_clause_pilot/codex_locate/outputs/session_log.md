@@ -21,3 +21,45 @@ Phase 2 完成：58 个不同 basis 条目归并为 66 个 item，其中 12 个�
 对上下文规则、gene/protein 规则、患者自身条件、phenotypic 重述、§1a 排除分支和非首位修饰语排除分支的人工归并进行了独立只读复核，未发现明确违反归并规则的情况。第 196 行没有本次 basis 引文，因此没有为其额外创建重述 item。top4_loop07_merge_decisions.json 保留人工分配关系及排除分支的动作说明；other 不意味着直接赋予 O。
 
 只读协作代理均限制在同一 Codex 任务内，读取范围仅为规范和允许输入，不使用其他 AI 工具、网络、API 或外部结果。保存、进度、校验和 Git 操作由主代理执行。
+
+### top4_loop01 本次批次
+
+按规定顺序开始 top4_loop01。负责定位的只读协作代理先完整阅读第 1 至 734 行，再按文件顺序处理第 1 批 20 条。全部 20 条 located，cannot_locate 为 0，上下文均包含预测文本，增量检查通过。第 9 条引用了 Section 1.5，但 rationale 没有说明该部分如何支持其 Disease Class span，因此保留可定位的依据并在 note 中说明引用限制。
+
+本次共完成 15 批，299 条预测。progress.json 当前为 top4_loop01，第 21 条开始恢复。top4_loop01 的 Phase 2 尚未开始，其余 9 份 guideline 尚未开始。由于全部 11 份的 Phase 1 和 Phase 2 尚未完成，Phase 3 和 Part B 均按规范保持未开始状态。
+
+### Git 提交受阻
+
+已尝试暂存本次两个授权目录，git add 退出码为 128。错误原文为：`fatal: Unable to create 'H:/Git/research/修論/llm-guideline-moderation-source/.git/index.lock': Permission denied`。沙箱不允许写入 Git 索引，因此无法继续提交；没有修改权限、信任设置或工作区边界，也没有重试。本会话的提交命令未成功执行。原始操作结果保存在 git_attempt.json。
+
+结束时只读核对发现，HEAD 为 `fc3c7798f5d052431fdbd5aa82b9e1d096697a96`，其树已包含 top4_loop07_locate.jsonl、top4_loop01_locate.jsonl 和 check_quotes.py。本会话没有成功执行 commit，未核实该 HEAD 状态的产生来源。结束时 session_checks.txt、session_hashes.json、session_log.md、session_summary.json 仍有未提交修改，git_attempt.json 仍未跟踪；暂存区为空。不能声称工作区已清理完成。
+
+拟使用的提交说明为：`Codex locate: complete top4_loop07 and locate first top4_loop01 batch`。
+
+### 会话结束检查（2026-11-06T10:34:14+09:00）
+
+完整 guideline 使用完整检查，未完成 guideline 只检查已保存记录。Phase 3 和 Part B 尚未开始。
+
+| Guideline | 已保存 / 总数 | located | cannot_locate | basis | ruled_out | context | items | Phase 2 | 检查 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| top4_loop07 | 279 / 279 | 279 | 0 | 384 | 15 | 22 | 66 | 完成 | PASS |
+| top4_loop01 | 20 / 272 | 20 | 0 | 32 | 0 | 0 | 0 | 未完成 | PASS |
+| top4_loop02 | 0 / 244 | 0 | 0 | 0 | 0 | 0 | 0 | 未完成 | not_started |
+| top4_loop04 | 0 / 281 | 0 | 0 | 0 | 0 | 0 | 0 | 未完成 | not_started |
+| top4_loop05 | 0 / 238 | 0 | 0 | 0 | 0 | 0 | 0 | 未完成 | not_started |
+| top4_loop06 | 0 / 305 | 0 | 0 | 0 | 0 | 0 | 0 | 未完成 | not_started |
+| top4_loop08 | 0 / 272 | 0 | 0 | 0 | 0 | 0 | 0 | 未完成 | not_started |
+| top4_loop09 | 0 / 279 | 0 | 0 | 0 | 0 | 0 | 0 | 未完成 | not_started |
+| top4_loop10 | 0 / 195 | 0 | 0 | 0 | 0 | 0 | 0 | 未完成 | not_started |
+| top1_loop05 | 0 / 291 | 0 | 0 | 0 | 0 | 0 | 0 | 未完成 | not_started |
+| top1_loop07 | 0 / 262 | 0 | 0 | 0 | 0 | 0 | 0 | 未完成 | not_started |
+
+所有生成输出和脚本的 SHA256 记录在 session_hashes.json，检查原始输出记录在 session_checks.txt。session_hashes.json 不包含自身的哈希。
+
+top4_loop07_locate.jsonl: `2cd3436fbcf518a28ca1af070fea9af840118990d6bae63f6941e5bd1760923a`
+
+top4_loop07_items.csv: `54ec78d10cc5364e8264e84276b5ce47738fa28a6a77069a2fcb5744d8f3caaa`
+
+top4_loop07_quote_to_item.csv: `cf95c3d425a155baf672a6dc8457c71f3665abd29925a89befe25a10c309eb2d`
+
+top4_loop01_locate.jsonl: `3672125857874accf70cb9914b36921715e376ba51af6830dfd13ea56d1115aa`
