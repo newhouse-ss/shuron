@@ -63,3 +63,31 @@ top4_loop07_items.csv: `54ec78d10cc5364e8264e84276b5ce47738fa28a6a77069a2fcb5744
 top4_loop07_quote_to_item.csv: `cf95c3d425a155baf672a6dc8457c71f3665abd29925a89befe25a10c309eb2d`
 
 top4_loop01_locate.jsonl: `3672125857874accf70cb9914b36921715e376ba51af6830dfd13ea56d1115aa`
+
+## 2026年11月6日，top4_loop02 locating-only 会话
+
+本轮使用 reasoning effort high。只处理 top4_loop02 的 244 条预测，按文件顺序每批 20 条，最后一批 4 条。已先完整通读 inputs/guidelines/top4_loop02.txt 的全部 511 行。全部定位决定由阅读 citation、rationale、context 与指南作出，代码只负责输入输出、进度与引文检查，没有执行定位匹配，没有调用 API 或网络。
+
+本次用户明确要求覆盖旧规范的两个限制：更新已有 progress.json 并追加已有 session_log.md；跳过 top4_loop01 剩余预测，仅按用户提供的执行情况标记完成。top4_loop01 的两个输出文件均未打开、修改或合并，其合计 located/cannot_locate 状态数没有重新核验，进度中以 null 明示。完成说明严格采用用户指定文字。旧日志中的 Phase 2、Phase 3 和 items 信息属于以前会话，本轮均不执行。
+
+盲法限制优先于 AGENTS.md 的常规读取和写入要求，因此未读 PROGRESS.md、LOG.md、OVERVIEW.md，也不会写 LOG.md。既有脚本位于本轮允许打开的文件范围之外，未读取；在授权脚本目录新增 loop02_session.py，只实现受限读取、保存和检查。Git 只读取仓库路径及工作树状态，开始时工作树干净。
+
+首次保存前，PowerShell 管道附带 UTF-8 BOM，导致 JSONDecodeError，尚未写入任何定位记录。输入工具改为仅移除 stdin 开头的 BOM 后，首批 20 条保存与检查通过。未改变定位决定或指南引文。
+
+### top4_loop02 完成与检查
+
+按文件顺序完成 13 批，前 12 批各 20 条，最后一批 4 条。共 244 条 located，0 条 cannot_locate。逐批追加 top4_loop02_locate.jsonl 并保存进度。没有创建、修改或合并 items 文件，没有做收益损失聚合，没有查看金标或判断标注对错。
+
+第 49 条首次增量检查出现 condition_words 不匹配：人工填写的 severity 不在所选引文中。重读指南第 166 至 171 行后，改为原文 evaluative，引文和位置未变。
+
+完成全部批次后，对照已读指南逐条缩短部分引文，保留实际依赖的条件与动作。新增 loop02_quote_refinements.py，只保存明确列出的人工句子选择，不根据 citation、rationale 或文本相似度搜索规则。该复核发现第 8、128、219 条的共享规则位置原先误选空白第 115 行。重读第 112 至 125 行，确认实际条文位于第 117 行，已纠正。检查器同步增加拒绝空引文的检查。记录这些失败，不把早期通过当作语义质量证明。
+
+最终运行 `python todo-temp/error-analysis/scripts/codex_locate/loop02_session.py check`，结果 PASS，errors 为空。244 个输入 pred_id 按文件顺序各出现一次；所有 context 包含预测文本；全部引文、行号和 condition_words 通过规范化原文检查，role、status 与 note 长度检查通过。最终引文角色计数：basis 400，ruled_out 6，context 8。完整检查结果保存在 top4_loop02_checks.json，计数与哈希收据保存在 top4_loop02_session_receipt.json。
+
+定位输出 SHA256：`1cc709c1719d9fb497bf832119702c48fa1d912de453c6d7accd83c4032b4c70`。
+
+progress.json 当前 guideline 为 top4_loop02，written 为 244，next_input_row 为 245，定位标记完成。top4_loop01 仅按用户指示更新完成标记和指定 note；其定位输出文件未改动。本轮使用 reasoning effort high。
+
+### 本轮 Git 提交受阻
+
+已对本轮指定文件执行 git add，退出码 128，原文：`fatal: Unable to create 'H:/Git/research/修論/llm-guideline-moderation-source/.git/index.lock': Permission denied`。随后尝试 `git commit --only -m "Codex locate: complete top4_loop02 predictions"` 并显式列出相同文件，退出码 1：新增文件因无法暂存而未被 Git 识别，报 `did not match any file(s) known to git`。沙箱禁止写入 Git 索引，提交未成功，没有扩大权限或继续重试。原始结果保存在 top4_loop02_git_attempt.json。按用户要求保留文件未提交。
