@@ -91,3 +91,31 @@ progress.json 当前 guideline 为 top4_loop02，written 为 244，next_input_ro
 ### 本轮 Git 提交受阻
 
 已对本轮指定文件执行 git add，退出码 128，原文：`fatal: Unable to create 'H:/Git/research/修論/llm-guideline-moderation-source/.git/index.lock': Permission denied`。随后尝试 `git commit --only -m "Codex locate: complete top4_loop02 predictions"` 并显式列出相同文件，退出码 1：新增文件因无法暂存而未被 Git 识别，报 `did not match any file(s) known to git`。沙箱禁止写入 Git 索引，提交未成功，没有扩大权限或继续重试。原始结果保存在 top4_loop02_git_attempt.json。按用户要求保留文件未提交。
+
+
+## 2026-11-06 top4_loop04 定位会话
+
+本次使用 reasoning effort high。仅按文件顺序每批 20 条定位 top4_loop04，共 281 条，末批 1 条。已先通读完整指南。无 API 或网络调用。
+
+适用限制：本次用户指定 top4_loop04，优先于规范默认顺序与旧执行者列表；用户明确授权更新 progress.json、追加目标 JSONL 和 session_log.md，优先于规范禁止修改已有文件的通则。盲读限制优先于 AGENTS.md 要求读取 PROGRESS.md、LOG.md 及更新 LOG.md，本次不打开或修改这些文件。
+
+检查器限制：已有 check_quotes.py 位于本次允许读取范围之外，因此未读取或运行该文件；在获准脚本目录新建本会话检查器，检查相同要求及顺序、引用片段覆盖。只按人工阅读后指定的行号抄录，不进行引用或理由到指南的自动匹配。
+
+初检发现第 13、15、28、29、43、183、265 条的 cited_as 未覆盖括号内分号后的片段。已重新阅读这七条输入及指南第 66 至 80、87 至 103、112 至 120、203、236 至 237 行，修正本会话新建输出的引用片段元数据。原定位文本、行号、角色、条件词、条目顺序和条数均未变；未修改任何其他指南输出。
+
+完成：281/281 条，15 批（前 14 批各 20 条，末批 1 条），located 281，cannot_locate 0。角色计数：basis 537，context 19，ruled_out 8。本次使用 reasoning effort high。仅定位，无合并、条目文件或收益损失汇总。
+
+最终检查通过：ID 完整且各一次、文件顺序一致；预测文本均在给定上下文中；引用在指定指南行内符合规范化原文；条件词为引用子串；状态、角色和 note 合规；所有分号引用片段均有记录或说明。检查命令：`python todo-temp/error-analysis/scripts/codex_locate/loop04_session.py check`。progress.json 当前指南为 top4_loop04，written 为 281，next_input_row 为 282。
+
+实现记录：首批写入前，PowerShell 管道带 BOM 导致 JSON 读取失败，未产生部分输出；读取端支持 BOM 后同一批成功追加。所有批次追加后，仅修正上述七条引用元数据。
+
+输出 SHA256：
+
+- `top4_loop04_locate.jsonl`: `d98bd2f93afff535c680a0155cb76542beb53e5c9e90d88b2dc8a4d1e17b7c27`
+- `top4_loop04_checks.json`: `fbf17cb292c7d59f0c55d05d4a99cdfa73338430ffe0b215c9521b02079fd8bb`
+- `progress.json`: `420bd681cea8288bb7f8c9560e1b9ea2a290c7b547507a5ccdd5e68ecfd0b12c`
+- `loop04_session.py`: `76f3a02a5a00a5d2f711acc7f643b7a77251fdf048d5e1b17f58550612c2659d`
+
+Git ?????????????????????? git diff --check???? 0?????????? CRLF ??? LF?git add ??? 128??????? `.git/index.lock`??? `Permission denied`??????????? git commit --only???? 1???????????? `pathspec ... did not match any file(s) known to git`?????????????????????????????????????????
+
+Git ?????`top4_loop04_git_attempt.json`?SHA256 `49aa73691d3c39609aee03fcc6b1a0ba4ba09e8fcda20c32a125fa19c7ef1a58`????? reasoning effort high?
