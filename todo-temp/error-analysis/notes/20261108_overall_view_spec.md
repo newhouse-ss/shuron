@@ -58,7 +58,11 @@ Script `todo-temp/error-analysis/scripts/overall_view.py` (stdlib plus matplotli
 
 ## Checks (all must pass; print each in the output txt)
 
-- Per guideline and label, the sum of d over gold rows equals the bar in `bar_attribution.json` (|diff| < 1e-6).
+- The stored `d` column has 4 decimals (first run, 2026-11-08: every sum missed the bar by 0.00004 to 0.00013 for this
+  reason). Use the exact value d = y - n_orig_of_19 / 19, with y = 1 for category `gold_now_right` and y = 0 for the
+  other gold categories. Check that it rounds to the stored `d` at 4 decimals for every gold row, then use it everywhere
+  (sums and cosine vectors).
+- Per guideline and label, the sum of exact d over gold rows equals the bar in `bar_attribution.json` (|diff| < 1e-6).
 - Per guideline and label, `tp` in `type_f1.csv` equals `start[label].tp_mean + by_label[guideline][label].tp`
   (|diff| < 1e-6), and fp equals the 19-run mean FP of that label plus `by_label[...].fp`.
 - `overall_f1` equals `loops[...].valid_f1` for that guideline.
@@ -69,6 +73,8 @@ If a check fails, stop, write what failed in the output txt, and do not produce 
 
 ## Limits
 
-- Do not modify any existing file, PROGRESS.md, LOG.md, reports or slides. Do not commit.
+- Do not modify any existing file, PROGRESS.md, LOG.md, reports or slides. Do not commit. Exception: the first run's
+  own files (`scripts/overall_view.py`, everything in `outputs/overall_view/`) are replaced by this run; keep the clause
+  directions it already wrote only if they were written before items.csv, predictions or instances were opened.
 - No interpretation, conclusions, significance tests, extra pairs, FP-side matrices or noise baselines.
 - Finish with a short final message: files written, check results, anything you could not do.
