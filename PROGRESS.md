@@ -265,6 +265,13 @@ BC5CDR、BioRED 的复现已完成，validation 原指南/修改后分别为 **0
 - **柱状图的可靠性。** 每份改后指南在 valid100 上只有终版指南的一次标注，拿它和 19 次原指南标注的平均比，说明不了相对基线的稳定提升。判断方式（例如超出 19 次的最小值到最大值才算，或做显著性分析）是待定的课题。
 - **用户的反思：** 过度工程化，没有分清分析的主次；在没确认柱子之间有值得解释的差别之前，先搭了细粒度的定位、归并、汇总流程。探索阶段先确认方向是否值得做，没有证据不断言，也不在其上叠后续实验。
 
+**2026-11-08，按实体类型看整体（离线，未调用 API）：Modifier 的 F1 高低看 FP，SpecificDisease 和 DiseaseClass 看 TP 损失；top-4 loop08 和 loop04 的 Modifier 条文差别与柱子差距方向一致。** [规格](todo-temp/error-analysis/notes/20261108_overall_view_spec.md)，输出在 `todo-temp/error-analysis/outputs/overall_view/`（分组柱状图 `grouped_bars.png`，相似度矩阵 `similarity_matrices.png`）。余弦相似度的向量取该类每个 gold 提及的差异 d，衡量两份指南是否在同一批提及上往同一方向变，不是指南文本的相似度。
+
+- **F1 的高低：** SpecificDisease、DiseaseClass 该类 F1 最低的几份，正是 TP 损失最大的几份。Modifier 不同：top-4 loop07 的 TP 多了 40.7 个（11 份里第二多），FP 也多了 30.3 个，该类 F1 只排第 4。
+- **相似度矩阵：** Modifier 和 SpecificDisease 里，该类 F1 越接近最好的指南，与它的余弦越高；DiseaseClass 看不出趋势。Modifier 里 F1 低的分两种：变化落在同一批提及上但 FP 多（top-4 loop07、loop06），或者变化本身少（top-4 loop02、loop05、loop10）。165 对余弦全部大于 0，柱子正负相反的两份也是，所以只读同一行里的先后，绝对值要等噪声参照（两次原指南运行之间的余弦）。
+- **第一对指南：** 只看文字，有 5 处差别会让 loop08 标出更多 Modifier，2 处更少，与柱子差距（+50.7 对 +26.7）方向一致。其中带来 Modifier TP 的只有一处：loop08 不要求病名紧挨中心名词，也不先按 DiseaseClass、Composite 判定（依赖它的提及 63 个，TP +23.9）。一个提及可以同时依赖几条规定，算不出这一处占差距的多少。
+- **对研究主线的含义：** 三类实体的 F1 差别来源不同，条文对比按实体类型分开做。一对指南能对上柱子，其余指南对待做，Todo 第 1、2 项未完成。
+
 ## 后续记录方式
 
 实验后，LOG 新增一行，PROGRESS 记录它对三条优化轴、阶段目标和当前决策的影响，并更新文档底部的 Todo。负结果和中断同样保留。
