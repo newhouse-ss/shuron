@@ -1,0 +1,108 @@
+name,unit_id,line_start,line_end,text,judgement,types,reason
+original,original_001,1,1,# Biomedical Annotation Guidelines,none,,
+original,original_002,3,3,## What to Annotate,none,,
+original,original_003,5,5,### 1. Annotate all **Specific Disease** mentions,none,,
+original,original_004,6,6,A textual string referring to a disease name may refer to a **Specific Disease** or a **Disease Class**.,types,SpecificDisease;DiseaseClass,依据原定义区分一个不可再细分的具体疾病与包含多个疾病的家族。
+original,original_005,7,7,- **Disease Class**: Mentions that could be described as a family of multiple specific diseases.,types,SpecificDisease;DiseaseClass,依据原定义区分一个不可再细分的具体疾病与包含多个疾病的家族。
+original,original_006,8,8,- **Specific Disease**: Mentions that can be linked to one specific definition that does not include further categorization.,types,SpecificDisease;DiseaseClass,依据原定义区分一个不可再细分的具体疾病与包含多个疾病的家族。
+original,original_007,10,10,**Example**,none,,
+original,original_008,11,11,"> Diastrophic dysplasia is an autosomal recessive disease characterized by short stature, very short limbs and joint problems that restrict mobility.",types,SpecificDisease;DiseaseClass,示例同句呈现具体病名及遗传疾病家族描述。
+original,original_009,13,13,- **Annotate**:,none,,
+original,original_010,14,14,- “Diastrophic dysplasia” as **Specific Disease**,types,SpecificDisease,将 Diastrophic dysplasia 标为具体疾病。
+original,original_011,15,15,- “autosomal recessive disease” as **Disease Class**,types,DiseaseClass,将 autosomal recessive disease 标为疾病家族。
+original,original_012,17,17,---,none,,
+original,original_013,19,19,### 2. Annotate **contiguous text strings**,none,,
+original,original_014,20,20,A textual string may refer to two or more separate disease mentions.,types,SpecificDisease;DiseaseClass;CompositeMention,一个连续字符串可涵盖多个疾病，构成复合提及的条件。
+original,original_015,20,20,Such mentions are annotated with the **Composite Mention** category.,types,SpecificDisease;DiseaseClass;CompositeMention,将前述多个疾病共用的字符串标为 CompositeMention。
+original,original_016,22,22,**Example**,none,,
+original,original_017,23,23,> The text phrase “Duchenne and Becker muscular dystrophy” refers to two separate diseases.,types,SpecificDisease;CompositeMention,同一短语指向两个具体疾病，示范复合提及。
+original,original_018,23,23,"If this phrase is separated into two strings: “Duchenne” and “Becker muscular dystrophy,” it results in information loss, because the word “Duchenne” on its own is not a disease mention.",types,SpecificDisease;CompositeMention,拆开共享疾病词会丢失信息，因此保留复合跨度。
+original,original_019,25,25,---,none,,
+original,original_020,27,27,### 3. Annotate disease mentions that are used as **Modifiers** for other concepts,none,,
+original,original_021,28,28,"A textual string may refer to a disease name, but it may modify a noun phrase (or may not be a noun phrase itself).",types,Modifier;SpecificDisease;DiseaseClass,病名修饰其他名词的语法角色会改变疾病标签。
+original,original_022,28,28,"In such cases, annotate using the **Modifier** category.",types,Modifier;SpecificDisease;DiseaseClass,上述修饰用法标 Modifier，区别独立的具体疾病或疾病家族。
+original,original_023,30,30,**Example**,none,,
+original,original_024,31,31,"> Although this mutation was initially detected in four of 33 colorectal cancer families analysed from eastern England, more extensive analysis has reduced the frequency to four of 52 English HNPCC kindreds analysed.",types,Modifier;SpecificDisease;DiseaseClass,示范病名修饰 families 和 kindreds 的 Modifier 用法。
+original,original_025,33,33,- **Annotate**:,none,,
+original,original_026,34,34,- “colorectal cancer” as **Modifier**,types,Modifier;DiseaseClass,colorectal cancer 在 families 前标 Modifier，区别独立疾病。
+original,original_027,35,35,- “HNPCC” as **Modifier**,types,Modifier;SpecificDisease,HNPCC 在 kindreds 前标 Modifier，区别具体疾病。
+original,original_028,37,37,---,none,,
+original,original_029,39,39,### 4. Annotate **duplicate mentions**,none,,
+original,original_030,40,40,"For each sentence in the PubMed abstract and title, the locations of all disease mentions are marked, including duplicates within the same sentence.",general,,所有类型的重复提及都应保留。
+original,original_031,42,42,---,none,,
+original,original_032,44,44,### 5. Annotate **minimum necessary span of text**,none,,
+original,original_033,45,45,Use the smallest span necessary to include all tokens expressing the most specific form of the disease.,general,,所有类型均取表达完整病名所需的最小跨度。
+original,original_034,47,47,**Example**,none,,
+original,original_035,48,48,"> In the case of “insulin-dependent diabetes mellitus,” the disease mention including the whole phrase was preferred over its substrings such as “diabetes mellitus” or “diabetes.”",general,,具体糖尿病名称应保留限定词，避免截短。
+original,original_036,50,50,---,none,,
+original,original_037,52,52,### 6. Annotate all **synonymous mentions**,none,,
+original,original_038,53,53,"Abbreviation definitions such as “Huntington disease” (“HD”) are separated into two annotated mentions (one for the long form, one for the abbreviation).",general,,全称与缩写分别成提及，分割原则适用于各类型。
+original,original_039,55,55,---,none,,
+original,original_040,57,57,## What NOT to Annotate,none,,
+original,original_041,59,59,1. **Do not annotate organism names**,general,,仅指生物体的名称统一排除于疾病提及。
+original,original_042,60,60,- Organism names such as “human” were excluded from the preferred mention.,general,,human 等生物体词统一不进入疾病跨度。
+original,original_043,61,61,"- Viruses, bacteria, and other organism names were not annotated **unless** it was clear that the disease caused by these organisms is being discussed.",general,,是否指疾病而非生物体，是所有类型共同的纳入条件。
+original,original_044,62,62,- **Example**,none,,
+original,original_045,63,63,> Studies of biopsied tissue for the presence of Epstein-Barr virus and cytomegalovirus were negative.,general,,检测生物体存在的语境用于判断是否实际指疾病。
+original,original_046,65,65,"In this case: “Epstein-Barr virus” and “cytomegalovirus” are annotated as **Specific Disease** category **only** if the context clearly indicates the diseases they cause, otherwise not.",types,SpecificDisease,只有明确指所致疾病时才把两个病毒名标 SpecificDisease。
+original,original_047,67,67,2. **Do not annotate gender**,general,,性别词进入疾病跨度的限制适用于所有类型。
+original,original_048,68,68,- Tokens such as “male” and “female” were only included if they specifically identified a new form of the disease.,general,,性别词只有界定新的疾病形式时才进入跨度。
+original,original_049,69,69,- **Example**,none,,
+original,original_050,70,70,> “male breast cancer”,general,,展示带性别限定词的乳腺癌名称及疾病跨度。
+original,original_051,72,72,3. **Do not annotate overlapping mentions**,general,,所有类型都禁止重叠提及。
+original,original_052,73,73,- **Example**: The phrase “von Hippel-Lindau (VHL) disease” is annotated as **one single disease mention** (Specific Disease category).,types,SpecificDisease,带嵌入缩写的完整病名作为一个 SpecificDisease 提及。
+original,original_053,75,75,4. **Do not annotate general terms**,general,,一般词不构成疾病名称时统一排除。
+original,original_054,76,76,"- Very general terms such as “disease,” “syndrome,” “deficiency,” “complications,” “abnormalities,” etc. were excluded.",general,,说明所有类型共同排除的裸一般词范围。
+original,original_055,77,77,"- However, the terms “cancer” and “tumor” were retained.",types,DiseaseClass,保留 cancer 和 tumor 这类疾病家族词。
+original,original_056,79,79,5. **Do not annotate references to **biological processes**,general,,仅指生物过程的表达统一不标疾病。
+original,original_057,80,80,- e.g. Terms corresponding to biological processes such as “tumorigenesis” or “cancerogenesis.”,general,,以肿瘤发生过程示范所有类型共同的疾病纳入界限。
+original,original_058,82,82,6. **Do not annotate disease mentions interrupted by nested mentions**,general,,所有类型均排除被嵌套内容打断的非连续提及。
+original,original_059,83,83,"- Essentially, do not break the contiguous text rule.",general,,连续性要求适用于所有类型。
+original,original_060,84,84,- **Example**,none,,
+original,original_061,85,85,"> WT1 dysfunction is implicated in both neoplastic (Wilms tumor, mesothelioma, leukemia, and breast cancer) and nonneoplastic (glomerulosclerosis) disease.",general,,展示具体肿瘤与被括号内容打断的概括性疾病短语。
+original,original_062,87,87,"Here, the mentions “neoplastic disease” and “nonneoplastic disease” are not annotated because other tokens break up these phrases.",general,,排除被打断的两个疾病类别短语。
+original,original_063,89,89,---,none,,
+original,original_064,91,91,## Examples,none,,
+original,original_065,93,93,1. **“Insulin-dependent diabetes mellitus”**,types,SpecificDisease,给出应完整保留的具体糖尿病名称。
+original,original_066,94,94,- **Specific Disease**,types,SpecificDisease,将本例糖尿病提及标为 SpecificDisease。
+original,original_067,95,95,- Prefer the whole string.,general,,要求本例具体糖尿病保留完整跨度。
+original,original_068,97,97,2. **CDH1 mutations predispose to early onset “colorectal cancer.”**,general,,展示带起病时间限定语的癌症提及。
+original,original_069,98,98,"- “early onset” may or may not be part of the disease mention, depending on:",general,,此癌症跨度是否包含 early onset 需要进一步判断。
+original,original_070,99,99,1. If there is a UMLS concept specifying this as a separate form of disease,general,,以独立疾病概念是否存在决定此癌症限定语的跨度。
+original,original_071,100,100,2. If the annotator believes it should be included,general,,允许标注者判断此癌症限定语是否纳入跨度。
+original,original_072,102,102,3. **Human “X-linked recessive disorder”**,general,,示范遗传方式限定的疾病家族，human 不属于病名。
+original,original_073,104,104,4. **Her fresh serum lacked complement-mediated bactericidal activity against Neisseria gonorrhoeae.**,general,,展示抗菌活性和生物体语境，用于区分疾病提及与非疾病背景。
+original,original_074,106,106,5. **“Huntington disease” (“HD”)**,general,,展示具体疾病全称及其缩写。
+original,original_075,107,107,- The long form and the short form constitute two separate mentions.,general,,示范全称和缩写分别形成提及的通用分割规则。
+original,original_076,109,109,6. **C7 deficiency**,types,SpecificDisease,给出补体成分限定的具体缺乏病名称。
+original,original_077,110,110,- “This report represents the first cases of C7 deficiency associated with infectious complications.”,types,SpecificDisease,展示 C7 deficiency 作为患者疾病名出现的语境。
+original,original_078,111,111,- “infectious complications” is too general a term; C7 deficiency is a **Specific Disease**.,types,SpecificDisease,排除泛并发症描述，明确 C7 deficiency 是具体疾病。
+original,original_079,113,113,"7. **“colorectal, endometrial, and ovarian cancers”**",types,SpecificDisease;CompositeMention,共享 cancers 的并列癌症名称包含多个具体疾病。
+original,original_080,114,114,- Considered one **Composite Mention** of several Specific Diseases.,types,SpecificDisease;CompositeMention,多个具体疾病合为一个 CompositeMention。
+original,original_081,116,116,"8. **WT1 dysfunction is implicated in both neoplastic (“Wilms tumor,” “mesothelioma,” “leukemias,” and “breast cancer”) and nonneoplastic (“glomerulosclerosis”) disease.**",general,,展示病名及被插入内容打断的疾病类别短语。
+original,original_082,117,117,"- Potential disease mentions include: “neoplastic disease,” “nonneoplastic disease,” “Wilms tumor,” “mesothelioma,” “leukemias,” “breast cancer,” and “glomerulosclerosis.”",general,,列出本例具体疾病和疾病类别的候选短语。
+original,original_083,118,118,- “neoplastic disease” and “nonneoplastic disease” are **not** annotated because these phrases are interrupted by nested mentions.,general,,排除两个被嵌套内容打断的疾病类别表达。
+original,original_084,120,120,9. **Tumorigenesis and cancerogenesis**,general,,给出只指过程的术语，示范共同排除条件。
+original,original_085,121,121,"- These refer to processes, not diseases.",general,,明确这些表达指过程，不能形成任何疾病类型的提及。
+original,original_086,123,123,10. **“autosomal recessive disease”**,types,DiseaseClass,给出遗传方式界定的疾病家族表达。
+original,original_087,124,124,- Refers to a family of diseases that can be passed down genetically → **Disease Class** category.,types,SpecificDisease;DiseaseClass,将该遗传疾病家族标为 DiseaseClass。
+original,original_088,126,126,"11. **Large phenotypic variability with “convulsive disorders,” “motor retardation,” and “mental retardation.”**",types,SpecificDisease;DiseaseClass,展示表现词是否对应单一疾病的类别判断情境。
+original,original_089,127,127,"- These are “grey area” terms: they may not correspond to a single **Specific Disease**, so they are annotated as **Disease Class** category if appropriate.",types,SpecificDisease;DiseaseClass,可能不对应单一具体疾病的表现词归入 DiseaseClass。
+original,original_090,129,129,12. **Borjeson-Forssman-Lehmann syndrome (BFLS) is a syndromal X-linked mental retardation.**,types,SpecificDisease;DiseaseClass,同句呈现特定综合征及概括性遗传疾病家族。
+original,original_091,130,130,- “Borjeson-Forssman-Lehmann syndrome” = **Specific Disease**,types,SpecificDisease,将命名综合征全称标为 SpecificDisease。
+original,original_092,131,131,"- “X-linked mental retardation syndrome” = a family of diseases (i.e., **Disease Class**)",types,SpecificDisease;DiseaseClass,将 X-linked mental retardation syndrome 标为疾病家族。
+original,original_093,133,133,13. **Acute meningococcal pericarditis**,general,,展示可能构成独立疾病概念的完整病名。
+original,original_094,134,134,- Exists as a separate concept in UMLS.,general,,用独立概念依据支持本例具体病名及跨度。
+original,original_095,136,136,14. **Acute Neisseria infection**,general,,给出需判断 acute 是否属于名称的感染病名。
+original,original_096,137,137,- May or may not include “acute” depending on context.,general,,依语境决定该感染病名是否包含 acute。
+original,original_097,139,139,15. **Classical galactosemia**,general,,给出特定形式的半乳糖血症名称。
+original,original_098,140,140,- Includes “classical” because it corresponds to a particular form of the disease.,general,,因界定具体疾病形式而将 classical 纳入跨度。
+original,original_099,142,142,16. **Inherited spinocerebellar ataxia**,general,,给出需判断 inherited 是否纳入的共济失调病名。
+original,original_100,143,143,"- May or may not include “inherited,” depending on the annotator.",general,,允许标注者判断该疾病名称是否包含 inherited。
+original,original_101,145,145,17. **“Adenomatous polyps of the colon and rectum”**,types,SpecificDisease;DiseaseClass;CompositeMention,给出多个解剖部位共用病理名称的复合表达。
+original,original_102,146,146,- **Composite Mention**,types,SpecificDisease;DiseaseClass;CompositeMention,将该共用名称的表达标为 CompositeMention。
+original,original_103,148,148,18. **Fibroepithelial or epithelial hyperplasias**,types,SpecificDisease;DiseaseClass;CompositeMention,给出并列限定词共用 hyperplasias 的复合表达。
+original,original_104,149,149,- **Composite Mention**,types,SpecificDisease;DiseaseClass;CompositeMention,将此并列表达标为 CompositeMention。
+original,original_105,151,151,19. **Stage II or stage III colorectal cancer**,types,SpecificDisease;DiseaseClass;CompositeMention,给出不同分期共用具体癌症名称的复合表达。
+original,original_106,152,152,- **Composite Mention**,types,SpecificDisease;DiseaseClass;CompositeMention,将该分期并列表达标为 CompositeMention。
+original,original_107,154,154,---,none,,
