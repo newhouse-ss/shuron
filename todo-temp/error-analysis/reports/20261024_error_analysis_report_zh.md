@@ -1,6 +1,6 @@
 # 10/23 复现的错误分析：修改后的指南改变了哪些标注错误
 
-2026-11-03 版（补上 Modifier 以外两类损失的条文对照、相关循环的逐轮记录和删条文检验的准备）。全部离线完成，没有调用标注 API；历次修订见[附录](20261024_error_analysis_appendix_zh.md)第 E 节。英文版 `20261024_error_analysis_report.md` 尚未同步。
+2026-11-10 版（新增第 4.4 节：top-4 loop08 与 top-4 loop04 的 Modifier 柱高差对到条文；11/03 版补上了 Modifier 以外两类损失的条文对照、相关循环的逐轮记录和删条文检验的准备）。全部离线完成，没有调用标注 API；历次修订见[附录](20261024_error_analysis_appendix_zh.md)第 E 节。英文版 `20261024_error_analysis_report.md` 尚未同步。
 
 ## 本文回答什么
 
@@ -34,6 +34,7 @@
 6. **家族史规则是从一篇开发文档推广出来的，误标对应的是这条规则，不是照抄的字符串。** 改写首次写出这条规则时几乎都写成 Modifier，那时它没见过家族史位置的正确标签；11 份指南都抄进了这篇文档的短语，但只有把家族史写成 Modifier 的 7 份出现这类误标。
 7. **保留判定只看开发集总分，与 gold 相反的规则也能通过。** 事后核对 5 个开发集短语，被保留的规则中有 15 处与开发集 gold 相反；多数在写入的那一轮就让开发集上的对应提及从对变错，只是被总分的上升盖过了。
 8. **开发集看得出 DiseaseClass 漏标，看不出 Specific 标成 DiseaseClass。** 11 份指南都有一轮改写针对开发集上"Specific 被标成 DiseaseClass"这个错误簇，写出的规则方向相反；"部位词不足以算具体疾病"的害处在开发集上看不出来，因为 10 篇开发文档里没有 breast cancer 这类泛指的用法。DiseaseClass 漏标则在 top-4 loop05、loop10 的开发集上已经翻倍，仍被总分的上升盖过。
+9. **top-4 loop08 标对的 Modifier 比 top-4 loop04 多 24 个，一半多是同一篇摘要里对缩写 VHL 的同一个判断。** 其余部分对得最清楚的是 top-4 loop04 "病名后隔着括号就标 Specific"的规定，模型理由引用了它；方向相反的条文差别有三处，规模小得多。两份指南最显眼的家族史条文差别只影响 Modifier 错标，不影响这根柱子（第 4.4 节）。
 
 ## 1. 方法的平均收益没有确认，修改后的指南各不相同
 
@@ -245,6 +246,36 @@ top-4 比原指南平均高 0.0067。95% 区间是按这些运行的波动推算
 也有预测与条文不符的情况。top-4 loop09 要求家族史中的单一疾病标 Modifier，并写明 cancer 要标注，却把 "family history of cancer" 中的 cancer 漏标了。
 
 这些对照只覆盖全部变化的一小部分。11 份指南相对原指南改对或改错的提及约有 940 个，逐条对照过条文的只有 130 个出错的预测，改对的一侧没有对照（判定方法和逐份结果见附录 G.6、G.7）。
+
+### 4.4 top-4 loop08 标对的 Modifier 比 top-4 loop04 多 24 个，一半多是同一篇摘要里的同一个判断
+
+**柱高差的一半多来自一篇摘要里对缩写 VHL 的判断；其余部分对得最清楚的，是 top-4 loop04 "病名后隔着括号就标 Specific"的规定。** 两根柱子减的是同一个原指南平均，所以柱高之差就是两份指南标对的 gold Modifier 个数之差：top-4 loop08 标对 161 个，top-4 loop04 标对 137 个。
+
+逐个比较验证集的 gold Modifier，只有 top-4 loop08 标对的有 33 个，只有 top-4 loop04 标对的有 9 个。下表按写法把它们分组。"标法"是两份指南在这组提及上的实际预测，括号里是相关条文在指南原文中的行号（从 1 起），条文是否直接规定了这种标法，见表下逐行说明；这些提及的 gold 都是 Modifier。
+
+| 写法（验证集例子） | top-4 loop08 标法 | top-4 loop04 标法 | 只有 loop08 标对 / 只有 loop04 标对 | 原指南 19 次运行中标对 |
+| --- | --- | --- | --- | --- |
+| 文中定义过的病名缩写放在 gene、mRNA 等名词前（"the VHL gene"、"VHL mRNA"，同一篇） | Modifier（第 52、259 行） | 不标（第 120、191 行） | 13 / 0 | 0 次 |
+| 病名后跟括号缩写，再接名词（"myotonic dystrophy ( DM ) locus"） | Modifier（第 46 行） | Specific（第 113、114 行） | 7 / 1 | 1 至 19 次 |
+| 并列病名接名词（"breast-ovarian cancer families"），另有 1 个是 "heritable cancer predisposition" 中的 cancer | Modifier（第 46 行） | Composite，那 1 个整体标 DiseaseClass（第 117 行） | 5 / 1 | 并列病名 0 次，cancer 15 次 |
+| -deficient 形容词修饰别的名词（"Atm-deficient mice"，同一篇） | 不标（第 89 行） | Modifier（第 38 行） | 0 / 4 | 0 次 |
+| 文中没有定义过的缩写（"EDMD families"） | 不标（第 53 行） | Modifier（第 125 行） | 0 / 1 | 19 次 |
+| 病名缩写接 protein（"WAS protein"） | 不标（第 47 行） | Modifier（第 289 行） | 0 / 1 | 0 次 |
+| 找不到条文差别（"male breast cancer population" 等） | | | 8 / 1 | 1 至 17 次 |
+
+前三行与柱高方向一致，中间三行方向相反。逐行说明：
+
+- **VHL：top-4 loop08 的条文只指向 Modifier，top-4 loop04 的条文两个方向都有。** 这篇摘要里的 VHL 既是文中定义过的病名缩写，也是基因符号（基因的简写名，如 BRCA1）。top-4 loop08 第 52 行规定，`a short form that the document has explicitly defined as a disease` 修饰非疾病名词时标 Modifier；第 259 行的例子 `“DTD” as a premodifier of “gene” is **Modifier**` 与 "the VHL gene" 同形，模型理由几乎照抄（"Defined short form VHL is a premodifier of the gene noun"）。top-4 loop04 第 120 行前半句同样给 Modifier（`an acronym that the document has already defined as a disease`），同一行末句却是 `any bare gene symbol remain O`，第 191 行又写 `gene symbols remain O`，例子里有 "FALDH gene"。top-4 loop04 一个也没标；没标的提及不留理由，所以它依据哪一句不标只是推断。原指南 19 次运行也一个都没标对。
+- **括号：同一篇摘要里同一个病名，带不带括号，top-4 loop04 的标法就变。** 标题 "the myotonic dystrophy locus" 标 Modifier，正文 "the myotonic dystrophy ( DM ) locus" 标 Specific，理由是病名 "followed by a parenthetical acronym gloss rather than a head noun"。这对应第 113 行要求病名 `**immediately** followed by a common-noun head`，中间不能隔括号，否则按第 114 行 `label the span **Specific Disease**`，括号里的缩写随全称。top-4 loop08 第 46 行只看病名是否 `specifies a non-disease head noun`，不要求紧挨。正文这一处，原指南 19 次运行全都标对。唯一的反例是 "Huntington disease (HD) gene" 中的 HD：top-4 loop08 的理由是括号里的缩写算一处单独的同义提及，标成 Specific，与它第 258 行的例子 `The defined short form “DTD” in parentheses is **Specific Disease**` 方向相同。
+- **并列病名：方向一致，但 top-4 loop04 的理由不是第 117 行。** 第 117 行写 `The span is a Disease Class mention or a Composite Mention. Those are resolved by their own definitions before this test is applied.`，与标成 Composite 的结果一致。已保存回复里的理由却是 "two separate diseases joined together"；"BRCA1 breast and ovarian cancer susceptibility gene" 一处，模型先按自己指南"gene 前的病名标 Modifier"判成 Modifier，又以 `I recall now — the NCBI disease corpus actually annotates "breast and ovarian cancer" as a Composite Mention` 改掉。top-4 loop08 的条文也没写 Modifier 先于 Composite（第 46 行只写 `(takes precedence over items 1 and 7)`），理由里的 "Modifier takes precedence over Composite Mention" 是模型自己定的先后。
+- **方向相反的三处，都是 top-4 loop04 写得更宽或有现成的例子。** -deficient：top-4 loop08 第 89 行只举 `“[enzyme]-deficient”`，写在"酶缺乏状态"一条的例外里；top-4 loop04 第 38 行写 `When the deficiency-type word modifies a different noun, it is attributive and is annotated as **Modifier**`，并写明 `The same holds for "deficient patients."`。没定义的缩写：这篇摘要只定义了 EMDM（原文的拼法），后文写的是 EDMD；top-4 loop08 第 53 行规定 `(c) a short form has no disease definition in the document` 时不能凭位置标 Modifier，top-4 loop04 第 125 行要 `no disease definition or established disease referent` 才不标。protein：top-4 loop04 第 289 行的例子正是 "Wiskott-Aldrich syndrome protein"，top-4 loop08 第 47 行列举的中心名词里没有 protein。
+- **找不到条文差别的，原指南自己也时对时错。** "male breast cancer" 后接 population、cases、patients 的 4 个在同一篇，两份指南关于性别词的条文逐字相同（top-4 loop08 第 127 行、top-4 loop04 第 161 行）；top-4 loop04 去掉了 male，top-4 loop08 保留，原指南 19 次运行里 7 次标对。单独的 tumour、tumor 后接名词的 4 个，top-4 loop04 都没标，没有理由可查；字面上只有 top-4 loop04 第 112 行说规定适用于 `disease-name spans`，top-4 loop08 第 46 行说 `A disease-denoting expression`，单独的 tumour 算不算病名，两份都没写。
+
+**差距的大小主要取决于 VHL 这一篇。** 这 13 个提及在两份指南和原指南 19 次运行里，每次都是全对或全错，相当于一个判断。去掉这一篇，差距剩 11 个，小于原指南自己 19 次运行之间标对数的最大差距（20 个）。
+
+**两份指南最显眼的 Modifier 条文差别与这根柱子无关。** top-4 loop08 第 48 行把 `the complement of a history frame`（如 "a family history of ovarian cancer"）定为 Modifier，top-4 loop04 第 118 行用同一个例子定为 Specific。验证集上紧跟 history of 的 9 个 gold 提及没有一个是 Modifier，top-4 loop08 在这类位置标的 6 个 Modifier 全是错标，标对数不受影响。11/08 只读条文判断方向时，家族史这一条被判为"top-4 loop08 标出更多 Modifier"，VHL 这一块因为 top-4 loop04 第 120 行两句方向相反被判为方向不明：只读条文找得到候选，分不出哪一处落在标对数上。
+
+（来源：`outputs/overall_view/pair_modifier_tp_diff_output.txt`，A 节分组计数，B 节逐个提及的预测与理由，C 节括号的同篇对照，D 节家族史，F 节 top-4 loop04 标 Composite 的回复原文，E 节引文逐字核对。分组由人工按写法归类，脚本核对分组恰好覆盖全部差别。11/08 只读条文的对照见 `outputs/overall_view/pair_loop08_loop04_modifier.md`）
 
 ## 5. Modifier 以外的损失：新条文把一部分提及排除在 Specific 或标注之外
 
