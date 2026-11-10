@@ -501,7 +501,7 @@
 
 | 产物 | SHA-256（前 12 位） | 内容 |
 | --- | --- | --- |
-| `pair_modifier_tp_diff.py` → `overall_view/pair_modifier_tp_diff_output.txt` | 9b2301aa1ceb → 44851d38ab99 | 11/10：两份指南的 Modifier 标对数（161、137）与 `loop_label_tables.json` 的起点均值和变化量一致（断言）；只有一份标对的 42 个 gold Modifier 逐个列出两份的预测、原指南 19 次运行中标对的次数和保存的理由（B 节）；人工分组的计数（A 节，断言分组恰好覆盖全部差别、净差为 24）；同篇带括号与不带括号的对照（C 节）；家族史后的 Modifier 错标（D 节）；top-4 loop04 标 Composite 的回复原文（F 节）；26 条引文与指南原文逐字核对（E 节；plain 指南与两个循环的 `final/final_guidelines.txt` 去掉回车后逐字相同）。重跑两次输出相同 |
+| `pair_modifier_tp_diff.py` → `overall_view/pair_modifier_tp_diff_output.txt` | 10240b20469b → 8311548a0148 | 11/10：两份指南的 Modifier 标对数（161、137）与 `loop_label_tables.json` 的起点均值和变化量一致（断言）；只有一份标对的 42 个 gold Modifier 逐个列出两份的预测、原指南 19 次运行中标对的次数和保存的理由（B 节）；人工分组的计数（A 节，断言分组恰好覆盖全部差别、净差为 24）；同篇带括号与不带括号的对照（C 节）；家族史后的 Modifier 错标（D 节）；top-4 loop04 标 Composite 的回复原文（F 节）；26 条引文与指南原文逐字核对（E 节；plain 指南与两个循环的 `final/final_guidelines.txt` 去掉回车后逐字相同）。重跑两次输出相同 |
 | `draw_test_split.py` → `reproduction/test_splits/ncbi_disease_heldout50.json` | 8540c0a742bc → f6d86403f3d8 | 从 537 篇（593 篇训练文档，减去 50 篇开发文档，减去 6 篇同时出现在 BioRED 的文档）中抽取 50 篇测试文档，种子 20261024 |
 | `error_table.py` → `error_table_output.txt`、`error_rows.csv`、`error_items.csv` | 1f6e4c350a79 → 4f4507660a31, 012db607b14c, 191d78dbabb8 | 8,855 个错误，924 个不同错误。由错误类型推出的 TP、FP、FN 在全部 30 次运行上与 `valid_metrics.json` 一致（assert） |
 | `patterns_lib.py` | 769d38886b3f | 下列脚本共用的模式规则；组名和模式名描述各规则实际检测的内容（10/25 改名，计数不变） |

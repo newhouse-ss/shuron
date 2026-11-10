@@ -209,5 +209,5 @@ for g, n, q in QUOTES:
 out.append(f"PASS：{len(QUOTES)} 条引文逐字出现在所注行。")
 
 target = HERE / "overall_view" / "pair_modifier_tp_diff_output.txt"
-target.write_text("\n".join(out) + "\n", encoding="utf-8")
+target.write_bytes(("\n".join(out) + "\n").encode("utf-8"))  # LF on every platform
 print("\n".join(out[:20]))
