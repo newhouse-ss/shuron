@@ -184,6 +184,44 @@ for name, run in RUN.items():
     out.append(f"  {name}：{len(hits)} 个  " + "；".join(hits))
 
 out.append("")
+out.append("G. 验证集上紧跟 history of 的全部 gold 提及：原指南 19 次运行中标对次数，以及两份指南的标法（11/10 追加）")
+err_any: dict[str, dict] = defaultdict(dict)  # run -> gold key (any label) -> first error row
+for r in rows:
+    if r["gold_start"]:
+        err_any[r["run"]].setdefault((r["doc"], int(r["gold_start"]), int(r["gold_end"])), r)
+hist = []
+for path in sorted(VALID.glob("*.json")):
+    doc = json.loads(path.read_text(encoding="utf-8"))
+    for a in doc["denotations"]:
+        s, e = a["span"]["begin"], a["span"]["end"]
+        if re.search(r"history of\s*$", doc["text"][max(0, s - 25):s]):
+            hist.append(((doc["sourceid"], s, e), a["obj"]))
+assert len(hist) == 9 and all(label != "Modifier" for _, label in hist)
+
+
+def hist_state(run, key):
+    r = err_any[run].get(key)
+    if r is None:
+        return "标对"
+    return f"{r['kind']}：{r['pred_label'] or '没标'}" + (f" '{r['pred_text'].strip()}'" if r["pred_text"] else "")
+
+
+orig_modifier_here = Counter()
+for key, label in hist:
+    n_right = sum(1 for run in orig_runs if key not in err_any[run])
+    for run in orig_runs:
+        if err_any[run].get(key, {}).get("pred_label") == "Modifier":
+            orig_modifier_here[run] += 1
+    out.append(f"  {key[0]} '{texts[key[0]][key[1]:key[2]].strip()}'（gold {label}）：原指南 {n_right}/19；"
+               f"loop08 {hist_state(RUN['loop08'], key)}；loop04 {hist_state(RUN['loop04'], key)}")
+out.append(f"  这 9 个 gold 的标签：{dict(Counter(label for _, label in hist))}；Modifier 0 个")
+out.append(f"  原指南 19 次运行在这 9 个位置标成 Modifier 的个数：每次 {sorted(orig_modifier_here[r] for r in orig_runs)}")
+fp = {r["guideline"]: r for r in csv.DictReader((HERE / "overall_view" / "type_f1.csv").open(encoding="utf-8"))
+      if r["label"] == "Modifier"}
+out.append(f"  Modifier 错标总数（type_f1.csv）：loop08 {fp['top-4 loop08']['fp']}，loop04 {fp['top-4 loop04']['fp']}")
+out.append("  训练集 gold（543 篇）紧跟 history of 的提及见 rule_chain_output.txt D 节：Specific 9、Composite 5、不标 4、DiseaseClass 3，没有 Modifier")
+
+out.append("")
 out.append("F. loop04 标成 Composite 的 4 个并列病名：已保存回复里的相关文字（codex_locate 没收这几条，理由取自原始回复）")
 want = {("8644702", 133): "cancer susceptibility gene", ("8644702", 1109): "breast-ovarian cancer families",
         ("8644702", 1282): "cancer kindred", ("8968716", 425): "cancer cases"}

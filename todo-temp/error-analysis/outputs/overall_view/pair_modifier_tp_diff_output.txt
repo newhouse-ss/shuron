@@ -219,6 +219,21 @@ D. 家族史短语后的非 Modifier gold 被标成 Modifier（只影响 Modifie
   loop08：6 个  8968716 'breast , ovarian , or other cancers'（gold CompositeMention）；9012404 'cancer'（gold DiseaseClass）；9145677 'breast cancer'（gold SpecificDisease）；9145677 'breast cancer'（gold SpecificDisease）；9195227 'cancer'（gold DiseaseClass）；9195227 'cancer'（gold DiseaseClass）
   loop04：0 个  
 
+G. 验证集上紧跟 history of 的全部 gold 提及：原指南 19 次运行中标对次数，以及两份指南的标法（11/10 追加）
+  8644703 'breast and / or ovarian cancer'（gold CompositeMention）：原指南 19/19；loop08 标对；loop04 标对
+  8968716 'breast , ovarian , or other cancers'（gold CompositeMention）：原指南 19/19；loop08 label：Modifier 'breast , ovarian , or other cancers'；loop04 标对
+  9012404 'breast and / or ovarian cancer'（gold CompositeMention）：原指南 19/19；loop08 标对；loop04 标对
+  9012404 'cancer'（gold DiseaseClass）：原指南 19/19；loop08 label：Modifier 'cancer'；loop04 标对
+  9012404 'breast / ovarian cancer'（gold CompositeMention）：原指南 19/19；loop08 标对；loop04 标对
+  9145677 'breast cancer'（gold SpecificDisease）：原指南 19/19；loop08 label：Modifier 'breast cancer'；loop04 标对
+  9145677 'breast cancer'（gold SpecificDisease）：原指南 19/19；loop08 label：Modifier 'breast cancer'；loop04 标对
+  9195227 'cancer'（gold DiseaseClass）：原指南 0/19；loop08 label：Modifier 'cancer'；loop04 boundary：DiseaseClass 'cancer'
+  9195227 'cancer'（gold DiseaseClass）：原指南 19/19；loop08 label：Modifier 'cancer'；loop04 标对
+  这 9 个 gold 的标签：{'CompositeMention': 4, 'DiseaseClass': 3, 'SpecificDisease': 2}；Modifier 0 个
+  原指南 19 次运行在这 9 个位置标成 Modifier 的个数：每次 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  Modifier 错标总数（type_f1.csv）：loop08 28，loop04 21
+  训练集 gold（543 篇）紧跟 history of 的提及见 rule_chain_output.txt D 节：Specific 9、Composite 5、不标 4、DiseaseClass 3，没有 Modifier
+
 F. loop04 标成 Composite 的 4 个并列病名：已保存回复里的相关文字（codex_locate 没收这几条，理由取自原始回复）
   8644702 133 CompositeMention 'breast and ovarian cancer'（outputs/ncbi_disease/20261022_haiku-xhigh_batchqueue/replies/ba673d6de8bc960c9fe0c69ae7c2aba59d6f6d155d256993.json）
     al-span rule.  For the second line, I'm looking at \"BRCA1 breast and ovarian cancer susceptibility gene\" where the disease term functions as a premodifier of \"gene\" — under the locus-designator rule, this coordinated disease premodifier should be tagged as a Modifier rather than a standalone disease mention.  I recall now — the NCBI disease corpus actually annotates \"breast and ovarian cancer\" as a Composite Mention even in this attributive conte

@@ -34,7 +34,7 @@
 6. **家族史规则是从一篇开发文档推广出来的，误标对应的是这条规则，不是照抄的字符串。** 改写首次写出这条规则时几乎都写成 Modifier，那时它没见过家族史位置的正确标签；11 份指南都抄进了这篇文档的短语，但只有把家族史写成 Modifier 的 7 份出现这类误标。
 7. **保留判定只看开发集总分，与 gold 相反的规则也能通过。** 事后核对 5 个开发集短语，被保留的规则中有 15 处与开发集 gold 相反；多数在写入的那一轮就让开发集上的对应提及从对变错，只是被总分的上升盖过了。
 8. **开发集看得出 DiseaseClass 漏标，看不出 Specific 标成 DiseaseClass。** 11 份指南都有一轮改写针对开发集上"Specific 被标成 DiseaseClass"这个错误簇，写出的规则方向相反；"部位词不足以算具体疾病"的害处在开发集上看不出来，因为 10 篇开发文档里没有 breast cancer 这类泛指的用法。DiseaseClass 漏标则在 top-4 loop05、loop10 的开发集上已经翻倍，仍被总分的上升盖过。
-9. **top-4 loop08 标对的 Modifier 比 top-4 loop04 多 24 个，一半多是同一篇摘要里对缩写 VHL 的同一个判断。** 其余部分对得最清楚的是 top-4 loop04 "病名后隔着括号就标 Specific"的规定，模型理由引用了它；方向相反的条文差别有三处，规模小得多。两份指南最显眼的家族史条文差别只影响 Modifier 错标，不影响这根柱子（第 4.4 节）。
+9. **top-4 loop08 标对的 Modifier 比 top-4 loop04 多 24 个，一半多是同一篇摘要里对缩写 VHL 的同一个判断。** 其余部分对得最清楚的是 top-4 loop04 "病名后隔着括号就标 Specific"的规定，模型理由引用了它；方向相反的条文差别有三处，规模小得多。两份指南最显眼的家族史条文差别不改变 Modifier 标对数，改变的是 Modifier 错标和其他类别的标对（第 4.4 节）。
 
 ## 1. 方法的平均收益没有确认，修改后的指南各不相同
 
@@ -273,9 +273,14 @@ top-4 比原指南平均高 0.0067。95% 区间是按这些运行的波动推算
 
 **差距的大小主要取决于 VHL 这一篇。** 这 13 个提及在两份指南和原指南 19 次运行里，每次都是全对或全错，相当于一个判断。去掉这一篇，差距剩 11 个，小于原指南自己 19 次运行之间标对数的最大差距（20 个）。
 
-**两份指南最显眼的 Modifier 条文差别与这根柱子无关。** top-4 loop08 第 48 行把 `the complement of a history frame`（如 "a family history of ovarian cancer"）定为 Modifier，top-4 loop04 第 118 行用同一个例子定为 Specific。验证集上紧跟 history of 的 9 个 gold 提及没有一个是 Modifier，top-4 loop08 在这类位置标的 6 个 Modifier 全是错标，标对数不受影响。11/08 只读条文判断方向时，家族史这一条被判为"top-4 loop08 标出更多 Modifier"，VHL 这一块因为 top-4 loop04 第 120 行两句方向相反被判为方向不明：只读条文找得到候选，分不出哪一处落在标对数上。
+**两份指南最显眼的 Modifier 条文差别是家族史一条，它改变的是 Modifier 错标，不是 Modifier 标对数。** top-4 loop08 第 48 行把 `the complement of a history frame`（如 "a family history of ovarian cancer"）定为 Modifier，top-4 loop04 第 118 行用同一个例子定为 Specific。验证集和训练集里紧跟 history of 的 gold 提及都没有 Modifier，所以这条规定在这个位置只能产生错标：
 
-（来源：`outputs/overall_view/pair_modifier_tp_diff_output.txt`，A 节分组计数，B 节逐个提及的预测与理由，C 节括号的同篇对照，D 节家族史，F 节 top-4 loop04 标 Composite 的回复原文，E 节引文逐字核对。分组由人工按写法归类，脚本核对分组恰好覆盖全部差别。11/08 只读条文的对照见 `outputs/overall_view/pair_loop08_loop04_modifier.md`）
+- top-4 loop08 把这类位置的 9 个 gold 提及中 6 个标成 Modifier，其中 5 个原指南 19 次运行都标对；top-4 loop04 和原指南都没有在这里标 Modifier。
+- 两份指南的 Modifier 错标总数相差 7 个，家族史位置占 6 个。
+
+11/08 只读条文判断方向时，家族史这一条被判为"top-4 loop08 标出更多 Modifier"，VHL 这一块因为 top-4 loop04 第 120 行两句方向相反被判为方向不明：只读条文找得到候选，分不出哪一处落在标对数上。
+
+（来源：`outputs/overall_view/pair_modifier_tp_diff_output.txt`，A 节分组计数，B 节逐个提及的预测与理由，C 节括号的同篇对照，D、G 节家族史，F 节 top-4 loop04 标 Composite 的回复原文，E 节引文逐字核对。分组由人工按写法归类，脚本核对分组恰好覆盖全部差别。11/08 只读条文的对照见 `outputs/overall_view/pair_loop08_loop04_modifier.md`）
 
 ## 5. Modifier 以外的损失：新条文把一部分提及排除在 Specific 或标注之外
 
