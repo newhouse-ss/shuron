@@ -497,6 +497,8 @@
 
 **11/10，新增正文第 4.4 节和结论第 9 条：top-4 loop08 与 top-4 loop04 的 Modifier 柱高差。** 按 11/06 seminar Todo（挑两份指南直接对比 Modifier 条文，再对到柱子上）。11/08 已只读条文判断过方向（`outputs/overall_view/pair_loop08_loop04_modifier.md`）；这次逐个比较 218 个 gold Modifier 在两份指南下是否严格标对，按写法人工分组，附上模型理由（codex_locate 输入，以及 top-4 loop04 标 Composite 的 4 个取自已保存回复）。新脚本 `pair_modifier_tp_diff.py`，没有改动已有脚本和产物。11/08 只读条文的判断有两处与逐个比较不符：家族史一条只影响错标，最大的 VHL 一块当时判为方向不明。
 
+**11/11，第 4.4 节改成供 seminar 用的短版。** 用户要求一份简短的中文分析，回答 top-4 loop08 的 Modifier 柱为什么比 top-4 loop04 高，按"整体结果、指南对比、再到逐个标注"的顺序写。正文表格改为每行先列两份指南对同一写法规定不同的条文（逐字引文和行号），再列实际标法、只有一份标对的个数和与柱高方向是否相符；家族史一条改为单独一段；逐行说明、原指南的标对次数和例外移到新增的附录 Q。改写时补了 11/10 版没写清的四处：括号一行有 1 个 top-4 loop04 没标，而不是标成 Specific；并列病名一行唯一的反例是 top-4 loop04 按 gene 前的规定标成 Modifier；-deficient 两份指南都有一般条件，差在写的位置和例子；WAS 一处 top-4 loop04 的理由引的是紧挨检验，不是第 289 行的例子。数字、分组和理由都取自 11/10 的 `pair_modifier_tp_diff_output.txt`，没有新脚本和新运行；正文和附录 Q 引用的指南原文都是该输出 E 节逐字核对过的引文的片段。结论第 9 条随之改写。
+
 ## F. 核查记录
 
 | 产物 | SHA-256（前 12 位） | 内容 |
@@ -1021,3 +1023,26 @@ loop05、08 只阅读了相关规定，未逐例核对其遗漏：loop05 第 142
 **gold 惯例。** 训练集（543 篇，不含 50 篇测试文档）中，不在更长 gold 提及里的单独 cancer、tumor 有 125 处，118 处被标为提及（输出 G 节）；紧跟 history of 的病名 21 处，没有一处标 Modifier（`history_tally_output.txt`）；两个词以上、以肿瘤词结尾的名称，Specific 213 个、DiseaseClass 50 个（`dc_loss_clauses_output.txt` B 节）。
 
 （来源：`outputs/bar_attribution_output.txt`，`outputs/blind_clause_coding.csv`，`outputs/bar_attribution_rules.json`）
+
+## Q. top-4 loop08 与 top-4 loop04 的 Modifier 逐个提及（正文第 4.4 节）
+
+正文第 4.4 节表格各行的明细：原指南 19 次运行在这些提及上标对的次数，两份指南的标法、模型理由和例外。行号指两份指南终版原文，从 1 起。
+
+| 写法 | 只有 top-4 loop08 标对 / 只有 top-4 loop04 标对 | 原指南 19 次运行中标对 |
+| --- | --- | --- |
+| 文中定义过的病名缩写 VHL 放在 gene、mRNA 等名词前（同一篇） | 13 / 0 | 每个 0 次 |
+| 病名后跟括号缩写，再接名词 | 7 / 1 | 1 至 19 次 |
+| 并列病名接名词，另有 "heritable cancer predisposition" 中的 cancer | 5 / 1 | 并列病名 0 次，cancer 15 次 |
+| -deficient 形容词修饰别的名词（同一篇） | 0 / 4 | 0 次 |
+| 文中没有定义过的缩写 EDMD | 0 / 1 | 19 次 |
+| 病名缩写接 protein | 0 / 1 | 0 次 |
+| 两份条文找不到明确差别 | 8 / 1 | 1 至 17 次 |
+
+- **VHL：top-4 loop08 的条文只指向 Modifier，top-4 loop04 的条文两个方向都有。** 这篇摘要里的 VHL 既是文中定义过的病名缩写，也是基因符号（基因的简写名，如 BRCA1）。top-4 loop08 第 52 行规定，`a short form that the document has explicitly defined as a disease` 修饰非疾病名词时标 Modifier；第 259 行的例子 `“DTD” as a premodifier of “gene” is **Modifier**` 与 "the VHL gene" 同形，模型理由几乎照抄（"Defined short form VHL is a premodifier of the gene noun"）。top-4 loop04 第 120 行前半句同样给 Modifier（`an acronym that the document has already defined as a disease`），同一行末句却是 `any bare gene symbol remain O`，第 191 行又写 `gene symbols remain O`，例子里有 "FALDH gene"。top-4 loop04 一个也没标；没标的提及不留理由，所以它依据哪一句不标只是推断。
+- **括号：同一篇摘要里同一个病名，带不带括号，top-4 loop04 的标法就变。** 标题 "the myotonic dystrophy locus" 标 Modifier，正文 "the myotonic dystrophy ( DM ) locus" 标 Specific，理由是病名 "followed by a parenthetical acronym gloss rather than a head noun"。这对应第 113 行要求病名 `**immediately** followed by a common-noun head`，中间不能隔括号，否则按第 114 行 `label the span **Specific Disease**`，括号里的缩写随全称。top-4 loop08 第 46 行只看病名是否 `specifies a non-disease head noun`，不要求紧挨。7 个中 "adenomatous polyposis coli ( APC ) gene" 一处，top-4 loop04 没有标，不是标成 Specific。唯一的反例是 "Huntington disease (HD) gene" 中的 HD：top-4 loop08 的理由是括号里的缩写算一处单独的同义提及，标成 Specific，与它第 258 行的例子 `The defined short form “DTD” in parentheses is **Specific Disease**` 方向相同。
+- **并列病名：方向一致，但 top-4 loop04 的理由不是第 117 行。** 第 117 行写 `The span is a Disease Class mention or a Composite Mention. Those are resolved by their own definitions before this test is applied.`，与标成 Composite 的结果一致。已保存回复里的理由却是 "two separate diseases joined together"、"for consistency with earlier coordination" 一类；"BRCA1 breast and ovarian cancer susceptibility gene" 一处，模型先按自己指南"gene 前的病名标 Modifier"判成 Modifier，又以 `I recall now — the NCBI disease corpus actually annotates "breast and ovarian cancer" as a Composite Mention` 改掉。另一篇的 "breast / ovarian cancer susceptibility gene BRCA1"，top-4 loop04 反而按 gene 前的规定标成 Modifier，就是这一行唯一的反例。top-4 loop08 的条文也没写 Modifier 先于 Composite（第 46 行只写 `(takes precedence over items 1 and 7)`），理由里的 "Modifier takes precedence over Composite Mention" 是模型自己定的先后。
+- **方向相反的三处，都是 top-4 loop04 写得更直白或有现成的例子。** -deficient：两份都有一般条件。top-4 loop08 第 89 行 `The deficiency term is an adjectival modifier that does not head a disease noun phrase` 标 Modifier，但写在酶缺乏一条的例外里，例子是 `“[enzyme]-deficient”`（第 47 行另有 "G6PD deficient phenotype"）；top-4 loop04 第 38 行写 `When the deficiency-type word modifies a different noun, it is attributive and is annotated as **Modifier**`，并写明 `The same holds for "deficient patients."`。没定义的缩写：这篇摘要只定义了 EMDM（原文的拼法），后文写的是 EDMD；top-4 loop08 第 53 行规定 `(c) a short form has no disease definition in the document` 时不能凭位置标 Modifier，top-4 loop04 第 125 行要 `no disease definition or established disease referent` 才不标。protein：top-4 loop04 第 289 行的例子正是 "Wiskott-Aldrich syndrome protein"；top-4 loop08 只有第 46 行的一般条件，第 47 行列举的中心名词里没有 protein。这三处 top-4 loop08 都没标，不留理由。top-4 loop04 的理由：-deficient 类比第 38 行的 "G6PD-deficient phenotype"；WAS 写的是缩写紧接 protein，即第 113 行的紧挨检验，没有提第 289 行；EDMD 没有理由。
+- **找不到条文差别的，原指南自己也时对时错。** "male breast cancer" 后接 population、cases、patients 的 4 个在同一篇，两份指南关于性别词的条文相同（top-4 loop08 第 127 行、top-4 loop04 第 161 行）；top-4 loop04 去掉了 male，top-4 loop08 保留，原指南 19 次运行里 7 次标对。单独的 tumour、tumor 后接名词的 4 个，top-4 loop04 都没标，没有理由可查；字面上只有 top-4 loop04 第 112 行说规定适用于 `disease-name spans`，top-4 loop08 第 46 行说 `A disease-denoting expression`，单独的 tumour 算不算病名，两份都没写。
+- **家族史位置的逐个结果。** 验证集上紧跟 history of 的 gold 提及共 9 个：Composite 4 个、DiseaseClass 3 个、Specific 2 个；训练集里同样位置也没有 Modifier。top-4 loop08 把其中 6 个标成 Modifier，其中 5 个原指南 19 次运行都标对；top-4 loop04 和原指南都没有在这里标 Modifier。两份指南的 Modifier 错标总数相差 7 个（28 个对 21 个），家族史位置占 6 个。
+
+（来源：`outputs/overall_view/pair_modifier_tp_diff_output.txt`：A 节分组计数，B 节逐个提及的预测与理由，C 节括号的同篇对照，D、G 节家族史，F 节 top-4 loop04 标 Composite 的回复原文，E 节引文逐字核对。分组由人工按写法归类，脚本核对分组恰好覆盖全部差别。）
