@@ -301,6 +301,34 @@ for row, (kind, what, t8, t4) in ROWS.items():
 w("  按模式合计：")
 for kind, cnt in by_kind.items():
     w(f"    {kind}：{sum(cnt.values())} 处，" + "，".join(f"{RIGHT[r]} {cnt[r]}" for r in RIGHT))
+w("")
+w("E. 拆到柱子上：Modifier 柱子只算标对的 gold Modifier，所以柱高差 24 = 只有 top-4 loop08 标对的 33 个 - 只有 top-4 loop04 标对的 9 个；")
+w("   标成 Modifier 的错误预测不进柱子，但进柱子下面的 Modifier F1，另列；两份都没标对的不影响两者")
+
+
+def split(it):
+    right, desc = it[0], it[1]
+    if right == "neither":
+        return "都没标对"
+    if " gold Modifier " in desc:
+        return f"柱子：只有 {NAME[right]} 标对"
+    return f"错标：只在 {NAME['loop04' if right == 'loop08' else 'loop08']}"
+
+
+COLS = ["柱子：只有 top-4 loop08 标对", "柱子：只有 top-4 loop04 标对", "错标：只在 top-4 loop08", "错标：只在 top-4 loop04", "都没标对"]
+w("  模式 | 写法 | " + " | ".join(COLS))
+tot = Counter()
+kind_tot = defaultdict(Counter)
+for row, (kind, what, t8, t4) in ROWS.items():
+    cnt = Counter(split(it) for it in items if ASSIGN[it[4]] == row)
+    tot.update(cnt)
+    kind_tot[kind].update(cnt)
+    w(f"  {kind} | {what} | " + " | ".join(str(cnt[c]) for c in COLS))
+w("  合计 | | " + " | ".join(str(tot[c]) for c in COLS))
+assert tot[COLS[0]] == 33 and tot[COLS[1]] == 9
+w("  按模式合计：")
+for kind, cnt in kind_tot.items():
+    w(f"    {kind}：" + "，".join(f"{c} {cnt[c]}" for c in COLS))
 
 dest = HERE / "overall_view" / "pair_modifier_cited_text_output.txt"
 with dest.open("w", encoding="utf-8", newline="\n") as f:
