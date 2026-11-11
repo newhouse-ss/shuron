@@ -288,6 +288,39 @@ w("")
 w("D. 两份引用的原文怎样不同（行号前为 top-4 loop08，后为 top-4 loop04；另一份没有引文时，按写法在它的备用里查）")
 cover = Counter(sum(REAL(it[2][n]) for n in RUN) for it in items)
 w(f"  两份理由都引到备用的 {cover[2]} 处，只有一份引到的 {cover[1]} 处，两份都没引到的 {cover[0]} 处")
+w("  依据来源：只用 codex_locate 按出处和理由定位出的原文（role 为 basis），没有直接读标注时生成的理由原文。")
+w("  codex_locate 只处理了与原指南结果不同的预测，所以有预测、有理由但不在它范围里的，这里没有原文。每处两份各自的情况：")
+inputs = set()
+for n in RUN:
+    for line in (LOC / "inputs" / f"top4_{n}_predictions.jsonl").open(encoding="utf-8"):
+        x = json.loads(line)
+        inputs.add((n, x["doc"], x["pred_start"], x["pred_end"], x["pred_label"]))
+ORDER = ["定位原文在备用里", "定位原文在备用之外", "有预测但不在 codex_locate 范围里", "没有预测"]
+
+
+def source(n, keys):
+    if not keys:
+        return "没有预测"
+    cats = []
+    for k in keys:
+        kk = (n,) + k
+        if kk not in basis:
+            assert kk not in inputs, kk
+            cats.append("有预测但不在 codex_locate 范围里")
+        elif any(in_reserve(n, lo, hi) for lo, hi in basis[kk]):
+            cats.append("定位原文在备用里")
+        else:
+            cats.append("定位原文在备用之外")
+    return min(cats, key=ORDER.index)
+
+
+pairs = Counter()
+for right, desc, keys, key in diffs:
+    a, b = source("loop08", keys["loop08"]), source("loop04", keys["loop04"])
+    pairs[tuple(sorted((a, b), key=ORDER.index))] += 1
+for (a, b), c in sorted(pairs.items(), key=lambda x: -x[1]):
+    w(f"    一份{a}、另一份{b}：{c} 处" if a != b else f"    两份都是{a}：{c} 处")
+w("  除了两份定位原文都在备用里的那些，另一份对应哪段原文，是按提及的写法从它的备用里人工指定的（下面的 ROWS、ASSIGN），没有理由文本支持。")
 w("  模式 | 写法 | top-4 loop08 的原文 | top-4 loop04 的原文 | 处数 | " + " | ".join(RIGHT.values()))
 by_kind = defaultdict(Counter)
 for row, (kind, what, t8, t4) in ROWS.items():
