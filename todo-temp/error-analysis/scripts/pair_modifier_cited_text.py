@@ -1,10 +1,10 @@
 """top-4 loop08 against top-4 loop04, Modifier only (11/11). Three steps, as the user set them:
 
-1. Reserve: every passage of each guideline that is about the Modifier label, wherever it sits in the guideline.
-   Found by scanning every paragraph for "Modifier", "attributive", "premodif" and references to rule or item 3 (the
-   Modifier section of both guidelines), then reading each hit; hits that use "modifier" or "premodifier" only as a
-   grammar word for another label (for example "the enzyme name premodifies the head" in a Specific Disease rule) are
-   left out and listed in section A.
+1. Reserve: both guidelines read in full, line by line (not a keyword search), keeping every passage that defines when
+   a disease expression is a Modifier, excludes it from Modifier, ranks Modifier against another label, or gives an
+   example of one of these. Passages read and left out because they apply to every label or decide another label
+   (gender, general terms, abbreviations, Composite coordination, the general precedence principle) are listed in
+   section A with the reason. Check: every line containing the label word "Modifier" is in the reserve.
 2. For each of the 69 Modifier annotation differences (pair_all_diff.py), the guideline text that the reasons of the
    predictions involved actually cite (codex_locate, role basis), looked up in the reserve.
 3. The differences grouped by which reserve passages each guideline's reasons cite, so the cited texts of the two
@@ -16,7 +16,6 @@ from __future__ import annotations
 
 import csv
 import json
-import re
 from collections import Counter, defaultdict
 from pathlib import Path
 
@@ -31,44 +30,69 @@ lines = {n: (LOC / "inputs" / "guidelines" / f"top4_{n}.txt").read_text(encoding
 # 1. reserve: (first line, last line, what the passage says about Modifier)
 RESERVE = {
     "loop08": [
-        (17, 17, "第 1 节 Precedence：修饰非疾病名词的病名不进 Specific/DiseaseClass 判定，归第 3 节标 Modifier"),
+        (17, 17, "优先级：修饰非疾病名词的病名归第 3 节标 Modifier，第 1 节的指称测试和基因定义条款不管它"),
         (36, 37, "第 3 节定义：病名修饰名词短语时标 Modifier"),
         (39, 44, "第 3 节例子：colorectal cancer、HNPCC 标 Modifier"),
-        (46, 48, "第 3 节：病名修饰非疾病名词就标 Modifier；第 47 行列 case、patient、family、gene 等名词，第 48 行 history of 的宾语"),
-        (50, 50, "第 3 节：只在起修饰作用时标；病名本身是中心词或完整实体时按第 1、7 节"),
-        (52, 53, "第 3 节：命名里的病名标 Modifier；不适用：病名本身是中心词、命名里没有病名、缩写文中没定义为病"),
-        (55, 55, "第 3 节：with、has 后面和 form of 后面的病名标 Specific"),
-        (89, 89, "第 7 节排除：形容词性的 deficiency 标 Modifier"),
-        (159, 159, "Precedence 1：Modifier 先于 Specific/DiseaseClass，history 框架也是"),
-        (165, 165, "Precedence 4：[enzyme]-deficient 标 Modifier"),
-        (236, 237, "例 21：family history of ovarian cancer 和 ovarian cancer cases 里的病名都标 Modifier"),
-        (239, 240, "例 22：kindreds with SLS 的 SLS 标 Specific"),
+        (46, 48, "条件：病名修饰非疾病名词就标 Modifier，优先于第 1、7 节；第 47 行列 case、patient、family、gene 等名词，第 48 行 history of 的宾语"),
+        (50, 50, "排除：只在起修饰作用时标；病名本身是中心词或完整实体时按第 1、7 节"),
+        (52, 53, "条件和排除：命名里的病名（全称或文中定义的缩写）修饰非疾病名词时标 Modifier；病名本身是中心词、命名里没有病名、缩写文中没定义时不标"),
+        (55, 55, "排除：with、has 后面的病名，以及被描述某一型、某一形式的病名，标 Specific"),
+        (89, 89, "条件：形容词性的缺乏词（[enzyme]-deficient）标 Modifier"),
+        (159, 159, "优先级：Modifier 先于 Specific、DiseaseClass，history 框架也是；病名本身是中心词时不是 Modifier"),
+        (165, 165, "优先级：[enzyme]-deficient 标 Modifier，不是 Specific"),
+        (233, 234, "例 20：the classical form of Coats disease 的 Coats disease 标 Specific（第 55 行排除的例子）"),
+        (236, 237, "例 21：family history of ovarian cancer 和 ovarian cancer cases 的病名都标 Modifier"),
+        (239, 240, "例 22：kindreds with SLS 的 SLS 标 Specific，不是修饰"),
         (242, 243, "例 23：Norrie disease gene 的 Norrie disease 标 Modifier"),
-        (257, 259, "例 27：文中定义过的缩写 DTD 接 gene 标 Modifier"),
+        (257, 259, "例 27：括号里定义的 DTD 标 Specific；DTD gene 的 DTD 标 Modifier"),
     ],
     "loop04": [
-        (38, 38, "第 1 节 1a 排除：-deficient 修饰别的名词标 Modifier"),
-        (44, 44, "第 1 节 1b：修饰用法标 Modifier，不进本测试"),
-        (53, 53, "第 1 节 1b：修饰用法标 Modifier，不标 Specific"),
-        (78, 78, "第 1 节 1c 排除：early onset 这类单独的严重度、发病、时间限定语标 Modifier"),
-        (96, 96, "第 2 节：并列的 cancer 按第 1b、3 节判，多病并列按 Composite"),
-        (102, 103, "第 3 节定义：病名修饰名词短语时标 Modifier；带专名也一样"),
+        (38, 38, "条件：缺乏词修饰别的名词标 Modifier（G6PD-deficient phenotype、deficient patients）"),
+        (39, 39, "排除：否定或正常状态的形容词（non-deficient、normal）标 O"),
+        (44, 44, "优先级：修饰用法是 Modifier，不进第 1b 节的测试"),
+        (53, 53, "优先级：修饰用法是 Modifier，不是 Specific"),
+        (78, 78, "条件：early onset 这类单独的严重度、发病、时间限定语标 Modifier"),
+        (96, 96, "转介：共用 cancer 的并列病名不按并列修饰词规则，按第 1b、3 节判；多病并列按 Composite"),
+        (102, 103, "第 3 节定义：病名修饰名词短语时标 Modifier；带专名也一样，第 1b 节的测试不推翻"),
         (105, 110, "第 3 节例子：colorectal cancer、HNPCC 标 Modifier"),
-        (112, 118, "第 3 节：病名紧挨名词才标 Modifier，否则（隔括号、标点、介词等）标 Specific；DiseaseClass、Composite 先判；history of 的病名标 Specific"),
-        (120, 120, "第 3 节：gene、locus 前的病名或定义过的缩写标 Modifier；基因符号不标"),
-        (122, 127, "第 3 节：BRCA1、SLS genes 例子；不适用：病名本身是中心词、缩写没定义也没公认所指、基因符号、非疾病修饰词"),
-        (145, 145, "第 6 节：缩写跟随全称的类型"),
-        (190, 192, "不标注第 8 条：基因符号等不标，修饰它们的病名标 Modifier"),
-        (203, 203, "Precedence 1：修饰用法先标 Modifier"),
-        (207, 207, "Precedence 5：基因层面不标，除非病名修饰它们"),
-        (288, 290, "例 22：Wiskott-Aldrich syndrome protein 的病名标 Modifier"),
+        (112, 118, "条件和排除：病名紧挨名词才标 Modifier，否则（隔括号、标点、分词、动词、介词或后面没有词）标 Specific，缩写跟全称；不能只凭后面名词的意思判；DiseaseClass、Composite 先判；history of 的病名标 Specific"),
+        (120, 120, "条件：gene、locus 前的病名或定义过的缩写标 Modifier；基因符号不标"),
+        (122, 127, "例子和排除：BRCA1、SLS genes；病名本身是中心词、缩写没定义也没公认所指、基因符号、非疾病修饰词时不适用"),
+        (145, 145, "条件：缩写跟全称的类型（第 3 节）"),
+        (187, 188, "排除：否定的缺乏形容词 non-deficient 标 O"),
+        (190, 192, "排除和例外：基因层面不标；修饰它们的病名标 Modifier"),
+        (203, 203, "优先级：修饰用法先标 Modifier"),
+        (207, 207, "优先级：基因层面不标，除非病名修饰它们"),
+        (281, 282, "例 21：Sjogren-Larsson syndrome (SLS) 后面跟括号，标 Specific，缩写跟全称（第 114 行的例子）"),
+        (288, 290, "例 22：Wiskott-Aldrich syndrome protein 的病名标 Modifier，WASP 标 O"),
         (292, 294, "例 23：family history of ovarian cancer 标 Specific，cases、risk 前标 Modifier"),
         (296, 298, "例 24：breast cancer susceptibility gene 1 的 breast cancer 标 Modifier"),
-        (300, 302, "例 25：G6PD deficient phenotype 标 Modifier"),
+        (300, 302, "例 25：G6PD deficient phenotype 标 Modifier，non-deficient 标 O"),
+        (308, 309, "例 27：Coats telangiectasis 后面跟 is，标 Specific（第 114 行的例子）"),
+        (316, 317, "例 29：Coats' disease 后面跟 of，标 Specific（第 114 行的例子）"),
         (322, 324, "例 30：fragile X syndrome patients 标 Modifier"),
     ],
 }
-KEYWORD = re.compile(r"[Mm]odifier|attributive|premodif|\b(?:rule|item)s?\b[^.;:]{0,20}\b3\b")
+LEFT_OUT = {
+    "loop08": [
+        (11, 11, "基因定义的疾病标 Specific；第 17 行已说修饰用法不受它管"),
+        (29, 29, "Composite 的定义：并列的病名作为一个提及"),
+        (75, 75, "缩写和全称分成两个提及，没说类型"),
+        (126, 129, "性别词不进范围，对所有类型都适用"),
+        (134, 137, "笼统词不标；cancer、tumor 保留，对所有类型都适用"),
+        (157, 157, "通用优先原则：窄的规则先用"),
+        (175, 178, "例 2：early onset 算不算进病名范围"),
+    ],
+    "loop04": [
+        (87, 87, "Composite 的定义"),
+        (92, 94, "并列修饰词共用病理中心词时标 Composite，说的不是病名作修饰语"),
+        (160, 163, "性别词不进范围，对所有类型都适用"),
+        (168, 171, "笼统词不标；cancer、tumor 保留，对所有类型都适用"),
+        (201, 201, "通用优先原则：窄的规则先用"),
+        (209, 209, "并列修饰词先于症状规则，说的是 Composite"),
+        (219, 222, "例 2：early onset 算不算进病名范围"),
+    ],
+}
 
 
 def in_reserve(n, lo, hi):
@@ -180,14 +204,16 @@ out: list[str] = []
 w = out.append
 w("top-4 loop08 与 top-4 loop04：Modifier 标注不同的地方，两份理由各自引用的 Modifier 相关原文（2026-11-11，离线）")
 w("")
-w("A. 备用：两份指南里与 Modifier 标签有关的全部段落（行号从 1 起）")
+w("A. 备用：逐行通读两份全文，与 Modifier 标签有关的全部段落（行号从 1 起；凡含 Modifier 一词的行都在内）")
 for n in RUN:
     w(f"  {NAME[n]}：{len(RESERVE[n])} 段，共 {sum(r[1] - r[0] + 1 for r in RESERVE[n])} 行")
     for r in RESERVE[n]:
         w(f"    第 {rid(r)} 行：{r[2]}")
     covered = {i for r in RESERVE[n] for i in range(r[0], r[1] + 1)}
-    left = [i for i, x in enumerate(lines[n], 1) if KEYWORD.search(x) and i not in covered]
-    w(f"    关键词命中但没收进备用的行（modifier、premodifier 只作语法用词，说的是别的类型）：{'、'.join(map(str, left))}")
+    assert all(i in covered for i, x in enumerate(lines[n], 1) if "Modifier" in x), n
+    w("    读过、没收进备用的段落（对所有类型都适用，或决定的是别的类型）：")
+    for r in LEFT_OUT[n]:
+        w(f"      第 {rid(r)} 行：{r[2]}")
 w("")
 w("B. 69 处标注不同的地方，理由所引原文落在备用里还是备用之外（按引用次数）")
 for n in RUN:
