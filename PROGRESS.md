@@ -1,6 +1,6 @@
 # 研究进展
 
-更新：2026-11-11。这里沿研究主线记录阶段成果、判断变化和下次 seminar 待办；逐次实验见 [LOG.md](LOG.md)，固定背景及评价口径见 [OVERVIEW.md](OVERVIEW.md)。
+更新：2026-11-12。这里沿研究主线记录阶段成果、判断变化和下次 seminar 待办；逐次实验见 [LOG.md](LOG.md)，固定背景及评价口径见 [OVERVIEW.md](OVERVIEW.md)。
 
 **2026-10-30，已保存理由的离线核查完成。** [正文第 8 节](todo-temp/error-analysis/reports/20261024_error_analysis_report_zh.md)与附录 J 增加 16 条预测的逐例探索，完整证据在 `todo-temp/error-analysis/outputs/20261030_rationale_audit/`。全部 30 次验证集运行的请求及预测来源已准确核对。理由与标签自洽仍可能与 gold 不同，边界取舍也常未被理由解释；分类前提不能确定的案例继续保留为未定。16 条是工作量上限，不代表全体比例或改写效果；未追加标注、修改指南或启动方法实验，也不据此关闭“全部错误分类”的待办。
 
@@ -287,6 +287,15 @@ BC5CDR、BioRED 的复现已完成，validation 原指南/修改后分别为 **0
 - **错标一侧（不进柱子，进 Modifier F1）：** history of 那条（top-4 loop08 第 48 行与 top-4 loop04 第 118 行规定相反）只在 top-4 loop08 错标 7 个。
 - **对研究主线的含义：** 这些对应来自模型理由和写法，是候选；要说条文导致了柱高差，需要删改这几处条文后重标（报告第 9 节）。报告第 4.4 节的净差写法和"去掉 VHL"的说法待按此更正。
 
+**2026-11-12，以 top-4 loop08 为锚点，把其余 10 份改后指南的 Modifier 柱高差逐份对到条文（离线，未调用 API）：三类条文差别在大多数指南里反复出现。** 候选列表 `todo-temp/error-analysis/outputs/overall_view/anchor_loop08_modifier_candidates.md`，位置清单 `anchor_loop08_modifier_diff_output.txt`。
+
+- **做法：** Codex 先按指南给出一版候选，我逐份重做并复核。每一对只看 gold 为 Modifier、top-4 loop08 标对而另一份没标对的位置（以及反过来的位置），逐条读，再到两份指南里找管它的条文。Codex 引的行号和实例全部属实；复核补上了它漏列的同类条文，并换掉两个同时受几条条文管、分不清来源的实例。
+- **反复出现的三类：** 病名缩写同时是基因符号（实例都在 VHL 那一篇），6 份改后指南有排除基因符号或纯符号的条文，强弱不同，top-4 loop09 另有一条间接相关；病名和名词之间隔着括号缩写，6 份有"括号挡住修饰"或"括号缩写标 Specific"的明文；并列病名先判 CompositeMention，同样 6 份有明文。top-4 loop08 在这三处都没有对应的排除。
+- **只在部分指南出现的：** 正式基因名称里的病名不标（top-1 loop07、top-4 loop05、top-4 loop10）；单独的 cancer、tumor 不标 Modifier（top-4 loop02、loop05、loop10）；"-deficient" 形容词没有通则（top-4 loop07、top-1 loop07，较弱）。
+- **找不到条文来源的差异：** top-4 loop07 的括号和并列、top-4 loop06 的 cell line。top-1 loop05 与 top-4 loop08 的差别只是写得明确与否，没有相反的规定。
+- **与"柱高相同的指南是否遵循相似模式"的关系：** Modifier 柱高同为 +26.7 的三份里，top-4 loop04 和 loop01 三类都有明文，top-4 loop06 只有一条较弱的纯符号排除；只是观察，未做那条 Todo 的分析。
+- **对研究主线的含义：** 仍是候选，要说明因果需要删改这几处条文后重标。SpecificDisease、DiseaseClass 两组柱子还没有对到条文。
+
 ## 后续记录方式
 
 实验后，LOG 新增一行，PROGRESS 记录它对三条优化轴、阶段目标和当前决策的影响，并更新文档底部的 Todo。负结果和中断同样保留。
@@ -299,7 +308,7 @@ seminar 后，将会议要点及其对研究主线的推进融入对应日期的
 
 前两项最紧急。
 
-- [ ] 把柱子按 Modifier、SpecificDisease、DiseaseClass 分组，先看整体结果。然后不拆标注，直接 diff 两份指南（例如 top-4 loop08 和 top-4 loop04）中与 Modifier 有关的条文，把差别对到柱子上，看指南差别和柱子差别是否对得上（教授）。我现在想的一种呈现方法是按照像xmind那种思维导图的方式把每根柱子对应地guidelines特征条款attach到柱子后面。11/08 分组柱状图已画；11/10 第一对（top-4 loop08 与 loop04 的 Modifier）已对完，见报告第 4.4 节，其余指南对未做。11/11 用两份全文的 Modifier 段落和理由引文重做第一对，见 `pair_modifier_cited_text_output.txt`。
+- [ ] 把柱子按 Modifier、SpecificDisease、DiseaseClass 分组，先看整体结果。然后不拆标注，直接 diff 两份指南（例如 top-4 loop08 和 top-4 loop04）中与 Modifier 有关的条文，把差别对到柱子上，看指南差别和柱子差别是否对得上（教授）。我现在想的一种呈现方法是按照像xmind那种思维导图的方式把每根柱子对应地guidelines特征条款attach到柱子后面。11/08 分组柱状图已画；11/10 第一对（top-4 loop08 与 loop04 的 Modifier）已对完，见报告第 4.4 节，其余指南对未做。11/11 用两份全文的 Modifier 段落和理由引文重做第一对，见 `pair_modifier_cited_text_output.txt`。11/12 以 top-4 loop08 为锚点，其余 10 份的 Modifier 候选已列，见 `anchor_loop08_modifier_candidates.md`；SpecificDisease、DiseaseClass 未做。
 - [ ] 柱子的相似度矩阵：Modifier、SpecificDisease、DiseaseClass 各一张，横轴、纵轴都按 F1 排序（整体 F1 还是该类 F1 待定），计算两两余弦相似度，对照"F1 离最好的越近"和"与最好的越相似"两个趋势。用什么向量计算待定（教授提议）。
 - [ ] 柱状图的可靠性：每份改后指南在 valid100 上只有终版指南的一次标注，拿它和 19 次相互独立的原指南标注的平均比，说明不了相对基线的稳定提升。判断方式是待定的课题，候选有两个：显著性分析；超出 19 次的最低到最高才算（报告第 3 节已用这个范围标星号，16/33 根超出）。与 10/30 Todo"每份改后指南再标 2 次"相关。只记为课题，先不设计实验（教授）。
 - [ ] 分析和汇报都按"整体结果 → 指南对比 → 发现值得深究的现象才设计方法、逐标注往下钻"的顺序；研究计划不变。
