@@ -110,3 +110,4 @@
 - 运行：`python -B nodes/2026-11-16_seminar/two-step-pilot/scripts/pilot/run_pilot.py run --detach --yes --administrator-notified --output-root outputs/ncbi_disease/20261114_haiku-xhigh_pilot_twostep`；`manifest.json`（SHA-256 前 12 位 65c41a73c9ea），`status.json`（c7a214be34b9）。
 - 评分：`python -B nodes/2026-11-16_seminar/two-step-pilot/scripts/pilot/score_pilot.py --run-root outputs/ncbi_disease/20261114_haiku-xhigh_pilot_twostep --report-dir nodes/2026-11-16_seminar/two-step-pilot/outputs/20261114_scores`，屏幕输出 `outputs/20261114_scores_output.txt`（1b0e0e6b4caf），汇总 `outputs/20261114_scores/metrics.json`（00b7a90201d0）。
 - 事后补算：`scripts/pilot/posthoc_splus_vs_s.py`，输出 `outputs/20261114_posthoc_splus_vs_s_output.txt`（c03fa45a9d1f）。
+- 之后的事后分析（离线）：`posthoc_tracks.py`（输出 7db0e053d4b6）、`posthoc_step2_none.py`（1852910470c4）、`posthoc_rule4_cases.py`（876d10854a3a）、`dev_rule4_coverage.py`（6add163e8c96），输出都在 `outputs/20261114_*`。
