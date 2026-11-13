@@ -1,4 +1,4 @@
-# 两步标注试跑设计：指南不变，把"找全"和"定类型"拆开，真正漏标会不会减少
+# 两步标注检验设计：指南不变，把"找全"和"定类型"拆开，真正漏标会不会减少
 
 状态：设计，未运行，未写代码。2026-11-13。来源：`20261113_thesis_claim_research.md` 第 4 节方案 A。
 
@@ -31,12 +31,12 @@
 ## 4. 文档
 
 - **池：** 训练集 593 篇去掉 dev50、heldout50（留作最终评价的 50 篇）和 6 个 BioRED PMID，共 487 篇；定义与 `nodes/2026-11-06_seminar/error-analysis/scripts/ablation_stage0.py` 第 175 至 178 行相同。
-- **抽样：** `random.Random(20261113).sample(sorted(pool), len(pool))` 打乱。前 100 篇留作方案 A 正式实验的评价集，这次不用；第 101 至 300 篇作试跑文档。运行前把两份清单和池的 SHA-256 写进输出目录。
+- **抽样：** `random.Random(20261113).sample(sorted(pool), len(pool))` 打乱。前 100 篇留作方案 A 正式实验的评价集，这次不用；第 101 至 300 篇作检验文档。运行前把两份清单和池的 SHA-256 写进输出目录。
 - **验证集 100 篇不用：** 它的逐例错误已用来挑方向，不再是独立的评价集（错误分析报告第 10 节）。
 
 ## 5. 判定（运行前写定）
 
-主指标是 Track 2 输出的真正漏标数，按文档配对比较：同一篇文档在两组里各取 2 次的平均，相减后在全部试跑文档上合计。
+主指标是 Track 2 输出的真正漏标数，按文档配对比较：同一篇文档在两组里各取 2 次的平均，相减后在全部检验文档上合计。
 
 - **通过：** T 对 S、T 对 S+ 的合计差，按文档重抽样得到的 95% 区间都不含 0，而且 T 更少（RP v4 的口径）。两个比较都要通过，误判通过的机会不超过 2.5%。拆开结构本身有作用，进入正式实验设计。
 - **只赢 S、不赢 S+：** 没有证明两步结构比同样说明下的单次调用更好。方案 A 作为架构改动没有得到支持，停；说明层面的结果交你和教授判断。
@@ -60,7 +60,7 @@
   1. dry run：S 的 prompt 与复现 E1 的 prompt 只有正文不同（同模板、同指南哈希）。
   2. 用假 provider 跑通三组，Track 1、Track 2 输出与手算一致；漏判按上条处理。
   3. 计数口径：用同一段计数代码重算 `20261022_haiku-xhigh_e1_run01` 在验证集上的真正漏标，等于 140。
-  4. 试跑文档与留作评价的 100 篇不相交，都在 487 篇池内。
+  4. 检验文档与留作评价的 100 篇不相交，都在 487 篇池内。
   5. dry run 打印预计费用。
 
 ## 8. 不做的
@@ -84,6 +84,21 @@
 
 > You are given the text, the guidelines and a numbered list of candidate spans. Decide each candidate exactly once: give its type from the entity schema, or NONE if the guidelines say it should not be annotated, and cite the guideline section. Keep each candidate's span as given and do not add spans.
 
+## 结果（2026-11-14）：只赢 S、不赢 S+，方案 A 作为架构改动不成立
+
+按第 5 节预先写定的规则判定。1,600 次调用全部可用，分两批发出，花费 ¥949.81（6.01 美元）。下表是 200 篇检验文档、每组 2 次的平均。
+
+| 组 | 真正漏标 | 专家要删的预测（不与任何 gold 重叠） | Track 1 严格 F1 |
+| --- | ---: | ---: | ---: |
+| S：单次标注 | 292.5 | 57.5 | 0.704 |
+| S+：单次标注加"宁可多标"说明 | 129.5 | 273 | 0.712 |
+| T：两步标注 | 128 | 272.5 | 0.698 |
+
+- **T 对 S：** 少 164.5 个真正漏标，95% 区间 −198.0 至 −132.5，不含 0。
+- **T 对 S+：** 少 1.5 个，95% 区间 −20.5 至 18.5，含 0。没有证明两步结构比同样说明下的单次调用更好。
+- **事后补算（不在预先写定的规则里）：** S+ 对 S 少 163.0 个，95% 区间 −197.0 至 −132.0；200 篇里 S+ 更少的 101 篇，更多的 0 篇。真正漏标的减少来自"宁可多标"那句说明，代价是专家要删的预测从 57.5 增到 273。
+- 按 gold 类型的真正漏标（S → S+ → T）：SpecificDisease 72.5 → 28.5 → 34，DiseaseClass 98.5 → 27.5 → 23.5，Modifier 114.5 → 69.5 → 65，CompositeMention 7 → 4 → 5.5。
+
 ## 核查记录
 
 - 文档池：`ablation_stage0.py` 第 175 至 178 行；`reproduction/test_splits/ncbi_disease_heldout50.json`（size 50，seed 20261024，pool_size 537，排除 6 个 BioRED PMID）。
@@ -91,4 +106,7 @@
 - 计数口径：`nodes/shared/error-analysis/scripts/error_table.py` 用 `reproduction/lib/discrepancy.py` 的 `classify_document`；e1_run01 的真正漏标 140 见 `outputs/true_miss_recoverability_output.txt` 第 3 行。
 - 规模：`nodes/2026-11-16_seminar/two-step-pilot/scripts/pilot_variance.py`（ba3a0d31c90b）输出 `outputs/pilot_variance_output.txt`（ffb2f87a4a17），给出同一篇文档重复标注的波动 0.355 和效果在文档间的不均 1.045（去掉文档 8733131 为 0.500）；`nodes/2026-11-16_seminar/two-step-pilot/scripts/pilot_size_options.py`（b5af51cf532d）输出 `outputs/pilot_size_options_output.txt`（e99053527000），给出各篇数能判出的减少和跑 2、3 次的差别。两个脚本在仓库根目录直接运行。
 - 运行器设置：`reproduction/haiku_batch_loops.py` 第 94 至 113 行（训练集目录、指南、schema、输出配置、重试次数）。
-- 本文件只是设计，没有调用 API。
+- 设计部分没有调用 API；结果部分的运行和评分如下。
+- 运行：`python -B nodes/2026-11-16_seminar/two-step-pilot/scripts/pilot/run_pilot.py run --detach --yes --administrator-notified --output-root outputs/ncbi_disease/20261114_haiku-xhigh_pilot_twostep`；`manifest.json`（SHA-256 前 12 位 65c41a73c9ea），`status.json`（c7a214be34b9）。
+- 评分：`python -B nodes/2026-11-16_seminar/two-step-pilot/scripts/pilot/score_pilot.py --run-root outputs/ncbi_disease/20261114_haiku-xhigh_pilot_twostep --report-dir nodes/2026-11-16_seminar/two-step-pilot/outputs/20261114_scores`，屏幕输出 `outputs/20261114_scores_output.txt`（1b0e0e6b4caf），汇总 `outputs/20261114_scores/metrics.json`（00b7a90201d0）。
+- 事后补算：`scripts/pilot/posthoc_splus_vs_s.py`，输出 `outputs/20261114_posthoc_splus_vs_s_output.txt`（c03fa45a9d1f）。

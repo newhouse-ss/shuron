@@ -25,7 +25,7 @@
 | [2026-10-30_seminar](2026-10-30_seminar/) | `error-analysis/`（10/24 至 10/30）：错误模式、规则与 gold 的对照、逐轮记录、Modifier 子集与 pilot 编码、理由引用的条文；`notes/` 是当时的分析计划和规则 |
 | [2026-11-06_seminar](2026-11-06_seminar/) | `error-analysis/`（10/31 至 11/06）：柱子归因（`bar_attribution`、`bar_patterns`、`dc_loss_clauses`）、删条文检验的准备（`clause_ablation_stage0`、`rerun_cost`）、柱子聚类抽样（`bar_cluster_sample`）、理由定位到条文（`bar_clause_pilot`，其中 `codex_locate/` 是 Codex 的定位记录） |
 | [2026-11-13_seminar](2026-11-13_seminar/) | `error-analysis/`（11/07 至 11/13）：按实体类型看整体（`overall_view/`）、类型文本相似度试点（`type_text/`）、top-4 loop08 与其他改后指南的 Modifier 条文对照（`pair_*`、`anchor_loop08_*`） |
-| [2026-11-16_seminar](2026-11-16_seminar/) | `two-step-pilot/`（11/13 起）：论文主张的调研（`notes/20261113_thesis_claim_research.md`）、两步标注试跑设计（`notes/20261113_two_step_pilot_design.md`）、原指南真正漏标能否被找到与试跑篇数的离线检验（`scripts/`、`outputs/`） |
+| [2026-11-16_seminar](2026-11-16_seminar/) | `two-step-pilot/`（11/13 起）：论文主张的调研（`notes/20261113_thesis_claim_research.md`）、两步标注检验的设计与结果（`notes/20261113_two_step_pilot_design.md`）、代码与评分（`scripts/pilot/`，评分输出 `outputs/20261114_scores/`）、原指南真正漏标能否被找到与检验篇数的离线推算（`scripts/`、`outputs/`） |
 | [shared](shared/) | `error-analysis/`：错误分析报告和附录（中英文）及其图；错误总表（`error_table.py` 写出 `error_rows.csv`）；已保存理由的索引（`20261030_rationale_audit/`）；柱子数据（`loop_label_tables`）。`slides/`：各次 deck 的生成脚本，共用排版函数在 `build_faldh_slides.py`；deck 本身在 `修論/presentations/`，10/09、10/16 的三份在对应节点的 `slides/` |
 
 ## 不在这里的
