@@ -55,7 +55,7 @@
 - **模板：** S 沿用现有 `annotate_with_guidelines` 模板和 `OutputConfiguration(include_rationale=True, include_guideline_section=True)`，一个字不改。S+ 只在 `instructions` 填附录第一段，输出字段加一个排除标记。T 第一步也用现有模板，`instructions` 填附录第二段，输出字段与 S+ 相同，只去掉类型和排除标记；第二步新增一个模板，正文用附录第三段。
 - **T 的输出 schema：** 第一步 `{"annotations": [{"start", "end", "text", "rationale", "guideline_section"}]}`；第二步 `{"decisions": [{"id", "entity", "rationale", "guideline_section"}]}`，`entity` 取 schema 中的标签或 `"NONE"`；边界一律用第一步的。
 - **第二步漏判时怎么处理（只影响 Track 1 的报告，不影响通过与否）：** 模型漏判的候选，在 Track 1 里当作不标，并记下个数。交给专家的清单只由第一步的候选决定。
-- **输出：** `outputs/ncbi_disease/<运行日期>_haiku-xhigh_pilot_twostep/` 下按组、按次分目录，保存原始回复、Track 1 与 Track 2 的 PubAnnotation 预测、`metrics.json`、文档清单。分析脚本和输出放下次 seminar 的节点文件夹（日期待定）。
+- **输出：** `outputs/ncbi_disease/<运行日期>_haiku-xhigh_pilot_twostep/` 下按组、按次分目录，保存原始回复、Track 1 与 Track 2 的 PubAnnotation 预测、`metrics.json`、文档清单。分析脚本和输出放 `nodes/2026-11-16_seminar/two-step-pilot/`；实现细节见同目录 `20261113_codex_pilot_spec.md`。
 - **提交批次前的离线检查，全部通过才运行：**
   1. dry run：S 的 prompt 与复现 E1 的 prompt 只有正文不同（同模板、同指南哈希）。
   2. 用假 provider 跑通三组，Track 1、Track 2 输出与手算一致；漏判按上条处理。
