@@ -56,8 +56,38 @@
     - **病名缩写同时是基因符号（补）。** 第 137 行 (d)。实例：`VHL gene`，top-4 loop10 没标。
     - **并列病名先判 CompositeMention（补）。** 第 136 行 (c)。实例：`breast-ovarian cancer families`，top-4 loop10 标 CompositeMention。
 
+## 柱高相近的指南：条文相同的落在同一批提及上，条文不同的只是得失凑巧相近
+
+2026-11-13，离线，未调用 API，没有新脚本。用到上面的候选和位置清单、各指南的逐提及表、11/08 的余弦矩阵，以及报告第 3、4.2、5.1 节。仍是候选，没有删改条文后重标的对照。
+
+**判断方法：** 两份柱高相近的指南，如果在同一批 gold 提及上标得与原指南不同，而且两份都有管这些提及的同一类条文，算同一模式；如果各自变了的提及不同，管它们的条文也不同，柱高相近只是不同提及的得失正好抵消。例子只挑原指南 19 次运行几乎全对（至少 15 次）或从没标对的提及，一次运行的偶然出入不太可能造成这样的差别。余弦取自 11/08 的矩阵：把一份指南在该类每个 gold 提及上的结果减去原指南 19 次的平均，两份指南的这列数方向越一致越接近 1；它没有噪声参照，只比较同一行里的先后。
+
+**Modifier +26.7（top-4 loop04、loop01、loop06，标对数都是 137）：top-4 loop04 与 loop01 是同一模式，top-4 loop06 只是凑巧同高。**
+- top-4 loop04、loop01 都写了"-deficient 修饰别的名词标 Modifier"（第 38 行；第 56、358 行），`Atm-deficient mice` 都标对，原指南 19 次从没标对；都写了"并列病名先判 CompositeMention"（第 117 行；第 375 行），`BRCA1 breast and ovarian cancer susceptibility gene` 都标 CompositeMention。两份的余弦 0.65，在各自那一行最高。
+- top-4 loop06 在这两处正相反。它的 -deficient 条文只管 phenotype、activity（第 65 行），`Atm-deficient mice` 没标；它没有并列先判，按第 161 行"基因、蛋白名称里的病名标 Modifier"把 susceptibility gene 那一处标对，原指南 19 次从没标对。它少标对的在别处：`prostate adenocarcinoma cell line` 标成 SpecificDisease，原指南 19 次全对；理由写 "not a gene or protein designation"，它的 Modifier 一节只列了人或临床名词（第 150 行）和基因、蛋白名称（第 161 行）两类中心词，这一条是较弱的候选。
+- 标对数一样，错标不一样：top-4 loop06 的 Modifier 错标比原指南平均多 32.3 个，另两份只差 −0.7、+1.3 个。top-4 loop06 与这两份的余弦（0.54）在它那一行也最高：三份共有的主体是病名在基因、蛋白名词前这一块（报告第 4.1 节），差别在上面这些地方。
+
+**Modifier +16 左右（top-1 loop07 +15.7、top-4 loop09 +16.7、top-1 loop05 +17.7）：三份各有各的得失，柱高相近是凑巧。**
+- 三份里只有 top-1 loop07 把 VHL 那一篇的 13 个全部标对，原指南 19 次一个也没标对。
+- 只有 top-4 loop09 写了"病名和名词之间隔着括号就不算修饰"（第 143、149 行），`myotonic dystrophy ( DM ) locus` 中的病名标成 SpecificDisease；原指南 19 次全对，另两份也标对。
+- 只有 top-1 loop05 把 `Atm-deficient mice` 标对，它的第 28 行规定描述 phenotype 或 patient 的 -deficient 形容词标 Modifier。
+- 三份两两的余弦是 0.21 至 0.22，在各自那一行都排在后半。
+
+**Modifier 接近 0（top-4 loop02 +3.7、loop05 +8.7、loop10 −3.3）：单独 cancer 一块是同一条文、同一批提及。** 三根柱子都在原指南范围内，高低本身可能是波动，但下面这块变化是三份共有的。
+- 三份都规定单独的 cancer、tumor 不标 Modifier（top-4 loop02 第 245、295 行，loop05 第 160 行，loop10 第 139、191 行）。8968716 的 `cancer incidence`、`age of cancer onset`，原指南 19 次中分别 16、17 次标对，11 份改后指南里只有这三份没标。
+- top-4 loop02 与 loop10 还都写了括号挡住修饰（第 231 行；第 134、135 行），`myotonic dystrophy ( DM ) locus` 中的病名都标 SpecificDisease。两份的余弦 0.66，是整张 Modifier 矩阵里最高的一对。
+
+**SpecificDisease −35 左右（top-1 loop05 −39.2、top-4 loop06 −35.2、top-4 loop07 −34.2）：共有一块，最大的一块不同。** 数字取自报告第 3、4.2、5.1 节。
+- 共有：三份都把 history of 这类短语后的病名写成 Modifier（top-1 loop05 第 63 行，top-4 loop06 第 120、150 行，top-4 loop07 第 65 行）；9145677 的 `women with a family history of breast cancer` 三份都标 Modifier，原指南从不标错。
+- 不同：top-1 loop05、top-4 loop06 规定部位词不足以让病名算具体疾病，以肿瘤词结尾的 124 个 Specific 中分别有 54、24 个被标成 DiseaseClass，原指南平均 13.0 个。top-4 loop07 第 34 行字面上也这样写，这类错误却只有 14 个，只读条文预测不了这一块。三份两两的余弦 0.26 至 0.28，都不是彼此最近的。
+
+**DiseaseClass：没有柱高相近又超出原指南范围的组。降得最多的 top-4 loop10（−38.8）和 loop05（−21.8）条文相同，是同一模式、程度不同。** 两份都规定列举中的症状不自动标注（第 84 行；第 157 行）、单独的 cancer、tumor 不标（第 191 行；第 160 行）（报告第 3 节）；两份的余弦 0.67，是整张 DiseaseClass 矩阵里最高的一对。
+
+**合起来：** 柱高相近不能当作条文相似的证据，要看变化落在哪些提及上。Modifier 矩阵最高的两对（top-4 loop02 与 loop10、top-4 loop04 与 loop01）和 DiseaseClass 矩阵最高的一对（top-4 loop05 与 loop10），都是写了同一类排除条文的指南。
+
 ## 核查记录
 
+- 柱高相近一节（2026-11-13）：逐提及表 `nodes/2026-11-06_seminar/error-analysis/outputs/bar_clause_pilot/<指南>_instances.csv`，按 doc、text、gold_label 查 `n_orig_of_19`（原指南 19 次运行中标对的次数）、`target_state`、`target_pred_label`、`raw_rationale`；某份指南的表里没有这个提及，表示它与原指南 19 次一致（19 次全对且这次也对，或 19 次全错且这次也错）。top-4 loop07、loop08 没有用逐提及表，按位置清单核对。余弦：同目录 `similarity_Modifier.csv`（SHA-256 前 12 位 `3361473ca62f`）、`similarity_DiseaseClass.csv`（`ad5ebf5a9995`）、`similarity_SpecificDisease.csv`（`5500cce78cdc`）。柱高与 Modifier 错标的变化取自 `overall_view_output.txt`。条文行号用 `sed -n` 读 `nodes/2026-11-06_seminar/error-analysis/outputs/bar_clause_pilot/codex_locate/inputs/guidelines/` 下的纯文本指南核对。
 - 位置清单：`python nodes/2026-11-13_seminar/error-analysis/scripts/anchor_loop08_modifier_diff.py > nodes/2026-11-13_seminar/error-analysis/outputs/overall_view/anchor_loop08_modifier_diff_output.txt`，输出 SHA-256 前 12 位 `57cf0ce6d396`。输入为 `data/datasets/ncbi_disease/valid/` 的 gold 和 `outputs/ncbi_disease/20261022_haiku-xhigh_*/valid_predictions/`。
 - 每一对"只有 top-4 loop08 标对"减"只有另一份标对"的个数，与 `nodes/shared/error-analysis/outputs/loop_label_tables.json` 中两根 Modifier 柱的高度差一致（例如 top-4 loop04：33 减 9 等于 50.74 减 26.74）。
 - 条文行号用 `sed -n` 逐条读取核对；实例逐条在位置清单中核对。

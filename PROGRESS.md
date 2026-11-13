@@ -298,6 +298,12 @@ BC5CDR、BioRED 的复现已完成，validation 原指南/修改后分别为 **0
 - **与"柱高相同的指南是否遵循相似模式"的关系：** Modifier 柱高同为 +26.7 的三份里，top-4 loop04 和 loop01 三类都有明文，top-4 loop06 只有一条较弱的纯符号排除；只是观察，未做那条 Todo 的分析。
 - **对研究主线的含义：** 仍是候选，要说明因果需要删改这几处条文后重标。SpecificDisease、DiseaseClass 两组柱子还没有对到条文。
 
+**2026-11-13，柱高相近的改后指南是否遵循同一模式（离线，未调用 API）：写了同一类条文的，变化落在同一批提及上；条文不同的，柱高相近只是不同提及的得失凑巧抵消。** 结果在 `nodes/2026-11-13_seminar/error-analysis/outputs/overall_view/anchor_loop08_modifier_candidates.md` 末节。判断看两份指南是否在同一批 gold 提及上标得与原指南不同、并且都有管这些提及的同一类条文；例子只用原指南 19 次几乎全对或从没标对的提及。
+
+- **同一模式：** Modifier +26.7 的 top-4 loop04 与 loop01（都写了 -deficient 修饰别的名词标 Modifier、并列病名先判 CompositeMention，`Atm-deficient mice` 都标对，susceptibility gene 前的并列病名都标 CompositeMention）；Modifier 接近 0 的 top-4 loop02、loop05、loop10（都规定单独的 cancer 不标 Modifier，`age of cancer onset` 在 11 份里只有这三份没标）；DiseaseClass 降得最多的 top-4 loop10 与 loop05（条文相同，程度不同）。Modifier 余弦矩阵最高的两对和 DiseaseClass 最高的一对都在这里。
+- **凑巧相近：** Modifier +26.7 里的 top-4 loop06（没有上面两条，susceptibility gene 那一处标对、`Atm-deficient mice` 没标，cell line 前的病名标成 Specific，Modifier 错标多 32.3 个）；Modifier +16 左右的 top-1 loop07、top-4 loop09、top-1 loop05（得失各在不同提及上，两两余弦 0.21 至 0.22）；SpecificDisease −35 左右的三份只共有 history of 一块，最大的一块（以肿瘤词结尾的 Specific 被标成 DiseaseClass）只出在 top-1 loop05、top-4 loop06，top-4 loop07 字面相近的条文没有带来这类错误。
+- **对研究主线的含义：** 柱高相近不能当作条文相似的证据，比较指南要看变化落在哪些提及上。对应仍是候选，没有删改条文后重标的对照。
+
 ## 后续记录方式
 
 实验后，LOG 新增一行，PROGRESS 记录它对三条优化轴、阶段目标和当前决策的影响，并更新文档底部的 Todo。负结果和中断同样保留。
@@ -314,7 +320,7 @@ seminar 后，将会议要点及其对研究主线的推进融入对应日期的
 - [ ] 柱子的相似度矩阵：Modifier、SpecificDisease、DiseaseClass 各一张，横轴、纵轴都按 F1 排序（整体 F1 还是该类 F1 待定），计算两两余弦相似度，对照"F1 离最好的越近"和"与最好的越相似"两个趋势。用什么向量计算待定（教授提议）。
 - [ ] 柱状图的可靠性：每份改后指南在 valid100 上只有终版指南的一次标注，拿它和 19 次相互独立的原指南标注的平均比，说明不了相对基线的稳定提升。判断方式是待定的课题，候选有两个：显著性分析；超出 19 次的最低到最高才算（报告第 3 节已用这个范围标星号，16/33 根超出）。与 10/30 Todo"每份改后指南再标 2 次"相关。只记为课题，先不设计实验（教授）。
 - [ ] 分析和汇报都按"整体结果 → 指南对比 → 发现值得深究的现象才设计方法、逐标注往下钻"的顺序；研究计划不变。
-- [ ] 柱高相同的两份改后指南，分析指南是否遵循某种相似的模式（教授，11/06 提出，11/11 补记）。例：Modifier 上 top-4 loop04、loop01、loop06 的柱高都是 +26.7（`nodes/shared/error-analysis/outputs/loop_label_tables.json`）。11/11 拟了计划（先做这三份），未执行；top-4 loop01 的理由定位只做了 272 条里的 27 条。
+- [x] 柱高相同的两份改后指南，分析指南是否遵循某种相似的模式（教授，11/06 提出，11/11 补记）。例：Modifier 上 top-4 loop04、loop01、loop06 的柱高都是 +26.7（`nodes/shared/error-analysis/outputs/loop_label_tables.json`）。11/13 完成：top-4 loop04 与 loop01 同一模式，top-4 loop06 凑巧同高；另看了 Modifier +16 左右、接近 0，SpecificDisease −35 左右和 DiseaseClass 降得最多的几组，见 `anchor_loop08_modifier_candidates.md` 末节。
 
 ### 2026-10-30 seminar Todo（当前进行中）
 
