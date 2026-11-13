@@ -4,9 +4,9 @@
 
 ## 研究目标
 
-这是一个以生物医学命名实体识别（NER）为起点的 NLP 硕士研究。基于 *Refining and Reusing Annotation Guidelines for LLM Annotation*，总体路线是在标注资源稀少、还不足以训练监督模型的阶段改进 guideline refinement，分两条 track（2026-10-20 会议后确定，见 [RP v4](docs/RP/20261020_research_plan_v4.md)）：Track 1 面向直接使用 LLM 标注、不经人工修正的场景，提高标注质量；Track 2 面向构建 benchmark、需要专家修正的场景，以 FP 换取更少的 FN，减少专家的修正量。
+这是一个以生物医学命名实体识别（NER）为起点的 NLP 硕士研究。基于 *Refining and Reusing Annotation Guidelines for LLM Annotation*，总体路线是在标注资源稀少、还不足以训练监督模型的阶段改进 guideline refinement，分两条 track（2026-10-20 会议后确定，见 [RP v4](nodes/2026-10-20_meeting/20261020_research_plan_v4.md)）：Track 1 面向直接使用 LLM 标注、不经人工修正的场景，提高标注质量；Track 2 面向构建 benchmark、需要专家修正的场景，以 FP 换取更少的 FN，减少专家的修正量。
 
-[中期 abstract](archive/2026-08-31_midterm-abstract/47256388_周恒宇_要旨.pdf)将方法优化归为三个方向：从开发证据提取有效规则、泛化到新文档、可靠评价。hard-coding、Top-K、数据规模和规则冲突是其中的具体问题；其结果需回到整体标注质量和后续人工负担上判断。
+[中期 abstract](nodes/2026-08-31_midterm-abstract/47256388_周恒宇_要旨.pdf)将方法优化归为三个方向：从开发证据提取有效规则、泛化到新文档、可靠评价。hard-coding、Top-K、数据规模和规则冲突是其中的具体问题；其结果需回到整体标注质量和后续人工负担上判断。
 
 研究建立在已有 moderation 框架上，覆盖 NCBI Disease、BC5CDR 和 BioRED。NCBI Disease 是主要诊断场景。比较基准：四子类型严格 F1 与主论文在同一批 100 篇上的结果比较（原指南 0.73，moderated 0.76）；监督 SOTA（NEEDLE，单一 Disease 类型，测试集 0.9228）只在单一类型 F1 上作参照。此前的“BioBERT 0.86”在 NCBI 上找不到出处，已于 2026-10-20 删除。
 
@@ -39,9 +39,9 @@
 | [主论文](archive/references/backbone-research.pdf) | 基线方法和实验设计 |
 | [同作者相关工作](archive/references/sub-backbone-research1.pdf)、[相近研究](archive/references/sub-backbone-research2.pdf) | 证据驱动的指南构建、规则组合和其他标注工作流 |
 | [导师通信](archive/correspondence/email_with_professor.pdf)、[作者通信](archive/correspondence/email_with_auther_of_backbone-research.pdf) | 已记录的研究建议和方法澄清 |
-| [中期摘要](archive/2026-08-31_midterm-abstract/47256388_周恒宇_要旨.pdf)、[中期 slides](archive/2026-09-07_midterm-defense/midterm_slides.pptx) | 中期成果，状态可能早于后续实验 |
-| [冲突案例 slides](archive/2026-10-02_seminar-conflict-casestudy/conflict_handle_casestudy.pptx) | October 2 seminar 对应的 Round 3/4 案例 |
-| [人工 hard-coding 分析](archive/2026-09-24_seminar-expert-benchmark/hardcoding_analysis.docx)、[专家标注参考提案](archive/2026-09-24_seminar-expert-benchmark/Expert_Annotation_Benchmark_English.pptx) | 诊断方法和待探索参考 |
+| [中期摘要](nodes/2026-08-31_midterm-abstract/47256388_周恒宇_要旨.pdf)、[中期 slides](nodes/2026-09-07_midterm-defense/midterm_slides.pptx) | 中期成果，状态可能早于后续实验 |
+| [冲突案例 slides](nodes/2026-10-02_seminar-conflict-casestudy/conflict_handle_casestudy.pptx) | October 2 seminar 对应的 Round 3/4 案例 |
+| [人工 hard-coding 分析](nodes/2026-09-24_seminar-expert-benchmark/hardcoding_analysis.docx)、[专家标注参考提案](nodes/2026-09-24_seminar-expert-benchmark/Expert_Annotation_Benchmark_English.pptx) | 诊断方法和待探索参考 |
 | [seminar 历史](archive/seminar_note.txt)、[每次会议留档](archive/) | 研究反馈的原始记录 |
 
 代码入口及数据结构见 [README.md](README.md)。实验变体和评分工具在 reproduction/，保存的配置、逐轮提示和指南在 outputs/，评分结果在 reproduction/results/，发表与报告留档在 archive/。新 session 先读本文件和 PROGRESS，再按当前问题读取相应实验材料，避免每次加载全部历史。

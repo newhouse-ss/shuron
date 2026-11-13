@@ -7,7 +7,7 @@ RP v4 step 2 loops: the published top-1 loop (iterative.run_iterative_refinement
 (reproduction/dev_splits/ncbi_disease_dev10.json), data/guidelines/ncbi_disease_guidelines.txt, n_examples 5,
 threshold 0.9, at most 20 rounds, rationale and guideline section in the annotation output. Each final guideline
 is annotated once on valid100 and scored with strict PubAnnotation matching (reproduction/lib/scoring.py, the
-scorer behind eval_valid.py). Model settings are the Haiku trial's H_xhigh (todo-temp/haiku-trial/run_haiku.py):
+scorer behind eval_valid.py). Model settings are the Haiku trial's H_xhigh (nodes/2026-10-23_seminar/haiku-trial/run_haiku.py):
 claude-haiku-5-5, effort xhigh, adaptive thinking, structured outputs for annotation, except the output cap:
 max_tokens 128000 (Haiku 5.5's maximum) for every call of every loop. The first pilot (2026-10-22) ran at the
 trial's 64000; its top-4 rewrite was cut off there three times, all of it thinking, so the user raised the cap.
@@ -76,7 +76,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-for extra in (REPO_ROOT / "src", REPO_ROOT / "reproduction", REPO_ROOT / "todo-temp/haiku-trial"):
+for extra in (REPO_ROOT / "src", REPO_ROOT / "reproduction", REPO_ROOT / "nodes/2026-10-23_seminar/haiku-trial"):
     sys.path.insert(0, str(extra))
 
 import moderate_topk  # noqa: E402

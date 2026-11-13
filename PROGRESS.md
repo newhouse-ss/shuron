@@ -1,14 +1,16 @@
 # 研究进展
 
-更新：2026-11-12。这里沿研究主线记录阶段成果、判断变化和下次 seminar 待办；逐次实验见 [LOG.md](LOG.md)，固定背景及评价口径见 [OVERVIEW.md](OVERVIEW.md)。
+更新：2026-11-13。这里沿研究主线记录阶段成果、判断变化和下次 seminar 待办；逐次实验见 [LOG.md](LOG.md)，固定背景及评价口径见 [OVERVIEW.md](OVERVIEW.md)。
 
-**2026-10-30，已保存理由的离线核查完成。** [正文第 8 节](todo-temp/error-analysis/reports/20261024_error_analysis_report_zh.md)与附录 J 增加 16 条预测的逐例探索，完整证据在 `todo-temp/error-analysis/outputs/20261030_rationale_audit/`。全部 30 次验证集运行的请求及预测来源已准确核对。理由与标签自洽仍可能与 gold 不同，边界取舍也常未被理由解释；分类前提不能确定的案例继续保留为未定。16 条是工作量上限，不代表全体比例或改写效果；未追加标注、修改指南或启动方法实验，也不据此关闭“全部错误分类”的待办。
+**2026-11-13，分析材料按会议节点整理到 [nodes/](nodes/README.md)：** 每次 seminar 或会议一个文件夹，放为它准备的分析、脚本、输出和汇报材料；被两个以上后续节点使用的放 `nodes/shared/`。原 `todo-temp/`、`docs/RP/`、`docs/slides/` 和 `archive/` 下的日期文件夹都已并入，旧路径对照见 `nodes/path_map_20261113.tsv`。挪动后全部离线脚本重跑，输出与整理前一致（例外及原因见 nodes/README.md）。不涉及研究结论。
+
+**2026-10-30，已保存理由的离线核查完成。** [正文第 8 节](nodes/shared/error-analysis/reports/20261024_error_analysis_report_zh.md)与附录 J 增加 16 条预测的逐例探索，完整证据在 `nodes/shared/error-analysis/outputs/20261030_rationale_audit/`。全部 30 次验证集运行的请求及预测来源已准确核对。理由与标签自洽仍可能与 gold 不同，边界取舍也常未被理由解释；分类前提不能确定的案例继续保留为未定。16 条是工作量上限，不代表全体比例或改写效果；未追加标注、修改指南或启动方法实验，也不据此关闭“全部错误分类”的待办。
 
 ## 总体主线与阶段目标
 
 **在标注资源稀少、还不足以训练监督模型的阶段改进 guideline refinement：Track 1 让直接使用、不经人工修正的 LLM 标注质量更高；Track 2 在构建 benchmark 需要专家修正时，以 FP 换取更少的 FN，减少专家的修正量。**
 
-这是本研究的总体方向，2026-10-20 会议后确定，取代 10-06 的“先逼近 SOTA、再替代或部分替代专家标注”；计划见 [RP v4](docs/RP/20261020_research_plan_v4.md)。此前的 hard-coding、规则冲突、Top-K 和开发数据规模分析，都是这条路线上的方法诊断。研究脉络来自 [中期 abstract](archive/2026-08-31_midterm-abstract/47256388_周恒宇_要旨.pdf)，第 1 至 2 页。
+这是本研究的总体方向，2026-10-20 会议后确定，取代 10-06 的“先逼近 SOTA、再替代或部分替代专家标注”；计划见 [RP v4](nodes/2026-10-20_meeting/20261020_research_plan_v4.md)。此前的 hard-coding、规则冲突、Top-K 和开发数据规模分析，都是这条路线上的方法诊断。研究脉络来自 [中期 abstract](nodes/2026-08-31_midterm-abstract/47256388_周恒宇_要旨.pdf)，第 1 至 2 页。
 
 | 阶段 | 要解决的问题 | 当前位置 |
 | --- | --- | --- |
@@ -45,7 +47,7 @@ dev10 原方法达到开发 F1 **0.9091**，但有 **15/37** 个符合条件的�
 
 因此，问题从“提高开发分数”延伸为“如何学习能迁移的规则，同时保护正确案例”。文本吸收不等于正确答案记忆，现有结果也没有证明保护正确案例必须依靠记忆。
 
-同期开展 10/20/30 篇规模实验，validation F1 为 **0.7878/0.7745/0.8050**。各规模只有一条已报告 refinement 轨迹，尚不能隔离规模的作用。2026-10-08 勘误：三次运行的 n_examples 实际均为 5（resolved config 与 prompt 实测，见 [P4 报告](todo-temp/p0-p4/p4/20261007_p4_devsize_report.md)），此前"示例上限 5/10/15"为误记，规模对比不含示例数混杂。固定指南五次重复标注的 F1 标准差为 **0.01502/0.00978/0.00921**，提示需要把评价波动纳入方法优化。
+同期开展 10/20/30 篇规模实验，validation F1 为 **0.7878/0.7745/0.8050**。各规模只有一条已报告 refinement 轨迹，尚不能隔离规模的作用。2026-10-08 勘误：三次运行的 n_examples 实际均为 5（resolved config 与 prompt 实测，见 [P4 报告](nodes/2026-10-09_seminar/p0-p4/p4/20261007_p4_devsize_report.md)），此前"示例上限 5/10/15"为误记，规模对比不含示例数混杂。固定指南五次重复标注的 F1 标准差为 **0.01502/0.00978/0.00921**，提示需要把评价波动纳入方法优化。
 
 8 月 20 日将中期摘要的当前结果重点放在 hard-coding，是当时的写作安排；整个研究仍沿三条优化轴展开。详见 [seminar 历史](archive/seminar_note.txt)和 [8 月实验报告](reproduction/REPORT_progress_20260814.md)，旧报告状态及过强因果结论以当前记录为准。
 
@@ -59,7 +61,7 @@ BC5CDR、BioRED 的复现已完成，validation 原指南/修改后分别为 **0
 
 ### 4. 10 月：用真实冲突检验一项具体优化假设
 
-2026-10-02 seminar（2026-10-06 补录）的 [会议摘要](archive/2026-10-02_seminar-conflict-casestudy/seminar_oct2.md)和 [案例 slides](archive/2026-10-02_seminar-conflict-casestudy/conflict_handle_casestudy.pptx)展示新旧指南合并后的严重冲突：修好一类错误可能误伤其他类别，指南甚至把 gold 实体写为“不标注”。
+2026-10-02 seminar（2026-10-06 补录）的 [会议摘要](nodes/2026-10-02_seminar-conflict-casestudy/seminar_oct2.md)和 [案例 slides](nodes/2026-10-02_seminar-conflict-casestudy/conflict_handle_casestudy.pptx)展示新旧指南合并后的严重冲突：修好一类错误可能误伤其他类别，指南甚至把 gold 实体写为“不标注”。
 
 具体而言，指南把“deficiency of norrin”和“deficient activity of fatty aldehyde dehydrogenase”写作排除示例，但开发 gold 分别标为 DiseaseClass 和 SpecificDisease；“spasticity”的适用范围也需核查。会议摘要报告 Round 3 的三个目标案例只修复一个，Round 4 调整范围后的整体变化仍待核查。约 10 篇、70 个实体的小样本还需要规模及同类对照。
 
@@ -69,19 +71,19 @@ BC5CDR、BioRED 的复现已完成，validation 原指南/修改后分别为 **0
 
 材料：[Round 3 snapshot](outputs/ncbi_disease/20260802_gpt54-high_moderation/rounds/iteration_03/snapshot.json)、[Round 4 snapshot](outputs/ncbi_disease/20260802_gpt54-high_moderation/rounds/iteration_04/snapshot.json)。需分别记录原规则、实际提示证据、新增文本、模型输出和 gold；gold 不一致或错误簇排名本身不能证明冲突原因或实际选中的提示案例。
 
-**2026-10-06，P0 核查完成：** Round 4 开发 F1 从 0.8873 升至 0.9091，逐实体为 3 个修复、1 个新增回归；目标簇仅修复 1/3。norrin 与 FALDH 是较早存在的漏标，不能归为本轮新增回归。完整逐例变化和混淆矩阵见 [P0 报告](todo-temp/p0-p4/p0/20261006_round4_p0_report.md)。作用域的因果解释仍待 P1/P2。
+**2026-10-06，P0 核查完成：** Round 4 开发 F1 从 0.8873 升至 0.9091，逐实体为 3 个修复、1 个新增回归；目标簇仅修复 1/3。norrin 与 FALDH 是较早存在的漏标，不能归为本轮新增回归。完整逐例变化和混淆矩阵见 [P0 报告](nodes/2026-10-09_seminar/p0-p4/p0/20261006_round4_p0_report.md)。作用域的因果解释仍待 P1/P2。
 
-**2026-10-07，P1/P2 三臂对照完成：** 原从句（dev F1 **0.8873**）、删除从句（P1，**0.8671**）、限定作用域改写（P2，**0.8511**，低于 R2 基线会被回退）三个原则版本下，norrin、FALDH、abnormal retinal vascular development 三个焦点漏标**均未恢复**，spasticity 均修复。结论：指南中与 gold 相反的排除示例是模型上游判断的**症状而非成因**——模型在这些 definitional/characterization 语境中本就不把这些短语读作疾病提及，限制条款的写法改变不了该判断；该从句的真实功能是压制 DiseaseClass 过度扩张的精度护栏（P1 删除后 S→D 类型错误 2→4）。详见 [P1 报告](todo-temp/p0-p4/p1/20261006_p1_truncated_clause_report.md)与 [P2 报告](todo-temp/p0-p4/p2/20261007_p2_scoped_clause_report.md)。下一步方向从"修改限制措辞"转向"更具体的语言模式原则 / 正例演示的代价权衡 / CONSTRAINT 通道承载"。
+**2026-10-07，P1/P2 三臂对照完成：** 原从句（dev F1 **0.8873**）、删除从句（P1，**0.8671**）、限定作用域改写（P2，**0.8511**，低于 R2 基线会被回退）三个原则版本下，norrin、FALDH、abnormal retinal vascular development 三个焦点漏标**均未恢复**，spasticity 均修复。结论：指南中与 gold 相反的排除示例是模型上游判断的**症状而非成因**——模型在这些 definitional/characterization 语境中本就不把这些短语读作疾病提及，限制条款的写法改变不了该判断；该从句的真实功能是压制 DiseaseClass 过度扩张的精度护栏（P1 删除后 S→D 类型错误 2→4）。详见 [P1 报告](nodes/2026-10-09_seminar/p0-p4/p1/20261006_p1_truncated_clause_report.md)与 [P2 报告](nodes/2026-10-09_seminar/p0-p4/p2/20261007_p2_scoped_clause_report.md)。下一步方向从"修改限制措辞"转向"更具体的语言模式原则 / 正例演示的代价权衡 / CONSTRAINT 通道承载"。
 
-**2026-10-07，P3 Top-K 对比补全：** dev 终点 0.9155 的 top-4 指南实测 valid100 F1 **0.8023**（top-1 0.7878、原指南 0.7792），增益几乎全部来自 Modifier 召回（TP +26）；dev 上 0.9155 vs 0.9091 的差距在 dev10 噪声带内，valid 的 +0.0145 才是有效证据但仍是单点估计。吸收率 32% 反低于 top-1 的 41%，排除"更多硬编码"解释。两个 gold 相反排除示例在 top-4 终版指南中同样存在，且查证 top-4 第 1 轮分析调用已展示 FALDH/retinal-vascular 的 gold 标签仍照写排除——输入侧加证据也防不住，缺口定位在 refine_guidelines 调用看不到带标签的 discrepancy 证据。详见 [P3 报告](todo-temp/p0-p4/p3/20261007_p3_topk4_report.md)。
+**2026-10-07，P3 Top-K 对比补全：** dev 终点 0.9155 的 top-4 指南实测 valid100 F1 **0.8023**（top-1 0.7878、原指南 0.7792），增益几乎全部来自 Modifier 召回（TP +26）；dev 上 0.9155 vs 0.9091 的差距在 dev10 噪声带内，valid 的 +0.0145 才是有效证据但仍是单点估计。吸收率 32% 反低于 top-1 的 41%，排除"更多硬编码"解释。两个 gold 相反排除示例在 top-4 终版指南中同样存在，且查证 top-4 第 1 轮分析调用已展示 FALDH/retinal-vascular 的 gold 标签仍照写排除——输入侧加证据也防不住，缺口定位在 refine_guidelines 调用看不到带标签的 discrepancy 证据。详见 [P3 报告](nodes/2026-10-09_seminar/p0-p4/p3/20261007_p3_topk4_report.md)。
 
-**2026-10-08，P4 规模对比完成（全部离线，无新运行）：** 三项结论：① 勘误——三次规模运行 n_examples 实际均为 5，"示例数 5/10/15 混杂"不存在；② 假设的硬编码端成立（吸收率 41%→9%→3% 单调塌缩），泛化端不成立——valid 0.7878/0.7745/0.8050 非单调，配对 bootstrap 显示所有臂间差 95% CI 跨 0（仅 dev30 vs 原指南 +0.026 达 97.1% 单侧），且吸收率低 ≠ valid 好（dev20 反例）；③ dev30 指南在拥有 norrin 文档的情况下仍写出其扁平排除——规模不解决 gold 相反排除，与 P3 §3.4 的结构定位一致。dev20/dev30 replicate 两臂已设计但按用户决定不执行，轨迹方差未知是主要保留。详见 [P4 报告](todo-temp/p0-p4/p4/20261007_p4_devsize_report.md)。**至此 2026-10-02 seminar 的五项 Todo（P0–P4）全部关闭。**
+**2026-10-08，P4 规模对比完成（全部离线，无新运行）：** 三项结论：① 勘误——三次规模运行 n_examples 实际均为 5，"示例数 5/10/15 混杂"不存在；② 假设的硬编码端成立（吸收率 41%→9%→3% 单调塌缩），泛化端不成立——valid 0.7878/0.7745/0.8050 非单调，配对 bootstrap 显示所有臂间差 95% CI 跨 0（仅 dev30 vs 原指南 +0.026 达 97.1% 单侧），且吸收率低 ≠ valid 好（dev20 反例）；③ dev30 指南在拥有 norrin 文档的情况下仍写出其扁平排除——规模不解决 gold 相反排除，与 P3 §3.4 的结构定位一致。dev20/dev30 replicate 两臂已设计但按用户决定不执行，轨迹方差未知是主要保留。详见 [P4 报告](nodes/2026-10-09_seminar/p0-p4/p4/20261007_p4_devsize_report.md)。**至此 2026-10-02 seminar 的五项 Todo（P0–P4）全部关闭。**
 
 **2026-10-09，seminar 汇报 P0–P4，导师反馈确定下一阶段重点：** 会上报告了五项核查结果（R4 逐例变化、P1/P2 三臂对照、Top-4 valid100、规模对比）。导师的核心要求是**逐例解释"新规则为什么没有修复目标错误"**，而不是继续扩大实验规模：R4 针对 3 个 S→O 漏标只修复 1 个，需逐案例串起"原文/gold/R3 预测 → discrepancy 解释 → 新 principle → R3→R4 指南 diff → 最终预测"的规则链，并做隔离对照（新 principle 单独重标目标案例 vs R4 完整指南），以区分修复条件不足、规则冲突与整合失真；同时解释为什么针对漏标的规则主要改变了其他类型（2 个 M→S 修复、1 个 S→D 新增回归）。术语修正：safety clause 改称 **exception rule**；流程图须区分 gold annotation 与 TP，gold 来源直接指向原始 gold 数据。Top-4 收益（recall/Modifier 驱动、precision 未改善）需重复实验确认显著性；导师提醒 FP 增加可能反映"尽量标成实体"的标注偏置。两个下一步方向获认可：refinement 阶段注入目标错误案例的 gold（输入侧）、reviewer 写后冲突检查（输出侧）；pattern explanation 阶段可直接使用原始 gold annotation（含正确案例）。下次 seminar 拟邀请 Ken 与 Kim 教授，候选时间 10/15、10/16、10/19 上午、10/20，本周收集可用性。
 
-**2026-10-14，新 P0 规则链与隔离对照完成（10/16 seminar 前）：** 计划见 [RP](docs/RP/20261014_r4_failure_attribution_plan.md)。
+**2026-10-14，新 P0 规则链与隔离对照完成（10/16 seminar 前）：** 计划见 [RP](nodes/2026-10-16_seminar/20261014_r4_failure_attribution_plan.md)。
 
-[规则链](todo-temp/r4-attribution/rule-chain/20261014_r4_rule_chain_report.md)显示 R4 的三个目标属于三种情况：
+[规则链](nodes/2026-10-16_seminar/r4-attribution/rule-chain/20261014_r4_rule_chain_report.md)显示 R4 的三个目标属于三种情况：
 
 - **FALDH**：规则冲突。新规则放行，指南却有三处点名排除，其中一处是 R4 改写时新增的。
 - **G6PD**：修复条件不足。
@@ -89,7 +91,7 @@ BC5CDR、BioRED 的复现已完成，validation 原指南/修改后分别为 **0
 
 与 gold 相反的点名排除，全部出自"不许破坏的示例"区块中被展示的文档。这个区块按样本顺序取前 5 篇有 TP 的文档，展示全文，不标记 FN；改写指南这一站看不到任何 gold。dev30 中 FALDH 的文档没有被展示，指南就从未点名它。
 
-[隔离对照](todo-temp/r4-attribution/isolation/20261014_r4_isolation_report.md)（36 次，GPT-5.4 high）的结果：
+[隔离对照](nodes/2026-10-16_seminar/r4-attribution/isolation/20261014_r4_isolation_report.md)（36 次，GPT-5.4 high）的结果：
 
 - **FALDH**：在"标签定义＋原则"条件下，3 次都被当作疾病标注（2 次 SpecificDisease，跨度含缩写；1 次 CompositeMention）。用 R4 完整指南为 0/3。去掉原则的 exception rule，结果不变。
 - **G6PD**：四组都没有标对。去掉 exception rule 后，模型只是改为把 "enzyme deficiency" 标成 DiseaseClass。
@@ -122,31 +124,31 @@ BC5CDR、BioRED 的复现已完成，validation 原指南/修改后分别为 **0
 - 提示声明这些文档"currently handled CORRECTLY"，又要求"prioritize specific sub-cases to avoid regression"。这与 FALDH 被写成点名排除的过程一致，但属于推断。
 - 论文 §3.4.4 说这一步还会收到 discrepancy context，现有实现没有传入。
 
-10/16 seminar 的 slides 见 `../presentations/20261016_faldh_attribution_en.pptx`（slides 统一放在 `修論/presentations`），生成脚本为 `todo-temp/slides/build_faldh_slides.py`；非目标变化另成一份 `../presentations/20261016_r4_secondary_effects_en.pptx`，生成脚本为 `todo-temp/slides/build_secondary_effects_slides.py`。
+10/16 seminar 的 slides 见 `../presentations/20261016_faldh_attribution_en.pptx`（slides 统一放在 `修論/presentations`），生成脚本为 `nodes/shared/slides/build_faldh_slides.py`；非目标变化另成一份 `../presentations/20261016_r4_secondary_effects_en.pptx`，生成脚本为 `nodes/shared/slides/build_secondary_effects_slides.py`。
 
 **2026-10-16，seminar 反馈与当日离线核查：** 教授提出两项检验，原文见底部 Todo。
 
-- 第二项的前提已离线核对：E1 能控制的输入和设置都与 08/02 原 run 相同；无法做到相同的只有模型版本（原 run 未记录）和模型自身的随机性。见[复现一致性核查](todo-temp/r4-attribution/nontarget/20261016_replay_identity_report.md)。
+- 第二项的前提已离线核对：E1 能控制的输入和设置都与 08/02 原 run 相同；无法做到相同的只有模型版本（原 run 未记录）和模型自身的随机性。见[复现一致性核查](nodes/2026-10-16_seminar/r4-attribution/nontarget/20261016_replay_identity_report.md)。
 - 23 次重跑与原 run 相比，差别和重跑之间的差别处在同一水平。例外只有两处，而两处都是因为原 run 的结果特别才被挑出来的：R4 下的 Tay-Sachs/TSD，以及 R3 下的 PAH。R3 下 PAH 原 run 未标，重跑 3/3 是跨度正确的 DiseaseClass，两者都不算对。
 - 对研究主线的含义：要说某一处"被规则改变"，必须先重复确认，单次标注不够。这与 10/15 关于"接受或回退一轮修改的决定可能被单次波动左右"的判断一致。
-- 第一项已完成设计，未运行，设计稿已于 10/20 并入[结果报告](todo-temp/r4-attribution/isolation/20261017_r3_minus_faldh_report.md)（原文见提交 d86ea17）。10/17 已运行，见下。
+- 第一项已完成设计，未运行，设计稿已于 10/20 并入[结果报告](nodes/2026-10-16_seminar/r4-attribution/isolation/20261017_r3_minus_faldh_report.md)（原文见提交 d86ea17）。10/17 已运行，见下。
 
 **2026-10-17，R3 删去点名排除仍修不好 FALDH；FALDH 归因到此收尾：**
 
-- R3 指南删去点名 FALDH 的两处后，5 次都没有标出 FALDH；同批 R3 原样对照 0/3，其余 13 个 gold 每次都对。10/14 里 R4 删去点名排除后是 3/3（Fisher 单侧 p ≈ 0.018，跨日比较，两天的 R3 对照一致）。见[结果](todo-temp/r4-attribution/isolation/20261017_r3_minus_faldh_report.md)。
+- R3 指南删去点名 FALDH 的两处后，5 次都没有标出 FALDH；同批 R3 原样对照 0/3，其余 13 个 gold 每次都对。10/14 里 R4 删去点名排除后是 3/3（Fisher 单侧 p ≈ 0.018，跨日比较，两天的 R3 对照一致）。见[结果](nodes/2026-10-16_seminar/r4-attribution/isolation/20261017_r3_minus_faldh_report.md)。
 - 对研究主线的含义：只去掉点名排除不够，R4 新 principle 写进指南的内容是修复 FALDH 的必要条件。连同 10/14 的"标签定义＋原则"3 次都当作疾病标注、③− 3/3 精确恢复，以及 PAH 在 R3 下 0/3、R4 下 3/3，可以说 R4 的 principle 对"缺乏/活性降低＋具体分子"这类漏标有用。FALDH 没修好，原因在改写这一站加入的点名排除（规则冲突），不在 principle 本身。
 - 口径限制：只对 FALDH、PAH 两例成立，单一模型；G6PD 在 R4 下仍未修复；R4 这一轮的 dev F1 提升本身不能复现（10/15）。
 - 决定不运行追加条件（删 R3 第 12 行的 "a molecular/substance entity or its level/activity"）。它只能区分 R4 里起作用的是收窄旧 exception rule（第 14 行），还是新增的正向规则（第 12 行）。两处都是按同一条 principle 写入的，所以不影响上面的结论。规则链显示 PAH 在 R3 的丢失与第 12 行同时发生，这与"第 12 行是 FALDH 的第二道阻挡"的推测一致，但这一点没有检验。
 
 **2026-10-19, preparation for the 10/20 meeting (Prof. Goto, Kon Woo Kim, Prof. Kim); offline only:**
 
-- Validation error breakdown of the saved runs ([error breakdown](todo-temp/plan-v3/error_breakdown_output.txt)). With the top-4 guideline (strict F1 0.8023), the largest single loss is subtype confusion between SpecificDisease and DiseaseClass (21 each way; F1 0.8750 if all subtype errors were fixed by gold), then boundaries (0.8597), missed mentions (0.8429) and extra mentions (0.8260). Ignoring subtypes, the same predictions score 0.8546.
+- Validation error breakdown of the saved runs ([error breakdown](nodes/2026-10-20_meeting/plan-v3/error_breakdown_output.txt)). With the top-4 guideline (strict F1 0.8023), the largest single loss is subtype confusion between SpecificDisease and DiseaseClass (21 each way; F1 0.8750 if all subtype errors were fixed by gold), then boundaries (0.8597), missed mentions (0.8429) and extra mentions (0.8260). Ignoring subtypes, the same predictions score 0.8546.
 - Midterm point 4 has lower priority now: missed Modifier is 27 of 208 disagreements with top-4 (13%), against 40 with the base method.
 - Simulated expert bound: checking each of the 777 predicted entities with gold reaches 0.9606. This frames the new annotation-reviewer direction (an LLM second pass, measured between the model alone and this bound).
 - Target check: no source gives BioBERT 0.86 on NCBI Disease. Zhao and Goto 2025 (Table 4) report BioBERT-Large 0.897 with one Disease type on a different test split. The 0.86 in OVERVIEW is left unchanged until the user decides; the meeting deck uses 0.897 with its source.
-- Deck (10/20 meeting, rebuilt on 10/20 from plan v3): `../presentations/20261020_progress_and_plan_en.pptx`, builder `todo-temp/slides/build_plan_v3_slides.py`. The 10/19 draft deck and its builder were deleted.
+- Deck (10/20 meeting, rebuilt on 10/20 from plan v3): `../presentations/20261020_progress_and_plan_en.pptx`, builder `nodes/shared/slides/build_plan_v3_slides.py`. The 10/19 draft deck and its builder were deleted.
 
-**2026-10-19 (later), direction research and plan v2; offline only:** [report](todo-temp/plan-v3/evidence_notes.md), plan v2, superseded on 10/20 by plan v3 and after the meeting by [plan v4](docs/RP/20261020_research_plan_v4.md); v1 and v2 were deleted.
+**2026-10-19 (later), direction research and plan v2; offline only:** [report](nodes/2026-10-20_meeting/plan-v3/evidence_notes.md), plan v2, superseded on 10/20 by plan v3 and after the meeting by [plan v4](nodes/2026-10-20_meeting/20261020_research_plan_v4.md); v1 and v2 were deleted.
 
 - No refined guideline is yet proven better than the original on valid100: top-4 minus original +0.0231, 95% interval [−0.0192, +0.0683]. The same R4 guideline annotated twice gave 0.7878 and 0.7789. Four refined loop finals (top-1 run 3, top-4 runs 1 to 3) were never scored on validation; scoring them is the cheapest test of top-4 as a method.
 - Subtype confusion (largest loss) is convention, not noisy gold: 20 of top-4's 34 same-span S/D confusions go against consistent training precedent. It is guideline-sensitive (14 to 58 across guidelines), and refinement created part of it (two cancer patterns, 3 to 16).
@@ -165,7 +167,7 @@ BC5CDR、BioRED 的复现已完成，validation 原指南/修改后分别为 **0
 - Ken：原方法的其他步骤（discrepancy 分类、principle 生成）也可以改；top-4 的区间包含 0；换新模型重跑，结论不变即可；手上没有专家标注。
 - 测试集、标注费用、与 Ken 当前工作的边界，会上没有谈到，待邮件确认。
 
-会后确定（[RP v4](docs/RP/20261020_research_plan_v4.md)）：
+会后确定（[RP v4](nodes/2026-10-20_meeting/20261020_research_plan_v4.md)）：
 - 按场景分两条 track：Track 1 提高直接使用的标注质量；Track 2 以 FP 换 FN，减少专家修正量。
 - 新实验全部在 DeepSeek V4.1 flash 上进行。顺序是：稳定性测试 → 复现 → 在 DeepSeek 输出上做错误分类体系和 Track 2 取舍曲线 → 按分类结果选定 Track 1 的改动。GPT-5.4 不再运行，也不再在它的输出上做新的分析。
 - 计时的专家实验不做，列为未来工作。
@@ -173,7 +175,7 @@ BC5CDR、BioRED 的复现已完成，validation 原指南/修改后分别为 **0
 
 会议的 Todo 写在 Notion 页面 “10/20 meeting summ & todo”，下方也有一份副本。
 
-**2026-10-21，DeepSeek 稳定性测试（RP v4 第 1 步）完成：** 结果见 [报告](todo-temp/deepseek-stability/report_run_output.txt)，20 次的 SD 与重复次数规划见 [plan_next_step_output.txt](todo-temp/deepseek-stability/plan_next_step_output.txt)。
+**2026-10-21，DeepSeek 稳定性测试（RP v4 第 1 步）完成：** 结果见 [报告](nodes/2026-10-23_seminar/deepseek-stability/report_run_output.txt)，20 次的 SD 与重复次数规划见 [plan_next_step_output.txt](nodes/2026-10-23_seminar/deepseek-stability/plan_next_step_output.txt)。
 
 - **设置选定开 thinking。** 关 thinking 即使 temperature 0 也不稳定：dev10 F1 均值 0.2583，50 次调用中 6 次失控。开 thinking 高出 +0.5585，95% CI [0.377, 0.740]。
 - **开 thinking 的标注噪声：** 原指南 20 次，dev10 F1 均值 0.8062，SD 0.0194（真实 SD 的 95% 范围 0.0147 至 0.0283，GPT-5.4 的 0.0150 在范围内）。
@@ -182,17 +184,17 @@ BC5CDR、BioRED 的复现已完成，validation 原指南/修改后分别为 **0
 - **标签名归一：** DeepSeek 有时照抄指南里的 "Specific Disease"，pipeline 现在把去掉空格后等于 schema 名的标签改回 schema 名。
 - **费用：** 实际约 ¥303。开 thinking 的一次 dev10 标注调用非高峰约 ¥1.27、47 秒，低于 RP v4 按 GPT-5.4 输出长度的估算。循环内的其他调用（discrepancy、principle、改写）还没测过。
 
-**2026-10-22，Claude Haiku 5.5 试验（dev10，Batch API）：** 起因是 DeepSeek 高峰时段价格翻倍。结果见 [报告](todo-temp/haiku-trial/report_output.txt)。
+**2026-10-22，Claude Haiku 5.5 试验（dev10，Batch API）：** 起因是 DeepSeek 高峰时段价格翻倍。结果见 [报告](nodes/2026-10-23_seminar/haiku-trial/report_output.txt)。
 
 - **质量：** 同一 prompt、文档和评分下，Haiku 的 dev10 F1 比 DeepSeek 开 thinking 低约 0.045（high 0.7615、xhigh 0.7605，对 0.8062，p < 0.0001）。差距主要来自漏标（每次 FN 约 22，对 17），精确率相同（约 0.84）。漏标多对 Track 2 不利。
 - **effort：** high 与 xhigh 没有显著差别（p 0.88），按事先规则选 high。xhigh 的分数更稳定（SD 0.0150 对 0.0240），但每次调用贵约六成。
 - **费用与速度：** Batch 价每次调用 high ¥0.315，约为 DeepSeek 非高峰价（¥1.27）的四分之一；400 个请求 7 分钟完成，循环按步骤成批提交可行。
 - **稳定的错误：** FALDH、norrin、G6PD 与 DeepSeek 一样 20/20 漏标；PAH Haiku 20/20 漏标；Tay-Sachs disease、TSD Haiku 多数标对，DeepSeek 多数标成 Modifier。
-- **单位精度的费用：** 达到同一显著性所需的钱约等于每次费用 × 方差。以 high 为 1，xhigh 为 0.81（FN）/ 0.63（F1），DeepSeek 为 2.99 / 2.62（[计算](todo-temp/haiku-trial/effort_efficiency_with_max_output.txt)）。xhigh 噪声更小只在 F1 上勉强显著（p 0.046），FN 上不显著（p 0.14）。
-- **effort max（同日补测，[报告](todo-temp/haiku-trial/report_with_max_output.txt)）：** max 确实更好。在没有截断的 8 篇文档上，F1 比 xhigh 高 0.024（p 0.007），每次少漏标约 2 个（p < 0.0001），按事先规则选 max。但每次调用 ¥1.431，是 xhigh 的 2.8 倍，比 DeepSeek 非高峰还贵，分数仍显著低于 DeepSeek；噪声不比 xhigh 小。5% 的回复超过 64000 token 被截断，用于循环需要提高上限。
+- **单位精度的费用：** 达到同一显著性所需的钱约等于每次费用 × 方差。以 high 为 1，xhigh 为 0.81（FN）/ 0.63（F1），DeepSeek 为 2.99 / 2.62（[计算](nodes/2026-10-23_seminar/haiku-trial/effort_efficiency_with_max_output.txt)）。xhigh 噪声更小只在 F1 上勉强显著（p 0.046），FN 上不显著（p 0.14）。
+- **effort max（同日补测，[报告](nodes/2026-10-23_seminar/haiku-trial/report_with_max_output.txt)）：** max 确实更好。在没有截断的 8 篇文档上，F1 比 xhigh 高 0.024（p 0.007），每次少漏标约 2 个（p < 0.0001），按事先规则选 max。但每次调用 ¥1.431，是 xhigh 的 2.8 倍，比 DeepSeek 非高峰还贵，分数仍显著低于 DeepSeek；噪声不比 xhigh 小。5% 的回复超过 64000 token 被截断，用于循环需要提高上限。
 - **max 与 Modifier：** max 把 Tay-Sachs disease、TSD 多数标成 Modifier（17/20、13/20），与 DeepSeek（17/20、17/20）相同，high、xhigh 则多数标对。思考越多越倾向 Modifier，可能是指南条文本身的读法问题。
 - **决定（用户，10/22）：** 主模型用 Haiku 5.5，effort xhigh，经 Batch API 提交。理由：同一精度所需的钱最低（约为 DeepSeek 的四分之一），漏标多、可改进的空间大；max 比 DeepSeek 还贵且分数更低。RP v4 第 4、5 节已按此修订。
-- **复现的次数（10/22 更正）：** 之前的 E1 和循环次数是用 GPT-5.4 的 valid100 数据算的，违反了用户"不用 GPT 数据做决定"的要求，已撤回（相关脚本开头注明撤回）。用户定默认次数：E1 10 次、每种方法 10 个循环。费用只按 Haiku 实测价格和代码里的循环结构算：每个循环 1 轮时 3,520 次调用、约 ¥1,799，3 轮约 ¥2,126，5 轮约 ¥2,453，20 轮（上限）约 ¥4,906；分析调用按最大尺寸计时最多 ¥11,647（[计算](todo-temp/haiku-trial/cost_default10_output.txt)）。轮数和分析调用的价格都没测过。
+- **复现的次数（10/22 更正）：** 之前的 E1 和循环次数是用 GPT-5.4 的 valid100 数据算的，违反了用户"不用 GPT 数据做决定"的要求，已撤回（相关脚本开头注明撤回）。用户定默认次数：E1 10 次、每种方法 10 个循环。费用只按 Haiku 实测价格和代码里的循环结构算：每个循环 1 轮时 3,520 次调用、约 ¥1,799，3 轮约 ¥2,126，5 轮约 ¥2,453，20 轮（上限）约 ¥4,906；分析调用按最大尺寸计时最多 ¥11,647（[计算](nodes/2026-10-23_seminar/haiku-trial/cost_default10_output.txt)）。轮数和分析调用的价格都没测过。
 - **下一步：** 循环和 valid100 脚本接入 Claude provider，支持同一方法的循环同步推进、每一步一个批次，以及重试和续跑；然后通知管理员（超过 ¥1,000）并请用户批准复现。
 - **待定：** 是否在 DeepSeek 上跑同一方法，作为较强模型的对照（费用另算）。
 - **批处理试跑（10/22，top-1、top-4 各 1 个循环）：** 两个循环同步推进可行，6 个批次共约 36 分钟，¥90.36。top-1 第 1 轮的候选未被采用（dev10 0.7591 对 0.7681，差距在噪声内），终版即原指南，valid100 严格 F1 0.6986，这是 Haiku 上原指南的第一个 valid100 数。top-4 的改写要合并 4 条原则，思考超过 64000 token，3 次都截断，循环失败。实测价格：valid100 标注每次 ¥0.634，高于 dev10 的 ¥0.511；分析调用每次 ¥0.11 至 ¥0.36；top-1 改写 ¥1.5。
@@ -202,7 +204,7 @@ BC5CDR、BioRED 的复现已完成，validation 原指南/修改后分别为 **0
 - **top-4 的指南膨胀：** 每轮改写都整篇重写指南，长度从 7,367 字符涨到 113,338 字符（15 倍），改写输出接近 128,000 token 的上限（第 5 轮 99.4%）。以后的 top-4 循环很可能在某一轮改写超出上限；`--stop-at-cap`（改写 3 次都被截断时按被拒绝的一轮结束）已实现并测试，是否启用待用户决定。
 - **实测费用：** 1 轮的 top-1 循环 ¥76；6 轮的 top-4 循环 ¥199，其中 valid100 标注每次 ¥1.093（长指南使输入变大）。第 5 节按每次 ¥0.511 算的费用低估了 top-4，复现的费用需要按实测重算。
 
-**2026-10-23，scope 确认 seminar：** [deck](../presentations/20261023_scope_confirmation_en.pptx)（生成脚本 `todo-temp/slides/build_scope_confirmation_slides.py`，生成后用户另有手改）。逐题问答与注意点见 [TODO](todo-temp/seminar-20261023/TODO.md) 第 ① 节。依据是会议录音的自动转写（没有说话人标注，有缺段）；第二语料一题的答案由用户补充。
+**2026-10-23，scope 确认 seminar：** [deck](../presentations/20261023_scope_confirmation_en.pptx)（生成脚本 `nodes/shared/slides/build_scope_confirmation_slides.py`，生成后用户另有手改）。逐题问答与注意点见 [TODO](nodes/2026-10-23_seminar/seminar-20261023/TODO.md) 第 ① 节。依据是会议录音的自动转写（没有说话人标注，有缺段）；第二语料一题的答案由用户补充。
 
 - **两条 track 都必要（Q1）：** 教授不同意把 Track 2 作为补充分析，并说审稿意见也是这个方向。Track 2 不能靠重复运行投票，那只利用 LLM 输出的随机性；要在方法上改，让指南以更多 FP 换更少 FN，同时保持 F1，并从标注者修正是否更容易的角度讨论。计时的专家实验不需要。
 - **错误分析先行（Q2、Q3）：** 只做一个改动是否足够、分析做多深，等错误分类出来后再谈。教授把错误分析与分类列为第一件事。
@@ -212,7 +214,7 @@ BC5CDR、BioRED 的复现已完成，validation 原指南/修改后分别为 **0
 - **其他：** 投票那页解释了约 40 分钟，以后展示重复运行要先给"运行 × gold"矩阵并说明次数的依据；教授问到 top-2、top-3（都没跑过）；top-4 试跑的 +0.04 需要重复循环和 t 检验才能下结论；会后要写一份含统计检验的研究计划。
 - **对研究主线的含义：** Track 2 从"在已有输出上分析 FN/FP 取舍"变成需要自己方法的研究目标，RP v4 中 Track 2 的投票阈值和取舍曲线要改写。复现（E1 与 top-1、top-4 各 10 个循环）不受影响。
 
-**2026-10-23，复现完成（Haiku：原指南 10 次，top-1、top-4 各 10 个循环）：** [设计](todo-temp/seminar-20261023/reproduction_design.md)，[结果](todo-temp/seminar-20261023/reproduction_analysis_output.txt)。三个检验在运行前固定：Welch 双侧，各 5%。
+**2026-10-23，复现完成（Haiku：原指南 10 次，top-1、top-4 各 10 个循环）：** [设计](nodes/2026-10-23_seminar/seminar-20261023/reproduction_design.md)，[结果](nodes/2026-10-23_seminar/seminar-20261023/reproduction_analysis_output.txt)。三个检验在运行前固定：Welch 双侧，各 5%。
 
 | 比较 | 均值差 | 95% CI | p |
 | --- | --- | --- | --- |
@@ -230,7 +232,7 @@ BC5CDR、BioRED 的复现已完成，validation 原指南/修改后分别为 **0
 - **费用与运行：** ¥2,517（$15.92），低于估算的 ¥2,960 至 3,110；18 个批次约 2 小时；没有不可用回复。
 - **对研究主线的含义：** 按 10/23 的完成标准（Q4），不显著的结果本身可以写，但要配合分析。下一步是教授列为第一件事的错误分析，现在有 30 次 validation 输出可用；"哪些改写在 validation 上有用、哪些有害"和"dev10 上的接受规则为何选不出能泛化的改写"是直接的问题。按设计，不因不显著而追加循环。
 
-**2026-10-24 至 10-30，错误分析（离线，未调用 API）：修改后的指南各不相同，F1 的高低跟着少数几条新规则走；这些规则出自改写看不到的 gold 和只看总分的保留判定。** [报告](todo-temp/error-analysis/reports/20261024_error_analysis_report_zh.md)，[附录](todo-temp/error-analysis/reports/20261024_error_analysis_appendix_zh.md)，英文版尚未同步。材料是 10/23 复现的 30 次验证集运行和 44 轮改写记录。下文的"原指南范围"指 19 次原指南运行（10 次重复标注，加上停在原指南的 9 个循环各一次）的最小值到最大值。
+**2026-10-24 至 10-30，错误分析（离线，未调用 API）：修改后的指南各不相同，F1 的高低跟着少数几条新规则走；这些规则出自改写看不到的 gold 和只看总分的保留判定。** [报告](nodes/shared/error-analysis/reports/20261024_error_analysis_report_zh.md)，[附录](nodes/shared/error-analysis/reports/20261024_error_analysis_appendix_zh.md)，英文版尚未同步。材料是 10/23 复现的 30 次验证集运行和 44 轮改写记录。下文的"原指南范围"指 19 次原指南运行（10 次重复标注，加上停在原指南的 9 个循环各一次）的最小值到最大值。
 
 - **平均收益没有确认，单份指南的差别是真的。** 11 份修改后指南中 7 份 F1 落在原指南范围外（3 份高于、4 份低于），纯波动只会有约 1 份。
 - **F1 跟着 Specific 的损失走，不跟着 Modifier 的收益走。** 几乎每份指南都多标对了 Modifier。按排名比，11 份指南的 F1 与 Specific 标对数的相关是 0.84，与 Modifier 只有 0.44。
@@ -242,7 +244,7 @@ BC5CDR、BioRED 的复现已完成，validation 原指南/修改后分别为 **0
 - **候选改动（都未检验）：** 改写后按开发集 gold 核对新规则；把全部标错例子交给分析和改写（主论文第 3.4.4 节写改写也会收到，现有实现没有传入）；取消 verified examples 每篇 5 个的上限；只收紧 history of 这类短语后的 Modifier 规则。
 - **对研究主线的含义：** Track 1 的改动对象从"选哪类错误来修"具体到流程的两个环节：改写这一步能看到哪些 gold，保留判定看什么。这与 10/14 FALDH 证据链里的缺口相同：改写看不到 gold，就把开发文档里没列出的情形写错。验证集 100 篇的逐例错误已用于挑选改动，它不再是独立评价集，选出的改动要在新循环和没用过的文档上评价。
 
-**2026-10-30 seminar：汇报错误分析；教授要求先把逐循环、逐轮的对照摆清楚，再把指南条文和结果模式对应起来。** [deck](../presentations/20261030_error_analysis_en.pptx)，生成脚本 `todo-temp/slides/build_error_analysis_slides.py`。依据是会议录音的自动转写，没有说话人标注，大段听不清，下面只记能确认的意见。
+**2026-10-30 seminar：汇报错误分析；教授要求先把逐循环、逐轮的对照摆清楚，再把指南条文和结果模式对应起来。** [deck](../presentations/20261030_error_analysis_en.pptx)，生成脚本 `nodes/shared/slides/build_error_analysis_slides.py`。依据是会议录音的自动转写，没有说话人标注，大段听不清，下面只记能确认的意见。
 
 - **计数没讲清楚。** 教授反复追问 19 次原指南运行和 11 个以修改后指南结束的循环是怎么来的，建议列一张逐循环的表：每一轮的 F1、指南改没改，让每份修改后指南都能和原指南对上。以后的汇报先给这张表，再给汇总。
 - **基线不配对。** 教授质疑拿一份修改后指南的一次标注去比 19 次原指南运行的均值和范围："用均值，看不出提升是不是确实发生在这一轮"，倾向逐例对照原指南的标注。讨论后接受原指南在各循环相同、任一次原指南运行都可作对照，转而要求看中间轮次：每一轮指南怎么改，标注怎么变。中间轮次只在开发集上标注过，在验证集上逐轮比较需要新标注；是否要追加，转写里听不清。
@@ -253,7 +255,7 @@ BC5CDR、BioRED 的复现已完成，validation 原指南/修改后分别为 **0
 - **对研究主线的含义：** 错误分析从"给全部错误计数"推进到"条文对应结果模式"，这是 Track 1 选改动的依据；要说条文造成了结果，需要删条文重标这样的对照，要先估费用。教授的提议把 10/09 认可的"给 refinement 提供 gold"具体成改写 prompt 里的一条约束，加上完整的开发集 gold。
 - **下次 seminar：** 下周 16:00，日期转写听不清，待确认。
 
-**2026-11-05 至 11-06，柱子对应到指南规定（离线为主）：11 份改后指南在 valid100 上与基线不同的 2,918 条预测，全部找到了理由所依据的指南原文，归并成规定后按规定汇总，各类合计都等于柱子。** 做法：每个提及的差异等于这次的结果减去原指南 19 次里的比例，加起来正好等于柱子；同时读模型写的引用、理由和指南原文，逐字摘出依据的句子（Codex、Claude Haiku 5.5 与 Opus 5.5 分工，脚本只做逐字核对）；把句子归并成"一条规定"，再按规定把得、失和多标分开加总（[定位规格](todo-temp/error-analysis/notes/20261106_codex_locate_spec.md)，[归并规格](todo-temp/error-analysis/notes/20261106_merge_spec.md)，结果在 `todo-temp/error-analysis/outputs/bar_clause_pilot/codex_locate/aggregate/`）。
+**2026-11-05 至 11-06，柱子对应到指南规定（离线为主）：11 份改后指南在 valid100 上与基线不同的 2,918 条预测，全部找到了理由所依据的指南原文，归并成规定后按规定汇总，各类合计都等于柱子。** 做法：每个提及的差异等于这次的结果减去原指南 19 次里的比例，加起来正好等于柱子；同时读模型写的引用、理由和指南原文，逐字摘出依据的句子（Codex、Claude Haiku 5.5 与 Opus 5.5 分工，脚本只做逐字核对）；把句子归并成"一条规定"，再按规定把得、失和多标分开加总（[定位规格](nodes/2026-11-06_seminar/error-analysis/notes/20261106_codex_locate_spec.md)，[归并规格](nodes/2026-11-06_seminar/error-analysis/notes/20261106_merge_spec.md)，结果在 `nodes/2026-11-06_seminar/error-analysis/outputs/bar_clause_pilot/codex_locate/aggregate/`）。
 
 - **初步的规律（候选，未经对照实验）：** 11 份里有 10 份，得分最多的是"病名在名词前 → 标 Modifier"一类规定（+17.9 至 +36.0）；失分集中在家族史、语境和人群名词标 Modifier 的规定，以及"泛指一类 → DiseaseClass"。top-4 loop07 的第 65 行一句话里两个条件方向相反：作补足语 27 个标注 −26.5，修饰名词 15 个 +6.3。
 - **对研究主线的含义：** 现在知道每根柱子由哪些规定构成，但这些规定只是候选；是否确实是它们导致了差异，要靠删或加规定后重新标注来确定。
@@ -265,14 +267,14 @@ BC5CDR、BioRED 的复现已完成，validation 原指南/修改后分别为 **0
 - **柱状图的可靠性。** 每份改后指南在 valid100 上只有终版指南的一次标注，拿它和 19 次原指南标注的平均比，说明不了相对基线的稳定提升。判断方式（例如超出 19 次的最小值到最大值才算，或做显著性分析）是待定的课题。
 - **用户的反思：** 过度工程化，没有分清分析的主次；在没确认柱子之间有值得解释的差别之前，先搭了细粒度的定位、归并、汇总流程。探索阶段先确认方向是否值得做，没有证据不断言，也不在其上叠后续实验。
 
-**2026-11-08，按实体类型看整体（离线，未调用 API）：Modifier 的 F1 高低看 FP，SpecificDisease 和 DiseaseClass 看 TP 损失；top-4 loop08 和 loop04 的 Modifier 条文差别与柱子差距方向一致。** [规格](todo-temp/error-analysis/notes/20261108_overall_view_spec.md)，输出在 `todo-temp/error-analysis/outputs/overall_view/`（分组柱状图 `grouped_bars.png`，相似度矩阵 `similarity_matrices.png`）。余弦相似度的向量取该类每个 gold 提及的差异 d，衡量两份指南是否在同一批提及上往同一方向变，不是指南文本的相似度。
+**2026-11-08，按实体类型看整体（离线，未调用 API）：Modifier 的 F1 高低看 FP，SpecificDisease 和 DiseaseClass 看 TP 损失；top-4 loop08 和 loop04 的 Modifier 条文差别与柱子差距方向一致。** [规格](nodes/2026-11-13_seminar/error-analysis/notes/20261108_overall_view_spec.md)，输出在 `nodes/2026-11-13_seminar/error-analysis/outputs/overall_view/`（分组柱状图 `grouped_bars.png`，相似度矩阵 `similarity_matrices.png`）。余弦相似度的向量取该类每个 gold 提及的差异 d，衡量两份指南是否在同一批提及上往同一方向变，不是指南文本的相似度。
 
 - **F1 的高低：** SpecificDisease、DiseaseClass 该类 F1 最低的几份，正是 TP 损失最大的几份。Modifier 不同：top-4 loop07 的 TP 多了 40.7 个（11 份里第二多），FP 也多了 30.3 个，该类 F1 只排第 4。
 - **相似度矩阵：** Modifier 和 SpecificDisease 里，该类 F1 越接近最好的指南，与它的余弦越高；DiseaseClass 看不出趋势。Modifier 里 F1 低的分两种：变化落在同一批提及上但 FP 多（top-4 loop07、loop06），或者变化本身少（top-4 loop02、loop05、loop10）。165 对余弦全部大于 0，柱子正负相反的两份也是，所以只读同一行里的先后，绝对值要等噪声参照（两次原指南运行之间的余弦）。
 - **第一对指南：** 只看文字，有 5 处差别会让 loop08 标出更多 Modifier，2 处更少，与柱子差距（+50.7 对 +26.7）方向一致。其中带来 Modifier TP 的只有一处：loop08 不要求病名紧挨中心名词，也不先按 DiseaseClass、Composite 判定（依赖它的提及 63 个，TP +23.9）。一个提及可以同时依赖几条规定，算不出这一处占差距的多少。（11/10 逐个比较后更正，见下一条。）
 - **对研究主线的含义：** 三类实体的 F1 差别来源不同，条文对比按实体类型分开做。一对指南能对上柱子，其余指南对待做，Todo 第 1、2 项未完成。
 
-**2026-11-10，top-4 loop08 与 top-4 loop04 的 Modifier 柱高差逐个对到条文（离线，未调用 API）：一半多是同一篇摘要里的同一个判断；11/08 只读条文的判断要更正。** 报告第 4.4 节，输出 `todo-temp/error-analysis/outputs/overall_view/pair_modifier_tp_diff_output.txt`。
+**2026-11-10，top-4 loop08 与 top-4 loop04 的 Modifier 柱高差逐个对到条文（离线，未调用 API）：一半多是同一篇摘要里的同一个判断；11/08 只读条文的判断要更正。** 报告第 4.4 节，输出 `nodes/2026-11-13_seminar/error-analysis/outputs/overall_view/pair_modifier_tp_diff_output.txt`。
 
 - **柱高差 24 就是两份指南标对的 gold Modifier 之差。** 只有 loop08 标对的 33 个，只有 loop04 标对的 9 个。
 - **13 个是一篇摘要里的缩写 VHL**（文中定义过的病名缩写，也是基因符号）。loop08 第 52、259 行只指向 Modifier；loop04 第 120 行前后两句方向相反，第 191 行规定基因符号不标，一个也没标；原指南 19 次运行也没标对。去掉这一篇，差距剩 11，小于原指南两次运行之间可能的差距（最多 20）。
@@ -280,14 +282,14 @@ BC5CDR、BioRED 的复现已完成，validation 原指南/修改后分别为 **0
 - **更正 11/08：** 只读条文时，被判为"loop08 标更多 Modifier"的家族史一条不影响 Modifier 标对（这个位置的 gold 在验证集、训练集都没有 Modifier），只带来 6 个 Modifier 错标，其中 5 个原指南 19 次都标对；最大的 VHL 一块当时判为方向不明。"带来 TP 的只有一处"不成立。
 - **对研究主线的含义：** 只读条文能列出候选，但哪一处落在柱子上，要看两份指南结果不同的提及。条文对应都是候选，没有删条文后重标的对照。其余指南对待做。
 
-**2026-11-11，top-4 loop08 与 top-4 loop04 的 Modifier 差异按两份理由所引条文重做（离线，未调用 API）：柱高差主要落在三处条文规定不同的地方。** 输出 `todo-temp/error-analysis/outputs/overall_view/pair_modifier_cited_text_output.txt`。
+**2026-11-11，top-4 loop08 与 top-4 loop04 的 Modifier 差异按两份理由所引条文重做（离线，未调用 API）：柱高差主要落在三处条文规定不同的地方。** 输出 `nodes/2026-11-13_seminar/error-analysis/outputs/overall_view/pair_modifier_cited_text_output.txt`。
 
 - **做法：** 逐行通读两份全文，找出全部与 Modifier 有关的段落作备用（top-4 loop08 15 段、top-4 loop04 24 段，散在全文各节）。两次运行 Modifier 标注不同的地方共 69 处（gold Modifier 只有一份标对 42 处、都没标对但标法不同 5 处、标成 Modifier 的错误预测只在一份里 22 处），把两份理由所引原文放进备用里比较；一份没有引文时，按写法在它的备用里查对应原文。两份理由都引到原文的只有 11 处。
 - **柱高差 24（只有 top-4 loop08 标对 33 个，只有 top-4 loop04 标对 9 个）：** 只有 top-4 loop08 标对的 33 个里，25 个落在两份规定不同的地方，最大的三处是定义过的病名缩写同时是基因名（13 对 0，同一篇 VHL）、病名和名词之间隔着括号缩写（7 对 1）、Modifier 与 Composite/DiseaseClass 哪个先判（5 对 1）；两份规定一样的地方是 8 对 6。
 - **错标一侧（不进柱子，进 Modifier F1）：** history of 那条（top-4 loop08 第 48 行与 top-4 loop04 第 118 行规定相反）只在 top-4 loop08 错标 7 个。
 - **对研究主线的含义：** 这些对应来自模型理由和写法，是候选；要说条文导致了柱高差，需要删改这几处条文后重标（报告第 9 节）。报告第 4.4 节的净差写法和"去掉 VHL"的说法待按此更正。
 
-**2026-11-12，以 top-4 loop08 为锚点，把其余 10 份改后指南的 Modifier 柱高差逐份对到条文（离线，未调用 API）：三类条文差别在大多数指南里反复出现。** 候选列表 `todo-temp/error-analysis/outputs/overall_view/anchor_loop08_modifier_candidates.md`，位置清单 `anchor_loop08_modifier_diff_output.txt`。
+**2026-11-12，以 top-4 loop08 为锚点，把其余 10 份改后指南的 Modifier 柱高差逐份对到条文（离线，未调用 API）：三类条文差别在大多数指南里反复出现。** 候选列表 `nodes/2026-11-13_seminar/error-analysis/outputs/overall_view/anchor_loop08_modifier_candidates.md`，位置清单 `anchor_loop08_modifier_diff_output.txt`。
 
 - **做法：** Codex 先按指南给出一版候选，我逐份重做并复核。每一对只看 gold 为 Modifier、top-4 loop08 标对而另一份没标对的位置（以及反过来的位置），逐条读，再到两份指南里找管它的条文。Codex 引的行号和实例全部属实；复核补上了它漏列的同类条文，并换掉两个同时受几条条文管、分不清来源的实例。
 - **反复出现的三类：** 病名缩写同时是基因符号（实例都在 VHL 那一篇），6 份改后指南有排除基因符号或纯符号的条文，强弱不同，top-4 loop09 另有一条间接相关；病名和名词之间隔着括号缩写，6 份有"括号挡住修饰"或"括号缩写标 Specific"的明文；并列病名先判 CompositeMention，同样 6 份有明文。top-4 loop08 在这三处都没有对应的排除。
@@ -312,7 +314,7 @@ seminar 后，将会议要点及其对研究主线的推进融入对应日期的
 - [ ] 柱子的相似度矩阵：Modifier、SpecificDisease、DiseaseClass 各一张，横轴、纵轴都按 F1 排序（整体 F1 还是该类 F1 待定），计算两两余弦相似度，对照"F1 离最好的越近"和"与最好的越相似"两个趋势。用什么向量计算待定（教授提议）。
 - [ ] 柱状图的可靠性：每份改后指南在 valid100 上只有终版指南的一次标注，拿它和 19 次相互独立的原指南标注的平均比，说明不了相对基线的稳定提升。判断方式是待定的课题，候选有两个：显著性分析；超出 19 次的最低到最高才算（报告第 3 节已用这个范围标星号，16/33 根超出）。与 10/30 Todo"每份改后指南再标 2 次"相关。只记为课题，先不设计实验（教授）。
 - [ ] 分析和汇报都按"整体结果 → 指南对比 → 发现值得深究的现象才设计方法、逐标注往下钻"的顺序；研究计划不变。
-- [ ] 柱高相同的两份改后指南，分析指南是否遵循某种相似的模式（教授，11/06 提出，11/11 补记）。例：Modifier 上 top-4 loop04、loop01、loop06 的柱高都是 +26.7（`todo-temp/error-analysis/outputs/loop_label_tables.json`）。11/11 拟了计划（先做这三份），未执行；top-4 loop01 的理由定位只做了 272 条里的 27 条。
+- [ ] 柱高相同的两份改后指南，分析指南是否遵循某种相似的模式（教授，11/06 提出，11/11 补记）。例：Modifier 上 top-4 loop04、loop01、loop06 的柱高都是 +26.7（`nodes/shared/error-analysis/outputs/loop_label_tables.json`）。11/11 拟了计划（先做这三份），未执行；top-4 loop01 的理由定位只做了 272 条里的 27 条。
 
 ### 2026-10-30 seminar Todo（当前进行中）
 
@@ -335,12 +337,12 @@ seminar 后，将会议要点及其对研究主线的推进融入对应日期的
 - **论文故事线：** 复现（已完成）→ 诊断：损失对到具体条文（Modifier 部分已对上）→ 机制：已有证据，没有对照实验 → 方法：Track 1、Track 2 各一个候选，都未检验 → 评价：新循环、没用过的文档（待定）。
 - **Track 1 首选：** 改写拿到开发集全部标对的提及，prompt 要求不写与开发集 gold 相反的条文（教授提议）。要同时报告照抄开发集字符串的比例，因为清单上的字符串约一半被抄进了指南。
 - **Track 2 候选：** 标注输出加一个"不确定，送审"的出口，在方法上以 FP 换 FN，不是投票。依据是 top-4 loop10 的条文要求症状送审，输出里没有这一项，结果全变成漏标。
-- **删条文重标的检验：** 初稿经独立审阅后撤回并修正，见 [设计说明](todo-temp/error-analysis/notes/20261103_clause_ablation_design_review.md)；未运行，先定文档、判定阈值和预算。11/03 离线准备完成（报告第 9 节、附录 O）：7 份指南的规则位置已列出，top-4 loop07 删 5 行的文本、diff、哈希已固定并确认删干净；验证集方案 79 篇、1,140 次、约 ¥906，没用过的训练文档 487 篇（214 篇有短语后提及，history of 之后只有 10 个），两组 40 篇约 ¥298。
+- **删条文重标的检验：** 初稿经独立审阅后撤回并修正，见 [设计说明](nodes/2026-11-06_seminar/error-analysis/notes/20261103_clause_ablation_design_review.md)；未运行，先定文档、判定阈值和预算。11/03 离线准备完成（报告第 9 节、附录 O）：7 份指南的规则位置已列出，top-4 loop07 删 5 行的文本、diff、哈希已固定并确认删干净；验证集方案 79 篇、1,140 次、约 ¥906，没用过的训练文档 487 篇（214 篇有短语后提及，history of 之后只有 10 个），两组 40 篇约 ¥298。
 - **待拍板：** 新方法在哪些文档上评价（验证集的逐例错误已用来挑选改动，不再独立）；Track 2 主指标（倾向真正漏标为主、FN 为辅）；预算。
 
 ### 2026-10-23 seminar Todo（当前进行中）
 
-- [x] 错误分析与分类先行（教授）：先在已有的 Haiku 输出上建立分类方案，复现后再计数。（10/30 汇报第一版，见[错误分析报告](todo-temp/error-analysis/reports/20261024_error_analysis_report_zh.md)；细化见上方 10/30 Todo）
+- [x] 错误分析与分类先行（教授）：先在已有的 Haiku 输出上建立分类方案，复现后再计数。（10/30 汇报第一版，见[错误分析报告](nodes/shared/error-analysis/reports/20261024_error_analysis_report_zh.md)；细化见上方 10/30 Todo）
 - [ ] Track 2 改为方法上的目标：以 FP 换 FN、同时保持 F1；修订 RP v4 中 Track 2 的部分。
 - [ ] 写一份含统计检验的研究计划（会后要求）。
 - [ ] 问 DBCLS 能否提供 Claude API key；准备报销材料：表格、收据、显示美元汇率的银行流水。
@@ -357,13 +359,13 @@ seminar 后，将会议要点及其对研究主线的推进融入对应日期的
 - [ ] 没有专家标注：两条 track 都以 gold 为参照（Ken）。
 - [ ] 邮件确认：测试集能否最后用一次、标注费用、与 Ken 当前工作的边界。
 
-已关闭的一组来自 [October 2 会议摘要](archive/2026-10-02_seminar-conflict-casestudy/seminar_oct2.md)（保留原优先顺序，均已完成）；当前进行中的一组来自 2026-10-09 seminar，列在本节末尾。注意两组的 P0–P4 编号含义不同，引用时不要混淆。
+已关闭的一组来自 [October 2 会议摘要](nodes/2026-10-02_seminar-conflict-casestudy/seminar_oct2.md)（保留原优先顺序，均已完成）；当前进行中的一组来自 2026-10-09 seminar，列在本节末尾。注意两组的 P0–P4 编号含义不同，引用时不要混淆。
 
-- [x] **P0：核查 Round 4 标注变化与回归。** 已复算整体及类别指标，整理混淆矩阵和逐例历史，区分已有错误、目标修复与新增回归。见 [P0 报告](todo-temp/p0-p4/p0/20261006_round4_p0_report.md)。
-- [x] **P1：检验限制条款。** 已完成单变量对照（2026-10-06）：截短 R3 原则的 "do not apply" 从句后，原 41–44 行扁平排除消失，但模型自行再生等效条件限制，norrin/FALDH/abnormal development 无一恢复；dev F1 0.8671 低于原原则的 0.8873，S→D 类型错误翻倍。假设未证实，问题指向限制条款的写法与作用域而非其存在本身。见 [P1 报告](todo-temp/p0-p4/p1/20261006_p1_truncated_clause_report.md)。
-- [x] **P2：改写作用域。** 已完成（2026-10-07）：限定改写使 FALDH 排除从扁平变为条件式，且未再生额外排除示例，但焦点漏标仍无一恢复；dev F1 0.8511 低于 R2 基线，按循环规则会被回退。结合 P1 的三臂证据：漏标近因是标注模型的上游判断，不是限制文本。见 [P2 报告](todo-temp/p0-p4/p2/20261007_p2_scoped_clause_report.md)。
-- [x] **P3：整理并补充 Top-K 对比。** 已完成（2026-10-07）：0.9155 那次 top-4 指南 valid100 实测 F1 **0.8023**（top-1 0.7878、原指南 0.7792），增益集中于 Modifier 召回；吸收率 32% 低于 top-1 的 41%，硬编码解释被排除；两个 gold 相反排除示例仍在，且查明输入侧给 gold 证据也防不住。见 [P3 报告](todo-temp/p0-p4/p3/20261007_p3_topk4_report.md)。
-- [x] **P4：汇报 10/20/30 篇规模对比。** 已完成（2026-10-08，全部离线）：吸收率随规模单调塌缩（41%→9%→3%）但 valid 非单调且臂间差均在噪声内（bootstrap）；dev30 仍写出 norrin 的 gold 相反排除——规模解决硬编码、不解决冲突示例；n_examples 误记勘误（实际均为 5）。replicate 两臂已设计未执行。见 [P4 报告](todo-temp/p0-p4/p4/20261007_p4_devsize_report.md)。
+- [x] **P0：核查 Round 4 标注变化与回归。** 已复算整体及类别指标，整理混淆矩阵和逐例历史，区分已有错误、目标修复与新增回归。见 [P0 报告](nodes/2026-10-09_seminar/p0-p4/p0/20261006_round4_p0_report.md)。
+- [x] **P1：检验限制条款。** 已完成单变量对照（2026-10-06）：截短 R3 原则的 "do not apply" 从句后，原 41–44 行扁平排除消失，但模型自行再生等效条件限制，norrin/FALDH/abnormal development 无一恢复；dev F1 0.8671 低于原原则的 0.8873，S→D 类型错误翻倍。假设未证实，问题指向限制条款的写法与作用域而非其存在本身。见 [P1 报告](nodes/2026-10-09_seminar/p0-p4/p1/20261006_p1_truncated_clause_report.md)。
+- [x] **P2：改写作用域。** 已完成（2026-10-07）：限定改写使 FALDH 排除从扁平变为条件式，且未再生额外排除示例，但焦点漏标仍无一恢复；dev F1 0.8511 低于 R2 基线，按循环规则会被回退。结合 P1 的三臂证据：漏标近因是标注模型的上游判断，不是限制文本。见 [P2 报告](nodes/2026-10-09_seminar/p0-p4/p2/20261007_p2_scoped_clause_report.md)。
+- [x] **P3：整理并补充 Top-K 对比。** 已完成（2026-10-07）：0.9155 那次 top-4 指南 valid100 实测 F1 **0.8023**（top-1 0.7878、原指南 0.7792），增益集中于 Modifier 召回；吸收率 32% 低于 top-1 的 41%，硬编码解释被排除；两个 gold 相反排除示例仍在，且查明输入侧给 gold 证据也防不住。见 [P3 报告](nodes/2026-10-09_seminar/p0-p4/p3/20261007_p3_topk4_report.md)。
+- [x] **P4：汇报 10/20/30 篇规模对比。** 已完成（2026-10-08，全部离线）：吸收率随规模单调塌缩（41%→9%→3%）但 valid 非单调且臂间差均在噪声内（bootstrap）；dev30 仍写出 norrin 的 gold 相反排除——规模解决硬编码、不解决冲突示例；n_examples 误记勘误（实际均为 5）。replicate 两臂已设计未执行。见 [P4 报告](nodes/2026-10-09_seminar/p0-p4/p4/20261007_p4_devsize_report.md)。
 
 **本轮交付：** 逐例变化表、Round 4 混淆矩阵，以及原规则、删除限制、限定作用域三个版本的对比（P0–P4 已完成，seminar 五项 Todo 全部关闭）。**与整体目标的连接：** 三臂对照显示规则措辞路径对焦点漏标无效，P3/P4 进一步显示加证据（top-k、加数据）也防不住 gold 相反排除；共同缺口定位在 refine_guidelines 调用看不到带标签的 discrepancy 证据。若提出新的承载方式（gold 证据注入 rewrite 步、写后对照校验、CONSTRAINT 通道），需先在小样本验证可复用收益，再扩大评价，检查整体 validation 收益与稳定性，推动向 SOTA 目标前进。改善一个开发案例不直接视为达到阶段目标。
 
@@ -373,10 +375,10 @@ seminar 后，将会议要点及其对研究主线的推进融入对应日期的
 
 **新 P0（下次 seminar 必做）：逐例定位失败环节。**
 
-- [x] （2026-10-14 完成：与 3 个 gold 相反案例只在 FALDH 重合，未修复案例共 4 个，加上已修复的 PAH；见[规则链报告](todo-temp/r4-attribution/rule-chain/20261014_r4_rule_chain_report.md)）追踪 R4 后仍存在的 2 个 S→O 漏标（FALDH、deficiency in G6PD）；此前 3 个 gold 相反排除案例先按 case ID 核对重合（FALDH 重叠），保留完整句子与上下文。已有基础：P0 报告的逐例历史与 R4 diff 对照、P3 §3.4 的 gold 可见性核查，新增工作是归因与隔离实验，避免重复劳动。
-- [x] （2026-10-15 完成：两类变化都不能归因于 R4 新 principle。Tay-Sachs/TSD 用 R4 指南重跑 5 次全是 M，原 run 的 S 不能复现；cutaneous vasculitis 在原指南不变时 5 次中 2 次为 S，属于波动。见[非目标变化报告](todo-temp/r4-attribution/nontarget/20261015_r4_nontarget_report.md)）解释 R4 非目标变化：为什么针对漏标生成的规则主要修复了 2 个 M→S（Tay-Sachs/TSD）并新增 1 个 S→D 回归。
+- [x] （2026-10-14 完成：与 3 个 gold 相反案例只在 FALDH 重合，未修复案例共 4 个，加上已修复的 PAH；见[规则链报告](nodes/2026-10-16_seminar/r4-attribution/rule-chain/20261014_r4_rule_chain_report.md)）追踪 R4 后仍存在的 2 个 S→O 漏标（FALDH、deficiency in G6PD）；此前 3 个 gold 相反排除案例先按 case ID 核对重合（FALDH 重叠），保留完整句子与上下文。已有基础：P0 报告的逐例历史与 R4 diff 对照、P3 §3.4 的 gold 可见性核查，新增工作是归因与隔离实验，避免重复劳动。
+- [x] （2026-10-15 完成：两类变化都不能归因于 R4 新 principle。Tay-Sachs/TSD 用 R4 指南重跑 5 次全是 M，原 run 的 S 不能复现；cutaneous vasculitis 在原指南不变时 5 次中 2 次为 S，属于波动。见[非目标变化报告](nodes/2026-10-16_seminar/r4-attribution/nontarget/20261015_r4_nontarget_report.md)）解释 R4 非目标变化：为什么针对漏标生成的规则主要修复了 2 个 M→S（Tay-Sachs/TSD）并新增 1 个 S→D 回归。
 - [x] （2026-10-14 完成：FALDH 为规则冲突，G6PD 为修复条件不足，PAH 为撤销 R3 副作用）逐案例串规则链：原文/gold/R3 预测 → discrepancy explanation → 新 principle → R3→R4 guideline diff → 最终预测；归类为修复条件不足（principle 太抽象）、规则冲突（新规则允许但例外仍禁止）或整合失真（principle 可用但写入时被改写弱化）。交付物是"案例—具体条款—预测变化"证据，不只是总体分数。
-- [x] （2026-10-14 完成，另加 ②b"去掉 exception rule"；见[隔离对照报告](todo-temp/r4-attribution/isolation/20261014_r4_isolation_report.md)；追加 ③− 已完成：删去三处点名排除后 FALDH 3/3 恢复）隔离对照（会上提出）：同模型同生成设置，用 ①R3 指南 ②标签定义＋新 principle（不进完整指南） ③R4 完整指南 三种条件重标 3 个原 S→O 案例；重标阶段不给 annotator gold，gold 仅用于事后评分。结果读法：principle 单独有效而整合无效 → 优先查规则冲突与整合；单独也无效 → 查 discrepancy explanation 与 principle 内容；相同条件下结果不稳 → 先少量重复，避免把随机变化当成规则效果。
+- [x] （2026-10-14 完成，另加 ②b"去掉 exception rule"；见[隔离对照报告](nodes/2026-10-16_seminar/r4-attribution/isolation/20261014_r4_isolation_report.md)；追加 ③− 已完成：删去三处点名排除后 FALDH 3/3 恢复）隔离对照（会上提出）：同模型同生成设置，用 ①R3 指南 ②标签定义＋新 principle（不进完整指南） ③R4 完整指南 三种条件重标 3 个原 S→O 案例；重标阶段不给 annotator gold，gold 仅用于事后评分。结果读法：principle 单独有效而整合无效 → 优先查规则冲突与整合；单独也无效 → 查 discrepancy explanation 与 principle 内容；相同条件下结果不稳 → 先少量重复，避免把随机变化当成规则效果。
 - [ ] 汇报材料：逐例对照表（原始错误、新 principle、最终相关条款、重标结果、判断依据）＋关键 guideline diff（只标真正影响目标案例的修改）＋明确区分已观察现象、实验支持的解释、尚未验证的假设。
 
 **新 P1（完成定位后有时间再测）：流程改进，一次只改一个输入位置。**
@@ -403,6 +405,6 @@ seminar 后，将会议要点及其对研究主线的推进融入对应日期的
 >
 > Test whether the 'M→S fixes can't be reproduced' are real noise or not. I need to make the input and settings all the same.
 
-- [x] R3 指南删去点名 FALDH 的两处（第 41 至 45 行、第 241 行）后重标 10577908，看 FALDH 能否修复。10/17 结果：**不能**，删除后 0/5，同批 R3 原样对照 0/3，其余 13 个 gold 每次都对。10/14 里 R4 删去点名排除后是 3/3，所以 FALDH 的修复靠的是 R4 新增的内容，不只是去掉点名排除。R3 第 12 行的一般性 exception rule（"a molecular/substance entity or its level/activity"）没有 R4 那样的 deficiency 例外，推测是第二道阻挡，未检验。见[结果](todo-temp/r4-attribution/isolation/20261017_r3_minus_faldh_report.md)。
+- [x] R3 指南删去点名 FALDH 的两处（第 41 至 45 行、第 241 行）后重标 10577908，看 FALDH 能否修复。10/17 结果：**不能**，删除后 0/5，同批 R3 原样对照 0/3，其余 13 个 gold 每次都对。10/14 里 R4 删去点名排除后是 3/3，所以 FALDH 的修复靠的是 R4 新增的内容，不只是去掉点名排除。R3 第 12 行的一般性 exception rule（"a molecular/substance entity or its level/activity"）没有 R4 那样的 deficiency 例外，推测是第二道阻挡，未检验。见[结果](nodes/2026-10-16_seminar/r4-attribution/isolation/20261017_r3_minus_faldh_report.md)。
 - [x] （2026-10-17 决定不运行：现有证据已足以说明 R4 新增内容是修复 FALDH 的必要条件，这一条只能细分是第 12 行还是第 14 行起作用，不改变结论）追加条件：在上一条的基础上再删去 R3 第 12 行的 "a molecular/substance entity or its level/activity"，5 次，检验它是否就是第二道阻挡。条件文本已备好（`conditions/c4b_minus_level.txt`），以后需要时可直接运行。
-- [ ] 检验 Tay-Sachs/TSD 的 M→S 不能复现是否真是波动，要求输入和设置完全相同。10/16 离线核查：能控制的都相同，模型版本无法确认。可补的三项都还没做：请管理员确认部署是否升级过；以后保存每次调用的 `model` 字段；用 R4 指南再标 8326491 15 次。10/17 补充：`model` 字段实测返回的是部署名 `eastus2-gpt-5.4`，查不出版本，版本只能问管理员。见[核查](todo-temp/r4-attribution/nontarget/20261016_replay_identity_report.md)。
+- [ ] 检验 Tay-Sachs/TSD 的 M→S 不能复现是否真是波动，要求输入和设置完全相同。10/16 离线核查：能控制的都相同，模型版本无法确认。可补的三项都还没做：请管理员确认部署是否升级过；以后保存每次调用的 `model` 字段；用 R4 指南再标 8326491 15 次。10/17 补充：`model` 字段实测返回的是部署名 `eastus2-gpt-5.4`，查不出版本，版本只能问管理员。见[核查](nodes/2026-10-16_seminar/r4-attribution/nontarget/20261016_replay_identity_report.md)。
