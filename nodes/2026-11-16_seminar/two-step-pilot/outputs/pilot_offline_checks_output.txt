@@ -1,0 +1,432 @@
+S+ versus T step-1 prompt diff:
+--- S+
++++ T step 1
+@@ -9,3 +9,3 @@
+ **HIGH-LEVEL INSTRUCTIONS:**
+-Annotate every span that could be a disease mention under the guidelines below, in any role. If the guidelines say a span should not be annotated, still return it and cite the section that excludes it. When a span is a disease mention only under some reading, include it. Give each span the type it would otherwise have, and set "excluded" to "yes" for spans the guidelines say should not be annotated and "no" otherwise.
++Annotate every span that could be a disease mention under the guidelines below, in any role. If the guidelines say a span should not be annotated, still return it and cite the section that excludes it. When a span is a disease mention only under some reading, include it. Do not give a type in this step.
+
+@@ -18,6 +18,4 @@
+   "text": string,
+-  "entity": string,
+   "rationale": string,
+-  "guideline_section": string,
+-  "excluded": string
++  "guideline_section": string
+ }
+
+CHECK 1: PASS; S prompt and request equal reproduction validation; guideline SHA-256=e6232d944d68e9e98c6012328add622486a743f5978e48a5a56c77ac2743002d; S+/T differences limited to last instruction sentence and output fields
+CHECK 2: PASS; 3 arms x 2 pilot documents x 2 runs; hand-computed Track 1/2 and undecided counts match; missing/repeated/unknown IDs and empty-candidate skip verified
+CHECK 3: PASS; e1_run01 valid100 true misses=140
+CHECK 4: PASS; pool=487; pilot=200; reserved=100; disjoint; no dev50/heldout50/BioRED IDs; pool SHA-256=ab4732c83af5fc59a58a64bbf37fbc85f63fb5edf3fef9a472f7e276f0f013ef
+DRY RUN: pool=487; reserved=100; pilot=200; runs=2; calls <= 1600 before retries (S=400, S+=400, T<=800); JPY 1014.40 at JPY 0.634/call; no spending cap; no calls executed
+CHECK 5: PASS; maximum planned calls=1600 before retries; estimated cost=JPY 1014.40 at JPY 0.634/call; no calls executed
+09:34:35 sent batch fake_0: 1 requests {'S-r01-S-fake:annotate_with_guidelines': 1}
+09:34:35 S-r01-S-fake annotate_with_guidelines: unusable reply (try 1): Claude declined the request (stop_details=None)
+09:34:35 batch fake_0 ended: {'succeeded': 1}; spent so far JPY 0.01 (USD 0.00)
+09:34:35 sent batch fake_1: 1 requests {'S-r01-S-fake:annotate_with_guidelines': 1}
+09:34:35 S-r01-S-fake annotate_with_guidelines: unusable reply (try 2): annotation reply is not JSON
+09:34:35 batch fake_1 ended: {'succeeded': 1}; spent so far JPY 0.02 (USD 0.00)
+09:34:35 sent batch fake_2: 1 requests {'S-r01-S-fake:annotate_with_guidelines': 1}
+09:34:35 batch fake_2 ended: {'succeeded': 1}; spent so far JPY 0.03 (USD 0.00)
+09:34:35 S-r01-S-fake annotate_with_guidelines: unusable reply (try 1): Claude declined the request (stop_details=None)
+09:34:35 S-r01-S-fake annotate_with_guidelines: unusable reply (try 2): annotation reply is not JSON
+09:34:36 sent batch fake_3: 1 requests {'S-r02-S-fake:annotate_with_guidelines': 1}
+09:34:36 batch fake_3 ended: {'succeeded': 1}; spent so far JPY 0.03 (USD 0.00)
+09:34:36 sent batch fake_4: 3 requests {'T-r01-find-schema:annotate_with_guidelines': 1, 'S+-r01-S+-schema:annotate_with_guidelines': 1, 'T-r01-type-schema:annotate_with_guidelines': 1}
+09:34:36 batch fake_4 ended: {'succeeded': 3}; spent so far JPY 0.06 (USD 0.00)
+09:34:36 sent batch fake_5: 1 requests {'S-r01-S-refused:annotate_with_guidelines': 1}
+09:34:36 S-r01-S-refused annotate_with_guidelines: unusable reply (try 1): Claude declined the request (stop_details=None)
+09:34:36 batch fake_5 ended: {'succeeded': 1}; spent so far JPY 0.07 (USD 0.00)
+09:34:36 sent batch fake_6: 1 requests {'S-r01-S-refused:annotate_with_guidelines': 1}
+09:34:36 S-r01-S-refused annotate_with_guidelines: unusable reply (try 2): Claude declined the request (stop_details=None)
+09:34:36 batch fake_6 ended: {'succeeded': 1}; spent so far JPY 0.08 (USD 0.00)
+09:34:36 sent batch fake_7: 1 requests {'S-r01-S-refused:annotate_with_guidelines': 1}
+09:34:36 S-r01-S-refused annotate_with_guidelines: unusable reply (try 3): Claude declined the request (stop_details=None)
+09:34:36 S-r01-S-refused annotate_with_guidelines: unusable reply (try 1): Claude declined the request (stop_details=None)
+09:34:36 S-r01-S-refused annotate_with_guidelines: unusable reply (try 2): Claude declined the request (stop_details=None)
+09:34:36 S-r01-S-refused annotate_with_guidelines: unusable reply (try 3): Claude declined the request (stop_details=None)
+09:34:36 batch fake_7 ended: {'succeeded': 1}; spent so far JPY 0.09 (USD 0.00)
+PILOT TESTS: PASS (fixed texts, alignment, labels, NONE/missing/repeated/unknown IDs, bootstrap outcomes, request schemas, retries, usage, resume, run isolation, synthetic end-to-end scoring, inconclusive cases)
+Reproduction suite: test_eval_valid.py
+ok    test_boundary_mismatch
+ok    test_boundary_mismatch_lands_on_the_diagonal
+ok    test_confusion_matrix_gold_rows_orientation_is_the_transpose
+ok    test_confusion_matrix_pred_rows_orientation
+ok    test_documents_align_by_sourceid_not_filename
+ok    test_empty_predictions_are_all_false_negatives
+ok    test_false_negative_and_false_positive
+ok    test_gold_against_itself_is_perfect
+ok    test_label_mismatch
+ok    test_label_mismatch_takes_priority_over_boundary_mismatch
+ok    test_reproduces_the_section_5_4_modifier_claim
+ok    test_strict_match_is_not_a_discrepancy
+ok    test_text_mismatch_is_reported_not_scored
+
+13/13 passed
+
+Reproduction suite: test_haiku_batch_loops.py
+ok   concurrent top-4 refinement = moderate_topk.topk_refine: 7 prompts, outputs and prompt order identical
+ok   cap 128000: the request hash ignores the cap, three replies cut off at 64000 are skipped without counting as tries, and the next saved reply is used
+09:34:44 sent batch msgbatch_fake001: 10 requests {'topk1L01:annotate_with_guidelines': 10}
+09:34:44 topk1L01 annotate_with_guidelines: unusable reply (try 1): Claude response cut off at max_tokens=128000 (usage={'input_tokens': 1000, 'output_tokens': 128000})
+09:34:44 batch msgbatch_fake001 ended: {'succeeded': 9, 'errored': 1}; spent so far JPY 5.76 (USD 0.04)
+09:34:44 sent batch msgbatch_fake002: 2 requests {'topk1L01:annotate_with_guidelines': 2}
+09:34:44 batch msgbatch_fake002 ended: {'succeeded': 2}; spent so far JPY 5.94 (USD 0.04)
+09:34:44 sent batch msgbatch_fake003: 1 requests {'topk1L01:infer_discrepancy_patterns': 1}
+09:34:44 batch msgbatch_fake003 ended: {'succeeded': 1}; spent so far JPY 6.02 (USD 0.04)
+09:34:45 sent batch msgbatch_fake004: 1 requests {'topk1L01:generate_moderation_principle': 1}
+09:34:45 batch msgbatch_fake004 ended: {'succeeded': 1}; spent so far JPY 6.11 (USD 0.04)
+09:34:45 sent batch msgbatch_fake005: 1 requests {'topk1L01:refine_guidelines': 1}
+09:34:45 batch msgbatch_fake005 ended: {'succeeded': 1}; spent so far JPY 6.20 (USD 0.04)
+09:34:46 sent batch msgbatch_fake006: 10 requests {'topk1L01:annotate_with_guidelines': 10}
+09:34:46 20261022_haiku-xhigh_topk1_loop01 round 1: dev10 F1 0.6903 -> 0.7769 (candidate), improved=True
+09:34:46 batch msgbatch_fake006 ended: {'succeeded': 10}; spent so far JPY 7.07 (USD 0.04)
+09:34:46 sent batch msgbatch_fake007: 1 requests {'topk1L01:infer_discrepancy_patterns': 1}
+09:34:46 batch msgbatch_fake007 ended: {'succeeded': 1}; spent so far JPY 7.15 (USD 0.05)
+09:34:46 sent batch msgbatch_fake008: 1 requests {'topk1L01:generate_moderation_principle': 1}
+09:34:46 batch msgbatch_fake008 ended: {'succeeded': 1}; spent so far JPY 7.24 (USD 0.05)
+09:34:47 sent batch msgbatch_fake009: 1 requests {'topk1L01:refine_guidelines': 1}
+09:34:47 topk1L01 refine_guidelines: unusable reply (try 1): Claude response cut off at max_tokens=128000 (usage={'input_tokens': 1000, 'output_tokens': 128000})
+09:34:47 batch msgbatch_fake009 ended: {'succeeded': 1}; spent so far JPY 12.31 (USD 0.08)
+09:34:47 sent batch msgbatch_fake010: 1 requests {'topk1L01:refine_guidelines': 1}
+09:34:47 topk1L01 refine_guidelines: unusable reply (try 2): Claude response cut off at max_tokens=128000 (usage={'input_tokens': 1000, 'output_tokens': 128000})
+09:34:47 batch msgbatch_fake010 ended: {'succeeded': 1}; spent so far JPY 17.37 (USD 0.11)
+09:34:48 sent batch msgbatch_fake011: 1 requests {'topk1L01:refine_guidelines': 1}
+09:34:48 topk1L01 refine_guidelines: unusable reply (try 3): Claude response cut off at max_tokens=128000 (usage={'input_tokens': 1000, 'output_tokens': 128000})
+09:34:48 20261022_haiku-xhigh_topk1_loop01 FAILED: RewriteCapExceeded: topk1L01 refine_guidelines: no usable reply in 3 tries: Claude response cut off at max_tokens=128000 (usage={'input_tokens': 1000, 'output_tokens': 128000})
+09:34:48 all loops returned; batches sent this session 11; total spent JPY 22.44 (USD 0.14)
+09:34:48 batch msgbatch_fake011 ended: {'succeeded': 1}; spent so far JPY 22.44 (USD 0.14)
+09:34:48 sent batch msgbatch_fake001: 10 requests {'topk1L01:annotate_with_guidelines': 10}
+09:34:48 topk1L01 annotate_with_guidelines: unusable reply (try 1): Claude response cut off at max_tokens=128000 (usage={'input_tokens': 1000, 'output_tokens': 128000})
+09:34:48 batch msgbatch_fake001 ended: {'succeeded': 9, 'errored': 1}; spent so far JPY 5.76 (USD 0.04)
+09:34:49 sent batch msgbatch_fake002: 2 requests {'topk1L01:annotate_with_guidelines': 2}
+09:34:49 batch msgbatch_fake002 ended: {'succeeded': 2}; spent so far JPY 5.94 (USD 0.04)
+09:34:49 sent batch msgbatch_fake003: 1 requests {'topk1L01:infer_discrepancy_patterns': 1}
+09:34:49 batch msgbatch_fake003 ended: {'succeeded': 1}; spent so far JPY 6.02 (USD 0.04)
+09:34:49 sent batch msgbatch_fake004: 1 requests {'topk1L01:generate_moderation_principle': 1}
+09:34:49 batch msgbatch_fake004 ended: {'succeeded': 1}; spent so far JPY 6.11 (USD 0.04)
+09:34:50 sent batch msgbatch_fake005: 1 requests {'topk1L01:refine_guidelines': 1}
+09:34:50 batch msgbatch_fake005 ended: {'succeeded': 1}; spent so far JPY 6.20 (USD 0.04)
+09:34:50 sent batch msgbatch_fake006: 10 requests {'topk1L01:annotate_with_guidelines': 10}
+09:34:50 20261022_haiku-xhigh_topk1_loop01 round 1: dev10 F1 0.6903 -> 0.7769 (candidate), improved=True
+09:34:50 batch msgbatch_fake006 ended: {'succeeded': 10}; spent so far JPY 7.07 (USD 0.04)
+09:34:51 sent batch msgbatch_fake007: 1 requests {'topk1L01:infer_discrepancy_patterns': 1}
+09:34:51 batch msgbatch_fake007 ended: {'succeeded': 1}; spent so far JPY 7.15 (USD 0.05)
+09:34:51 sent batch msgbatch_fake008: 1 requests {'topk1L01:generate_moderation_principle': 1}
+09:34:51 batch msgbatch_fake008 ended: {'succeeded': 1}; spent so far JPY 7.24 (USD 0.05)
+09:34:51 sent batch msgbatch_fake009: 1 requests {'topk1L01:refine_guidelines': 1}
+09:34:51 topk1L01 refine_guidelines: unusable reply (try 1): Claude response cut off at max_tokens=128000 (usage={'input_tokens': 1000, 'output_tokens': 128000})
+09:34:51 batch msgbatch_fake009 ended: {'succeeded': 1}; spent so far JPY 12.31 (USD 0.08)
+09:34:52 sent batch msgbatch_fake010: 1 requests {'topk1L01:refine_guidelines': 1}
+09:34:52 topk1L01 refine_guidelines: unusable reply (try 2): Claude response cut off at max_tokens=128000 (usage={'input_tokens': 1000, 'output_tokens': 128000})
+09:34:52 batch msgbatch_fake010 ended: {'succeeded': 1}; spent so far JPY 17.37 (USD 0.11)
+09:34:52 sent batch msgbatch_fake011: 1 requests {'topk1L01:refine_guidelines': 1}
+09:34:52 topk1L01 refine_guidelines: unusable reply (try 3): Claude response cut off at max_tokens=128000 (usage={'input_tokens': 1000, 'output_tokens': 128000})
+09:34:52 20261022_haiku-xhigh_topk1_loop01 loop done: rewrite_exceeded_output_cap, 1 rounds, dev10 F1 0.6903 -> 0.7769
+09:34:52 batch msgbatch_fake011 ended: {'succeeded': 1}; spent so far JPY 22.44 (USD 0.14)
+09:34:53 sent batch msgbatch_fake012: 100 requests {'topk1L01:annotate_with_guidelines': 100}
+09:34:53 batch msgbatch_fake012 ended: {'succeeded': 100}; spent so far JPY 31.14 (USD 0.20)
+09:34:53 20261022_haiku-xhigh_topk1_loop01 valid100 strict F1 0.0000
+09:34:53 all loops returned; batches sent this session 12; total spent JPY 31.14 (USD 0.20)
+ok   rewrite cut off at the cap on every try in round 2: without --stop-at-cap the loop fails; with it the loop ends with the round-1 guideline (stop reason rewrite_exceeded_output_cap) and valid100 is scored
+09:34:53 sent batch msgbatch_fake001: 20 requests {'topk1L01:annotate_with_guidelines': 10, 'topk4L01:annotate_with_guidelines': 10}
+09:34:53 topk1L01 annotate_with_guidelines: unusable reply (try 1): Claude response cut off at max_tokens=128000 (usage={'input_tokens': 1000, 'output_tokens': 128000})
+09:34:53 batch msgbatch_fake001 ended: {'succeeded': 19, 'errored': 1}; spent so far JPY 6.63 (USD 0.04)
+09:34:54 sent batch msgbatch_fake002: 5 requests {'topk1L01:annotate_with_guidelines': 2, 'topk4L01:infer_discrepancy_patterns': 3}
+09:34:54 batch msgbatch_fake002 ended: {'succeeded': 5}; spent so far JPY 7.07 (USD 0.04)
+09:34:54 sent batch msgbatch_fake003: 4 requests {'topk4L01:generate_moderation_principle': 3, 'topk1L01:infer_discrepancy_patterns': 1}
+09:34:54 batch msgbatch_fake003 ended: {'succeeded': 4}; spent so far JPY 7.41 (USD 0.05)
+09:34:54 sent batch msgbatch_fake004: 2 requests {'topk4L01:refine_guidelines': 1, 'topk1L01:generate_moderation_principle': 1}
+09:34:54 batch msgbatch_fake004 ended: {'succeeded': 2}; spent so far JPY 7.59 (USD 0.05)
+09:34:55 sent batch msgbatch_fake005: 11 requests {'topk4L01:annotate_with_guidelines': 10, 'topk1L01:refine_guidelines': 1}
+09:34:55 20261022_haiku-xhigh_topk4_loop01 round 1: dev10 F1 0.6903 -> 0.7769 (candidate), improved=True
+09:34:55 batch msgbatch_fake005 ended: {'succeeded': 11}; spent so far JPY 8.54 (USD 0.05)
+09:34:55 sent batch msgbatch_fake006: 13 requests {'topk1L01:annotate_with_guidelines': 10, 'topk4L01:infer_discrepancy_patterns': 3}
+09:34:55 20261022_haiku-xhigh_topk1_loop01 round 1: dev10 F1 0.6903 -> 0.7769 (candidate), improved=True
+09:34:55 batch msgbatch_fake006 ended: {'succeeded': 13}; spent so far JPY 9.67 (USD 0.06)
+09:34:56 sent batch msgbatch_fake007: 4 requests {'topk4L01:generate_moderation_principle': 3, 'topk1L01:infer_discrepancy_patterns': 1}
+09:34:56 batch msgbatch_fake007 ended: {'succeeded': 4}; spent so far JPY 10.02 (USD 0.06)
+09:34:56 sent batch msgbatch_fake008: 2 requests {'topk4L01:refine_guidelines': 1, 'topk1L01:generate_moderation_principle': 1}
+09:34:56 batch msgbatch_fake008 ended: {'succeeded': 2}; spent so far JPY 10.20 (USD 0.06)
+09:34:57 sent batch msgbatch_fake009: 11 requests {'topk4L01:annotate_with_guidelines': 10, 'topk1L01:refine_guidelines': 1}
+09:34:57 20261022_haiku-xhigh_topk4_loop01 round 2: dev10 F1 0.7769 -> 0.7769 (candidate), improved=False
+09:34:57 20261022_haiku-xhigh_topk4_loop01 loop done: no_improvement, 2 rounds, dev10 F1 0.6903 -> 0.7769
+09:34:57 batch msgbatch_fake009 ended: {'succeeded': 11}; spent so far JPY 11.15 (USD 0.07)
+09:34:57 sent batch msgbatch_fake010: 110 requests {'topk1L01:annotate_with_guidelines': 10, 'topk4L01:annotate_with_guidelines': 100}
+09:34:57 20261022_haiku-xhigh_topk1_loop01 round 2: dev10 F1 0.7769 -> 0.7769 (candidate), improved=False
+09:34:57 20261022_haiku-xhigh_topk1_loop01 loop done: no_improvement, 2 rounds, dev10 F1 0.6903 -> 0.7769
+09:34:57 batch msgbatch_fake010 ended: {'succeeded': 110}; spent so far JPY 20.72 (USD 0.13)
+09:34:57 20261022_haiku-xhigh_topk4_loop01 valid100 strict F1 0.0000
+09:34:58 sent batch msgbatch_fake011: 100 requests {'topk1L01:annotate_with_guidelines': 100}
+09:34:58 20261022_haiku-xhigh_topk1_loop01 valid100 strict F1 0.0000
+09:34:58 batch msgbatch_fake011 ended: {'succeeded': 100}; spent so far JPY 29.41 (USD 0.19)
+09:34:58 all loops returned; batches sent this session 11; total spent JPY 29.41 (USD 0.19)
+ok   both loops completed: top-1 no_improvement after 2 rounds, top-4 no_improvement after 2; valid100 annotated and scored for both
+ok   first batch = 20 requests (10 documents x 2 loops); identical prompts got separate replies per loop; batch sizes [20, 5, 4, 2, 11, 13, 4, 2, 11, 110, 100]
+ok   a cut-off reply was asked again (attempt 2) and an errored request was resent
+ok   11 batches for at most 10 lockstep steps (+ the two resends)
+ok   top-1 rewrite prompt uses the published template; top-4 adds the conflict instruction
+09:34:58 topk1L01 annotate_with_guidelines: unusable reply (try 1): Claude response cut off at max_tokens=128000 (usage={'input_tokens': 1000, 'output_tokens': 128000})
+09:34:58 20261022_haiku-xhigh_topk1_loop01 round 1: dev10 F1 0.6903 -> 0.7769 (candidate), improved=True
+09:34:58 20261022_haiku-xhigh_topk4_loop01 round 1: dev10 F1 0.6903 -> 0.7769 (candidate), improved=True
+09:34:58 20261022_haiku-xhigh_topk1_loop01 round 2: dev10 F1 0.7769 -> 0.7769 (candidate), improved=False
+09:34:58 20261022_haiku-xhigh_topk1_loop01 loop done: no_improvement, 2 rounds, dev10 F1 0.6903 -> 0.7769
+09:34:58 20261022_haiku-xhigh_topk4_loop01 round 2: dev10 F1 0.7769 -> 0.7769 (candidate), improved=False
+09:34:58 20261022_haiku-xhigh_topk4_loop01 loop done: no_improvement, 2 rounds, dev10 F1 0.6903 -> 0.7769
+09:34:58 20261022_haiku-xhigh_topk1_loop01 valid100 strict F1 0.0000
+09:34:58 20261022_haiku-xhigh_topk4_loop01 valid100 strict F1 0.0000
+09:34:58 all loops returned; batches sent this session 0; total spent JPY 29.41 (USD 0.19)
+ok   rerun on the same output: 0 batches sent, same final guidelines and valid100 scores
+09:34:58 collecting batch msgbatch_fake001 sent before the restart (1 requests)
+ok   a batch sent before a crash is collected on restart and not sent again
+09:34:59 spending cap reached: JPY 0 spent, cap JPY 0
+09:34:59 20261022_haiku-xhigh_topk4_loop01 FAILED: RuntimeError: spending cap reached: JPY 0 spent, cap JPY 0
+09:34:59 20261022_haiku-xhigh_topk1_loop01 FAILED: RuntimeError: spending cap reached: JPY 0 spent, cap JPY 0
+09:34:59 all loops returned; batches sent this session 0; total spent JPY 0.00 (USD 0.00)
+ok   cap 0: nothing sent, both loops stop with 'spending cap reached'
+09:34:59 sent batch msgbatch_fake001: 210 requests {'E1R01:annotate_with_guidelines': 100, 'E1R02:annotate_with_guidelines': 100, 'topk1L02:annotate_with_guidelines': 10}
+09:34:59 topk1L02 annotate_with_guidelines: unusable reply (try 1): Claude response cut off at max_tokens=128000 (usage={'input_tokens': 1000, 'output_tokens': 128000})
+09:34:59 20261022_haiku-xhigh_e1_run01 valid100 strict F1 0.0000
+09:34:59 batch msgbatch_fake001 ended: {'succeeded': 209, 'errored': 1}; spent so far JPY 23.15 (USD 0.15)
+09:34:59 20261022_haiku-xhigh_e1_run02 valid100 strict F1 0.0000
+09:35:00 sent batch msgbatch_fake002: 2 requests {'topk1L02:annotate_with_guidelines': 2}
+09:35:00 batch msgbatch_fake002 ended: {'succeeded': 2}; spent so far JPY 23.33 (USD 0.15)
+09:35:00 sent batch msgbatch_fake003: 1 requests {'topk1L02:infer_discrepancy_patterns': 1}
+09:35:00 batch msgbatch_fake003 ended: {'succeeded': 1}; spent so far JPY 23.41 (USD 0.15)
+09:35:01 sent batch msgbatch_fake004: 1 requests {'topk1L02:generate_moderation_principle': 1}
+09:35:01 batch msgbatch_fake004 ended: {'succeeded': 1}; spent so far JPY 23.50 (USD 0.15)
+09:35:01 sent batch msgbatch_fake005: 1 requests {'topk1L02:refine_guidelines': 1}
+09:35:01 batch msgbatch_fake005 ended: {'succeeded': 1}; spent so far JPY 23.59 (USD 0.15)
+09:35:01 sent batch msgbatch_fake006: 10 requests {'topk1L02:annotate_with_guidelines': 10}
+09:35:01 20261022_haiku-xhigh_topk1_loop02 round 1: dev10 F1 0.6903 -> 0.7769 (candidate), improved=True
+09:35:02 batch msgbatch_fake006 ended: {'succeeded': 10}; spent so far JPY 24.46 (USD 0.15)
+09:35:02 sent batch msgbatch_fake007: 1 requests {'topk1L02:infer_discrepancy_patterns': 1}
+09:35:02 batch msgbatch_fake007 ended: {'succeeded': 1}; spent so far JPY 24.54 (USD 0.16)
+09:35:02 sent batch msgbatch_fake008: 1 requests {'topk1L02:generate_moderation_principle': 1}
+09:35:02 batch msgbatch_fake008 ended: {'succeeded': 1}; spent so far JPY 24.63 (USD 0.16)
+09:35:03 sent batch msgbatch_fake009: 1 requests {'topk1L02:refine_guidelines': 1}
+09:35:03 batch msgbatch_fake009 ended: {'succeeded': 1}; spent so far JPY 24.72 (USD 0.16)
+09:35:03 sent batch msgbatch_fake010: 10 requests {'topk1L02:annotate_with_guidelines': 10}
+09:35:03 20261022_haiku-xhigh_topk1_loop02 round 2: dev10 F1 0.7769 -> 0.7769 (candidate), improved=False
+09:35:03 20261022_haiku-xhigh_topk1_loop02 loop done: no_improvement, 2 rounds, dev10 F1 0.6903 -> 0.7769
+09:35:03 batch msgbatch_fake010 ended: {'succeeded': 10}; spent so far JPY 25.59 (USD 0.16)
+09:35:04 sent batch msgbatch_fake011: 100 requests {'topk1L02:annotate_with_guidelines': 100}
+09:35:04 20261022_haiku-xhigh_topk1_loop02 valid100 strict F1 0.0000
+09:35:04 batch msgbatch_fake011 ended: {'succeeded': 100}; spent so far JPY 34.28 (USD 0.22)
+09:35:04 all loops returned; batches sent this session 11; total spent JPY 34.28 (USD 0.22)
+ok   --first-loop 2: loop 01 untouched, no request for it; first batch = 10 development requests of loop 02 + 2 x 100 E1 requests
+ok   E1: both runs ask the 100 prompts the validation step builds for the original guideline, each run gets its own 100 replies, and both are scored
+09:35:04 sent batch msgbatch_fake001: 5 requests {'topk1L01:annotate_with_guidelines': 5}
+09:35:04 sent batch msgbatch_fake002: 5 requests {'topk1L01:annotate_with_guidelines': 5}
+09:35:04 sent batch msgbatch_fake003: 5 requests {'topk4L01:annotate_with_guidelines': 5}
+09:35:04 sent batch msgbatch_fake004: 5 requests {'topk4L01:annotate_with_guidelines': 5}
+09:35:04 topk1L01 annotate_with_guidelines: unusable reply (try 1): Claude response cut off at max_tokens=128000 (usage={'input_tokens': 1000, 'output_tokens': 128000})
+09:35:04 batch msgbatch_fake001 ended: {'succeeded': 4, 'errored': 1}; spent so far JPY 5.33 (USD 0.03)
+09:35:04 batch msgbatch_fake002 ended: {'succeeded': 5}; spent so far JPY 5.76 (USD 0.04)
+09:35:04 batch msgbatch_fake003 ended: {'succeeded': 5}; spent so far JPY 6.20 (USD 0.04)
+09:35:04 batch msgbatch_fake004 ended: {'succeeded': 5}; spent so far JPY 6.63 (USD 0.04)
+09:35:05 sent batch msgbatch_fake005: 5 requests {'topk1L01:annotate_with_guidelines': 2, 'topk4L01:infer_discrepancy_patterns': 3}
+09:35:05 batch msgbatch_fake005 ended: {'succeeded': 5}; spent so far JPY 7.07 (USD 0.04)
+09:35:05 sent batch msgbatch_fake006: 4 requests {'topk4L01:generate_moderation_principle': 3, 'topk1L01:infer_discrepancy_patterns': 1}
+09:35:05 batch msgbatch_fake006 ended: {'succeeded': 4}; spent so far JPY 7.41 (USD 0.05)
+09:35:06 sent batch msgbatch_fake007: 2 requests {'topk1L01:generate_moderation_principle': 1, 'topk4L01:refine_guidelines': 1}
+09:35:06 batch msgbatch_fake007 ended: {'succeeded': 2}; spent so far JPY 7.59 (USD 0.05)
+09:35:06 sent batch msgbatch_fake008: 4 requests {'topk1L01:refine_guidelines': 1, 'topk4L01:annotate_with_guidelines': 3}
+09:35:06 sent batch msgbatch_fake009: 5 requests {'topk4L01:annotate_with_guidelines': 5}
+09:35:06 sent batch msgbatch_fake010: 2 requests {'topk4L01:annotate_with_guidelines': 2}
+09:35:06 batch msgbatch_fake008 ended: {'succeeded': 4}; spent so far JPY 7.94 (USD 0.05)
+09:35:06 batch msgbatch_fake009 ended: {'succeeded': 5}; spent so far JPY 8.37 (USD 0.05)
+09:35:06 20261022_haiku-xhigh_topk4_loop01 round 1: dev10 F1 0.6903 -> 0.7769 (candidate), improved=True
+09:35:06 batch msgbatch_fake010 ended: {'succeeded': 2}; spent so far JPY 8.54 (USD 0.05)
+09:35:07 sent batch msgbatch_fake011: 5 requests {'topk1L01:annotate_with_guidelines': 5}
+09:35:07 sent batch msgbatch_fake012: 5 requests {'topk1L01:annotate_with_guidelines': 5}
+09:35:07 sent batch msgbatch_fake013: 3 requests {'topk4L01:infer_discrepancy_patterns': 3}
+09:35:07 batch msgbatch_fake011 ended: {'succeeded': 5}; spent so far JPY 8.98 (USD 0.06)
+09:35:07 20261022_haiku-xhigh_topk1_loop01 round 1: dev10 F1 0.6903 -> 0.7769 (candidate), improved=True
+09:35:07 batch msgbatch_fake012 ended: {'succeeded': 5}; spent so far JPY 9.41 (USD 0.06)
+09:35:07 batch msgbatch_fake013 ended: {'succeeded': 3}; spent so far JPY 9.67 (USD 0.06)
+09:35:07 sent batch msgbatch_fake014: 4 requests {'topk1L01:infer_discrepancy_patterns': 1, 'topk4L01:generate_moderation_principle': 3}
+09:35:07 batch msgbatch_fake014 ended: {'succeeded': 4}; spent so far JPY 10.02 (USD 0.06)
+09:35:07 sent batch msgbatch_fake015: 2 requests {'topk1L01:generate_moderation_principle': 1, 'topk4L01:refine_guidelines': 1}
+09:35:07 batch msgbatch_fake015 ended: {'succeeded': 2}; spent so far JPY 10.20 (USD 0.06)
+09:35:08 sent batch msgbatch_fake016: 4 requests {'topk1L01:refine_guidelines': 1, 'topk4L01:annotate_with_guidelines': 3}
+09:35:08 sent batch msgbatch_fake017: 5 requests {'topk4L01:annotate_with_guidelines': 5}
+09:35:08 sent batch msgbatch_fake018: 2 requests {'topk4L01:annotate_with_guidelines': 2}
+09:35:08 batch msgbatch_fake016 ended: {'succeeded': 4}; spent so far JPY 10.54 (USD 0.07)
+09:35:08 batch msgbatch_fake017 ended: {'succeeded': 5}; spent so far JPY 10.98 (USD 0.07)
+09:35:08 20261022_haiku-xhigh_topk4_loop01 round 2: dev10 F1 0.7769 -> 0.7769 (candidate), improved=False
+09:35:08 20261022_haiku-xhigh_topk4_loop01 loop done: no_improvement, 2 rounds, dev10 F1 0.6903 -> 0.7769
+09:35:08 batch msgbatch_fake018 ended: {'succeeded': 2}; spent so far JPY 11.15 (USD 0.07)
+09:35:08 sent batch msgbatch_fake019: 5 requests {'topk1L01:annotate_with_guidelines': 5}
+09:35:08 sent batch msgbatch_fake020: 5 requests {'topk1L01:annotate_with_guidelines': 5}
+09:35:08 sent batch msgbatch_fake021: 5 requests {'topk4L01:annotate_with_guidelines': 5}
+09:35:08 sent batch msgbatch_fake022: 5 requests {'topk4L01:annotate_with_guidelines': 5}
+09:35:08 sent batch msgbatch_fake023: 5 requests {'topk4L01:annotate_with_guidelines': 5}
+09:35:08 sent batch msgbatch_fake024: 5 requests {'topk4L01:annotate_with_guidelines': 5}
+09:35:08 sent batch msgbatch_fake025: 5 requests {'topk4L01:annotate_with_guidelines': 5}
+09:35:08 sent batch msgbatch_fake026: 5 requests {'topk4L01:annotate_with_guidelines': 5}
+09:35:08 sent batch msgbatch_fake027: 5 requests {'topk4L01:annotate_with_guidelines': 5}
+09:35:08 sent batch msgbatch_fake028: 5 requests {'topk4L01:annotate_with_guidelines': 5}
+09:35:08 sent batch msgbatch_fake029: 5 requests {'topk4L01:annotate_with_guidelines': 5}
+09:35:08 sent batch msgbatch_fake030: 5 requests {'topk4L01:annotate_with_guidelines': 5}
+09:35:08 sent batch msgbatch_fake031: 5 requests {'topk4L01:annotate_with_guidelines': 5}
+09:35:08 sent batch msgbatch_fake032: 5 requests {'topk4L01:annotate_with_guidelines': 5}
+09:35:08 sent batch msgbatch_fake033: 5 requests {'topk4L01:annotate_with_guidelines': 5}
+09:35:08 sent batch msgbatch_fake034: 5 requests {'topk4L01:annotate_with_guidelines': 5}
+09:35:08 sent batch msgbatch_fake035: 5 requests {'topk4L01:annotate_with_guidelines': 5}
+09:35:08 sent batch msgbatch_fake036: 5 requests {'topk4L01:annotate_with_guidelines': 5}
+09:35:08 sent batch msgbatch_fake037: 5 requests {'topk4L01:annotate_with_guidelines': 5}
+09:35:08 sent batch msgbatch_fake038: 5 requests {'topk4L01:annotate_with_guidelines': 5}
+09:35:08 sent batch msgbatch_fake039: 5 requests {'topk4L01:annotate_with_guidelines': 5}
+09:35:08 sent batch msgbatch_fake040: 5 requests {'topk4L01:annotate_with_guidelines': 5}
+09:35:08 batch msgbatch_fake019 ended: {'succeeded': 5}; spent so far JPY 11.59 (USD 0.07)
+09:35:08 20261022_haiku-xhigh_topk1_loop01 round 2: dev10 F1 0.7769 -> 0.7769 (candidate), improved=False
+09:35:08 20261022_haiku-xhigh_topk1_loop01 loop done: no_improvement, 2 rounds, dev10 F1 0.6903 -> 0.7769
+09:35:08 batch msgbatch_fake020 ended: {'succeeded': 5}; spent so far JPY 12.02 (USD 0.08)
+09:35:08 batch msgbatch_fake021 ended: {'succeeded': 5}; spent so far JPY 12.46 (USD 0.08)
+09:35:09 batch msgbatch_fake022 ended: {'succeeded': 5}; spent so far JPY 12.89 (USD 0.08)
+09:35:09 batch msgbatch_fake023 ended: {'succeeded': 5}; spent so far JPY 13.33 (USD 0.08)
+09:35:09 batch msgbatch_fake024 ended: {'succeeded': 5}; spent so far JPY 13.76 (USD 0.09)
+09:35:09 batch msgbatch_fake025 ended: {'succeeded': 5}; spent so far JPY 14.20 (USD 0.09)
+09:35:09 batch msgbatch_fake026 ended: {'succeeded': 5}; spent so far JPY 14.63 (USD 0.09)
+09:35:09 batch msgbatch_fake027 ended: {'succeeded': 5}; spent so far JPY 15.07 (USD 0.10)
+09:35:09 batch msgbatch_fake028 ended: {'succeeded': 5}; spent so far JPY 15.50 (USD 0.10)
+09:35:09 batch msgbatch_fake029 ended: {'succeeded': 5}; spent so far JPY 15.94 (USD 0.10)
+09:35:09 batch msgbatch_fake030 ended: {'succeeded': 5}; spent so far JPY 16.37 (USD 0.10)
+09:35:09 batch msgbatch_fake031 ended: {'succeeded': 5}; spent so far JPY 16.80 (USD 0.11)
+09:35:09 batch msgbatch_fake032 ended: {'succeeded': 5}; spent so far JPY 17.24 (USD 0.11)
+09:35:09 batch msgbatch_fake033 ended: {'succeeded': 5}; spent so far JPY 17.67 (USD 0.11)
+09:35:09 batch msgbatch_fake034 ended: {'succeeded': 5}; spent so far JPY 18.11 (USD 0.11)
+09:35:09 batch msgbatch_fake035 ended: {'succeeded': 5}; spent so far JPY 18.54 (USD 0.12)
+09:35:09 batch msgbatch_fake036 ended: {'succeeded': 5}; spent so far JPY 18.98 (USD 0.12)
+09:35:09 batch msgbatch_fake037 ended: {'succeeded': 5}; spent so far JPY 19.41 (USD 0.12)
+09:35:09 batch msgbatch_fake038 ended: {'succeeded': 5}; spent so far JPY 19.85 (USD 0.13)
+09:35:09 batch msgbatch_fake039 ended: {'succeeded': 5}; spent so far JPY 20.28 (USD 0.13)
+09:35:09 batch msgbatch_fake040 ended: {'succeeded': 5}; spent so far JPY 20.72 (USD 0.13)
+09:35:09 20261022_haiku-xhigh_topk4_loop01 valid100 strict F1 0.0000
+09:35:09 sent batch msgbatch_fake041: 5 requests {'topk1L01:annotate_with_guidelines': 5}
+09:35:09 sent batch msgbatch_fake042: 5 requests {'topk1L01:annotate_with_guidelines': 5}
+09:35:09 sent batch msgbatch_fake043: 5 requests {'topk1L01:annotate_with_guidelines': 5}
+09:35:09 sent batch msgbatch_fake044: 5 requests {'topk1L01:annotate_with_guidelines': 5}
+09:35:09 sent batch msgbatch_fake045: 5 requests {'topk1L01:annotate_with_guidelines': 5}
+09:35:09 sent batch msgbatch_fake046: 5 requests {'topk1L01:annotate_with_guidelines': 5}
+09:35:09 sent batch msgbatch_fake047: 5 requests {'topk1L01:annotate_with_guidelines': 5}
+09:35:09 sent batch msgbatch_fake048: 5 requests {'topk1L01:annotate_with_guidelines': 5}
+09:35:09 sent batch msgbatch_fake049: 5 requests {'topk1L01:annotate_with_guidelines': 5}
+09:35:09 sent batch msgbatch_fake050: 5 requests {'topk1L01:annotate_with_guidelines': 5}
+09:35:09 sent batch msgbatch_fake051: 5 requests {'topk1L01:annotate_with_guidelines': 5}
+09:35:09 sent batch msgbatch_fake052: 5 requests {'topk1L01:annotate_with_guidelines': 5}
+09:35:09 sent batch msgbatch_fake053: 5 requests {'topk1L01:annotate_with_guidelines': 5}
+09:35:09 sent batch msgbatch_fake054: 5 requests {'topk1L01:annotate_with_guidelines': 5}
+09:35:09 sent batch msgbatch_fake055: 5 requests {'topk1L01:annotate_with_guidelines': 5}
+09:35:09 sent batch msgbatch_fake056: 5 requests {'topk1L01:annotate_with_guidelines': 5}
+09:35:09 sent batch msgbatch_fake057: 5 requests {'topk1L01:annotate_with_guidelines': 5}
+09:35:09 sent batch msgbatch_fake058: 5 requests {'topk1L01:annotate_with_guidelines': 5}
+09:35:09 sent batch msgbatch_fake059: 5 requests {'topk1L01:annotate_with_guidelines': 5}
+09:35:09 sent batch msgbatch_fake060: 5 requests {'topk1L01:annotate_with_guidelines': 5}
+09:35:09 batch msgbatch_fake041 ended: {'succeeded': 5}; spent so far JPY 21.15 (USD 0.13)
+09:35:09 batch msgbatch_fake042 ended: {'succeeded': 5}; spent so far JPY 21.59 (USD 0.14)
+09:35:09 batch msgbatch_fake043 ended: {'succeeded': 5}; spent so far JPY 22.02 (USD 0.14)
+09:35:09 batch msgbatch_fake044 ended: {'succeeded': 5}; spent so far JPY 22.46 (USD 0.14)
+09:35:09 batch msgbatch_fake045 ended: {'succeeded': 5}; spent so far JPY 22.89 (USD 0.14)
+09:35:09 batch msgbatch_fake046 ended: {'succeeded': 5}; spent so far JPY 23.33 (USD 0.15)
+09:35:09 batch msgbatch_fake047 ended: {'succeeded': 5}; spent so far JPY 23.76 (USD 0.15)
+09:35:09 batch msgbatch_fake048 ended: {'succeeded': 5}; spent so far JPY 24.20 (USD 0.15)
+09:35:09 batch msgbatch_fake049 ended: {'succeeded': 5}; spent so far JPY 24.63 (USD 0.16)
+09:35:09 batch msgbatch_fake050 ended: {'succeeded': 5}; spent so far JPY 25.06 (USD 0.16)
+09:35:09 batch msgbatch_fake051 ended: {'succeeded': 5}; spent so far JPY 25.50 (USD 0.16)
+09:35:09 batch msgbatch_fake052 ended: {'succeeded': 5}; spent so far JPY 25.93 (USD 0.16)
+09:35:09 batch msgbatch_fake053 ended: {'succeeded': 5}; spent so far JPY 26.37 (USD 0.17)
+09:35:09 batch msgbatch_fake054 ended: {'succeeded': 5}; spent so far JPY 26.80 (USD 0.17)
+09:35:09 batch msgbatch_fake055 ended: {'succeeded': 5}; spent so far JPY 27.24 (USD 0.17)
+09:35:09 batch msgbatch_fake056 ended: {'succeeded': 5}; spent so far JPY 27.67 (USD 0.18)
+09:35:09 batch msgbatch_fake057 ended: {'succeeded': 5}; spent so far JPY 28.11 (USD 0.18)
+09:35:09 batch msgbatch_fake058 ended: {'succeeded': 5}; spent so far JPY 28.54 (USD 0.18)
+09:35:09 batch msgbatch_fake059 ended: {'succeeded': 5}; spent so far JPY 28.98 (USD 0.18)
+09:35:09 20261022_haiku-xhigh_topk1_loop01 valid100 strict F1 0.0000
+09:35:09 batch msgbatch_fake060 ended: {'succeeded': 5}; spent so far JPY 29.41 (USD 0.19)
+09:35:10 all loops returned; batches sent this session 60; total spent JPY 29.41 (USD 0.19)
+ok   batch limit lowered to 60,000 bytes: 60 batches, the largest 58,846 bytes; same final guidelines and valid100 results as one batch per step
+09:35:10 sent batch msgbatch_fake001: 10 requests {'topk1L01:annotate_with_guidelines': 10}
+09:35:10 topk1L01 annotate_with_guidelines: unusable reply (try 1): Claude declined the request (stop_details=None)
+09:35:10 batch msgbatch_fake001 ended: {'succeeded': 10}; spent so far JPY 0.87 (USD 0.01)
+09:35:10 sent batch msgbatch_fake002: 1 requests {'topk1L01:annotate_with_guidelines': 1}
+09:35:10 topk1L01 annotate_with_guidelines: unusable reply (try 2): Claude declined the request (stop_details=None)
+09:35:10 batch msgbatch_fake002 ended: {'succeeded': 1}; spent so far JPY 0.96 (USD 0.01)
+09:35:11 sent batch msgbatch_fake003: 1 requests {'topk1L01:annotate_with_guidelines': 1}
+09:35:11 topk1L01 annotate_with_guidelines: unusable reply (try 3): Claude declined the request (stop_details=None)
+09:35:11 20261022_haiku-xhigh_topk1_loop01 FAILED: RuntimeError: topk1L01 annotate_with_guidelines: no usable reply in 3 tries: Claude declined the request (stop_details=None)
+09:35:11 all loops returned; batches sent this session 3; total spent JPY 1.04 (USD 0.01)
+09:35:11 batch msgbatch_fake003 ended: {'succeeded': 1}; spent so far JPY 1.04 (USD 0.01)
+09:35:11 topk1L01 annotate_with_guidelines: unusable reply (try 1): Claude declined the request (stop_details=None)
+09:35:11 topk1L01 annotate_with_guidelines: unusable reply (try 2): Claude declined the request (stop_details=None)
+09:35:11 topk1L01 annotate_with_guidelines: unusable reply (try 3): Claude declined the request (stop_details=None)
+09:35:11 20261022_haiku-xhigh_topk1_loop01 FAILED: RuntimeError: topk1L01 annotate_with_guidelines: no usable reply in 3 tries: Claude declined the request (stop_details=None)
+09:35:11 all loops returned; batches sent this session 0; total spent JPY 1.04 (USD 0.01)
+09:35:11 topk1L01 annotate_with_guidelines: unusable reply (try 1): Claude declined the request (stop_details=None)
+09:35:11 topk1L01 annotate_with_guidelines: unusable reply (try 2): Claude declined the request (stop_details=None)
+09:35:11 topk1L01 annotate_with_guidelines: unusable reply (try 3): Claude declined the request (stop_details=None)
+09:35:11 sent batch msgbatch_fake001: 1 requests {'topk1L01:annotate_with_guidelines': 1}
+09:35:11 batch msgbatch_fake001 ended: {'succeeded': 1}; spent so far JPY 1.13 (USD 0.01)
+09:35:12 sent batch msgbatch_fake002: 1 requests {'topk1L01:infer_discrepancy_patterns': 1}
+09:35:12 batch msgbatch_fake002 ended: {'succeeded': 1}; spent so far JPY 1.22 (USD 0.01)
+09:35:12 sent batch msgbatch_fake003: 1 requests {'topk1L01:generate_moderation_principle': 1}
+09:35:12 batch msgbatch_fake003 ended: {'succeeded': 1}; spent so far JPY 1.30 (USD 0.01)
+09:35:12 sent batch msgbatch_fake004: 1 requests {'topk1L01:refine_guidelines': 1}
+09:35:12 batch msgbatch_fake004 ended: {'succeeded': 1}; spent so far JPY 1.39 (USD 0.01)
+09:35:13 sent batch msgbatch_fake005: 10 requests {'topk1L01:annotate_with_guidelines': 10}
+09:35:13 20261022_haiku-xhigh_topk1_loop01 round 1: dev10 F1 0.6903 -> 0.7769 (candidate), improved=True
+09:35:13 batch msgbatch_fake005 ended: {'succeeded': 10}; spent so far JPY 2.26 (USD 0.01)
+09:35:13 sent batch msgbatch_fake006: 1 requests {'topk1L01:infer_discrepancy_patterns': 1}
+09:35:13 batch msgbatch_fake006 ended: {'succeeded': 1}; spent so far JPY 2.35 (USD 0.01)
+09:35:14 sent batch msgbatch_fake007: 1 requests {'topk1L01:generate_moderation_principle': 1}
+09:35:14 batch msgbatch_fake007 ended: {'succeeded': 1}; spent so far JPY 2.43 (USD 0.02)
+09:35:14 sent batch msgbatch_fake008: 1 requests {'topk1L01:refine_guidelines': 1}
+09:35:14 batch msgbatch_fake008 ended: {'succeeded': 1}; spent so far JPY 2.52 (USD 0.02)
+09:35:14 sent batch msgbatch_fake009: 10 requests {'topk1L01:annotate_with_guidelines': 10}
+09:35:14 20261022_haiku-xhigh_topk1_loop01 round 2: dev10 F1 0.7769 -> 0.7769 (candidate), improved=False
+09:35:14 20261022_haiku-xhigh_topk1_loop01 loop done: no_improvement, 2 rounds, dev10 F1 0.6903 -> 0.7769
+09:35:15 batch msgbatch_fake009 ended: {'succeeded': 10}; spent so far JPY 3.39 (USD 0.02)
+09:35:15 sent batch msgbatch_fake010: 100 requests {'topk1L01:annotate_with_guidelines': 100}
+09:35:15 batch msgbatch_fake010 ended: {'succeeded': 100}; spent so far JPY 12.09 (USD 0.08)
+09:35:15 20261022_haiku-xhigh_topk1_loop01 valid100 strict F1 0.0000
+09:35:15 all loops returned; batches sent this session 10; total spent JPY 12.09 (USD 0.08)
+ok   three refused replies: a plain resume fails again and sends nothing; with --max-attempts 5 the resume asks only that call again (attempt 4) and the loop completes
+09:35:15 sent batch msgbatch_fake001: 10 requests {'topk1L01:annotate_with_guidelines': 10}
+09:35:15 topk1L01 annotate_with_guidelines: unusable reply (try 1): Claude response cut off at max_tokens=128000 (usage={'input_tokens': 1000, 'output_tokens': 128000})
+09:35:15 batch msgbatch_fake001 ended: {'succeeded': 9, 'errored': 1}; spent so far JPY 5.76 (USD 0.04)
+09:35:16 sent batch msgbatch_fake002: 2 requests {'topk1L01:annotate_with_guidelines': 2}
+09:35:16 batch msgbatch_fake002 ended: {'succeeded': 2}; spent so far JPY 5.94 (USD 0.04)
+09:35:16 sent batch msgbatch_fake003: 1 requests {'topk1L01:infer_discrepancy_patterns': 1}
+09:35:16 batch msgbatch_fake003 ended: {'succeeded': 1}; spent so far JPY 6.02 (USD 0.04)
+09:35:17 sent batch msgbatch_fake004: 1 requests {'topk1L01:generate_moderation_principle': 1}
+09:35:17 batch msgbatch_fake004 ended: {'succeeded': 1}; spent so far JPY 6.11 (USD 0.04)
+09:35:17 sent batch msgbatch_fake005: 1 requests {'topk1L01:refine_guidelines': 1}
+09:35:17 batch msgbatch_fake005 ended: {'succeeded': 1}; spent so far JPY 6.20 (USD 0.04)
+09:35:17 sent batch msgbatch_fake006: 10 requests {'topk1L01:annotate_with_guidelines': 10}
+09:35:17 20261022_haiku-xhigh_topk1_loop01 round 1: dev10 F1 0.6903 -> 0.7769 (candidate), improved=True
+09:35:17 batch msgbatch_fake006 ended: {'succeeded': 10}; spent so far JPY 7.07 (USD 0.04)
+09:35:18 sent batch msgbatch_fake007: 1 requests {'topk1L01:infer_discrepancy_patterns': 1}
+09:35:18 batch msgbatch_fake007 ended: {'succeeded': 1}; spent so far JPY 7.15 (USD 0.05)
+09:35:18 sent batch msgbatch_fake008: 1 requests {'topk1L01:generate_moderation_principle': 1}
+09:35:18 batch msgbatch_fake008 ended: {'succeeded': 1}; spent so far JPY 7.24 (USD 0.05)
+09:35:19 sent batch msgbatch_fake009: 1 requests {'topk1L01:refine_guidelines': 1}
+09:35:19 topk1L01 refine_guidelines: unusable reply (try 1): Claude response cut off at max_tokens=128000 (usage={'input_tokens': 1000, 'output_tokens': 128000})
+09:35:19 batch msgbatch_fake009 ended: {'succeeded': 1}; spent so far JPY 12.31 (USD 0.08)
+09:35:19 sent batch msgbatch_fake010: 1 requests {'topk1L01:refine_guidelines': 1}
+09:35:19 topk1L01 refine_guidelines: unusable reply (try 2): Claude response cut off at max_tokens=128000 (usage={'input_tokens': 1000, 'output_tokens': 128000})
+09:35:19 batch msgbatch_fake010 ended: {'succeeded': 1}; spent so far JPY 17.37 (USD 0.11)
+09:35:20 sent batch msgbatch_fake011: 1 requests {'topk1L01:refine_guidelines': 1}
+09:35:20 topk1L01 refine_guidelines: unusable reply (try 3): Claude response cut off at max_tokens=128000 (usage={'input_tokens': 1000, 'output_tokens': 128000})
+09:35:20 20261022_haiku-xhigh_topk1_loop01 loop done: rewrite_exceeded_output_cap, 1 rounds, dev10 F1 0.6903 -> 0.7769
+09:35:20 batch msgbatch_fake011 ended: {'succeeded': 1}; spent so far JPY 22.44 (USD 0.14)
+09:35:20 sent batch msgbatch_fake012: 100 requests {'topk1L01:annotate_with_guidelines': 100}
+09:35:20 batch msgbatch_fake012 ended: {'succeeded': 100}; spent so far JPY 31.14 (USD 0.20)
+09:35:20 20261022_haiku-xhigh_topk1_loop01 valid100 strict F1 0.0000
+09:35:20 all loops returned; batches sent this session 12; total spent JPY 31.14 (USD 0.20)
+ok   with --max-attempts 5 a rewrite cut off at the cap is still asked 3 times and the round ends (rewrite_exceeded_output_cap)
+all offline checks passed
+
+CHECK 6: PASS; reproduction/tests/ (2 standalone suites, exit=0 each; fake API only)
+ALL OFFLINE CHECKS: PASS; network blocked; no credential files read; no paid calls or batches submitted
