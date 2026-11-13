@@ -216,9 +216,10 @@ def main():
         return
     if not args.yes or not args.administrator_notified:
         parser.error("paid run requires --yes and --administrator-notified after approval and notification")
-    # Require an environment key. Never open .env or any credential file, even in the paid entry point.
-    if not os.environ.get("ANTHROPIC_API_KEY"):
-        parser.error("ANTHROPIC_API_KEY must already be set in the environment")
+    # Same as the reproduction runner: the project's load_dotenv puts ANTHROPIC_API_KEY from .env into the
+    # environment (an existing environment variable wins). Only this paid entry point loads it.
+    if not hb.rh.load_key():
+        parser.error("ANTHROPIC_API_KEY is not set (add it to .env)")
     root = args.output_root.resolve()
     freeze_inputs(root)  # Persist both document lists and hashes before any client is created.
     if args.detach:

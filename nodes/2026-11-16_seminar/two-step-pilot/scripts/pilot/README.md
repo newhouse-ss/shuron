@@ -13,13 +13,13 @@ python -B nodes/2026-11-16_seminar/two-step-pilot/scripts/pilot/offline_checks.p
 
 ## 付费运行，尚未执行
 
-仅在用户批准、管理员已收到通知，并且环境中已设置 `ANTHROPIC_API_KEY` 后执行。以下命令启动脱离当前终端的后台进程，日志写入运行目录的 `runner.log`。同一命令恢复同一目录；不要同时启动两个进程操作同一运行目录。
+仅在用户批准、管理员已收到通知后执行。`ANTHROPIC_API_KEY` 与复现运行器相同，由项目的 load_dotenv 从 .env 读入（环境变量优先）。以下命令启动脱离当前终端的后台进程，日志写入运行目录的 `runner.log`。同一命令恢复同一目录；不要同时启动两个进程操作同一运行目录。
 
 ```powershell
 python -B nodes/2026-11-16_seminar/two-step-pilot/scripts/pilot/run_pilot.py run --detach --yes --administrator-notified --output-root outputs/ncbi_disease/20261113_haiku-xhigh_pilot_twostep
 ```
 
-最多 1,600 个原定调用，重试可能增加实际请求数。按每次 JPY 0.634 估算为 JPY 1,014.40，不设花费上限。模型、思考设置、输出上限、BatchQueue、QueueProvider 和最多三次尝试均沿用复现运行器。脚本直接使用环境中的密钥，不加载 `.env`。
+最多 1,600 个原定调用，重试可能增加实际请求数。按每次 JPY 0.634 估算为 JPY 1,014.40，不设花费上限。模型、思考设置、输出上限、BatchQueue、QueueProvider 和最多三次尝试均沿用复现运行器。只有付费入口读取密钥；离线检查和 dry run 不读取。
 
 提交前保存 manifest，包括 487 篇池的排序文件名、哈希、100 篇正式实验保留文档、200 篇试跑文档，以及指南、schema 和提示的哈希。哈希编码方式写在 manifest 内。恢复时输入必须一致。
 
