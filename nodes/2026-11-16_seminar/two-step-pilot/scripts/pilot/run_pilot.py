@@ -165,7 +165,9 @@ def run_all(root: Path, client, *, quiet=hb.QUIET, poll=hb.POLL):
             write_json(arm_dir(root, arm, run) / "documents.json", names)
     queue.start()
     units = [(arm, run, name) for run in RUNS for name in names for arm in ARMS]
-    with cf.ThreadPoolExecutor(max_workers=128) as pool:
+    # One worker per unit, so every first call goes out in one batch and T's typing calls in a second one
+    # (the queue sends the next batch only after the previous one ends).
+    with cf.ThreadPoolExecutor(max_workers=len(units)) as pool:
         futures = [pool.submit(run_document, root, arm, run, name, documents[name], guideline, entities, factory)
                    for arm, run, name in units]
         statuses = [future.result() for future in futures]
